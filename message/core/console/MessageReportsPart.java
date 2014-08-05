@@ -81,7 +81,9 @@ class MessageReportsPart
 
 					"<td>%h</td>\n",
 					timeFormatter.instantToTimestampString (
-						dateToInstant (messageReport.getReceivedTime ())),
+						timeFormatter.defaultTimezone (),
+						dateToInstant (
+							messageReport.getReceivedTime ())),
 
 					"<td>%h</td>\n",
 					requestContext.prettyMsInterval (interval),

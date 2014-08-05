@@ -26,7 +26,6 @@
 	<layer name="console">
 		<bean class="console.MagicNumberCreateAction"/>
 		<bean class="console.MagicNumberCreatePart"/>
-		<bean class="console.MagicNumberSetEntityFinder"/>
 	</layer>
 
 	<layer name="daemon">

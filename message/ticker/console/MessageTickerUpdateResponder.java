@@ -226,6 +226,7 @@ class MessageTickerUpdateResponder
 
 				", [ '%j'",
 				timeFormatter.instantToTimeString (
+					timeFormatter.defaultTimezone (),
 					messageTickerMessage.createdTime ()),
 
 				", '%j'",

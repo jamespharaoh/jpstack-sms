@@ -189,7 +189,9 @@ class ObjectSmsMessagesPart
 
 					"<td colspan=\"7\">%h</td>\n",
 					timeFormatter.instantToDateStringLong (
-						dateToInstant (message.getCreatedTime ())),
+						timeFormatter.defaultTimezone (),
+						dateToInstant (
+							message.getCreatedTime ())),
 
 					"</tr>\n");
 
@@ -210,7 +212,9 @@ class ObjectSmsMessagesPart
 
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimeString (
-					dateToInstant (message.getCreatedTime ())),
+					timeFormatter.defaultTimezone (),
+					dateToInstant (
+						message.getCreatedTime ())),
 
 				"<td>%h</td>\n",
 				message.getNumFrom (),

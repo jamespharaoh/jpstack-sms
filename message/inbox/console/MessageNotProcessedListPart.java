@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.joda.time.DateTimeZone;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.console.misc.TimeFormatter;
@@ -20,13 +22,19 @@ public
 class MessageNotProcessedListPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	MessageConsoleHelper messageHelper;
 
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// state
+
 	List<MessageRec> messages;
+
+	// implementation
 
 	@Override
 	public
@@ -87,7 +95,9 @@ class MessageNotProcessedListPart
 
 						"<td colspan=\"6\">%h</td>\n",
 						timeFormatter.instantToDateStringLong (
-							dateToInstant (message.getCreatedTime ())),
+							DateTimeZone.getDefault (),
+							dateToInstant (
+								message.getCreatedTime ())),
 
 						"</tr>\n");
 
@@ -109,7 +119,9 @@ class MessageNotProcessedListPart
 				printFormat (
 					"<td>%h</td>\n",
 					timeFormatter.instantToTimeString (
-						dateToInstant (message.getCreatedTime ())));
+						DateTimeZone.getDefault (),
+						dateToInstant (
+							message.getCreatedTime ())));
 
 				printFormat (
 					"<td>%h</td>\n",

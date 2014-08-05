@@ -75,7 +75,9 @@ class MessageInboxSummaryPart
 
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimestampString (
-					dateToInstant (message.getCreatedTime ())),
+					timeFormatter.defaultTimezone (),
+					dateToInstant (
+						message.getCreatedTime ())),
 
 				"<td>%h</td>\n",
 				message.getRoute ().getCode (),

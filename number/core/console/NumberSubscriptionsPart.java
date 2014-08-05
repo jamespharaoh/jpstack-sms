@@ -117,14 +117,18 @@ class NumberSubscriptionsPart
 
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimestampString (
-					dateToInstant (link.getStartTime ())));
+					timeFormatter.defaultTimezone (),
+					dateToInstant (
+						link.getStartTime ())));
 
 			if (! activeOnly) {
 
 				printFormat (
 					"<td>%h</td>\n",
 					timeFormatter.instantToTimestampString (
-						dateToInstant (link.getEndTime ())),
+						timeFormatter.defaultTimezone (),
+						dateToInstant (
+							link.getEndTime ())),
 
 					"<td>%h</td>\n",
 					link.getActive ()

@@ -227,6 +227,7 @@ class MessageSummaryPart
 				"<td>%h</td>\n",
 				ifNull (
 					timeFormatter.instantToTimestampString (
+						timeFormatter.defaultTimezone (),
 						dateToInstant (
 							message.getNetworkTime ())),
 					"-"),
@@ -239,6 +240,7 @@ class MessageSummaryPart
 
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimestampString (
+					timeFormatter.defaultTimezone (),
 					dateToInstant (
 						message.getCreatedTime ())),
 
@@ -252,6 +254,7 @@ class MessageSummaryPart
 				"<td>%h</td>\n",
 				ifNull (
 					timeFormatter.instantToTimestampString (
+						timeFormatter.defaultTimezone (),
 						dateToInstant (
 							message.getProcessedTime ())),
 					"-"),
@@ -280,6 +283,7 @@ class MessageSummaryPart
 
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimestampString (
+					timeFormatter.defaultTimezone (),
 					dateToInstant (
 						message.getCreatedTime ())),
 
@@ -292,6 +296,7 @@ class MessageSummaryPart
 				"<td>%h</td>\n",
 				ifNull (
 					timeFormatter.instantToTimestampString (
+					timeFormatter.defaultTimezone (),
 						dateToInstant (
 							message.getProcessedTime ())),
 					"-"),
@@ -305,7 +310,9 @@ class MessageSummaryPart
 				"<td>%h</td>\n",
 				ifNull (
 					timeFormatter.instantToTimestampString (
-						dateToInstant (message.getNetworkTime ())),
+						timeFormatter.defaultTimezone (),
+						dateToInstant (
+							message.getNetworkTime ())),
 					"-"),
 
 				"</tr>\n");
