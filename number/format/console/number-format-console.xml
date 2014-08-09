@@ -1,0 +1,49 @@
+<console-module
+	name="number-format">
+
+	<console-helper-provider
+		object-name="numberFormat"
+		view-delegate-field="root">
+
+		<priv-key
+			name="numberFormat.manage"
+			delegate="root"
+			priv="manage"/>
+
+		<context-stuff
+			name="numberFormatName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="numberFormat"
+		object-name="numberFormat">
+
+		<list>
+
+			<object-list-page/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page/>
+
+			<object-settings-page/>
+
+			<context-link
+				name="pattern"
+				link="numberFormatPattern"
+				label="Patterns"
+				priv-key="numberFormat.manage"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+</console-module>

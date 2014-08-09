@@ -1,0 +1,20 @@
+<plugin
+	name="route-tester"
+	package="route.tester">
+
+	<sql-scripts>
+		<sql-schema name="route-tester"/>
+		<sql-data name="route-tester-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="routeTest"/>
+		<model name="routeTester"/>
+	</models>
+
+	<layer name="daemon">
+		<bean class="daemon.RouteTesterCommand"/>
+		<bean class="daemon.RouteTesterDaemon"/>
+	</layer>
+
+</plugin>

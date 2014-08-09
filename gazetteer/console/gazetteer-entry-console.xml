@@ -1,0 +1,143 @@
+<console-module
+	name="gazetteer-entry">
+
+	<console-helper-provider
+		object-name="gazetteerEntry"
+		view-delegate-field="gazetteer"
+		view-delegate-priv-code="manage">
+
+		<priv-key
+			name="gazetteerEntry.manage"
+			delegate="parent"
+			priv="manage"/>
+
+		<context-stuff
+			name="gazetteerEntryName"
+			field="name"/>
+
+		<context-stuff
+			name="gazetteerId"
+			delegate="gazetteer"
+			field="id"/>
+
+		<run-post-processor
+			name="gazetteer"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="gazetteerEntry"
+		object-name="gazetteerEntry">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page
+				fields="create"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="gazetteerEntry">
+
+		<name-field/>
+		<description-field/>
+
+		<double-field
+			name="longLat.longitude"
+			label="Longitude"/>
+
+		<double-field
+			name="longLat.latitude"
+			label="Latitude"/>
+
+		<yes-no-field
+			name="canonical"/>
+
+	</field-set>
+
+	<field-set
+		name="create"
+		object-name="gazetteerEntry">
+
+		<name-field/>
+		<description-field/>
+
+		<double-field
+			name="longLat.longitude"
+			label="Longitude"/>
+
+		<double-field
+			name="longLat.latitude"
+			label="Latitude"/>
+
+		<yes-no-field
+			name="canonical"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="gazetteerEntry">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<double-field
+			name="longLat.longitude"
+			label="Longitude"/>
+
+		<double-field
+			name="longLat.latitude"
+			label="Latitude"/>
+
+		<yes-no-field
+			name="canonical"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="gazetteerEntry">
+
+		<id-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<double-field
+			name="longLat.longitude"
+			label="Longitude"/>
+
+		<double-field
+			name="longLat.latitude"
+			label="Latitude"/>
+
+		<yes-no-field
+			name="canonical"/>
+
+	</field-set>
+
+</console-module>

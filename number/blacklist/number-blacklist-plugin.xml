@@ -1,0 +1,23 @@
+<plugin
+	name="number-blacklist"
+	package="number.blacklist">
+
+	<sql-scripts>
+		<sql-schema name="blacklist"/>
+	</sql-scripts>
+
+	<models>
+		<model name="blacklist"/>
+	</models>
+
+	<layer name="console">
+		<bean class="console.BlacklistAddAction"/>
+		<bean class="console.BlacklistAddPart"/>
+		<bean class="console.BlacklistSearchPart"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="blacklist"/>
+	</console-modules>
+
+</plugin>

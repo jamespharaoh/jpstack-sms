@@ -1,0 +1,114 @@
+<console-module
+	name="number-list">
+
+	<console-helper-provider
+		object-name="numberList">
+
+		<priv-key
+			name="numberList.manage"
+			priv="manage"/>
+
+		<context-stuff
+			name="numberListName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="numberList"
+		object-name="numberList">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page
+				fields="create"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<context-tab-action-page
+				name="numbers"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="numberList">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="numberFormat"
+			finder="numberFormat"/>
+
+		<integer-field
+			name="numberCount"/>
+
+	</field-set>
+
+	<field-set
+		name="create"
+		object-name="numberList">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="numberFormat"
+			finder="numberFormat"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="numberList">
+
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="numberFormat"
+			finder="numberFormat"/>
+
+		<integer-field
+			name="numberCount"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="numberList">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="numberFormat"
+			finder="numberFormat"/>
+
+	</field-set>
+
+</console-module>

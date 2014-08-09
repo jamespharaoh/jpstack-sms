@@ -1,0 +1,18 @@
+<plugin
+	name="route-test"
+	package="route.test">
+
+	<layer name="console">
+		<bean class="console.RouteTestInAction"/>
+		<bean class="console.RouteTestInPart"/>
+		<bean class="console.RouteTestOutAction"/>
+		<bean class="console.RouteTestOutPart"/>
+		<bean class="console.RouteTestTwoWayAction"/>
+		<bean class="console.RouteTestTwoWayPart"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="route-test"/>
+	</console-modules>
+
+</plugin>

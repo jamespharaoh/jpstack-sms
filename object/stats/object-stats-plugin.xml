@@ -1,0 +1,11 @@
+<plugin
+	name="object-stats"
+	package="object.stats">
+
+	<layer name="console">
+		<bean class="ObjectSmsStatsPageBuilder"/>
+		<bean class="ObjectSmsStatsPageSpec"/>
+		<bean class="ObjectStatsPartFactory"/>
+	</layer>
+
+</plugin>

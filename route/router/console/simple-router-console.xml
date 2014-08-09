@@ -1,0 +1,104 @@
+<console-module
+	name="simple-router">
+
+	<console-helper-provider
+		object-name="simpleRouter">
+
+		<context-stuff
+			name="simpleRouterName"
+			field="name"/>
+
+		<priv-key
+			name="simpleRouter.manage"
+			priv="manage"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="simpleRouter"
+		object-name="simpleRouter">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page
+				fields="create"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="simpleRouter">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="route"
+			finder="route"/>
+
+	</field-set>
+
+	<field-set
+		name="create"
+		object-name="simpleRouter">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="route"
+			finder="route"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="simpleRouter">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="route"
+			finder="route"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="simpleRouter">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<object-field
+			name="route"
+			finder="route"/>
+
+	</field-set>
+
+</console-module>

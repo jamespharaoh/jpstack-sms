@@ -1,0 +1,110 @@
+<console-module
+	name="keyword">
+
+	<console-helper-provider
+		object-name="keyword"
+		view-delegate-field="keywordSet">
+
+		<context-stuff
+			name="keywordName"
+			field="keyword"/>
+
+		<context-stuff
+			name="keywordSetId"
+			delegate="keywordSet"
+			field="id"/>
+
+		<run-post-processor
+			name="keywordSet"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="keyword"
+		object-name="keyword">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"
+				priv-key="keywordSet.manage"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="keyword">
+
+		<code-field/>
+		<description-field/>
+
+		<object-field
+			name="command"
+			finder="command"/>
+
+		<yes-no-field
+			name="sticky"/>
+
+		<yes-no-field
+			name="leaveIntact"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="keyword">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<description-field/>
+
+		<object-field
+			name="command"
+			finder="command"/>
+
+		<yes-no-field
+			name="sticky"/>
+
+		<yes-no-field
+			name="leaveIntact"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="keyword">
+
+		<id-field/>
+		<code-field/>
+		<description-field/>
+
+		<object-field
+			name="command"
+			finder="command"/>
+
+		<yes-no-field
+			name="sticky"/>
+
+		<yes-no-field
+			name="leaveIntact"/>
+
+	</field-set>
+
+</console-module>

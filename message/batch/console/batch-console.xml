@@ -1,0 +1,48 @@
+<console-module
+	name="batch">
+
+	<console-helper-provider
+		object-name="batch"
+		view-delegate-field="parent">
+
+		<context-stuff
+			name="batchSubjectName"
+			field="id"/>
+
+		<priv-key
+			name="batch.manage"
+			delegate="parent"
+			priv="manage"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="batch"
+		object-name="batch">
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-sms-messages-page/>
+
+			<object-sms-stats-page/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="summary"
+		object-name="batch">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+
+	</field-set>
+
+</console-module>

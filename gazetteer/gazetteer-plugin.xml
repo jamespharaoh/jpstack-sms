@@ -1,0 +1,23 @@
+<plugin
+	name="gazetteer"
+	package="gazetteer">
+
+	<sql-scripts>
+		<sql-data name="gazetteer-data"/>
+	</sql-scripts>
+
+	<layer name="logic">
+		<bean class="logic.GazetteerLogicImpl"/>
+	</layer>
+
+	<models>
+		<model name="gazetteer"/>
+		<model name="gazetteerEntry"/>
+	</models>
+
+	<console-modules>
+		<console-module name="gazetteer"/>
+		<console-module name="gazetteer-entry"/>
+	</console-modules>
+
+</plugin>

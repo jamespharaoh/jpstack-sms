@@ -1,0 +1,30 @@
+<plugin
+	name="number-list"
+	package="number.list">
+
+	<sql-scripts>
+		<sql-schema name="number-list"/>
+		<sql-data name="number-list-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="numberList"/>
+		<model name="numberListNumber"/>
+		<model name="numberListUpdate"/>
+	</models>
+
+	<layer name="console">
+		<bean class="console.NumberListNumbersAction"/>
+		<bean class="console.NumberListNumbersPart"/>
+	</layer>
+
+	<layer name="logic">
+		<bean class="logic.NumberListLogicImpl"/>
+		<bean class="logic.NumberListNumberLookupHelper"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="number-list"/>
+	</console-modules>
+
+</plugin>

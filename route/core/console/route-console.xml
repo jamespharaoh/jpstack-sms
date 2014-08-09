@@ -1,0 +1,223 @@
+<console-module
+	name="route">
+
+	<console-helper-provider
+		object-name="route">
+
+		<priv-key
+			name="route.manage"
+			priv="manage"/>
+
+		<priv-key
+			name="route.test"
+			priv="test"/>
+
+		<priv-key
+			name="route.send"
+			priv="send"/>
+
+		<priv-key
+			name="route.messages"
+			priv="messages"/>
+
+		<priv-key
+			name="route.stats"
+			priv="stats"/>
+
+		<context-stuff
+			name="routeName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="route"
+		object-name="route">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<extension-point
+				name="route.test"/>
+
+			<object-sms-messages-page/>
+
+			<object-sms-stats-page/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="route">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<yes-no-field
+			name="canReceive"
+			label="Receive"/>
+
+		<yes-no-field
+			name="canSend"
+			label="Send"/>
+
+		<yes-no-field
+			name="deliveryReports"
+			label="Reports"/>
+
+		<object-field
+			name="sender"
+			finder="sender"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="route">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="sender"
+			finder="sender"/>
+
+		<object-field
+			name="command"
+			finder="command"/>
+
+		<integer-field
+			name="inCharge"
+			label="Inbound charge"/>
+
+		<integer-field
+			name="outCharge"
+			label="Outbound charge"/>
+
+		<yes-no-field
+			name="canSend"/>
+
+		<yes-no-field
+			name="canReceive"/>
+
+		<yes-no-field
+			name="deliveryReports"/>
+
+		<seconds-field
+			name="expirySecs"
+			label="Expiry time"/>
+
+		<yes-no-field
+			name="avRequired"
+			label="Adult verification required"/>
+
+		<yes-no-field
+			name="inboundImpliesAdult"/>
+
+		<integer-field
+			name="maxTries"
+			nullable="yes"/>
+
+		<enum-field
+			name="networkBehaviour"
+			helper="routeNetworkBehaviourConsoleHelper"/>
+
+		<object-field
+			name="currency"
+			finder="currency"/>
+
+		<object-field
+			name="blockNumberLookup"
+			finder="numberLookup"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="route">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="sender"
+			finder="sender"/>
+
+		<object-field
+			name="command"
+			finder="command"/>
+
+		<integer-field
+			name="inCharge"
+			label="Inbound charge"/>
+
+		<integer-field
+			name="outCharge"
+			label="Outbound charge"/>
+
+		<yes-no-field
+			name="canSend"/>
+
+		<yes-no-field
+			name="canReceive"/>
+
+		<yes-no-field
+			name="deliveryReports"/>
+
+		<seconds-field
+			name="expirySecs"
+			label="Expiry time"/>
+
+		<yes-no-field
+			name="avRequired"
+			label="Adult verification required"/>
+
+		<yes-no-field
+			name="inboundImpliesAdult"/>
+
+		<integer-field
+			name="maxTries"
+			nullable="yes"/>
+
+		<enum-field
+			name="networkBehaviour"
+			helper="routeNetworkBehaviourConsoleHelper"/>
+
+		<object-field
+			name="currency"
+			finder="currency"/>
+
+		<object-field
+			name="blockNumberLookup"
+			finder="numberLookup"/>
+
+	</field-set>
+
+</console-module>

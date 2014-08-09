@@ -1,0 +1,151 @@
+<project
+	name="wbs-sms"
+	package="wbs.sms">
+
+	<!-- core stuff -->
+
+	<plugin
+		name="gsm"
+		package="gsm"/>
+
+	<plugin
+		name="network"
+		package="network"/>
+
+	<plugin
+		name="number-core"
+		package="number.core"/>
+
+	<plugin
+		name="number-lookup"
+		package="number.lookup"/>
+
+	<plugin
+		name="number-format"
+		package="number.format"/>
+
+	<plugin
+		name="route-core"
+		package="route.core"/>
+
+	<!-- shared stuff -->
+
+	<plugin
+		name="gazetteer"
+		package="gazetteer"/>
+
+	<!-- etc -->
+
+	<plugin
+		name="command"
+		package="command"/>
+
+	<plugin
+		name="message-delivery"
+		package="message.delivery"/>
+
+	<plugin
+		name="route-http"
+		package="route.http"/>
+
+	<plugin
+		name="message-inbox"
+		package="message.inbox"/>
+
+	<plugin
+		name="keyword"
+		package="keyword"/>
+
+	<plugin
+		name="locator"
+		package="locator"/>
+
+	<plugin
+		name="magic-number"
+		package="magicnumber"/>
+
+	<plugin
+		name="message-batch"
+		package="message.batch"/>
+
+	<plugin
+		name="message-core"
+		package="message.core"/>
+
+	<plugin
+		name="object-messages"
+		package="object.messages"/>
+
+	<plugin
+		name="message-report"
+		package="message.report"/>
+
+	<plugin
+		name="message-set"
+		package="messageset"/>
+
+	<plugin
+		name="message-stats"
+		package="message.stats"/>
+
+	<plugin
+		name="message-status"
+		package="message.status"/>
+
+	<plugin
+		name="message-ticker"
+		package="message.ticker"/>
+
+	<plugin
+		name="number-blacklist"
+		package="number.blacklist"/>
+
+	<plugin
+		name="object-stats"
+		package="object.stats"/>
+
+	<plugin
+		name="message-outbox"
+		package="message.outbox"/>
+
+	<plugin
+		name="modem-poll"
+		package="modempoll"/>
+
+	<plugin
+		name="number-list"
+		package="number.list"/>
+
+	<plugin
+		name="route-router"
+		package="route.router"/>
+
+	<plugin
+		name="route-sender"
+		package="route.sender"/>
+
+	<plugin
+		name="route-test"
+		package="route.test"/>
+
+	<plugin
+		name="route-tester"
+		package="route.tester"/>
+
+	<plugin
+		name="smpp"
+		package="smpp"/>
+
+	<plugin
+		name="template"
+		package="template"/>
+
+	<plugin
+		name="tracker"
+		package="tracker"/>
+
+	<plugin
+		name="wap-push"
+		package="message.wap"/>
+
+</project>

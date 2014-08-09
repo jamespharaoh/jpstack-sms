@@ -1,0 +1,90 @@
+<console-module
+	name="magic-number-set">
+
+	<console-helper-provider
+		object-name="magicNumberSet">
+
+		<priv-key
+			name="magicNumberSet.manage"
+			priv="manage"/>
+
+		<context-stuff
+			name="magicNumberSetName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="magicNumberSet"
+		object-name="magicNumberSet">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<context-link
+				name="number"
+				link="magicNumber"
+				label="Numbers"
+				priv-key="magicNumberSet.manage"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="magicNumberSet">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="magicNumberSet">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="magicNumberSet">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="numberFormat"
+			finder="numberFormat"/>
+
+	</field-set>
+
+</console-module>

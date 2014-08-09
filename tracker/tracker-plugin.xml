@@ -1,0 +1,26 @@
+<plugin
+	name="tracker"
+	package="tracker">
+
+	<sql-scripts>
+		<sql-schema name="sms-simple-tracker"/>
+		<sql-schema name="sms-tracker"/>
+		<sql-data name="sms-tracker-data"/>
+		<sql-data name="sms-simple-tracker-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="smsSimpleTracker"/>
+		<model name="smsSimpleTrackerNumber"/>
+		<model name="smsSimpleTrackerRoute"/>
+		<model name="smsTracker"/>
+		<model name="smsTrackerType"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.SmsSimpleTrackerHandler"/>
+		<bean class="logic.SmsTrackerLogicImpl"/>
+		<bean class="logic.SmsTrackerManager"/>
+	</layer>
+
+</plugin>

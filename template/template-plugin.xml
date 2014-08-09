@@ -1,0 +1,17 @@
+<plugin
+	name="template"
+	package="template">
+
+	<sql-scripts>
+		<sql-schema name="template"/>
+		<sql-data name="template-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="template"/>
+		<model name="templatePart"/>
+		<model name="templateType"/>
+		<model name="templateVersion"/>
+	</models>
+
+</plugin>

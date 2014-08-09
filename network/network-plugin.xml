@@ -1,0 +1,23 @@
+<plugin
+	name="network"
+	package="network">
+
+	<sql-scripts>
+		<sql-schema name="network"/>
+		<sql-data name="network-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="network"/>
+		<model name="networkPrefix"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.NetworkPrefixCache"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="network"/>
+	</console-modules>
+
+</plugin>

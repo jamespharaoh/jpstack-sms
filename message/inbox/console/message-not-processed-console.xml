@@ -1,0 +1,16 @@
+<console-module
+	name="message-not-processed">
+
+	<simple-context
+		name="messageNotProcessed">
+
+		<context-tab-responder-page
+			name="list"/>
+
+		<context-tab-action-page
+			name="summary"
+			hide-tab="yes"/>
+
+	</simple-context>
+
+</console-module>

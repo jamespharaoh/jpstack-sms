@@ -1,0 +1,28 @@
+<plugin
+	name="message-set"
+	package="messageset">
+
+	<sql-scripts>
+		<sql-schema name="message-set"/>
+		<sql-data name="message-set-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="messageSet"/>
+		<model name="messageSetMessage"/>
+		<model name="messageSetType"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.MessageSetLogicImpl"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.MessageSetAction"/>
+		<bean class="console.MessageSetPart"/>
+		<bean class="console.ObjectSmsMessageSetPageBuilder"/>
+		<bean class="console.ObjectSmsMessageSetPageSpec"/>
+		<bean class="console.SimpleMessageSetFinder"/>
+	</layer>
+
+</plugin>

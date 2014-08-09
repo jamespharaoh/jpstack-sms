@@ -1,0 +1,49 @@
+<plugin
+	name="message-core"
+	package="message.core">
+
+	<sql-scripts>
+		<sql-schema name="message"/>
+		<sql-schema name="message-media"/>
+		<sql-schema name="message-type"/>
+		<sql-data name="message-data"/>
+	</sql-scripts>
+
+	<models>
+		<type name="messageDirection"/>
+		<type name="messageStatus"/>
+		<model name="message"/>
+		<model name="messageExpiry"/>
+		<model name="messageType"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.MessageLogicImpl"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.MessageConsolePluginManager"/>
+		<bean class="console.MessageConsoleStuff"/>
+		<bean class="console.MessageMediaContext"/>
+		<bean class="console.MessageMediasPart"/>
+		<bean class="console.MessageMediaSummaryPart"/>
+		<bean class="console.MessageReportsPart"/>
+		<bean class="console.MessageSearchAction"/>
+		<bean class="console.MessageSearchPart"/>
+		<bean class="console.MessageSearchResultsCsvPart"/>
+		<bean class="console.MessageSearchResultsPart"/>
+		<bean class="console.MessageStatusConsoleHelper"/>
+		<bean class="console.MessageSourceImpl"/>
+		<bean class="console.MessageSummaryPart"/>
+		<bean class="console.MessageThreadPart"/>
+	</layer>
+
+	<layer name="daemon">
+		<bean class="daemon.MessageDaemon"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="message"/>
+	</console-modules>
+
+</plugin>

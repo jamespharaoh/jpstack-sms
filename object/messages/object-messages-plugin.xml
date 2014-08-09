@@ -1,0 +1,11 @@
+<plugin
+	name="object-messages"
+	package="object.messages">
+
+	<layer name="console">
+		<bean class="ObjectSmsMessagesPageBuilder"/>
+		<bean class="ObjectSmsMessagesPageSpec"/>
+		<bean class="ObjectSmsMessagesPart"/>
+	</layer>
+
+</plugin>

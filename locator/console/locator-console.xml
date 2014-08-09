@@ -1,0 +1,44 @@
+<console-module
+	name="locator">
+
+	<console-helper-provider
+		object-name="locator"
+		view-delegate-field="parent">
+
+		<context-stuff
+			name="locatorName"
+			field="id"/>
+
+		<priv-key
+			name="locator.manage"
+			delegate="parent"
+			priv="manage"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="locator"
+		object-name="locator">
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="summary"
+		object-name="locator">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+
+	</field-set>
+
+</console-module>

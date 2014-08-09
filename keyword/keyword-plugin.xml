@@ -1,0 +1,29 @@
+<plugin
+	name="keyword"
+	package="keyword">
+
+	<sql-scripts>
+		<sql-schema name="keyword-set-fallback"/>
+		<sql-data name="keyword-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="keyword"/>
+		<model name="keywordSet"/>
+		<model name="keywordSetFallback"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.KeywordLogicImpl"/>
+	</layer>
+
+	<layer name="daemon">
+		<bean class="daemon.KeywordCommand"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="keyword"/>
+		<console-module name="keyword-set"/>
+	</console-modules>
+
+</plugin>

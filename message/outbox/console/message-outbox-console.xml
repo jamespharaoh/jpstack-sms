@@ -1,0 +1,39 @@
+<console-module
+	name="message-outbox">
+
+	<console-helper-provider
+		object-name="outbox">
+
+		<context-stuff
+			name="outboxName"
+			field="id"/>
+
+		<priv-key
+			name="outbox.view"
+			delegate="root"
+			priv="outbox_view"/>
+
+		<priv-key
+			name="outbox.manage"
+			delegate="root"
+			priv="manage"/>
+
+	</console-helper-provider>
+
+	<simple-context
+		name="outbox">
+
+		<context-tab-responder-page
+			name="summary"
+			page-part="messageOutboxSummaryPart"/>
+
+		<context-tab-action-page
+			name="route"
+			page-part="messageOutboxRoutePart"
+			responder="messageOutboxRouteResponder"
+			action="messageOutboxRouteAction"
+			hide-tab="yes"/>
+
+	</simple-context>
+
+</console-module>

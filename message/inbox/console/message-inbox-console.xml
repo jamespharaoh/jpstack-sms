@@ -1,0 +1,34 @@
+<console-module
+	name="message-inbox">
+
+	<console-helper-provider
+		object-name="inbox">
+
+		<context-stuff
+			name="inboxName"
+			field="id"/>
+
+		<priv-key
+			name="inbox.view"
+			delegate="root"
+			priv="inbox_view"/>
+
+		<priv-key
+			name="inbox.manage"
+			delegate="root"
+			priv="manage"/>
+
+	</console-helper-provider>
+
+	<simple-context
+		name="inbox">
+
+		<context-tab-action-page
+			name="summary"
+			page-part="messageInboxSummaryPart"
+			responder="messageInboxSummaryResponder"
+			action="messageInboxAction"/>
+
+	</simple-context>
+
+</console-module>

@@ -1,0 +1,30 @@
+<plugin
+	name="number-core"
+	package="number.core">
+
+	<sql-scripts>
+		<sql-schema name="number"/>
+		<sql-data name="number-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="chatUserNumberReport"/>
+		<model name="number"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.NumberLogicImpl"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.NumberConsoleConfig"/>
+		<bean class="console.NumberLinkManager"/>
+		<bean class="console.NumberServicesPart"/>
+		<bean class="console.NumberSubscriptionsPart"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="number"/>
+	</console-modules>
+
+</plugin>

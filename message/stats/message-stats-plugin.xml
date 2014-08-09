@@ -1,0 +1,31 @@
+<plugin
+	name="message-stats"
+	package="message.stats">
+
+	<sql-scripts>
+		<sql-schema name="message-stats"/>
+		<sql-data name="message-stats-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="messageStats"/>
+	</models>
+
+	<layer name="console">
+		<bean class="console.AffiliateStatsSourceBuilder"/>
+		<bean class="console.BatchStatsSourceBuilder"/>
+		<bean class="console.GroupedStatsSourceImpl"/>
+		<bean class="console.RouteStatsSource"/>
+		<bean class="console.ServiceStatsSourceBuilder"/>
+		<bean class="console.SmsStatsConsoleLogicImpl"/>
+		<bean class="console.SmsStatsFormatter"/>
+		<bean class="console.SmsStatsPart"/>
+		<bean class="console.SmsStatsResponder"/>
+		<bean class="console.SmsStatsSourceImpl"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="sms-stats"/>
+	</console-modules>
+
+</plugin>

@@ -1,0 +1,13 @@
+<plugin
+	name="modem-poll"
+	package="modempoll">
+
+	<sql-scripts>
+		<sql-data name="modem-poll-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="modemPollQueue"/>
+	</models>
+
+</plugin>

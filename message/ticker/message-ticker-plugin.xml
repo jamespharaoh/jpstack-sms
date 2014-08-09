@@ -1,0 +1,15 @@
+<plugin
+	name="message-ticker"
+	package="message.ticker">
+
+	<layer name="console">
+		<bean class="console.MessageTickerManagerImpl"/>
+		<bean class="console.MessageTickerResponder"/>
+		<bean class="console.MessageTickerUpdateResponder"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="message-ticker"/>
+	</console-modules>
+
+</plugin>

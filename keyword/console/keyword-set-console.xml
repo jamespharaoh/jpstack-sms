@@ -1,0 +1,93 @@
+<console-module
+	name="keyword-set">
+
+	<console-helper-provider
+		object-name="keywordSet">
+
+		<priv-key
+			name="keywordSet.manage"
+			priv="manage"/>
+
+		<context-stuff
+			name="keywordSetName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="keywordSet"
+		object-name="keywordSet">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<context-link
+				name="keyword"
+				link="keyword"
+				label="Keywords"
+				priv-key="keywordSet.manage"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="keywordSet">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="keywordSet">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="fallbackCommand"
+			finder="command"/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="keywordSet">
+
+		<id-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+		<object-field
+			name="fallbackCommand"
+			finder="command"/>
+
+	</field-set>
+
+</console-module>

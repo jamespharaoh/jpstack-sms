@@ -1,0 +1,22 @@
+<plugin
+	name="wap-push"
+	package="message.wap">
+
+	<sql-scripts>
+		<sql-data name="wap-push-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="wapPushMessage"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.WapPushLogic"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.WapPushConsolePlugin"/>
+		<bean class="console.WapPushMessageSummaryPart"/>
+	</layer>
+
+</plugin>

@@ -1,0 +1,85 @@
+<console-module
+	name="magic-number">
+
+	<console-helper-provider
+		object-name="magicNumber"
+		view-delegate-field="magicNumberSet"
+		view-delegate-priv-code="manage">
+
+		<context-stuff
+			name="magicNumberName"
+			field="number"/>
+
+		<context-stuff
+			name="magicNumberSetId"
+			delegate="magicNumberSet"
+			field="id"/>
+
+		<priv-key
+			name="magicNumber.manage"
+			delegate="magicNumberSet"
+			priv="manage"/>
+
+		<run-post-processor
+			name="magicNumberSet"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="magicNumber"
+		object-name="magicNumber">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<context-tab-action-page
+				name="create"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="magicNumber">
+
+		<code-field/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="magicNumber">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<deleted-field/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="magicNumber">
+
+		<id-field/>
+		<code-field/>
+		<deleted-field/>
+
+	</field-set>
+
+</console-module>

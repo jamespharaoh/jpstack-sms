@@ -1,0 +1,39 @@
+<plugin
+	name="message-inbox"
+	package="message.inbox">
+
+	<sql-scripts>
+		<sql-data name="inbox-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="inbox"/>
+		<model name="inboxMultipartBuffer"/>
+		<model name="inboxMultipartLog"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.InboxLogicImpl"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.MessageInboxAction"/>
+		<bean class="console.MessageInboxSummaryPart"/>
+		<bean class="console.MessageNotProcessedListPart"/>
+		<bean class="console.MessageNotProcessedSummaryAction"/>
+		<bean class="console.MessageNotProcessedSummaryPart"/>
+	</layer>
+
+	<layer name="daemon">
+		<bean class="daemon.ReceivedManager"/>
+		<bean class="daemon.CommandManagerImpl"/>
+		<bean class="daemon.CommandManagerProxy"/>
+		<bean class="daemon.NullCommandTypeHandler"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="message-inbox"/>
+		<console-module name="message-not-processed"/>
+	</console-modules>
+
+</plugin>

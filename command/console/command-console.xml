@@ -1,0 +1,44 @@
+<console-module
+	name="command">
+
+	<console-helper-provider
+		object-name="command"
+		view-delegate-field="parent">
+
+		<priv-key
+			name="command.manage"
+			delegate="parent"
+			priv="manage"/>
+
+		<context-stuff
+			name="commandName"
+			field="code"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="command"
+		object-name="command">
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="summary"
+		object-name="command">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+
+	</field-set>
+
+</console-module>

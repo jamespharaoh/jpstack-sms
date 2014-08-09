@@ -1,0 +1,13 @@
+<plugin
+	name="message-status"
+	package="message.status">
+
+	<layer name="console">
+		<bean class="console.MessageNumInboxCache"/>
+		<bean class="console.MessageNumNotProcessedCache"/>
+		<bean class="console.MessageNumOutboxCache"/>
+		<bean class="console.MessageStatusLine"/>
+		<bean class="console.MessageStatusLinePart"/>
+	</layer>
+
+</plugin>

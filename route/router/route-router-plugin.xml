@@ -1,0 +1,28 @@
+<plugin
+	name="route-router"
+	package="route.router">
+
+	<sql-scripts>
+		<sql-schema name="router"/>
+		<sql-data name="router-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="router"/>
+		<model name="routerType"/>
+		<model name="simpleRouter"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.RouterHelperManager"/>
+		<bean class="logic.RouterLogicImpl"/>
+		<bean class="logic.SimpleRouterHelper"/>
+		<bean class="logic.StaticRouterHelper"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="router"/>
+		<console-module name="simple-router"/>
+	</console-modules>
+
+</plugin>

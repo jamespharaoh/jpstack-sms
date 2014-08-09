@@ -1,0 +1,15 @@
+<plugin
+	name="message-report"
+	package="message.report">
+
+	<models>
+		<type name="messageReportCodeType"/>
+		<model name="messageReport"/>
+		<model name="messageReportCode"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.ReportLogicImpl"/>
+	</layer>
+
+</plugin>

@@ -1,0 +1,18 @@
+<plugin
+	name="route-sender"
+	package="route.sender">
+
+	<sql-scripts>
+		<sql-schema name="sender"/>
+		<sql-data name="sender-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="sender"/>
+	</models>
+
+	<console-modules>
+		<console-module name="sender"/>
+	</console-modules>
+
+</plugin>

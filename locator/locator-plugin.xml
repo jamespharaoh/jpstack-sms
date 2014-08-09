@@ -1,0 +1,28 @@
+<plugin
+	name="locator"
+	package="locator">
+
+	<sql-scripts>
+		<sql-data name="locator-data"/>
+	</sql-scripts>
+
+	<models>
+		<type name="longLat"/>
+		<model name="biaxialEllipsoid"/>
+		<model name="locator"/>
+		<model name="locatorLog"/>
+		<model name="locatorType"/>
+		<model name="mercatorProjection"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.LocatorLogicImpl"/>
+		<bean class="logic.LocatorManager"/>
+		<bean class="logic.MercatorProjectionConfig"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="locator"/>
+	</console-modules>
+
+</plugin>

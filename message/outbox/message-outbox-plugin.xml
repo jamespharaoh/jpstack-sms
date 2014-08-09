@@ -1,0 +1,38 @@
+<plugin
+	name="outbox"
+	package="message.outbox">
+
+	<sql-scripts>
+		<sql-schema name="outbox"/>
+		<sql-data name="outbox-data"/>
+	</sql-scripts>
+
+	<models>
+		<type name="smsOutboxAttemptState"/>
+		<model name="failedMessage"/>
+		<model name="outbox"/>
+		<model name="routeOutboxSummary"/>
+		<model name="smsOutboxAttempt"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.MessageSender"/>
+		<bean class="logic.OutboxLogicImpl"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.MessageOutboxRouteAction"/>
+		<bean class="console.MessageOutboxRoutePart"/>
+		<bean class="console.MessageOutboxSummaryPart"/>
+	</layer>
+
+	<layer name="daemon">
+		<bean class="daemon.SmsOutboxMonitor"/>
+		<bean class="daemon.SmsOutboxUnstickDaemon"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="message-outbox"/>
+	</console-modules>
+
+</plugin>

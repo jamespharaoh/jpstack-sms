@@ -1,0 +1,8 @@
+<console-module
+	name="sms-stats">
+
+	<simple-responder-file
+		path="/stats"
+		name=""/>
+
+</console-module>

@@ -1,0 +1,20 @@
+<plugin
+	name="number-lookup"
+	package="number.lookup">
+
+	<sql-scripts>
+		<sql-schema name="number-lookup"/>
+		<sql-data name="number-lookup-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="numberLookup"/>
+		<model name="numberLookupType"/>
+	</models>
+
+	<layer name="logic">
+		<bean class="logic.NumberLookupHelperManager"/>
+		<bean class="logic.NumberLookupManagerImpl"/>
+	</layer>
+
+</plugin>
