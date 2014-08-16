@@ -2,6 +2,12 @@
 	name="number-list"
 	package="number.list">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="number-list"/>
 		<sql-data name="number-list-data"/>
@@ -22,6 +28,10 @@
 		<bean class="logic.NumberListLogicImpl"/>
 		<bean class="logic.NumberListNumberLookupHelper"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="numberList"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="number-list"/>

@@ -5,6 +5,10 @@
 	<!-- core stuff -->
 
 	<plugin
+		name="sms-common"
+		package="common"/>
+
+	<plugin
 		name="gsm"
 		package="gsm"/>
 

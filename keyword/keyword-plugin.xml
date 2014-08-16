@@ -2,6 +2,12 @@
 	name="keyword"
 	package="keyword">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="keyword-set-fallback"/>
 		<sql-data name="keyword-data"/>
@@ -20,6 +26,10 @@
 	<layer name="daemon">
 		<bean class="daemon.KeywordCommand"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="keyword"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="keyword"/>

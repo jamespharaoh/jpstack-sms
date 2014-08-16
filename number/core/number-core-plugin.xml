@@ -2,6 +2,12 @@
 	name="number-core"
 	package="number.core">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="number"/>
 		<sql-data name="number-data"/>
@@ -22,6 +28,10 @@
 		<bean class="console.NumberServicesPart"/>
 		<bean class="console.NumberSubscriptionsPart"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="number"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="number"/>

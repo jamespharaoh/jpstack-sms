@@ -2,6 +2,12 @@
 	name="route-sender"
 	package="route.sender">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="sender"/>
 		<sql-data name="sender-data"/>
@@ -10,6 +16,10 @@
 	<models>
 		<model name="sender"/>
 	</models>
+
+	<fixtures>
+		<fixture name="sender"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="sender"/>

@@ -2,6 +2,12 @@
 	name="route-router"
 	package="route.router">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="router"/>
 		<sql-data name="router-data"/>
@@ -19,6 +25,10 @@
 		<bean class="logic.SimpleRouterHelper"/>
 		<bean class="logic.StaticRouterHelper"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="simpleRouter"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="router"/>

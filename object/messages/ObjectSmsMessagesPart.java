@@ -147,7 +147,7 @@ class ObjectSmsMessagesPart
 		if (messages == null)
 			return;
 
-		ObsoleteDateLinks.dailyBrowser (
+		ObsoleteDateLinks.dailyBrowserParagraph (
 			out,
 			localUrl,
 			requestContext.getFormData (),

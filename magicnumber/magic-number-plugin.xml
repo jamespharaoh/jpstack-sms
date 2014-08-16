@@ -2,6 +2,12 @@
 	name="magic-number"
 	package="magicnumber">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="magic-number"/>
 		<sql-data name="magic-number-data"/>
@@ -26,6 +32,10 @@
 	<layer name="daemon">
 		<bean class="daemon.MagicNumberCommandTypeHandler"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="magicNumber"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="magic-number"/>

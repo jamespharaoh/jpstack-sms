@@ -2,6 +2,12 @@
 	name="number-format"
 	package="number.format">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-data name="number-format-data"/>
 	</sql-scripts>
@@ -14,6 +20,10 @@
 	<layer name="logic">
 		<bean class="logic.NumberFormatLogicImpl"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="numberFormat"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="number-format"/>

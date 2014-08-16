@@ -2,6 +2,12 @@
 	name="gazetteer"
 	package="gazetteer">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-data name="gazetteer-data"/>
 	</sql-scripts>
@@ -14,6 +20,10 @@
 		<model name="gazetteer"/>
 		<model name="gazetteerEntry"/>
 	</models>
+
+	<fixtures>
+		<fixture name="gazetteer"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="gazetteer"/>

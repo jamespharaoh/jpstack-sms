@@ -2,6 +2,12 @@
 	name="route-core"
 	package="route.core">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="route"/>
 		<sql-data name="route-data"/>
@@ -17,6 +23,10 @@
 		<bean class="console.RouteSummaryAdditionalPart"/>
 		<bean class="console.RouteNetworkBehaviourConsoleHelper"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="route"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="route"/>

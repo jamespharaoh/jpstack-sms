@@ -2,6 +2,12 @@
 	name="message-core"
 	package="message.core">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="message"/>
 		<sql-schema name="message-media"/>
@@ -41,6 +47,10 @@
 	<layer name="daemon">
 		<bean class="daemon.MessageDaemon"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="message"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="message"/>

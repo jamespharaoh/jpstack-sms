@@ -2,6 +2,12 @@
 	name="network"
 	package="network">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="network"/>
 		<sql-data name="network-data"/>
@@ -15,6 +21,10 @@
 	<layer name="logic">
 		<bean class="logic.NetworkPrefixCache"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="network"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="network"/>

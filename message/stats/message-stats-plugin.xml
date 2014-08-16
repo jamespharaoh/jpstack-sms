@@ -2,6 +2,12 @@
 	name="message-stats"
 	package="message.stats">
 
+	<dependencies>
+		<project name="wbs-sms">
+			<plugin name="sms-common"/>
+		</project>
+	</dependencies>
+
 	<sql-scripts>
 		<sql-schema name="message-stats"/>
 		<sql-data name="message-stats-data"/>
@@ -23,6 +29,10 @@
 		<bean class="console.SmsStatsResponder"/>
 		<bean class="console.SmsStatsSourceImpl"/>
 	</layer>
+
+	<fixtures>
+		<fixture name="messageStats"/>
+	</fixtures>
 
 	<console-modules>
 		<console-module name="sms-stats"/>
