@@ -20,8 +20,8 @@ import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.report.model.MessageReportCodeObjectHelper;
 import wbs.sms.message.report.model.MessageReportCodeRec;
+import wbs.sms.message.report.model.MessageReportObjectHelper;
 import wbs.sms.message.report.model.MessageReportRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -42,7 +42,7 @@ class ReportLogicImpl
 	MessageLogic messageLogic;
 
 	@Inject
-	MessageReportCodeObjectHelper messageReportCodeHelper;
+	MessageReportObjectHelper messageReportHelper;
 
 	@Inject
 	ObjectManager objectManager;
@@ -94,14 +94,21 @@ class ReportLogicImpl
 
 		// create message report thingy
 
-		messageReportCodeHelper.insert (
+		messageReportHelper.insert (
 			new MessageReportRec ()
-				.setMessage (message)
-				.setNewMessageStatus (
-					newMessageStatus == null
-						? message.getStatus ()
-						: newMessageStatus)
-				.setMessageReportCode (messageReportCode));
+
+			.setMessage (
+				message)
+
+			.setNewMessageStatus (
+				newMessageStatus == null
+					? message.getStatus ()
+					: newMessageStatus)
+
+			.setMessageReportCode (
+				messageReportCode)
+
+		);
 
 		// update received time if appropriate
 

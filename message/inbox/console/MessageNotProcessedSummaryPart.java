@@ -129,10 +129,12 @@ class MessageNotProcessedSummaryPart
 			"<th>Time sent</th>\n",
 
 			"<td>%h</td>\n",
-			timeFormatter.instantToTimestampString (
-				timeFormatter.defaultTimezone (),
-				dateToInstant (
-					message.getNetworkTime ())),
+			message.getNetworkTime () != null
+				? timeFormatter.instantToTimestampString (
+					timeFormatter.defaultTimezone (),
+					dateToInstant (
+						message.getNetworkTime ()))
+				: "-",
 
 			"</tr>\n");
 
