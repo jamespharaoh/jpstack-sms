@@ -82,10 +82,7 @@ class RouteTestOutAction
 			paramsChecker.apply (requestContext);
 
 		if (params == null) {
-
-			// searchResponder.execute (requestContext);
-			// return;
-
+			throw new RuntimeException ();
 		}
 
 		// get params

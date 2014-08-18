@@ -22,9 +22,9 @@ import wbs.sms.magicnumber.model.MagicNumberSetRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
 
-@PrototypeComponent ("magicNumberCreateAction")
+@PrototypeComponent ("magicNumberUpdateAction")
 public
-class MagicNumberCreateAction
+class MagicNumberUpdateAction
 	extends ConsoleAction {
 
 	// dependencies
@@ -99,40 +99,93 @@ class MagicNumberCreateAction
 
 		}
 
-		// add numbers
+		if (requestContext.parameter ("create") != null) {
 
-		int numAdded = 0;
+			// add numbers
 
-		for (String number : numbers) {
+			int numAdded = 0;
 
-			MagicNumberRec magicNumber =
-				magicNumberHelper.insert (
-					new MagicNumberRec ()
-						.setMagicNumberSet (magicNumberSet)
-						.setNumber (number));
+			for (String number : numbers) {
 
-			numAdded ++;
+				MagicNumberRec magicNumber =
+					magicNumberHelper.insert (
+						new MagicNumberRec ()
+							.setMagicNumberSet (magicNumberSet)
+							.setNumber (number));
 
-			eventLogic.createEvent (
-				"object_created",
-				myUser,
-				magicNumber,
-				magicNumberSet);
+				numAdded ++;
 
-		}
+				eventLogic.createEvent (
+					"object_created",
+					myUser,
+					magicNumber,
+					magicNumberSet);
 
-		// commit transaction
+			}
 
-		transaction.commit ();
+			// commit transaction
 
-		// messages
+			transaction.commit ();
 
-		if (numAdded > 0) {
+			// messages
 
-			requestContext.addNotice (
-				stringFormat (
-					"%s magic numbers created",
-					numAdded));
+			if (numAdded > 0) {
+
+				requestContext.addNotice (
+					stringFormat (
+						"%s magic numbers created",
+						numAdded));
+
+			}
+
+		} else if (requestContext.parameter ("remove") != null) {
+
+			// add numbers
+
+			int numDeleted = 0;
+
+			for (String number : numbers) {
+
+				MagicNumberRec magicNumber =
+					magicNumberHelper.findByNumber (
+						number);
+
+				if (magicNumber.getMagicNumberSet () != magicNumberSet)
+					continue;
+
+				if (magicNumber.getDeleted ())
+					continue;
+
+				magicNumber
+
+					.setDeleted (
+						true);
+
+				numDeleted ++;
+
+				eventLogic.createEvent (
+					"object_field_updated",
+					myUser,
+					"deleted",
+					magicNumber,
+					true);
+
+			}
+
+			// commit transaction
+
+			transaction.commit ();
+
+			// messages
+
+			if (numDeleted > 0) {
+
+				requestContext.addNotice (
+					stringFormat (
+						"%s magic numbers deleted",
+						numDeleted));
+
+			}
 
 		}
 

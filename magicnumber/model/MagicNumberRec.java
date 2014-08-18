@@ -56,8 +56,15 @@ class MagicNumberRec
 			(MagicNumberRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getMagicNumberSet (), other.getMagicNumberSet ())
-			.append (getNumber (), other.getNumber ())
+
+			.append (
+				getMagicNumberSet (),
+				other.getMagicNumberSet ())
+
+			.append (
+				getNumber (),
+				other.getNumber ())
+
 			.toComparison ();
 
 	}
@@ -70,7 +77,7 @@ class MagicNumberRec
 		MagicNumberRec findByNumber (
 				String number);
 
-		MagicNumberRec findUnused (
+		MagicNumberRec findExistingUnused (
 				MagicNumberSetRec magicNumberSet,
 				NumberRec number);
 

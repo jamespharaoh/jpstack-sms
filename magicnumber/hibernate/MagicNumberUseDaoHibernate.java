@@ -42,7 +42,7 @@ class MagicNumberUseDaoHibernate
 
 	@Override
 	public
-	MagicNumberUseRec findByRef (
+	MagicNumberUseRec findExistingByRef (
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
@@ -58,7 +58,8 @@ class MagicNumberUseDaoHibernate
 				"WHERE magicNumber.magicNumberSet = :magicNumberSet " +
 					"AND magicNumberUse.number= :number " +
 					"AND magicNumberUse.command= :command " +
-					"AND magicNumberUse.refId = :ref")
+					"AND magicNumberUse.refId = :ref " +
+					"AND magicNumber.deleted = false")
 
 			.setEntity (
 				"magicNumberSet",
@@ -82,7 +83,7 @@ class MagicNumberUseDaoHibernate
 
 	@Override
 	public
-	MagicNumberUseRec findLeastRecentlyUsed (
+	MagicNumberUseRec findExistingLeastRecentlyUsed (
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number) {
 
@@ -93,6 +94,7 @@ class MagicNumberUseDaoHibernate
 				"FROM MagicNumberUseRec magicNumberUse " +
 				"WHERE magicNumberUse.magicNumber.magicNumberSet = :magicNumberSet " +
 					"AND magicNumberUse.number = :number " +
+					"AND magicNumberUse.magicNumber.deleted = false " +
 				"ORDER BY magicNumberUse.lastUseTimestamp")
 
 			.setEntity (

@@ -3,9 +3,9 @@ package wbs.sms.magicnumber.console;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.platform.console.part.AbstractPagePart;
 
-@PrototypeComponent ("magicNumberCreatePart")
+@PrototypeComponent ("magicNumberUpdatePart")
 public
-class MagicNumberCreatePart
+class MagicNumberUpdatePart
 	extends AbstractPagePart {
 
 	@Override
@@ -27,7 +27,15 @@ class MagicNumberCreatePart
 		printFormat (
 			"<p><input",
 			" type=\"submit\"",
+			" name=\"create\"",
 			" value=\"create magic numbers\"",
+			"></p>\n");
+
+		printFormat (
+			"<p><input",
+			" type=\"submit\"",
+			" name=\"delete\"",
+			" value=\"delete magic numbers\"",
 			"></p>\n");
 
 		printFormat (

@@ -82,13 +82,13 @@ class MagicNumberUseRec
 				MagicNumberRec magicNumber,
 				NumberRec number);
 
-		MagicNumberUseRec findByRef (
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number,
-			CommandRec command,
-			Integer ref);
+		MagicNumberUseRec findExistingByRef (
+				MagicNumberSetRec magicNumberSet,
+				NumberRec number,
+				CommandRec command,
+				Integer ref);
 
-		MagicNumberUseRec findLeastRecentlyUsed (
+		MagicNumberUseRec findExistingLeastRecentlyUsed (
 				MagicNumberSetRec magicNumberSet,
 				NumberRec number);
 

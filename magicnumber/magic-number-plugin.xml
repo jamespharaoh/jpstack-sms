@@ -20,12 +20,13 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MagicNumberLogic"/>
+		<bean class="logic.MagicNumberLogicImpl"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MagicNumberCreateAction"/>
-		<bean class="console.MagicNumberCreatePart"/>
+		<bean class="console.MagicNumberUpdateAction"/>
+		<bean class="console.MagicNumberUpdatePart"/>
+		<bean class="console.MagicNumberSetEntityFinder"/>
 	</layer>
 
 	<layer name="daemon">

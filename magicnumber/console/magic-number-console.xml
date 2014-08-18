@@ -35,7 +35,7 @@
 				fields="list"/>
 
 			<context-tab-action-page
-				name="create"/>
+				name="update"/>
 
 		</list>
 

@@ -14,7 +14,6 @@ import javax.inject.Provider;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -27,7 +26,6 @@ import wbs.sms.message.delivery.model.DeliveryRec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 import wbs.sms.message.delivery.model.DeliveryTypeRec;
 
-@Log4j
 @SingletonComponent ("deliveryDaemon")
 public
 class DeliveryDaemon
@@ -246,16 +244,16 @@ class DeliveryDaemon
 					handlersById.get (
 						deliveryType.getId ());
 
-				if (handler == null) {
-
-					log.warn (
-						stringFormat (
-							"No delivery notice handler for %s",
-							deliveryType.getCode ()));
-
-				}
-
 				try {
+
+					if (handler == null) {
+
+						throw new RuntimeException (
+							stringFormat (
+								"No delivery notice handler for %s",
+								deliveryType.getCode ()));
+
+					}
 
 					handler.handle (
 						delivery.getId (),

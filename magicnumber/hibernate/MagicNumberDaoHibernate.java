@@ -33,7 +33,7 @@ class MagicNumberDaoHibernate
 
 	@Override
 	public
-	MagicNumberRec findUnused (
+	MagicNumberRec findExistingUnused (
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number) {
 
@@ -43,11 +43,12 @@ class MagicNumberDaoHibernate
 			createQuery (
 				"FROM MagicNumberRec magicNumber " +
 				"WHERE magicNumber.magicNumberSet = :magicNumberSet " +
-					"AND NOT EXISTS (" +
-						"SELECT magicNumberUse.id " +
-						"FROM magicNumber.magicNumberUses magicNumberUse " +
-						"WHERE magicNumberUse.number = :number" +
-					")")
+				"AND NOT EXISTS (" +
+					"SELECT magicNumberUse.id " +
+					"FROM magicNumber.magicNumberUses magicNumberUse " +
+					"WHERE magicNumberUse.number = :number" +
+				") " +
+				"AND magicNumber.deleted = false")
 
 			.setEntity (
 				"magicNumberSet",

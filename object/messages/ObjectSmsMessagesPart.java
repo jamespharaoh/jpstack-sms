@@ -110,8 +110,10 @@ class ObjectSmsMessagesPart
 	public
 	void goBodyStuff () {
 
+		/*
 		viewTabsPrepared.go (
 			requestContext);
+		*/
 
 		String localUrl =
 			requestContext.resolveLocalUrl (
@@ -125,33 +127,33 @@ class ObjectSmsMessagesPart
 			">\n");
 
 		printFormat (
-			"<p>Date<br>\n");
+			"<p",
+			" class=\"links\"",
+			">Date\n",
 
-		printFormat (
 			"<input",
 			" type=\"text\"",
 			" name=\"date\"",
 			" value=\"%h\"",
 			dateField.text,
-			">\n");
+			">\n",
 
-		printFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"ok\"",
-			"></p>\n");
+			">\n",
+
+			"%s</p>\n",
+			ObsoleteDateLinks.dailyBrowserLinks (
+				localUrl,
+				requestContext.getFormData (),
+				dateField.date));
 
 		printFormat (
 			"</form>\n");
 
 		if (messages == null)
 			return;
-
-		ObsoleteDateLinks.dailyBrowserParagraph (
-			out,
-			localUrl,
-			requestContext.getFormData (),
-			dateField.date);
 
 		printFormat (
 			"<table class=\"list\">\n");
