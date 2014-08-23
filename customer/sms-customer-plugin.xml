@@ -1,0 +1,30 @@
+<plugin
+	name="smsCustomerManager"
+	package="customer">
+
+	<sql-scripts>
+		<sql-schema name="sms-customer"/>
+		<sql-data name="sms-customer-data"/>
+	</sql-scripts>
+
+	<models>
+		<model name="smsCustomer"/>
+		<model name="smsCustomerManager"/>
+		<model name="smsCustomerTemplate"/>
+	</models>
+
+	<fixtures>
+		<fixture name="smsCustomerManager"/>
+	</fixtures>
+
+	<layer name="logic">
+		<bean class="logic.SmsCustomerLogicImpl"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="sms-customer"/>
+		<console-module name="sms-customer-manager"/>
+		<console-module name="sms-customer-template"/>
+	</console-modules>
+
+</plugin>

@@ -1,0 +1,92 @@
+<console-module
+	name="sms-customer-manager">
+
+	<console-helper-provider
+		object-name="smsCustomerManager">
+
+		<priv-key
+			name="smsCustomerManager.manage"
+			priv="manage"/>
+
+		<context-stuff
+			name="smsCustomerManagerName"
+			field="name"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="smsCustomerManager"
+		object-name="smsCustomerManager">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+			<object-create-page/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+			<object-settings-page
+				fields="settings"/>
+
+			<context-link
+				name="template"
+				link="smsCustomerTemplate"
+				label="Templates"
+				priv-key="smsCustomerManager.manage"/>
+
+			<context-link
+				name="customer"
+				link="smsCustomer"
+				label="Customers"
+				priv-key="smsCustomerManager.manage"/>
+
+			<object-events-page/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="smsCustomerManager">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="smsCustomerManager">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+	</field-set>
+
+	<field-set
+		name="settings"
+		object-name="smsCustomerManager">
+
+		<id-field/>
+		<parent-field/>
+		<code-field/>
+		<name-field/>
+		<description-field/>
+		<deleted-field/>
+
+	</field-set>
+
+</console-module>

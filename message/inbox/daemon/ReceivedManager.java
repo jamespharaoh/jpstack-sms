@@ -462,7 +462,8 @@ class ReceivedManager
 
 		thread.start ();
 
-		registerThread (thread);
+		registerThread (
+			thread);
 
 		// create worker threads
 
@@ -472,11 +473,12 @@ class ReceivedManager
 				threadManager.makeThread (
 					new ReceivedThread ("" + i));
 
-			thread.setName("RecMan" + i);
+			thread.setName ("RecMan" + i);
 
 			thread.start ();
 
-			registerThread (thread);
+			registerThread (
+				thread);
 
 		}
 

@@ -152,4 +152,8 @@
 		name="wap-push"
 		package="message.wap"/>
 
+	<plugin
+		name="sms-customer"
+		package="customer"/>
+
 </project>

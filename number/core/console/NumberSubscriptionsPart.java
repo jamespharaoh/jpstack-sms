@@ -113,13 +113,16 @@ class NumberSubscriptionsPart
 						link.getParentObject (),
 						false,
 						true)
-					: "-",
+					: "-");
 
+			printFormat (
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						link.getStartTime ())));
+				link.getStartTime () != null
+					? timeFormatter.instantToTimestampString (
+						timeFormatter.defaultTimezone (),
+						dateToInstant (
+							link.getStartTime ()))
+					: "-");
 
 			if (! activeOnly) {
 
