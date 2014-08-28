@@ -24,6 +24,12 @@ SELECT object_type_insert (
 	'sms_customer_manager',
 	3);
 
+SELECT object_type_insert (
+	'sms_customer_session',
+	'sms customer session',
+	'sms_customer',
+	3);
+
 SELECT service_type_insert (
 	'sms_customer_manager',
 	'welcome',

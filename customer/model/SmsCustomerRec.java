@@ -59,8 +59,6 @@ class SmsCustomerRec
 	@SimpleField
 	Instant createdTime;
 
-	// state
-
 	@ReferenceField (
 		nullable = true)
 	MessageRec welcomeMessage;
@@ -68,6 +66,11 @@ class SmsCustomerRec
 	@ReferenceField (
 		nullable = true)
 	MessageRec warningMessage;
+
+	// statistics
+	
+	@SimpleField
+	Integer numSessions = 0;
 
 	// compare to
 

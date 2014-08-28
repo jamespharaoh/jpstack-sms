@@ -1,0 +1,66 @@
+<console-module
+	name="sms-customer-session">
+
+	<console-helper-provider
+		object-name="smsCustomerSession"
+		view-delegate-field="customer.smsCustomerManager"
+		view-delegate-priv-code="manage">
+
+		<priv-key
+			name="smsCustomerSession.manage"
+			delegate="customer.smsCustomerManager"
+			priv="manage"/>
+
+		<context-stuff
+			name="smsCustomerSessionName"
+			field="index"/>
+
+		<context-stuff
+			name="smsCustomerId"
+			delegate="customer"
+			field="id"/>
+
+		<run-post-processor
+			name="smsCustomer"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="smsCustomerSession"
+		object-name="smsCustomerSession">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="smsCustomerSession">
+
+		<index-field/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="smsCustomerSession">
+
+		<id-field/>
+		<parent-field/>
+		<index-field/>
+
+	</field-set>
+
+</console-module>

@@ -13,6 +13,8 @@ import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.platform.user.model.UserObjectHelper;
 import wbs.platform.user.model.UserPrivObjectHelper;
+import wbs.sms.customer.model.SmsCustomerManagerObjectHelper;
+import wbs.sms.customer.model.SmsCustomerManagerRec;
 
 @PrototypeComponent ("smsCustomerManagerFixtureProvider")
 public
@@ -37,6 +39,9 @@ class SmsCustomerManagerFixtureProvider
 	SliceObjectHelper sliceHelper;
 
 	@Inject
+	SmsCustomerManagerObjectHelper smsCustomerManagerHelper;
+
+	@Inject
 	UserObjectHelper userHelper;
 
 	@Inject
@@ -47,6 +52,25 @@ class SmsCustomerManagerFixtureProvider
 	@Override
 	public
 	void createFixtures () {
+
+		smsCustomerManagerHelper.insert (
+			new SmsCustomerManagerRec ()
+			
+			.setSlice (
+				sliceHelper.findByCode (
+					GlobalId.root,
+					"test"))
+
+			.setCode (
+				"customer_manager")
+			
+			.setName (
+				"Customer manager")
+			
+			.setDescription (
+				"Test customer manager")
+
+		);
 
 		menuHelper.insert (
 			new MenuRec ()

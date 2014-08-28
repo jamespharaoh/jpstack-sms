@@ -47,6 +47,12 @@
 			<object-settings-page
 				fields="settings"/>
 
+			<context-link
+				name="session"
+				link="smsCustomerSession"
+				label="Sessions"
+				priv-key="smsCustomer.manage"/>
+
 			<object-events-page/>
 
 		</object>
