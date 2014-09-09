@@ -39,10 +39,6 @@
 		<parent-field/>
 		<code-field/>
 
-		<object-field
-			name="route"
-			finder="route"/>
-
 	</field-set>
 
 </console-module>

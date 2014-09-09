@@ -22,6 +22,10 @@
 		<bean class="logic.SmsCustomerLogicImpl"/>
 	</layer>
 
+	<layer name="daemon">
+		<bean class="daemon.SmsCustomerSessionTimeoutDaemon"/>
+	</layer>
+
 	<console-modules>
 		<console-module name="sms-customer"/>
 		<console-module name="sms-customer-manager"/>

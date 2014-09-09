@@ -55,7 +55,7 @@ class SmsCustomerManagerFixtureProvider
 
 		smsCustomerManagerHelper.insert (
 			new SmsCustomerManagerRec ()
-			
+
 			.setSlice (
 				sliceHelper.findByCode (
 					GlobalId.root,
@@ -63,10 +63,10 @@ class SmsCustomerManagerFixtureProvider
 
 			.setCode (
 				"customer_manager")
-			
+
 			.setName (
 				"Customer manager")
-			
+
 			.setDescription (
 				"Test customer manager")
 

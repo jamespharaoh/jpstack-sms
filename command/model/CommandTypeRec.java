@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import wbs.framework.entity.annotations.CodeField;
 import wbs.framework.entity.annotations.CollectionField;
+import wbs.framework.entity.annotations.DeletedField;
 import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.ParentField;
 import wbs.framework.entity.annotations.SimpleField;
@@ -49,6 +50,9 @@ class CommandTypeRec
 
 	@CollectionField
 	Set<CommandRec> commands;
+
+	@DeletedField
+	Boolean deleted = false;
 
 	// compare to
 

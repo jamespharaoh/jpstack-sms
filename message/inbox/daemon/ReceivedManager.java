@@ -276,7 +276,8 @@ class ReceivedManager
 							receivedMessage.getMessageId ()),
 						exception);
 
-					tries.error (exception);
+					tries.error (
+						exception);
 
 				}
 

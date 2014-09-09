@@ -1,11 +1,23 @@
 package wbs.sms.customer.logic;
 
+import static wbs.framework.utils.etc.Misc.stringFormat;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerRec;
+import wbs.sms.customer.model.SmsCustomerSessionObjectHelper;
+import wbs.sms.customer.model.SmsCustomerSessionRec;
 import wbs.sms.customer.model.SmsCustomerTemplateObjectHelper;
 import wbs.sms.customer.model.SmsCustomerTemplateRec;
 import wbs.sms.message.core.model.MessageRec;
@@ -13,12 +25,19 @@ import wbs.sms.message.outbox.logic.MessageSender;
 
 import com.google.common.base.Optional;
 
+@Log4j
 @SingletonComponent ("smsCustomerLogic")
 public
 class SmsCustomerLogicImpl
 	implements SmsCustomerLogic {
 
 	// dependencies
+
+	@Inject
+	Database database;
+
+	@Inject
+	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
 
 	@Inject
 	SmsCustomerTemplateObjectHelper smsCustomerTemplateHelper;
@@ -31,25 +50,71 @@ class SmsCustomerLogicImpl
 	// implementation
 
 	public
-	void newCustomer (
+	void sessionStart (
 			SmsCustomerRec customer,
 			Optional<Integer> threadId) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
+		sessionTimeoutAuto (
+			customer);
+
+		if (customer.getActiveSession () != null) {
+
+			customer
+
+				.setLastActionTime (
+					transaction.now ());
+
+			return;
+
+		}
+
+		SmsCustomerSessionRec newSession =
+			smsCustomerSessionHelper.insert (
+				new SmsCustomerSessionRec ()
+
+			.setCustomer (
+				customer)
+
+			.setIndex (
+				customer.getNumSessions ())
+
+			.setStartTime (
+				transaction.now ())
+
+		);
+
+		customer
+
+			.setActiveSession (
+				newSession)
+
+			.setLastActionTime (
+				transaction.now ())
+
+			.setNumSessions (
+				customer.getNumSessions () + 1);
+
 		sendWelcomeMessage (
-			customer,
+			newSession,
 			threadId);
 
 		sendWarningMessage (
-			customer,
+			newSession,
 			threadId);
 
 	}
 
 	void sendWelcomeMessage (
-			SmsCustomerRec customer,
+			SmsCustomerSessionRec session,
 			Optional<Integer> threadId) {
 
-		if (customer.getWelcomeMessage () != null)
+		SmsCustomerRec customer =
+			session.getCustomer ();
+
+		if (session.getWelcomeMessage () != null)
 			return;
 
 		SmsCustomerManagerRec manager =
@@ -87,7 +152,7 @@ class SmsCustomerLogicImpl
 
 			.send ();
 
-		customer
+		session
 
 			.setWelcomeMessage (
 				message);
@@ -97,11 +162,11 @@ class SmsCustomerLogicImpl
 	}
 
 	void sendWarningMessage (
-			SmsCustomerRec customer,
+			SmsCustomerSessionRec session,
 			Optional<Integer> threadId) {
 
-		if (customer.getWarningMessage () != null)
-			return;
+		SmsCustomerRec customer =
+			session.getCustomer ();
 
 		SmsCustomerManagerRec manager =
 			customer.getSmsCustomerManager ();
@@ -138,12 +203,110 @@ class SmsCustomerLogicImpl
 
 			.send ();
 
-		customer
+		session
 
 			.setWarningMessage (
 				message);
 
 		return;
+
+	}
+
+	public
+	void sessionTimeoutAuto (
+			@NonNull SmsCustomerRec customer) {
+
+		if (customer.getActiveSession () == null)
+			return;
+
+		sessionTimeoutAuto (
+			customer.getActiveSession ());
+
+	}
+
+	public
+	void sessionTimeoutAuto (
+			@NonNull SmsCustomerSessionRec session) {
+
+		log.debug (
+			stringFormat (
+				"Automatic session timeout for %s",
+				session.getId ()));
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		SmsCustomerRec customer =
+			session.getCustomer ();
+
+		SmsCustomerManagerRec manager =
+			customer.getSmsCustomerManager ();
+
+		if (session.getEndTime () != null) {
+
+			log.debug (
+				stringFormat (
+					"Not timing out session %s ",
+					session.getId (),
+					"since it has already ended"));
+
+			return;
+
+		}
+
+		if (manager.getSessionTimeout () == null) {
+
+			log.debug (
+				stringFormat (
+					"Not timing out session %s ",
+					session.getId (),
+					"since manager %s ",
+					manager.getId (),
+					"has no timeout configured"));
+
+			return;
+
+		}
+
+		Instant startTimeBefore =
+			transaction.now ().minus (
+				Duration.standardSeconds (
+					manager.getSessionTimeout ()));
+
+		if (! session.getStartTime ().isBefore (
+				startTimeBefore)) {
+
+			log.debug (
+				stringFormat (
+					"Not timing out session %s, ",
+					session.getId (),
+					"which started at %s, ",
+					session.getStartTime (),
+					"since that is not before %s",
+					startTimeBefore));
+
+			return;
+
+		}
+
+		log.warn (
+			stringFormat (
+				"Timing out sms customer session %s",
+				session.getId ()));
+
+		session
+
+			.setEndTime (
+				transaction.now ())
+
+		;
+
+		customer
+
+			.setActiveSession (
+				null)
+
+		;
 
 	}
 

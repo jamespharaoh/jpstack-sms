@@ -1,5 +1,7 @@
 package wbs.sms.customer.model;
 
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,12 +30,12 @@ class SmsCustomerSessionRec
 	implements CommonRecord<SmsCustomerSessionRec> {
 
 	// id
-	
+
 	@GeneratedIdField
 	Integer id;
 
 	// identity
-	
+
 	@ParentField
 	SmsCustomerRec customer;
 
@@ -41,10 +43,10 @@ class SmsCustomerSessionRec
 	Integer index;
 
 	// details
-	
+
 	@SimpleField
 	Instant startTime;
-	
+
 	@SimpleField (
 		nullable = true)
 	Instant endTime;
@@ -61,7 +63,7 @@ class SmsCustomerSessionRec
 
 	// compare to
 
-	public 
+	public
 	int compareTo (
 			Record<SmsCustomerSessionRec> otherRecord) {
 
@@ -69,16 +71,28 @@ class SmsCustomerSessionRec
 			(SmsCustomerSessionRec) otherRecord;
 
 		return new CompareToBuilder ()
-		
+
 			.append (
 				getCustomer (),
 				other.getCustomer ())
-			
+
 			.append (
 				getIndex (),
 				other.getIndex ())
-				
+
 			.toComparison ();
+
+	}
+
+	// dao methods
+
+	public static
+	interface SmsCustomerSessionDaoMethods {
+
+		List<SmsCustomerSessionRec> findToTimeout (
+				SmsCustomerManagerRec manager,
+				Instant startedBefore,
+				int batchSize);
 
 	}
 

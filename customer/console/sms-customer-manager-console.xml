@@ -74,6 +74,10 @@
 		<description-field/>
 		<deleted-field/>
 
+		<seconds-field
+			name="sessionTimeout"
+			nullable="yes"/>
+
 	</field-set>
 
 	<field-set
@@ -86,6 +90,10 @@
 		<name-field/>
 		<description-field/>
 		<deleted-field/>
+
+		<seconds-field
+			name="sessionTimeout"
+			nullable="yes"/>
 
 	</field-set>
 

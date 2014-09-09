@@ -51,12 +51,15 @@ class InboxRec
 			(InboxRec) otherRecord;
 
 		return new CompareToBuilder ()
+
 			.append (
 				other.getMessage ().getCreatedTime (),
 				getMessage ().getCreatedTime ())
+
 			.append (
 				other.getId (),
 				getId ())
+
 			.toComparison ();
 
 	}

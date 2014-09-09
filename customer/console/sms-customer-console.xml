@@ -82,6 +82,10 @@
 		<timestamp-field
 			name="createdTime"/>
 
+		<integer-field
+			name="numSessions"
+			label="Sessions"/>
+
 	</field-set>
 
 	<field-set
@@ -99,13 +103,15 @@
 		<timestamp-field
 			name="createdTime"/>
 
-		<object-field
-			name="welcomeMessage"
-			finder="message"/>
+		<timestamp-field
+			name="lastActionTime"/>
 
 		<object-field
-			name="warningMessage"
-			finder="message"/>
+			name="activeSession"
+			finder="smsCustomerSession"/>
+
+		<integer-field
+			name="numSessions"/>
 
 	</field-set>
 

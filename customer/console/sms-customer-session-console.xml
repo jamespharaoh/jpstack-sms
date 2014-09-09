@@ -51,6 +51,12 @@
 
 		<index-field/>
 
+		<timestamp-field
+			name="startTime"/>
+
+		<timestamp-field
+			name="endTime"/>
+
 	</field-set>
 
 	<field-set
@@ -60,6 +66,20 @@
 		<id-field/>
 		<parent-field/>
 		<index-field/>
+
+		<timestamp-field
+			name="startTime"/>
+
+		<timestamp-field
+			name="endTime"/>
+
+		<object-field
+			name="welcomeMessage"
+			finder="message"/>
+
+		<object-field
+			name="warningMessage"
+			finder="message"/>
 
 	</field-set>
 

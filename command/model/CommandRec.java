@@ -18,6 +18,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.annotations.CodeField;
+import wbs.framework.entity.annotations.DeletedField;
 import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.MinorEntity;
 import wbs.framework.entity.annotations.ParentIdField;
@@ -39,8 +40,12 @@ public
 class CommandRec
 	implements MinorRecord<CommandRec> {
 
+	// id
+
 	@GeneratedIdField
 	Integer id;
+
+	// identity
 
 	@ParentTypeField
 	ObjectTypeRec parentObjectType;
@@ -51,8 +56,13 @@ class CommandRec
 	@CodeField
 	String code;
 
+	// details
+
 	@TypeField
 	CommandTypeRec commandType;
+
+	@DeletedField
+	Boolean deleted = false;
 
 	// object hooks
 

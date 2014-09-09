@@ -26,7 +26,6 @@ import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.object.AbstractObjectHooks;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
-import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (chain = true)
@@ -59,16 +58,18 @@ class SmsCustomerRec
 	@SimpleField
 	Instant createdTime;
 
-	@ReferenceField (
+	// state
+
+	@SimpleField (
 		nullable = true)
-	MessageRec welcomeMessage;
+	Instant lastActionTime;
 
 	@ReferenceField (
 		nullable = true)
-	MessageRec warningMessage;
+	SmsCustomerSessionRec activeSession;
 
 	// statistics
-	
+
 	@SimpleField
 	Integer numSessions = 0;
 

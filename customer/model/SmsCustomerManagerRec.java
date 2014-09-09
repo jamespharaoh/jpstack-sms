@@ -14,6 +14,7 @@ import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.MajorEntity;
 import wbs.framework.entity.annotations.NameField;
 import wbs.framework.entity.annotations.ParentField;
+import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.MajorRecord;
 import wbs.framework.record.Record;
 import wbs.platform.scaffold.model.SliceRec;
@@ -50,6 +51,13 @@ class SmsCustomerManagerRec
 
 	@DeletedField
 	Boolean deleted = false;
+
+	// settings
+
+	@SimpleField
+	Integer sessionTimeout;
+
+	// compare to
 
 	public
 	int compareTo (
