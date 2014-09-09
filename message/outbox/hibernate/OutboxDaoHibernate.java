@@ -1,5 +1,7 @@
 package wbs.sms.message.outbox.hibernate;
 
+import static wbs.framework.utils.etc.Misc.stringFormat;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -147,11 +149,18 @@ class OutboxDaoHibernate
 		List<Object[]> list =
 
 			createQuery (
-				"SELECT o.route.id, count (*) " +
-				"FROM OutboxRec o " +
-				"WHERE o.retryTime < :date " +
-				"AND o.sending IS NULL " +
-				"GROUP BY o.route.id")
+				stringFormat (
+					"SELECT ",
+						"outbox.route.id, ",
+						"count (*) ",
+					"FROM OutboxRec outbox ",
+					"WHERE outbox.retryTime < :date ",
+					"AND (",
+						"outbox.remainingTries IS NULL ",
+						"OR outbox.remainingTries > 0",
+					") ",
+					"AND outbox.sending IS NULL ",
+					"GROUP BY outbox.route.id"))
 
 			.setTimestamp (
 				"date",

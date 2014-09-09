@@ -38,6 +38,10 @@ class SmsCustomerSessionDaoHibernate
 					manager))
 
 			.add (
+				Restrictions.isNull (
+					"_session.endTime"))
+
+			.add (
 				Restrictions.lt (
 					"_session.startTime",
 					startedBefore))

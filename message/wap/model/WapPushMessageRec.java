@@ -25,12 +25,18 @@ public
 class WapPushMessageRec
 	implements CommonRecord<WapPushMessageRec> {
 
+	// id
+
 	@ForeignIdField (
 		field = "message")
 	Integer id;
 
+	// identity
+
 	@MasterField
 	MessageRec message;
+
+	// details
 
 	@ReferenceField
 	TextRec textText;

@@ -196,9 +196,12 @@ class AbstractSmsSender2
 
 			try {
 
-				while (true) {
+				for (;;) {
+
 					waitForMessages ();
+
 					processMessages ();
+
 				}
 
 			} catch (InterruptedException exception) {
@@ -223,13 +226,17 @@ class AbstractSmsSender2
 
 			while (! Thread.interrupted ()) {
 
-				processOneMessage ();
+				boolean messageProcessed =
+					processOneMessage ();
+
+				if (! messageProcessed)
+					return;
 
 			}
 
 		}
 
-		void processOneMessage () {
+		boolean processOneMessage () {
 
 			OutboxRec outbox;
 			int messageId;
@@ -254,7 +261,7 @@ class AbstractSmsSender2
 
 				if (outbox == null) {
 
-					return;
+					return false;
 
 				}
 
@@ -288,7 +295,7 @@ class AbstractSmsSender2
 
 					transaction.commit ();
 
-					return;
+					return true;
 
 				}
 
@@ -308,7 +315,7 @@ class AbstractSmsSender2
 
 					transaction.commit ();
 
-					return;
+					return true;
 
 				}
 
@@ -360,7 +367,7 @@ class AbstractSmsSender2
 
 					transaction.commit ();
 
-					return;
+					return true;
 
 				}
 
@@ -470,7 +477,7 @@ class AbstractSmsSender2
 					performSendResult.responseTrace (),
 					performSendResult.errorTrace ());
 
-				return;
+				return true;
 
 			}
 
@@ -481,6 +488,8 @@ class AbstractSmsSender2
 				smsOutboxAttemptId,
 				performSendResult.otherIds (),
 				performSendResult.responseTrace ());
+
+			return true;
 
 		}
 

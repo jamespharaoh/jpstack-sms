@@ -48,7 +48,6 @@ class SmsCustomerDaoHibernate
 
 		if (search.getNumberLike () != null) {
 
-System.out.println ("NUMBER LIKE " + search.getNumberLike ());
 			numberCriteria.add (
 				Restrictions.ilike (
 					"number",
