@@ -61,7 +61,8 @@
 	</object-context>
 
 	<field-set
-		name="search">
+		name="search"
+		class="wbs.sms.number.core.model.NumberSearch">
 
 		<text-field
 			name="number"

@@ -56,12 +56,14 @@ BEGIN
 		id,
 		code,
 		description,
-		parent_object_type_id)
+		parent_object_type_id,
+		deleted)
 	VALUES (
 		new_id,
 		new_code,
 		new_description,
-		the_parent_object_type_id);
+		the_parent_object_type_id,
+		false);
 
 	RETURN new_id;
 

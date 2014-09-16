@@ -27,9 +27,9 @@ import wbs.sms.number.list.model.NumberListRec;
 import wbs.sms.number.list.model.NumberListUpdateRec;
 
 @Accessors (fluent = true)
-@PrototypeComponent ("numberListNumbersAction")
+@PrototypeComponent ("numberListNumberUpdateAction")
 public
-class NumberListNumbersAction
+class NumberListNumberUpdateAction
 	extends ConsoleAction {
 
 	// dependencies
@@ -66,7 +66,10 @@ class NumberListNumbersAction
 	@Override
 	protected
 	Responder backupResponder () {
-		return responder ("numberListNumbersResponder");
+
+		return responder (
+			"numberListNumberUpdateResponder");
+
 	}
 
 	// implementation

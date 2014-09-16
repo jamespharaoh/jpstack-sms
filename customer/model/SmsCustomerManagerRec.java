@@ -54,7 +54,8 @@ class SmsCustomerManagerRec
 
 	// settings
 
-	@SimpleField
+	@SimpleField (
+		nullable = true)
 	Integer sessionTimeout;
 
 	// compare to

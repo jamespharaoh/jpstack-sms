@@ -51,6 +51,12 @@ class SmsOutboxMonitor
 
 	@Override
 	protected
+	String getThreadName () {
+		throw new UnsupportedOperationException ();
+	}
+
+	@Override
+	protected
 	void createThreads () {
 
 		createThread (
@@ -124,7 +130,7 @@ class SmsOutboxMonitor
 
 					// log error
 
-					exceptionLogic.logException (
+					exceptionLogic.logThrowable (
 						"daemon",
 						"Outbox monitor",
 						exception,

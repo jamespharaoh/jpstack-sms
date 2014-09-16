@@ -88,6 +88,12 @@ class ModemPollDaemon
 			"\\+CMGL: (\\d*),(\\d*),(\\d*),(\\d*)");
 
 	@Override
+	protected
+	String getThreadName () {
+		throw new UnsupportedOperationException ();
+	}
+
+	@Override
 	public
 	void createThreads () {
 

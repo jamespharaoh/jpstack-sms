@@ -90,7 +90,7 @@ class MessageDaemon
 
 			} catch (Exception exception) {
 
-				exceptionLogic.logException (
+				exceptionLogic.logThrowable (
 					"daemon",
 					"MessageDaemon",
 					exception,

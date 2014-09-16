@@ -1,34 +1,79 @@
 package wbs.sms.number.list.console;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.console.helper.ConsoleObjectManager;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.platform.priv.console.PrivChecker;
 import wbs.sms.number.list.model.NumberListRec;
 
+import com.google.common.collect.ImmutableList;
+
 @Accessors (fluent = true)
-@PrototypeComponent ("numberListNumbersPart")
+@PrototypeComponent ("numberListNumberCopyPart")
 public
-class NumberListNumbersPart
+class NumberListNumberCopyPart
 	extends AbstractPagePart {
+
+	// dependencies
 
 	@Inject
 	NumberListConsoleHelper numberListHelper;
 
 	@Inject
+	ConsoleObjectManager objectManager;
+
+	@Inject
 	PrivChecker privChecker;
 
-	NumberListRec numberList;
+	// state
+
+	List<NumberListRec> browseableNumberLists;
+
+	NumberListRec thisNumberList;
+
+	// implementation
 
 	@Override
 	public
 	void prepare () {
 
-		numberList =
+		// this number list
+
+		thisNumberList =
 			numberListHelper.find (
 				requestContext.stuffInt ("numberListId"));
+
+		// browseable number lists
+
+		List<NumberListRec> allNumberLists =
+			numberListHelper.findAll ();
+
+		ImmutableList.Builder<NumberListRec> browseableNumberListsBuilder =
+			ImmutableList.<NumberListRec>builder ();
+
+		for (NumberListRec someNumberList
+				: allNumberLists) {
+
+			if (someNumberList == thisNumberList)
+				continue;
+
+			if (! privChecker.can (
+					someNumberList,
+					"number_list_browse"))
+				continue;
+
+			browseableNumberListsBuilder.add (
+				someNumberList);
+
+		}
+
+		browseableNumberLists =
+			browseableNumberListsBuilder.build ();
 
 	}
 
@@ -51,7 +96,7 @@ class NumberListNumbersPart
 			"<tr>\n",
 			"<th>Numbers</th>\n",
 			"<td>%h</td>\n",
-			numberList.getNumberCount (),
+			thisNumberList.getNumberCount (),
 			"</tr>\n");
 
 		printFormat (
@@ -65,7 +110,7 @@ class NumberListNumbersPart
 			"<form method=\"post\">\n");
 
 		printFormat (
-			"<p>Numbers<br>\n",
+			"<p>Number list<br>\n",
 
 			"<textarea",
 			" name=\"numbers\"",
@@ -78,7 +123,7 @@ class NumberListNumbersPart
 			"<p>\n");
 
 		if (privChecker.can (
-				numberList,
+				thisNumberList,
 				"number_list_add")) {
 
 			printFormat (
@@ -91,7 +136,7 @@ class NumberListNumbersPart
 		}
 
 		if (privChecker.can (
-				numberList,
+				thisNumberList,
 				"number_list_remove")) {
 
 			printFormat (

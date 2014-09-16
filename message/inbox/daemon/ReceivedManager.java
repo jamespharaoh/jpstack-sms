@@ -231,7 +231,7 @@ class ReceivedManager
 						messageId),
 					exception);
 
-				exceptionLogic.logException (
+				exceptionLogic.logThrowable (
 					"daemon",
 					"Route " + messageStuff.route.getCode (),
 					exception,
@@ -444,6 +444,12 @@ class ReceivedManager
 
 		}
 
+	}
+
+	@Override
+	protected
+	String getThreadName () {
+		throw new UnsupportedOperationException ();
 	}
 
 	/**

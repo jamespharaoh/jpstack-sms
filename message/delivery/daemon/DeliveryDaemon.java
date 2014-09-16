@@ -123,6 +123,12 @@ class DeliveryDaemon
 
 	@Override
 	protected
+	String getThreadName () {
+		throw new UnsupportedOperationException ();
+	}
+
+	@Override
+	protected
 	void createThreads () {
 
 		Thread thread = threadManager.makeThread (new QueryThread ());
@@ -261,7 +267,7 @@ class DeliveryDaemon
 
 				} catch (Exception exception) {
 
-					exceptionLogic.logException (
+					exceptionLogic.logThrowable (
 						"daemon",
 						"Delivery notice daemon",
 						exception,

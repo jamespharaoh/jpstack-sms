@@ -43,6 +43,12 @@ final class RouteTesterDaemon
 
 	@Override
 	protected
+	String getThreadName () {
+		return "RouteTester";
+	}
+
+	@Override
+	protected
 	void runService () {
 
 		while (true) {

@@ -55,6 +55,12 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@Override
 	protected
+	String getThreadName () {
+		return "SmsCustomerSessionTimeout";
+	}
+
+	@Override
+	protected
 	int getDelayMs () {
 		return 1000 * delayInSeconds;
 	}

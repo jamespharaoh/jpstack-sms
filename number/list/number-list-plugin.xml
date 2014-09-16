@@ -20,8 +20,8 @@
 	</models>
 
 	<layer name="console">
-		<bean class="console.NumberListNumbersAction"/>
-		<bean class="console.NumberListNumbersPart"/>
+		<bean class="console.NumberListNumberUpdateAction"/>
+		<bean class="console.NumberListNumberUpdatePart"/>
 	</layer>
 
 	<layer name="logic">

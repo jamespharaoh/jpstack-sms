@@ -60,7 +60,8 @@
 	</object-context>
 
 	<field-set
-		name="search">
+		name="search"
+		class="wbs.sms.customer.model.SmsCustomerSearch">
 
 		<text-field
 			name="numberLike"

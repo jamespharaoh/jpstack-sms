@@ -74,7 +74,8 @@
 	</object-context>
 
 	<field-set
-		name="search">
+		name="search"
+		class="wbs.sms.message.core.model.MessageSearch">
 
 	</field-set>
 

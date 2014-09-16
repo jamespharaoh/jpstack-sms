@@ -47,6 +47,12 @@ class SmsOutboxUnstickDaemon
 
 	@Override
 	protected
+	String getThreadName () {
+		return "SmsOutboxUnstick";
+	}
+
+	@Override
+	protected
 	int getDelayMs () {
 		return 1000 * delayInSeconds;
 	}

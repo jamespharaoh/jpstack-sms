@@ -55,8 +55,8 @@ SELECT priv_type_insert (
 SELECT priv_type_insert (
 	'number_list',
 	'number_list_browse',
-	'Brows numbers',
-	'Brows all numbers in this number list',
+	'Browse numbers',
+	'Browse all numbers in this number list',
 	true);
 
 SELECT event_type_insert (
