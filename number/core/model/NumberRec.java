@@ -31,11 +31,17 @@ public
 class NumberRec
 	implements CommonRecord<NumberRec> {
 
+	// id
+
 	@GeneratedIdField
 	Integer id;
 
+	// identity
+
 	@CodeField
 	String number;
+
+	// details
 
 	@ReferenceField
 	NetworkRec network;

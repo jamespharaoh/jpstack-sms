@@ -225,12 +225,12 @@ class MessageSummaryPart
 				"<th>Time sent</th>\n",
 
 				"<td>%h</td>\n",
-				ifNull (
-					timeFormatter.instantToTimestampString (
+				message.getNetworkTime () != null
+					? timeFormatter.instantToTimestampString (
 						timeFormatter.defaultTimezone (),
 						dateToInstant (
-							message.getNetworkTime ())),
-					"-"),
+							message.getNetworkTime ()))
+					: "-",
 
 				"</tr>\n");
 
