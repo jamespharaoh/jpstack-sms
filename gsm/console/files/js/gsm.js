@@ -196,7 +196,7 @@ function gsmCharCountMultiple2 (control, container) {
 
 var gsmRegExp = new RegExp (
 	"^[" +
-	"@\\u00a3\\u00a5\\u00e8\\u00e9\\u00f9\\u00ec\\u00f2\\u00e7\\n\\u00d8\\u00f8\\r\\u00c5\\u00e5" +
+	"@\\u00a3$\\u00a5\\u00e8\\u00e9\\u00f9\\u00ec\\u00f2\\u00e7\\n\\u00d8\\u00f8\\r\\u00c5\\u00e5" +
 	"\\u0394_\\u03a6\\u0393\\u039b\\u03a9\\u03a0\\u03a8\\u03a3\\u0398\\u039e\\u00c6\\u00e6\\u00df\\u00c9" +
 	" !\"#\\u00a4%&'()*+,\\-\\./" +
 	"0123456789:;<=>?" +
