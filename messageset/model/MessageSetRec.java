@@ -151,9 +151,19 @@ class MessageSetRec
 			(MessageSetRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getParentObjectType (), other.getParentObjectType ())
-			.append (getParentObjectId (), other.getParentObjectId ())
-			.append (getCode (), other.getCode ())
+
+			.append (
+				getParentObjectType (),
+				other.getParentObjectType ())
+
+			.append (
+				getParentObjectId (),
+				other.getParentObjectId ())
+
+			.append (
+				getCode (),
+				other.getCode ())
+
 			.toComparison ();
 
 	}

@@ -42,7 +42,11 @@ class BlacklistRec
 			(BlacklistRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getNumber (), other.getNumber ())
+
+			.append (
+				getNumber (),
+				other.getNumber ())
+
 			.toComparison ();
 
 	}

@@ -64,7 +64,11 @@ class NumberRec
 			(NumberRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getNumber (), other.getNumber ())
+
+			.append (
+				getNumber (),
+				other.getNumber ())
+
 			.toComparison ();
 
 	}

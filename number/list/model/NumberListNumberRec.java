@@ -29,8 +29,12 @@ public
 class NumberListNumberRec
 	implements EphemeralRecord<NumberListNumberRec> {
 
+	// id
+
 	@GeneratedIdField
 	Integer id;
+
+	// identity
 
 	@ParentField
 	NumberListRec numberList;
@@ -38,8 +42,12 @@ class NumberListNumberRec
 	@IdentityReferenceField
 	NumberRec number;
 
+	// state
+
 	@SimpleField
 	Boolean present = false;
+
+	// compare to
 
 	@Override
 	public
@@ -50,8 +58,15 @@ class NumberListNumberRec
 			(NumberListNumberRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getNumberList (), other.getNumberList ())
-			.append (getNumber (), other.getNumber ())
+
+			.append (
+				getNumberList (),
+				other.getNumberList ())
+
+			.append (
+				getNumber (),
+				other.getNumber ())
+
 			.toComparison ();
 
 	}

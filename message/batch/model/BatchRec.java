@@ -50,7 +50,11 @@ class BatchRec
 			(BatchRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getId (), other.getId ())
+
+			.append (
+				getId (),
+				other.getId ())
+
 			.toComparison ();
 
 	}

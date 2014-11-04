@@ -64,7 +64,11 @@ class NetworkRec
 			(NetworkRec) otherRecord;
 
 		return new CompareToBuilder ()
-			.append (getCode (), other.getCode ())
+
+			.append (
+				getCode (),
+				other.getCode ())
+
 			.toComparison ();
 
 	}
