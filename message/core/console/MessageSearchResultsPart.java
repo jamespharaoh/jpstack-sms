@@ -27,8 +27,13 @@ public
 class MessageSearchResultsPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	MediaConsoleLogic mediaConsoleLogic;
+
+	@Inject
+	MediaLogic mediaLogic;
 
 	@Inject
 	MessageConsolePluginManager messageConsolePluginManager;
@@ -38,6 +43,8 @@ class MessageSearchResultsPart
 
 	@Inject
 	ConsoleObjectManager objectManager;
+
+	// implementatino
 
 	@Override
 	public
@@ -187,8 +194,10 @@ class MessageSearchResultsPart
 
 				for (MediaRec media : medias) {
 
-					if (MediaLogic.textTypes.contains (
-							media.getMediaType ().getMimeType ())) {
+					if (
+						mediaLogic.isText (
+							media.getMediaType ().getMimeType ())
+					) {
 
 						printFormat (
 							"%s\n",

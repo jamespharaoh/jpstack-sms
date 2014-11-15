@@ -29,6 +29,8 @@ public
 class MessageSummaryPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	MediaConsoleLogic mediaConsoleLogic;
 
@@ -47,10 +49,14 @@ class MessageSummaryPart
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// state
+
 	MessageRec message;
 	FailedMessageRec failedMessage;
 	MessageConsolePlugin plug;
 	PagePart summaryPart;
+
+	// implementation
 
 	@Override
 	public
