@@ -1,6 +1,7 @@
 package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.nullIfEmptyString;
 import static wbs.framework.utils.etc.Misc.parseTimeAfter;
 import static wbs.framework.utils.etc.Misc.parseTimeBefore;
@@ -196,20 +197,34 @@ class MessageSearchAction
 			if (dateParam != null) {
 
 				timeFrom =
-					parseTimeAfter (dateParam);
+					instantToDate (
+						parseTimeAfter (
+							dateParam));
 
 				timeTo =
-					parseTimeBefore (dateParam);
+					instantToDate (
+						parseTimeBefore (
+							dateParam));
 
 			} else {
 
-				if (timeFromParam != null)
-					timeFrom =
-						parseTimeAfter(timeFromParam);
+				if (timeFromParam != null) {
 
-				if (timeToParam != null)
+					timeFrom =
+						instantToDate (
+							parseTimeAfter (
+								timeFromParam));
+
+				}
+
+				if (timeToParam != null) {
+
 					timeTo =
-						parseTimeBefore(timeToParam);
+						instantToDate (
+							parseTimeBefore (
+								timeToParam));
+
+				}
 
 			}
 
