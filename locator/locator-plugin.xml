@@ -7,7 +7,7 @@
 	</sql-scripts>
 
 	<models>
-		<type name="longLat"/>
+		<custom-type name="longLat"/>
 		<model name="biaxialEllipsoid"/>
 		<model name="locator"/>
 		<model name="locatorLog"/>

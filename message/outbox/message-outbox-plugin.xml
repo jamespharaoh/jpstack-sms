@@ -8,7 +8,7 @@
 	</sql-scripts>
 
 	<models>
-		<type name="smsOutboxAttemptState"/>
+		<enum-type name="smsOutboxAttemptState"/>
 		<model name="failedMessage"/>
 		<model name="outbox"/>
 		<model name="routeOutboxSummary"/>

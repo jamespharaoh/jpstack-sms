@@ -14,14 +14,13 @@
 	</sql-scripts>
 
 	<models>
+		<enum-type name="routeNetworkBehaviour"/>
 		<model name="route"/>
-		<type name="routeNetworkBehaviour"/>
 	</models>
 
 	<layer name="console">
 		<bean class="console.RouteSummaryAdditionalPartManager"/>
 		<bean class="console.RouteSummaryAdditionalPart"/>
-		<bean class="console.RouteNetworkBehaviourConsoleHelper"/>
 	</layer>
 
 	<fixtures>

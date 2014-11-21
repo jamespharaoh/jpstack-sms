@@ -16,8 +16,8 @@
 	</sql-scripts>
 
 	<models>
-		<type name="messageDirection"/>
-		<type name="messageStatus"/>
+		<custom-type name="messageDirection"/>
+		<custom-type name="messageStatus"/>
 		<model name="message"/>
 		<model name="messageExpiry"/>
 		<model name="messageType"/>
