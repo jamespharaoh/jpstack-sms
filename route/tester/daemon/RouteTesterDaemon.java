@@ -16,7 +16,7 @@ import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.MessageSender;
-import wbs.sms.number.core.logic.NumberLogic;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
 import wbs.sms.route.tester.model.RouteTesterObjectHelper;
 import wbs.sms.route.tester.model.RouteTesterRec;
@@ -26,20 +26,26 @@ public
 final class RouteTesterDaemon
 	extends AbstractDaemonService {
 
+	// dependencies
+
 	@Inject
 	Database database;
 
 	@Inject
-	NumberLogic numberLogic;
-
-	@Inject
-	Provider<MessageSender> messageSender;
+	NumberObjectHelper numberHelper;
 
 	@Inject
 	ObjectManager objectManager;
 
 	@Inject
 	RouteTesterObjectHelper routeTesterHelper;
+
+	// prototype dependencies
+
+	@Inject
+	Provider<MessageSender> messageSender;
+
+	// details
 
 	@Override
 	protected
@@ -147,15 +153,27 @@ final class RouteTesterDaemon
 
 		MessageRec message =
 			messageSender.get ()
-				.number (numberLogic.findOrCreateNumber (routeTester.getDestNumber ()))
-				.messageString (text.toString ())
-				.numFrom (routeTester.getRouteNumber ())
-				.route (routeTester.getRoute ())
-				.service (objectManager.findChildByCode (
+
+			.number (
+				numberHelper.findOrCreate (
+					routeTester.getDestNumber ()))
+
+			.messageString (
+				text.toString ())
+
+			.numFrom (
+				routeTester.getRouteNumber ())
+
+			.route (
+				routeTester.getRoute ())
+
+			.service (
+				objectManager.findChildByCode (
 					ServiceRec.class,
 					new GlobalId (0, 0),
 					"test"))
-				.send ();
+
+			.send ();
 
 		// connect the message to the RouteTest
 

@@ -7,9 +7,6 @@ import wbs.sms.number.core.model.NumberRec;
 public
 interface NumberLogic {
 
-	NumberRec findOrCreateNumber (
-			String number);
-
 	/**
 	 * Magically converts the given object to a NumberRec, depending on its
 	 * type. A NumberRec is returned as is, a String is replaced by looking up

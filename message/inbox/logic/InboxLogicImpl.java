@@ -41,6 +41,7 @@ import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.logic.NumberLogic;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -82,6 +83,9 @@ class InboxLogicImpl
 
 	@Inject
 	NetworkObjectHelper networkHelper;
+
+	@Inject
+	NumberObjectHelper numberHelper;
 
 	@Inject
 	NumberLogic numberLogic;
@@ -485,7 +489,7 @@ class InboxLogicImpl
 			bits [0].getMsgOtherId (),
 			textHelper.findOrCreate (
 				stringBuilder.toString ()),
-			numberLogic.findOrCreateNumber (
+			numberHelper.findOrCreate (
 				inboxMultipartBuffer.getMsgFrom ()),
 			inboxMultipartBuffer.getMsgTo (),
 			inboxMultipartBuffer.getRoute (),

@@ -7,11 +7,9 @@ import javax.inject.Inject;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
-import wbs.framework.record.GlobalId;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.network.model.NetworkObjectHelper;
-import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.model.ChatUserNumberReportObjectHelper;
 import wbs.sms.number.core.model.ChatUserNumberReportRec;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -41,39 +39,23 @@ class NumberLogicImpl
 
 	@Override
 	public
-	NumberRec findOrCreateNumber (
-			String numberString) {
-
-		NumberRec numberRecord =
-			numberHelper.findByCode (
-				GlobalId.root,
-				numberString);
-
-		if (numberRecord != null)
-			return numberRecord;
-
-		// create it
-
-		NetworkRec defaultNetwork =
-			networkHelper.find (0);
-
-		return numberHelper.insert (
-			new NumberRec ()
-				.setNumber (numberString)
-				.setNetwork (defaultNetwork));
-
-	}
-
-	@Override
-	public
 	NumberRec objectToNumber (
 			Object object) {
 
-		if (object instanceof NumberRec)
-			return (NumberRec) object;
+		if (object instanceof NumberRec) {
 
-		if (object instanceof String)
-			return findOrCreateNumber ((String) object);
+			return
+				(NumberRec)
+				object;
+
+		}
+
+		if (object instanceof String) {
+
+			return numberHelper.findOrCreate (
+				(String) object);
+
+		}
 
 		throw new IllegalArgumentException ();
 
@@ -86,7 +68,8 @@ class NumberLogicImpl
 			MessageStatus status) {
 
 		NumberRec number =
-			findOrCreateNumber (numTo);
+			numberHelper.findOrCreate (
+				numTo);
 
 		// TODO should not be here
 

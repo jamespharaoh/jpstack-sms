@@ -23,7 +23,7 @@ import wbs.platform.console.request.ConsoleRequestContext;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.MessageSender;
-import wbs.sms.number.core.logic.NumberLogic;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -46,7 +46,7 @@ class RouteTestOutAction
 	Database database;
 
 	@Inject
-	NumberLogic numberLogic;
+	NumberObjectHelper numberHelper;
 
 	@Inject
 	RouteConsoleHelper routeHelper;
@@ -88,7 +88,7 @@ class RouteTestOutAction
 		// get params
 
 		NumberRec number =
-			numberLogic.findOrCreateNumber (
+			numberHelper.findOrCreate (
 				(String) params.get ("num_to"));
 
 		ServiceRec testService =

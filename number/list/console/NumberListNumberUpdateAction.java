@@ -18,7 +18,7 @@ import wbs.platform.console.request.ConsoleRequestContext;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleHelper;
 import wbs.platform.user.model.UserRec;
-import wbs.sms.number.core.logic.NumberLogic;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
@@ -44,6 +44,9 @@ class NumberListNumberUpdateAction
 	NumberFormatLogic numberFormatLogic;
 
 	@Inject
+	NumberObjectHelper numberHelper;
+
+	@Inject
 	NumberListConsoleHelper numberListHelper;
 
 	@Inject
@@ -51,9 +54,6 @@ class NumberListNumberUpdateAction
 
 	@Inject
 	NumberListUpdateConsoleHelper numberListUpdateHelper;
-
-	@Inject
-	NumberLogic numberLogic;
 
 	@Inject
 	ConsoleRequestContext requestContext;
@@ -137,7 +137,7 @@ class NumberListNumberUpdateAction
 					transaction.flush ();
 
 				NumberRec number =
-					numberLogic.findOrCreateNumber (
+					numberHelper.findOrCreate (
 						numberString);
 
 				NumberListNumberRec numberListNumber =
@@ -186,7 +186,7 @@ class NumberListNumberUpdateAction
 					transaction.flush ();
 
 				NumberRec number =
-					numberLogic.findOrCreateNumber (
+					numberHelper.findOrCreate (
 						numberString);
 
 				NumberListNumberRec numberListNumber =
