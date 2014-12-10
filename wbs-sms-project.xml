@@ -141,10 +141,6 @@
 		package="smpp"/>
 
 	<plugin
-		name="template"
-		package="template"/>
-
-	<plugin
 		name="tracker"
 		package="tracker"/>
 
