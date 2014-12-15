@@ -158,7 +158,9 @@ class ReceivedManager
 				inbox.getTries ());
 
 			inbox
-				.setRetryTime (calendar.getTime ());
+
+				.setRetryTime (
+					calendar.getTime ());
 
 			// commit transaction
 
