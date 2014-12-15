@@ -254,16 +254,15 @@ class MessageSummaryPart
 
 			printFormat (
 				"<tr>\n",
-
 				"<th>Time processed</th>\n",
 
 				"<td>%h</td>\n",
-				ifNull (
-					timeFormatter.instantToTimestampString (
+				message.getProcessedTime () != null
+					? timeFormatter.instantToTimestampString (
 						timeFormatter.defaultTimezone (),
 						dateToInstant (
-							message.getProcessedTime ())),
-					"-"),
+							message.getProcessedTime ()))
+					: "-",
 
 				"</tr>\n");
 
