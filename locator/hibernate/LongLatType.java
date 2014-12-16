@@ -115,31 +115,6 @@ class LongLatType
 
 	}
 
-	/*
-	@Override
-	public boolean equals1 (Object x, Object y)
-		throws HibernateException {
-
-		if (x == y)
-			return true;
-
-		if (x == null || y == null)
-			return false;
-
-		LongLat
-			lx = (LongLat) x,
-			ly = (LongLat) y;
-
-		return
-			eq (
-				lx.getLongitude (),
-				ly.getLongitude ())
-			&& eq (
-				lx.getLatitude (),
-				ly.getLatitude ());
-	}
-	*/
-
 	@Override
 	public
 	int hashCode (

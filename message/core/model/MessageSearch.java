@@ -53,7 +53,8 @@ class MessageSearch {
 	Collection<Integer> filterRouteIds;
 	Collection<Integer> filterServiceIds;
 
-	public MessageSearch () {
+	public
+	MessageSearch () {
 	}
 
 	public

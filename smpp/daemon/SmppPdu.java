@@ -9,54 +9,98 @@ import java.util.List;
 public
 class SmppPdu {
 
-	protected SmppPdu(int newCommandId) {
-		commandId = newCommandId;
-		commandStatus = SmppCommandStatus.ok;
+	protected
+	SmppPdu (
+			int newCommandId) {
+
+		commandId =
+			newCommandId;
+
+		commandStatus =
+			SmppCommandStatus.ok;
+
 	}
 
-	protected SmppPdu(int newCommandId, int newCommandStatus) {
-		commandId = newCommandId;
-		commandStatus = newCommandStatus;
+	protected
+	SmppPdu (
+			int newCommandId,
+			int newCommandStatus) {
+
+		commandId =
+			newCommandId;
+
+		commandStatus =
+			newCommandStatus;
+
 	}
 
 	Integer commandStatus;
 	Integer sequenceNumber;
 
-	private int commandId;
-	private List<SmppOptParam> optParams = new ArrayList<SmppOptParam>();
+	int commandId;
 
-	public int getCommandId() {
+	List<SmppOptParam> optParams =
+		new ArrayList<SmppOptParam> ();
+
+	public
+	int getCommandId () {
 		return commandId;
 	}
 
-	public List<SmppOptParam> getOptParams() {
+	public
+	List<SmppOptParam> getOptParams () {
 		return optParams;
 	}
 
-	public SmppOptParam getOptParam(int tag) {
-		for (SmppOptParam optParam : optParams)
-			if (optParam.getTag() == tag)
+	public
+	SmppOptParam getOptParam (
+			int tag) {
+
+		for (SmppOptParam optParam : optParams) {
+
+			if (optParam.getTag () == tag)
 				return optParam;
+
+		}
+
 		return null;
+
 	}
 
-	public boolean isResponse() {
+	public
+	boolean isResponse () {
 		return (commandId & 0x80000000) == 0x80000000;
 	}
 
-	public boolean isError() {
+	public
+	boolean isError () {
 		return commandStatus != SmppCommandStatus.ok;
 	}
 
-	public byte[] getBody() {
+	public
+	byte[] getBody () {
+
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			SmppOutputStream out = new SmppOutputStream(baos);
-			writeBody(out);
-			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+
+			ByteArrayOutputStream baos =
+				new ByteArrayOutputStream ();
+
+			SmppOutputStream out =
+				new SmppOutputStream (
+					baos);
+
+			writeBody (
+				out);
+
+			return baos.toByteArray ();
+
+		} catch (IOException exception) {
+
+			throw new RuntimeException (
+				exception);
+
 		}
+
 	}
 
 	public
@@ -67,10 +111,21 @@ class SmppPdu {
 		byte[] body =
 			getBody ();
 
-		out.writeInteger(16 + body.length, 4);
-		out.writeInteger(commandId, 4);
-		out.writeInteger(commandStatus, 4);
-		out.writeInteger(sequenceNumber, 4);
+		out.writeInteger (
+			16 + body.length,
+			4);
+
+		out.writeInteger (
+			commandId,
+			4);
+
+		out.writeInteger (
+			commandStatus,
+			4);
+
+		out.writeInteger (
+			sequenceNumber,
+			4);
 
 		if (commandStatus == SmppCommandStatus.ok) {
 
@@ -117,9 +172,13 @@ class SmppPdu {
 			SmppOutputStream out)
 		throws IOException {
 
-		for (SmppOptParam optParam : optParams) {
+		for (
+			SmppOptParam optParam
+				: optParams
+		) {
 
-			optParam.write(out);
+			optParam.write (
+				out);
 
 		}
 
@@ -232,4 +291,5 @@ class SmppPdu {
 			sequenceNumber;
 
 	}
+
 }

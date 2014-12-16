@@ -16,6 +16,8 @@ public
 class CommandLogicImpl
 	implements CommandLogic {
 
+	// dependencies
+
 	@Inject
 	CommandTypeObjectHelper commandTypeHelper;
 
@@ -25,8 +27,11 @@ class CommandLogicImpl
 	@Inject
 	ObjectManager objectManager;
 
+	// implementation
+
 	@Override
-	public CommandRec findOrCreateCommand (
+	public
+	CommandRec findOrCreateCommand (
 			Record<?> parent,
 			String typeCode,
 			String code) {
@@ -55,10 +60,20 @@ class CommandLogicImpl
 
 		return objectManager.insert (
 			new CommandRec ()
-				.setCode (code)
-				.setCommandType (commandType)
-				.setParentObjectType (parentType)
-				.setParentObjectId (parent.getId ()));
+
+			.setCode (
+				code)
+
+			.setCommandType (
+				commandType)
+
+			.setParentObjectType (
+				parentType)
+
+			.setParentObjectId (
+				parent.getId ())
+
+		);
 
 	}
 

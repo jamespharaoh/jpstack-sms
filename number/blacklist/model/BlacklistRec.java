@@ -23,11 +23,17 @@ public
 class BlacklistRec
 	implements CommonRecord<BlacklistRec> {
 
+	// id
+
 	@GeneratedIdField
 	Integer id;
 
+	// identity
+
 	@CodeField
 	String number;
+
+	// details
 
 	@SimpleField
 	String reason;
@@ -35,7 +41,8 @@ class BlacklistRec
 	// compare to
 
 	@Override
-	public int compareTo (
+	public
+	int compareTo (
 			Record<BlacklistRec> otherRecord) {
 
 		BlacklistRec other =

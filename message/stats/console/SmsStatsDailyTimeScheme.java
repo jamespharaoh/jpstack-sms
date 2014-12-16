@@ -15,20 +15,25 @@ public
 class SmsStatsDailyTimeScheme
 		implements SmsStatsTimeScheme {
 
-	private final static SimpleDateFormat monthNameLongFormat =
+	private final static
+	SimpleDateFormat monthNameLongFormat =
 		new SimpleDateFormat ("MMMMM");
 
-	private final static SimpleDateFormat monthNameShortFormat =
+	private final static
+	SimpleDateFormat monthNameShortFormat =
 		new SimpleDateFormat ("MMM");
 
-	private final static SimpleDateFormat weekDateFormat =
+	private final static
+	SimpleDateFormat weekDateFormat =
 		new SimpleDateFormat ("EEE d");
 
-	private SmsStatsDailyTimeScheme () {
+	private
+	SmsStatsDailyTimeScheme () {
 	}
 
 	@Override
-	public DateRange dateRange (
+	public
+	DateRange dateRange (
 			LocalDate date) {
 
 		// create calendar

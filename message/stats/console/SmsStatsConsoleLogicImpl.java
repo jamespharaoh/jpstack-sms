@@ -178,7 +178,8 @@ class SmsStatsConsoleLogicImpl
 	 * will only return items that would have been returned by both critMaps.
 	 */
 	@Override
-	public Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
+	public
+	Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
 			Map<SmsStatsCriteria,
 			Set<Integer>>... critMaps) {
 
@@ -234,7 +235,8 @@ class SmsStatsConsoleLogicImpl
 	 * for passing to coreDao.searchMessageStatsEntries().
 	 */
 	@Override
-	public Map<String,Object> critMapToMessageStatsEntrySearchMap (
+	public
+	Map<String,Object> critMapToMessageStatsEntrySearchMap (
 			Map<SmsStatsCriteria,Set<Integer>> critMap,
 			Map<SmsStatsCriteria,Set<Integer>> filterMap) {
 
@@ -280,7 +282,8 @@ class SmsStatsConsoleLogicImpl
 	}
 
 	@Override
-	public String nameForCriteria (
+	public
+	String nameForCriteria (
 			SmsStatsCriteria statsCriteria) {
 
 		switch (statsCriteria) {

@@ -26,11 +26,15 @@ public
 class SmsTrackerLogicImpl
 	implements SmsTrackerLogic {
 
+	// dependencies
+
 	@Inject
 	SmsSimpleTrackerObjectHelper smsSimpleTrackerHelper;
 
 	@Inject
 	SmsSimpleTrackerNumberObjectHelper smsSimpleTrackerNumberHelper;
+
+	// implementation
 
 	@Override
 	public
@@ -50,9 +54,15 @@ class SmsTrackerLogicImpl
 
 			smsSimpleTrackerNumber =
 				new SmsSimpleTrackerNumberRec ()
-					.setSmsSimpleTracker (smsSimpleTracker)
-					.setNumber (number)
-					.setBlocked (false);
+
+				.setSmsSimpleTracker (
+					smsSimpleTracker)
+
+				.setNumber (
+					number)
+
+				.setBlocked (
+					false);
 
 			boolean result =
 				simpleTrackerNumberScanAndUpdate (
@@ -66,19 +76,36 @@ class SmsTrackerLogicImpl
 		}
 
 		// if we have an existing blocked just return that
-		if (smsSimpleTrackerNumber.getBlocked())
+
+		if (smsSimpleTrackerNumber.getBlocked ())
 			return false;
 
 		// check if the result has expired
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(smsSimpleTrackerNumber.getLastScan());
-		cal.add(Calendar.SECOND, smsSimpleTracker.getSinceScanSecsMax());
-		if (cal.getTime().getTime() < System.currentTimeMillis()) {
-			return simpleTrackerNumberScanAndUpdate(smsSimpleTrackerNumber);
+
+		Calendar cal =
+			new GregorianCalendar ();
+
+		cal.setTime (
+			smsSimpleTrackerNumber.getLastScan ());
+
+		cal.add (
+			Calendar.SECOND,
+			smsSimpleTracker.getSinceScanSecsMax ());
+
+		if (
+			cal.getTime ().getTime ()
+				< System.currentTimeMillis ()
+		) {
+
+			return simpleTrackerNumberScanAndUpdate (
+				smsSimpleTrackerNumber);
+
 		}
 
 		// or just return the current value
-		return !smsSimpleTrackerNumber.getBlocked();
+
+		return ! smsSimpleTrackerNumber.getBlocked ();
+
 	}
 
 	/**
@@ -89,17 +116,30 @@ class SmsTrackerLogicImpl
 	 *            The tracker number to update.
 	 * @return True if the number should be sent to.
 	 */
-	private boolean simpleTrackerNumberScanAndUpdate(
+	private
+	boolean simpleTrackerNumberScanAndUpdate (
 			SmsSimpleTrackerNumberRec trackerNumber) {
-		boolean result = simpleTrackerScan(trackerNumber.getSmsSimpleTracker(),
-				trackerNumber.getNumber());
-		trackerNumber.setLastScan(new Date());
-		trackerNumber.setBlocked(!result);
+
+		boolean result =
+			simpleTrackerScan (
+				trackerNumber.getSmsSimpleTracker (),
+				trackerNumber.getNumber ());
+
+		trackerNumber
+
+			.setLastScan (
+				new Date ())
+
+			.setBlocked (
+				! result);
+
 		return result;
+
 	}
 
 	@Override
-	public boolean simpleTrackerScan (
+	public
+	boolean simpleTrackerScan (
 			SmsSimpleTrackerRec smsSimpleTracker,
 			NumberRec number) {
 
@@ -126,7 +166,8 @@ class SmsTrackerLogicImpl
 	}
 
 	@Override
-	public SimpleTrackerResult simpleTrackerScanCore (
+	public
+	SimpleTrackerResult simpleTrackerScanCore (
 			Collection<? extends MessageRec> messagesSource,
 			int failureCountMin,
 			long failureSingleMsMin,
@@ -134,8 +175,11 @@ class SmsTrackerLogicImpl
 
 		// sort the messages
 
-		List<MessageRec> messages = new ArrayList<MessageRec>();
-		messages.addAll(messagesSource);
+		List<MessageRec> messages =
+			new ArrayList<MessageRec> ();
+
+		messages.addAll (
+			messagesSource);
 
 		Collections.sort (
 			messages,
@@ -155,46 +199,81 @@ class SmsTrackerLogicImpl
 			if (!simpleTrackerStatusIsNegative(message.getStatus()))
 				continue;
 
-			// if its the first one we always pick it up
-			if (lastTime == 0) {
-				lastCountedTime = firstTime = thisTime;
-				numFound++;
-			}
+			if (
 
-			// otherwise we only care if it is far enough back from the last one
-			// we counted
-			else if (thisTime + failureSingleMsMin < lastCountedTime) {
-				lastCountedTime = thisTime;
-				numFound++;
+				// if its the first one we always pick it up
+
+				lastTime == 0
+
+			) {
+
+				lastCountedTime =
+				firstTime =
+					thisTime;
+
+				numFound ++;
+
+			} else if (
+
+				// otherwise we only care if it is far enough back from the last
+				// one we counted
+
+				thisTime + failureSingleMsMin
+					< lastCountedTime
+
+			) {
+
+				lastCountedTime =
+					thisTime;
+
+				numFound ++;
+
 			}
 
 			// if we have counted enough return affirmative
-			if (numFound >= failureCountMin
-					&& thisTime + failureTotalMsMin < firstTime) {
+
+			if (
+
+				numFound
+					>= failureCountMin
+
+				&& thisTime + failureTotalMsMin
+					< firstTime
+
+			) {
+
 				return SimpleTrackerResult.notOk;
+
 			}
 
 			lastTime = thisTime;
+
 		}
 
 		// if we make it here there can't have been enough messages to decide
+
 		return SimpleTrackerResult.okSoFar;
+
 	}
 
 	@Override
-	public boolean simpleTrackerStatusIsPositive (
+	public
+	boolean simpleTrackerStatusIsPositive (
 			MessageStatus status) {
 
-		return in (status,
+		return in (
+			status,
 			MessageStatus.delivered);
 
 	}
 
 	@Override
-	public boolean simpleTrackerStatusIsNegative (
+	public
+	boolean simpleTrackerStatusIsNegative (
 			MessageStatus status) {
 
-		return in (status,
+		return in (
+			status,
 			MessageStatus.reportTimedOut,
 			MessageStatus.undelivered);
 

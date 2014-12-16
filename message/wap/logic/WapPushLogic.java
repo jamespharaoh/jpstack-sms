@@ -269,7 +269,8 @@ class WapPushLogic
 	 * @param retry
 	 *            the MessageRetryRec which needs retrying
 	 */
-	public MessageRec wapPushRetry (
+	public
+	MessageRec wapPushRetry (
 			MessageRec oldMessage,
 			RouteRec route,
 			TextRec textRec) {

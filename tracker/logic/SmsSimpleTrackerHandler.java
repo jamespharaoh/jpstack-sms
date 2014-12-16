@@ -15,16 +15,23 @@ public
 class SmsSimpleTrackerHandler
 	implements SmsTrackerHandler {
 
+	// dependencies
+
 	@Inject
 	SmsSimpleTrackerObjectHelper smsSimpleTrackerHelper;
 
 	@Inject
 	SmsTrackerLogic smsTrackerLogic;
 
+	// details
+
 	@Override
-	public String getTypeCode () {
+	public
+	String getTypeCode () {
 		return "default";
 	}
+
+	// implementation
 
 	@Override
 	public

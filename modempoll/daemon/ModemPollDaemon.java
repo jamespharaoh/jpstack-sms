@@ -226,72 +226,132 @@ class ModemPollDaemon
 		 * Polls the modem for each message, calling handlePdu for each one,
 		 * then deletes them.
 		 */
-		private void doPoll() throws InterruptedException, IOException {
+		private
+		void doPoll ()
+			throws
+				InterruptedException,
+				IOException {
 
 			// get the list
-			List<String> lines = sendCommand("at+cmgl=4\route");
+
+			List<String> lines =
+				sendCommand (
+					"at+cmgl=4\route");
 
 			// then go through it
-			Iterator<String> it = lines.iterator();
-			while (it.hasNext()) {
-				String line = it.next();
+
+			Iterator<String> iterator =
+				lines.iterator ();
+
+			while (iterator.hasNext ()) {
+
+				String line =
+					iterator.next ();
 
 				// if its not a +cmgl line skip it
-				Matcher m = cmglPattern.matcher(line);
-				if (!m.matches())
+
+				Matcher matcher =
+					cmglPattern.matcher (
+						line);
+
+				if (! matcher.matches ())
 					continue;
 
 				// ok get the pdu line and decode it
-				if (!it.hasNext())
-					throw new ModemException("Missing PDU data");
-				String pduLine = it.next();
-				if (!pduPattern.matcher(pduLine).matches())
-					throw new ModemException("Invalid or missing PDU data");
+
+				if (! iterator.hasNext ()) {
+
+					throw new ModemException (
+						"Missing PDU data");
+
+				}
+
+				String pduLine =
+					iterator.next ();
+
+				if (! pduPattern.matcher (pduLine).matches ()) {
+
+					throw new ModemException (
+						"Invalid or missing PDU data");
+
+				}
 
 				// store it
-				storePdu(pduLine);
+
+				storePdu (
+					pduLine);
 
 				// now delete it
-				sendCommandOk("at+cmgd=" + m.group(1) + "\route");
+
+				sendCommandOk (
+					"at+cmgd=" + matcher.group (1) + "\route");
+
 			}
+
 		}
 
 		/**
 		 * Send a command and collect the response.
 		 */
-		private List<String> sendCommand (
+		private
+		List<String> sendCommand (
 				String command)
 			throws
 				InterruptedException,
 				IOException {
 
-			log.debug("Sent: " + command.replaceAll("\\route", "\\\\route"));
-			List<String> ret = new ArrayList<String>();
+			log.debug (
+				stringFormat (
+					"Sent: %s",
+					command.replaceAll (
+						"\\route",
+						"\\\\route")));
+
+			List<String> ret =
+				new ArrayList<String> ();
 
 			// send the command
-			modemOut.write(command);
-			modemOut.flush();
+
+			modemOut.write (
+				command);
+
+			modemOut.flush ();
 
 			// give the modem 0.1s to responde
 			Thread.sleep(modemSleepTime1);
 
-			while (true) {
+			for (;;) {
 
 				// read any data and add it to the list
-				while (modemIn.ready()) {
-					String line = modemIn.readLine();
-					log.debug("Got: " + line);
-					ret.add(line);
+
+				while (modemIn.ready ()) {
+
+					String line =
+						modemIn.readLine ();
+
+					log.debug (
+						stringFormat (
+							"Got: " + line));
+
+					ret.add (
+						line);
+
 				}
 
 				// wait a second, if there's no more data then stop
-				Thread.sleep(modemSleepTime2);
-				if (!modemIn.ready())
+
+				Thread.sleep (
+					modemSleepTime2);
+
+				if (! modemIn.ready ())
 					break;
+
 			}
 
 			// and return
+
 			return ret;
+
 		}
 
 		/**
@@ -308,7 +368,10 @@ class ModemPollDaemon
 				sendCommand (
 					command);
 
-			for (String line : lines) {
+			for (
+				String line
+					: lines
+			) {
 
 				if (line.equals("OK"))
 					return;
@@ -431,7 +494,9 @@ class ModemPollDaemon
 		void processOne (
 				ModemPollQueueRec mpq) {
 
-			Pdu pdu = decodePduString(mpq.getPdu());
+			Pdu pdu =
+				decodePduString (
+					mpq.getPdu ());
 
 			if (pdu instanceof SmsDeliverPdu) {
 				handlePdu((SmsDeliverPdu) pdu);
@@ -478,7 +543,10 @@ class ModemPollDaemon
 		/**
 		 * Decodes a PDU string including SMSC details and returns the Pdu.
 		 */
-		public Pdu decodePduString(String str) {
+		public
+		Pdu decodePduString (
+				String str) {
+
 			try {
 				ByteBuffer bb = ByteBuffer.wrap(Pdu.hexToByteArray(str));
 				Pdu.skipSmsc(bb);
@@ -488,7 +556,9 @@ class ModemPollDaemon
 				throw new RuntimeException (e);
 			}
 		}
+
 	}
+
 }
 
 class ModemException

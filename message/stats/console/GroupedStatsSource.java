@@ -53,7 +53,8 @@ interface GroupedStatsSource {
 
 		}
 
-		public GroupStats (
+		public
+		GroupStats (
 				Map<LocalDate,MessageStats> newStatsByDate,
 				RouteRec newRoute,
 				String newUrl) {
