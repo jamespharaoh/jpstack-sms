@@ -1,12 +1,3 @@
-
--- route
-
-SELECT object_type_insert (
-	'route',
-	'route',
-	'root',
-	1);
-
 SELECT priv_type_insert (
 	'route',
 	'manage',
@@ -41,8 +32,6 @@ SELECT priv_type_insert (
 	'View messages',
 	'',
 	true);
-
--- slice
 
 SELECT priv_type_insert (
 	'slice',

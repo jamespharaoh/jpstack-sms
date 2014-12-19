@@ -16,14 +16,6 @@ CREATE TABLE message_tag (
 	PRIMARY KEY (message_id, tag)
 );
 
----------------------------------------- INSERT object_type
-
-SELECT object_type_insert (
-	'message',
-	'message',
-	'root',
-	3);
-
 ---------------------------------------- TRIGGER message
 
 CREATE OR REPLACE FUNCTION message_after_insert ()

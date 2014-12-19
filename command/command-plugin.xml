@@ -4,7 +4,6 @@
 
 	<sql-scripts>
 		<sql-schema name="command"/>
-		<sql-data name="command-data"/>
 	</sql-scripts>
 
 	<models>

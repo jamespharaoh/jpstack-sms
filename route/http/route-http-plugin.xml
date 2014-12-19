@@ -2,10 +2,6 @@
 	name="http-route"
 	package="route.http">
 
-	<sql-scripts>
-		<sql-data name="http-route-data"/>
-	</sql-scripts>
-
 	<models>
 		<model name="httpRoute"/>
 	</models>

@@ -1,22 +1,3 @@
-
-SELECT object_type_insert (
-	'inbox',
-	'inbox',
-	'message',
-	4);
-
-SELECT object_type_insert (
-	'inbox_multipart_log',
-	'inbox multipart log',
-	'root',
-	3);
-
-SELECT object_type_insert (
-	'inbox_multipart_buffer',
-	'inbox multipart buffer',
-	'root',
-	4);
-
 SELECT priv_type_insert (
 	'root',
 	'inbox_view',

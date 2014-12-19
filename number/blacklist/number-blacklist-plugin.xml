@@ -2,10 +2,6 @@
 	name="number-blacklist"
 	package="number.blacklist">
 
-	<sql-scripts>
-		<sql-schema name="blacklist"/>
-	</sql-scripts>
-
 	<models>
 		<model name="blacklist"/>
 	</models>

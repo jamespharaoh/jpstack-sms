@@ -1,24 +1,3 @@
-
-SELECT object_type_insert (
-	'message_set_type',
-	'message set type',
-	'object_type',
-	2);
-
-SELECT object_type_insert (
-	'message_set',
-	'message set',
-	NULL,
-	2);
-
-SELECT object_type_insert (
-	'message_set_message',
-	'message set message',
-	'message_set',
-	4);
-
--- event types
-
 SELECT event_type_insert (
 	'messageset_message_created',
 	'User %0 created message %1 in message-set %2 on route %3 with number %4, '

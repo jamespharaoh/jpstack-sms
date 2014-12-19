@@ -8,10 +8,6 @@
 		</project>
 	</dependencies>
 
-	<sql-scripts>
-		<sql-data name="number-format-data"/>
-	</sql-scripts>
-
 	<models>
 		<model name="numberFormat"/>
 		<model name="numberFormatPattern"/>

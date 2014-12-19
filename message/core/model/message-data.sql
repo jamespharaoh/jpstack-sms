@@ -1,28 +1,3 @@
-
-SELECT object_type_insert (
-	'message_type',
-	'message type',
-	'root',
-	1);
-
-SELECT object_type_insert (
-	'message_report_code',
-	'message report code',
-	'root',
-	1);
-
-SELECT object_type_insert (
-	'message_report',
-	'message report',
-	'message',
-	3);
-
-SELECT object_type_insert (
-	'message_expiry',
-	'message expiry',
-	'message',
-	4);
-
 SELECT priv_type_insert (
 	'root',
 	'message_notprocessed_view',

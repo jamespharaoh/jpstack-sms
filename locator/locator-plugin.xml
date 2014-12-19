@@ -2,10 +2,6 @@
 	name="locator"
 	package="locator">
 
-	<sql-scripts>
-		<sql-data name="locator-data"/>
-	</sql-scripts>
-
 	<models>
 		<custom-type name="longLat"/>
 		<model name="biaxialEllipsoid"/>

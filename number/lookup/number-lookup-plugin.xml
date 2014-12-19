@@ -4,7 +4,6 @@
 
 	<sql-scripts>
 		<sql-schema name="number-lookup"/>
-		<sql-data name="number-lookup-data"/>
 	</sql-scripts>
 
 	<models>

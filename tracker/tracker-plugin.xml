@@ -5,8 +5,6 @@
 	<sql-scripts>
 		<sql-schema name="sms-simple-tracker"/>
 		<sql-schema name="sms-tracker"/>
-		<sql-data name="sms-tracker-data"/>
-		<sql-data name="sms-simple-tracker-data"/>
 	</sql-scripts>
 
 	<models>

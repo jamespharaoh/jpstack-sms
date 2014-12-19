@@ -1,22 +1,3 @@
-
-SELECT object_type_insert (
-	'batch_type',
-	'batch type',
-	'object_type',
-	2);
-
-SELECT object_type_insert (
-	'batch_subject',
-	'batch subject',
-	NULL,
-	2);
-
-SELECT object_type_insert (
-	'batch',
-	'batch',
-	'batch_subject',
-	3);
-
 INSERT INTO batch_type (
 	id,
 	subject_object_type_id,
@@ -25,10 +6,10 @@ INSERT INTO batch_type (
 	batch_object_type_id)
 VALUES (
 	0,
-	0,
+	object_type_id ('root'),
 	'system',
 	'System',
-	0);
+	object_type_id ('root'));
 
 INSERT INTO batch_subject (
 	id,
@@ -41,7 +22,7 @@ VALUES (
 	0,
 	'system',
 	0,
-	0);
+	object_type_id ('root'));
 
 INSERT INTO batch (
 	id,
@@ -51,7 +32,7 @@ INSERT INTO batch (
 	subject_id)
 VALUES (
 	0,
-	0,
+	object_type_id ('root'),
 	0,
 	'system',
 	0);

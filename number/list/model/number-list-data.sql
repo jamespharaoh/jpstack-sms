@@ -1,22 +1,3 @@
-
-SELECT object_type_insert (
-	'number_list',
-	'number list',
-	'slice',
-	1);
-
-SELECT object_type_insert (
-	'number_list_number',
-	'number list number',
-	'number_list',
-	3);
-
-SELECT object_type_insert (
-	'number_list_update',
-	'number list update',
-	'number_list',
-	3);
-
 SELECT priv_type_insert (
 	'slice',
 	'number_list_create',

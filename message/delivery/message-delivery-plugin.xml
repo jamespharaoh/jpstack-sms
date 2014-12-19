@@ -4,7 +4,6 @@
 
 	<sql-scripts>
 		<sql-schema name="delivery"/>
-		<sql-data name="delivery-data"/>
 	</sql-scripts>
 
 	<models>
