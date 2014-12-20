@@ -1,6 +1,6 @@
 <plugin
 	name="tracker"
-	package="tracker">
+	package="wbs.sms.tracker">
 
 	<sql-scripts>
 		<sql-schema name="sms-simple-tracker"/>

@@ -1,6 +1,6 @@
 <plugin
 	name="modem-poll"
-	package="modempoll">
+	package="wbs.sms.modempoll">
 
 	<models>
 		<model name="modemPollQueue"/>

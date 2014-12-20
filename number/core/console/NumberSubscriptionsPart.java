@@ -1,7 +1,5 @@
 package wbs.sms.number.core.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
-
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -120,8 +118,7 @@ class NumberSubscriptionsPart
 				link.getStartTime () != null
 					? timeFormatter.instantToTimestampString (
 						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							link.getStartTime ()))
+						link.getStartTime ())
 					: "-");
 
 			if (! activeOnly) {
@@ -131,8 +128,7 @@ class NumberSubscriptionsPart
 					link.getEndTime () != null
 						? timeFormatter.instantToTimestampString (
 							timeFormatter.defaultTimezone (),
-							dateToInstant (
-								link.getEndTime ()))
+							link.getEndTime ())
 						: "-");
 
 				printFormat (

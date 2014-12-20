@@ -1,6 +1,6 @@
 <plugin
 	name="message-report"
-	package="message.report">
+	package="wbs.sms.message.report">
 
 	<models>
 		<custom-type name="messageReportCodeType"/>

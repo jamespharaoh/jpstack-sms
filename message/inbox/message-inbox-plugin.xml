@@ -1,6 +1,6 @@
 <plugin
 	name="message-inbox"
-	package="message.inbox">
+	package="wbs.sms.message.inbox">
 
 	<sql-scripts>
 		<sql-data name="inbox-data"/>

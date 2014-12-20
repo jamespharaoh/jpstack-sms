@@ -38,6 +38,9 @@ class KeywordCommand
 	Database database;
 
 	@Inject
+	KeywordFinder keywordFinder;
+
+	@Inject
 	KeywordLogic keywordLogic;
 
 	@Inject
@@ -101,9 +104,11 @@ class KeywordCommand
 
 		// try and find a keyword
 
-		for (KeywordFinder.Match match
-				: KeywordFinder.find (
-					receivedMessage.getRest ())) {
+		for (
+			KeywordFinder.Match match
+				: keywordFinder.find (
+					receivedMessage.getRest ())
+		) {
 
 			String keyword =
 				match.simpleKeyword ();

@@ -1,6 +1,6 @@
 <plugin
 	name="locator"
-	package="locator">
+	package="wbs.sms.locator">
 
 	<models>
 		<custom-type name="longLat"/>

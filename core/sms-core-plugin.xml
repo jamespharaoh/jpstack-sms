@@ -1,0 +1,13 @@
+<plugin
+	name="sms-core"
+	package="wbs.sms.core">
+
+	<layer name="logic">
+		<bean class="logic.KeywordFinder"/>
+	</layer>
+
+	<fixtures>
+		<fixture name="smsCore"/>
+	</fixtures>
+
+</plugin>

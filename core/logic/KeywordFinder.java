@@ -7,11 +7,10 @@ import java.util.regex.Pattern;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.gsm.Gsm;
 
-/**
- * Utility class to extract a keyword from the start of a string.
- */
+@SingletonComponent ("keywordFinder")
 public
 class KeywordFinder {
 
@@ -56,15 +55,10 @@ class KeywordFinder {
 			"([0-9]+.*)",
 			Pattern.DOTALL);
 
-	private
-	KeywordFinder () {
-		// never instantiated
-	}
-
 	/**
 	 * Produces a collection of possible keyword matches from the given string.
 	 */
-	public static
+	public
 	List<Match> find (
 			String string) {
 
@@ -127,7 +121,7 @@ class KeywordFinder {
 		Pattern.compile (
 			"[^" + keywordChars + "]+");
 
-	static
+	public
 	String stripKeyword (
 			String string) {
 
@@ -138,7 +132,7 @@ class KeywordFinder {
 
 	}
 
-	static
+	public
 	Match match (
 			String keyword,
 			String rest) {

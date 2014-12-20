@@ -1,6 +1,6 @@
 <plugin
 	name="route-tester"
-	package="route.tester">
+	package="wbs.sms.route.tester">
 
 	<sql-scripts>
 		<sql-schema name="route-tester"/>

@@ -1,4 +1,4 @@
-package wbs.sms.common.fixture;
+package wbs.sms.core.fixture;
 
 import javax.inject.Inject;
 
@@ -7,9 +7,9 @@ import wbs.framework.fixtures.FixtureProvider;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuGroupRec;
 
-@PrototypeComponent ("smsCommonFixtureProvider")
+@PrototypeComponent ("smsCoreFixtureProvider")
 public
-class SmsCommonFixtureProvider
+class SmsCoreFixtureProvider
 	implements FixtureProvider {
 
 	// dependencies

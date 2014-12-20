@@ -1,6 +1,6 @@
 <plugin
 	name="wap-push"
-	package="message.wap">
+	package="wbs.sms.message.wap">
 
 	<sql-scripts>
 		<sql-data name="wap-push-data"/>

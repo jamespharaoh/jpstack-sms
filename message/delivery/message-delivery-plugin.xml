@@ -1,6 +1,6 @@
 <plugin
 	name="delivery"
-	package="message.delivery">
+	package="wbs.sms.message.delivery">
 
 	<sql-scripts>
 		<sql-schema name="delivery"/>

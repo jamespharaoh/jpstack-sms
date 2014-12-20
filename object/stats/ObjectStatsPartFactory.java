@@ -76,8 +76,10 @@ class ObjectStatsPartFactory
 		List<SmsStatsSource> statsSources =
 			new ArrayList<SmsStatsSource> ();
 
-		for (ObjectStatsSourceBuilder objectStatsSourceBuilder
-				: objectStatsSourceBuilders) {
+		for (
+			ObjectStatsSourceBuilder objectStatsSourceBuilder
+				: objectStatsSourceBuilders
+		) {
 
 			SmsStatsSource statsSource =
 				objectStatsSourceBuilder.buildStatsSource (

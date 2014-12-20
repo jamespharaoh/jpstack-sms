@@ -239,8 +239,13 @@ class KeywordFinderTest
 	public
 	void testKeywordFinder () {
 
-		for (Map.Entry<String,List<List<String>>> testEntry
-				: tests.entrySet ()) {
+		for (
+			Map.Entry<String,List<List<String>>> testEntry
+				: tests.entrySet ()
+		) {
+
+			KeywordFinder keywordFinder =
+				new KeywordFinder ();
 
 			String baseInput =
 				testEntry.getKey ();
@@ -254,7 +259,7 @@ class KeywordFinderTest
 					prefix + baseInput;
 
 				List<KeywordFinder.Match> actualResults =
-					KeywordFinder.find (input);
+					keywordFinder.find (input);
 
 				assertEquals (
 					stringFormat (

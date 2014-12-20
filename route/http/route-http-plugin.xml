@@ -1,6 +1,6 @@
 <plugin
 	name="http-route"
-	package="route.http">
+	package="wbs.sms.route.http">
 
 	<models>
 		<model name="httpRoute"/>

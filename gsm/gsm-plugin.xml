@@ -1,5 +1,5 @@
 <plugin
 	name="gsm"
-	package="gsm">
+	package="wbs.sms.gsm">
 
 </plugin>

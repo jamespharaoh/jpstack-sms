@@ -1,6 +1,6 @@
 <plugin
 	name="route-test"
-	package="route.test">
+	package="wbs.sms.route.test">
 
 	<layer name="console">
 		<bean class="console.RouteTestInAction"/>

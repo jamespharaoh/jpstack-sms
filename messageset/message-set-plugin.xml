@@ -1,6 +1,6 @@
 <plugin
 	name="message-set"
-	package="messageset">
+	package="wbs.sms.messageset">
 
 	<sql-scripts>
 		<sql-schema name="message-set"/>

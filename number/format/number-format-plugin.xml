@@ -1,12 +1,10 @@
 <plugin
 	name="number-format"
-	package="number.format">
+	package="wbs.sms.number.format">
 
-	<dependencies>
-		<project name="wbs-sms">
-			<plugin name="sms-common"/>
-		</project>
-	</dependencies>
+	<plugin-dependencies>
+		<plugin-dependency name="sms-core"/>
+	</plugin-dependencies>
 
 	<models>
 		<model name="numberFormat"/>

@@ -1,6 +1,6 @@
 <plugin
 	name="object-messages"
-	package="object.messages">
+	package="wbs.sms.object.messages">
 
 	<layer name="console">
 		<bean class="ObjectSmsMessagesPageBuilder"/>

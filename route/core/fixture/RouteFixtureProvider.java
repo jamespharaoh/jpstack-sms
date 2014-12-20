@@ -104,6 +104,34 @@ class RouteFixtureProvider
 
 		);
 
+		routeHelper.insert (
+			new RouteRec ()
+
+			.setSlice (
+				sliceHelper.findByCode (
+					GlobalId.root,
+					"test"))
+
+			.setCode (
+				"bill")
+
+			.setName (
+				"Bill")
+
+			.setDescription (
+				"Bill")
+
+			.setCanSend (
+				true)
+
+			.setDeliveryReports (
+				true)
+
+			.setOutCharge (
+				500)
+
+		);
+
 		menuHelper.insert (
 			new MenuRec ()
 

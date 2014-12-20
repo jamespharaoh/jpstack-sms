@@ -1,7 +1,8 @@
 package wbs.sms.number.core.console;
 
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.Instant;
 
 import wbs.framework.record.Record;
 import wbs.sms.number.core.model.NumberRec;
@@ -20,8 +21,8 @@ interface NumberPlugin {
 		NumberPlugin getProvider ();
 		NumberRec getNumber ();
 		Boolean getActive ();
-		Date getStartTime ();
-		Date getEndTime ();
+		Instant getStartTime ();
+		Instant getEndTime ();
 		Record<?> getParentObject ();
 		Record<?> getSubscriptionObject ();
 		String getType ();

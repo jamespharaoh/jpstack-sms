@@ -1,6 +1,6 @@
 <plugin
 	name="number-lookup"
-	package="number.lookup">
+	package="wbs.sms.number.lookup">
 
 	<sql-scripts>
 		<sql-schema name="number-lookup"/>

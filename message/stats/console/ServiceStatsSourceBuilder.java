@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.object.ObjectHelper;
 import wbs.framework.record.Record;
 import wbs.platform.console.helper.ConsoleObjectManager;
 import wbs.platform.service.model.ServiceRec;
@@ -21,11 +22,15 @@ public
 class ServiceStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
 	@Inject
 	Provider<SmsStatsSourceImpl> statsSourceImpl;
+
+	// implementation
 
 	@Override
 	public
@@ -51,17 +56,56 @@ class ServiceStatsSourceBuilder
 
 		}
 
-
 		if (services.isEmpty ())
 			return null;
+
+		for (
+			ObjectHelper<?> objectHelper
+				: objectManager.objectHelpers ()
+		) {
+
+			if (! objectHelper.major ())
+				continue;
+
+			if (! objectHelper.parentClass ().isInstance (parent))
+				continue;
+
+			List<? extends Record<?>> children =
+				objectHelper.findByParent (
+					parent);
+
+			for (
+				Record<?> child
+					: children
+			) {
+
+				List<ServiceRec> childServices =
+					objectManager.getChildren (
+						child,
+						ServiceRec.class);
+
+				services.addAll (
+					childServices);
+
+			}
+
+		}
 
 		Set<Integer> serviceIds =
 			new HashSet<Integer> ();
 
-		for (ServiceRec service : services)
-			serviceIds.add (service.getId ());
+		for (
+			ServiceRec service
+				: services
+		) {
+
+			serviceIds.add (
+				service.getId ());
+
+		}
 
 		return statsSourceImpl.get ()
+
 			.fixedCriteriaMap (
 				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
 					SmsStatsCriteria.service,

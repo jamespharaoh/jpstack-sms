@@ -77,9 +77,11 @@ class ObjectSmsStatsPageBuilder {
 
 		buildResponder ();
 
-		for (ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
+		for (
+			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
 				: consoleMetaManager.resolveExtensionPoint (
-					container.extensionPointName ())) {
+					container.extensionPointName ())
+		) {
 
 			buildContextTab (
 				resolvedExtensionPoint);
@@ -97,14 +99,19 @@ class ObjectSmsStatsPageBuilder {
 		consoleModule.addContextTab (
 			"end",
 			contextTabProvider.get ()
+
 				.name (
 					consoleHelper.objectName () + ".stats")
+
 				.defaultLabel (
 					"Stats")
+
 				.localFile (
 					consoleHelper.objectName () + ".stats")
+
 				.privKeys (
 					privKey),
+
 			resolvedExtensionPoint.contextTypeNames ());
 
 	}
@@ -134,18 +141,25 @@ class ObjectSmsStatsPageBuilder {
 
 		Provider<PagePart> partFactory =
 			objectStatsPartFactoryProvider.get ()
-				.localName (
-					"/" + consoleHelper.objectName () + ".stats")
-				.objectLookup (
-					consoleHelper);
+
+			.localName (
+				"/" + consoleHelper.objectName () + ".stats")
+
+			.objectLookup (
+				consoleHelper);
 
 		consoleModule.addResponder (
 			consoleHelper.objectName () + "StatsResponder",
+
 			tabContextResponderProvider.get ()
+
 				.tab (
 					consoleHelper.objectName () + ".stats")
-				.title (capitalise (
-					consoleHelper.friendlyName () + " stats"))
+
+				.title (
+					capitalise (
+						consoleHelper.friendlyName () + " stats"))
+
 				.pagePartFactory (
 					partFactory));
 

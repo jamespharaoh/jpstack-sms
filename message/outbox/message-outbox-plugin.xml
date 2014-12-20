@@ -1,6 +1,6 @@
 <plugin
 	name="outbox"
-	package="message.outbox">
+	package="wbs.sms.message.outbox">
 
 	<sql-scripts>
 		<sql-schema name="outbox"/>

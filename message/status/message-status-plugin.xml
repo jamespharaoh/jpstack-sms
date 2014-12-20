@@ -1,6 +1,6 @@
 <plugin
 	name="message-status"
-	package="message.status">
+	package="wbs.sms.message.status">
 
 	<layer name="console">
 		<bean class="console.MessageNumInboxCache"/>

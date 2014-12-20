@@ -1,6 +1,6 @@
 <plugin
 	name="command"
-	package="command">
+	package="wbs.sms.command">
 
 	<sql-scripts>
 		<sql-schema name="command"/>

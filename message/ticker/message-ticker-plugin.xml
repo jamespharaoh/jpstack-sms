@@ -1,6 +1,6 @@
 <plugin
 	name="message-ticker"
-	package="message.ticker">
+	package="wbs.sms.message.ticker">
 
 	<layer name="console">
 		<bean class="console.MessageTickerManagerImpl"/>

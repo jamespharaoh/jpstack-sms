@@ -1,6 +1,6 @@
 <plugin
 	name="smpp"
-	package="smpp">
+	package="wbs.sms.smpp">
 
 	<sql-scripts>
 		<sql-data name="smpp-data"/>
