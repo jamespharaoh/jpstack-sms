@@ -81,10 +81,18 @@ class BatchLogicImpl
 
 		return objectManager.insert (
 			new BatchSubjectRec ()
-				.setCode (code)
-				.setType (batchType)
-				.setParentObjectType (parentType)
-				.setParentObjectId (parent.getId ()));
+
+			.setCode (
+				code)
+
+			.setType (
+				batchType)
+
+			.setParentObjectType (
+				parentType)
+
+			.setParentObjectId (
+				parent.getId ()));
 
 	}
 
