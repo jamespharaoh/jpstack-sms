@@ -1,5 +1,6 @@
 package wbs.sms.message.core.console;
 
+import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.nullIfEmptyString;
@@ -256,10 +257,12 @@ class MessageSearchAction
 			search.status (status);
 
 		if (timeFrom != null)
-			search.createdTimeAfter (timeFrom);
+			search.createdTimeAfter (
+				dateToInstant (timeFrom));
 
 		if (timeTo != null)
-			search.createdTimeBefore (timeTo);
+			search.createdTimeBefore (
+				dateToInstant (timeTo));
 
 		if (messageParam != null)
 			search.textILike ("%" + messageParam + "%");

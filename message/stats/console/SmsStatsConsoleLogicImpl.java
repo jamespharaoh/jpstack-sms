@@ -1,5 +1,7 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.framework.utils.etc.Misc.stringFormat;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +10,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.GlobalId;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -26,6 +29,7 @@ import wbs.sms.route.core.model.RouteRec;
 import com.google.common.collect.ImmutableMap;
 
 @SingletonComponent ("smsStatsConsoleLogic")
+@Log4j
 public
 class SmsStatsConsoleLogicImpl
 	implements SmsStatsConsoleLogic {
@@ -71,10 +75,24 @@ class SmsStatsConsoleLogicImpl
 		for (ServiceRec service
 				: serviceHelper.findAll ()) {
 
-			if (! privChecker.can (
-					objectManager.getParent (service),
-					"stats"))
+			try {
+
+				if (! privChecker.can (
+						objectManager.getParent (service),
+						"stats"))
+					continue;
+
+			} catch (Exception exception) {
+
+				log.error (
+					stringFormat (
+						"Error checking privs for service %s",
+						service.getId ()),
+					exception);
+
 				continue;
+
+			}
 
 			serviceIds.add (
 				service.getId ());
@@ -89,14 +107,27 @@ class SmsStatsConsoleLogicImpl
 		for (AffiliateRec affiliate
 				: affiliateHelper.findAll ()) {
 
-			if (privChecker.can (
-					objectManager.getParent (affiliate),
-					"stats")) {
+			try {
 
-				affiliateIds.add (
-					affiliate.getId ());
+				if (! privChecker.can (
+						objectManager.getParent (affiliate),
+						"stats"))
+					continue;
+
+			} catch (Exception exception) {
+
+				log.error (
+					stringFormat (
+						"Error checking privs for affiliate %s",
+						affiliate.getId ()),
+					exception);
+
+				continue;
 
 			}
+
+			affiliateIds.add (
+				affiliate.getId ());
 
 		}
 

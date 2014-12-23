@@ -2,7 +2,6 @@ package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
-import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.implode;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -299,12 +298,12 @@ class MessageSummaryPart
 				"<th>Time sent</th>\n",
 
 				"<td>%h</td>\n",
-				ifNull (
-					timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
+				message.getProcessedTime () != null
+					? timeFormatter.instantToTimestampString (
+						timeFormatter.defaultTimezone (),
 						dateToInstant (
-							message.getProcessedTime ())),
-					"-"),
+							message.getProcessedTime ()))
+					: "-",
 
 				"</tr>\n");
 

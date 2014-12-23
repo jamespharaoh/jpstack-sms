@@ -1,5 +1,7 @@
 package wbs.sms.message.core.hibernate;
 
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -337,7 +339,8 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.ge (
 					"createdTime",
-					search.createdTimeAfter ()));
+					instantToDate (
+						search.createdTimeAfter ())));
 
 		}
 
@@ -346,7 +349,8 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.lt (
 					"createdTime",
-					search.createdTimeBefore ()));
+					instantToDate (
+						search.createdTimeBefore ())));
 
 		}
 

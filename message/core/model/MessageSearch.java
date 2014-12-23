@@ -1,11 +1,12 @@
 package wbs.sms.message.core.model;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.TreeSet;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import org.joda.time.Instant;
 
 @Accessors (fluent = true)
 @Data
@@ -33,8 +34,8 @@ class MessageSearch {
 
 	Integer networkId;
 
-	Date createdTimeAfter;
-	Date createdTimeBefore;
+	Instant createdTimeAfter;
+	Instant createdTimeBefore;
 
 	MessageDirection direction;
 

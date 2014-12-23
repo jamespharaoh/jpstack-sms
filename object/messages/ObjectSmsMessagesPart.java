@@ -4,7 +4,6 @@ import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import wbs.platform.console.misc.TimeFormatter;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.platform.console.tab.Tab;
 import wbs.platform.console.tab.TabList;
+import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.console.MessageConsoleStuff;
 import wbs.sms.message.core.console.MessageSource;
@@ -34,11 +34,18 @@ public
 class ObjectSmsMessagesPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager consoleObjectManager;
 
 	@Inject
+	MediaConsoleLogic mediaConsoleLogic;
+
+	@Inject
 	TimeFormatter timeFormatter;
+
+	// properties
 
 	@Getter @Setter
 	String localName;
@@ -46,12 +53,16 @@ class ObjectSmsMessagesPart
 	@Getter @Setter
 	MessageSource messageSource;
 
+	// state
+
 	TabList.Prepared viewTabsPrepared;
 
 	ViewMode viewMode;
 	ObsoleteDateField dateField;
 
 	List<MessageRec> messages;
+
+	// implementation
 
 	@Override
 	public
@@ -85,22 +96,16 @@ class ObjectSmsMessagesPart
 			return;
 		}
 
-		requestContext.request ("date", dateField.text);
-
-		// get start and end dates
-
-		Calendar cal = Calendar.getInstance ();
-		cal.setTime (dateField.date);
-		Date startDate = cal.getTime ();
-		cal.add (Calendar.DATE, 1);
-		Date endDate = cal.getTime ();
+		requestContext.request (
+			"date",
+			dateField.text);
 
 		// do the query
 
-		messages = messageSource.findMessages (
-			startDate,
-			endDate,
-			viewMode.viewMode);
+		messages =
+			messageSource.findMessages (
+				dateField.date.toInterval (),
+				viewMode.viewMode);
 
 	}
 
@@ -169,18 +174,19 @@ class ObjectSmsMessagesPart
 			"<th>Media</th>\n",
 			"</tr>\n");
 
-		Calendar cal =
+		Calendar calendar =
 			Calendar.getInstance ();
 
 		int dayNumber = 0;
 
 		for (MessageRec message : messages) {
 
-			cal.setTime (message.getCreatedTime ());
+			calendar.setTime (
+				message.getCreatedTime ());
 
 			int newDayNumber =
-				+ (cal.get (Calendar.YEAR) << 9)
-				+ cal.get (Calendar.DAY_OF_YEAR);
+				+ (calendar.get (Calendar.YEAR) << 9)
+				+ calendar.get (Calendar.DAY_OF_YEAR);
 
 			if (newDayNumber != dayNumber) {
 
@@ -241,35 +247,17 @@ class ObjectSmsMessagesPart
 				"<td rowspan=\"2\">");
 
 			for (
-				int index = 0;
-				index < medias.size ();
-				index ++
+				MediaRec media
+					: medias
 			) {
 
+				if (media.getThumb32Content () == null)
+					continue;
+
 				printFormat (
-
-					"<a href=\"%h\">",
-					requestContext.resolveApplicationUrl (
-						stringFormat (
-							"/message",
-							"/%u",
-							message.getId (),
-							"/media_details",
-							"?i=%u",
-							index)),
-
-					"<img src=\"%h\">",
-					requestContext.resolveApplicationUrl (
-						stringFormat (
-							"/message",
-							"/%u",
-							message.getId (),
-							"/media",
-							"?thumb=32",
-							"&i=%u",
-							index)),
-
-					"</a>");
+					"%s\n",
+					mediaConsoleLogic.mediaThumb32 (
+						media));
 
 			}
 

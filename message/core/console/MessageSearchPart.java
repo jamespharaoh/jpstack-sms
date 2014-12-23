@@ -8,19 +8,20 @@ import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.toStringNull;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
 
+import org.joda.time.LocalDate;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.html.ObsoleteDateField;
+import wbs.platform.console.misc.TimeFormatter;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.platform.priv.console.PrivChecker;
 import wbs.platform.service.model.ServiceObjectHelper;
@@ -60,6 +61,9 @@ class MessageSearchPart
 
 	@Inject
 	ServiceObjectHelper serviceHelper;
+
+	@Inject
+	TimeFormatter timeFormatter;
 
 	@Inject
 	UserObjectHelper userHelper;
@@ -206,8 +210,8 @@ class MessageSearchPart
 		printFormat (
 			"function doToday () {\n",
 			"  document.getElementById ('date').value = '%j';\n",
-			ObsoleteDateField.format (
-				new Date ()),
+			timeFormatter.localDateToDateString (
+				LocalDate.now ()),
 			"  document.getElementById ('timeFrom').value = '';\n",
 			"  document.getElementById ('timeTo').value = '';\n",
 			"}\n");
@@ -223,8 +227,8 @@ class MessageSearchPart
 			"function do7Days () {\n",
 			"  document.getElementById ('date').value = '';\n",
 			"  document.getElementById ('timeFrom').value = '%j';\n",
-			ObsoleteDateField.format (
-				sevenDaysAgoCalendar.getTime ()),
+			timeFormatter.localDateToDateString (
+				LocalDate.now ().minusWeeks (1)),
 			"  document.getElementById ('timeTo').value = '';\n",
 			"}\n");
 
@@ -239,8 +243,8 @@ class MessageSearchPart
 			"function do1Month () {\n",
 			"  document.getElementById ('date').value = '';\n",
 			"  document.getElementById ('timeFrom').value = '%j';\n",
-			ObsoleteDateField.format (
-				sevenDaysAgoCalendar.getTime ()),
+			timeFormatter.localDateToDateString (
+				LocalDate.now ().minusMonths (1)),
 			"  document.getElementById ('timeTo').value = '';\n",
 			"}\n");
 

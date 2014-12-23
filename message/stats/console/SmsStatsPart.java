@@ -2,7 +2,6 @@ package wbs.sms.message.stats.console;
 
 import static wbs.framework.utils.etc.Misc.toEnum;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +20,7 @@ import org.joda.time.LocalDate;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.UrlParams;
 import wbs.platform.console.html.ObsoleteDateField;
+import wbs.platform.console.misc.TimeFormatter;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.platform.console.tab.Tab;
 import wbs.platform.console.tab.TabList;
@@ -35,6 +35,9 @@ class SmsStatsPart
 
 	@Inject
 	SmsStatsConsoleLogic statsConsoleLogic;
+
+	@Inject
+	TimeFormatter timeFormatter;
 
 	// prototype dependencies
 
@@ -339,14 +342,8 @@ class SmsStatsPart
 		printFormat (
 			"</form>");
 
-		if (!ready)
+		if (! ready)
 			return;
-
-		Calendar calendar =
-			Calendar.getInstance ();
-
-		calendar.setTime (
-			dateField.date);
 
 		printFormat (
 			"<p class=\"links\">\n");
@@ -359,27 +356,19 @@ class SmsStatsPart
 				"view",
 				"daily");
 
-			calendar.add (
-				Calendar.DATE,
-				- 7);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().minusWeeks (1)));
 
 			printFormat (
 				"<a href=\"%h\">Prev week</a>\n",
 				myUrlParams.toUrl (url));
 
-			calendar.add (
-				Calendar.DATE,
-				14);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().plusWeeks (1)));
 
 			printFormat (
 				"<a href=\"%h\">Next week</a>\n",
@@ -393,27 +382,19 @@ class SmsStatsPart
 				"view",
 				"weekly");
 
-			calendar.add (
-				Calendar.DATE,
-				- 49);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().minusDays (49)));
 
 			printFormat (
 				"<a href=\"%h\">Prev weeks</a>\n",
 				myUrlParams.toUrl (url));
 
-			calendar.add (
-				Calendar.DATE,
-				98);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().plusDays (98)));
 
 			printFormat (
 				"<a href=\"%h\">Next weeks</a>\n",
@@ -427,27 +408,19 @@ class SmsStatsPart
 				"view",
 				"monthly");
 
-			calendar.add (
-				Calendar.MONTH,
-				- 6);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().minusMonths (6)));
 
 			printFormat (
 				"<a href=\"%h\">Prev months</a>\n",
 				myUrlParams.toUrl (url));
 
-			calendar.add (
-				Calendar.MONTH,
-				12);
-
 			myUrlParams.set (
 				"date",
-				ObsoleteDateField.format (
-					calendar.getTime ()));
+				timeFormatter.localDateToDateString (
+					LocalDate.now ().plusMonths (12)));
 
 			printFormat (
 				"<a href=\"%h\">Next months</a>",
@@ -478,9 +451,16 @@ class SmsStatsPart
 		case daily:
 
 			statsFormatterProvider.get ()
-				.groupedStatsSource (groupedStatsSource)
-				.mainDate (LocalDate.fromDateFields (dateField.date))
-				.timeScheme (SmsStatsDailyTimeScheme.instance)
+
+				.groupedStatsSource (
+					groupedStatsSource)
+
+				.mainDate (
+					dateField.date)
+
+				.timeScheme (
+					SmsStatsDailyTimeScheme.instance)
+
 				.go ();
 
 			break;
@@ -488,9 +468,16 @@ class SmsStatsPart
 		case weekly:
 
 			statsFormatterProvider.get ()
-				.groupedStatsSource (groupedStatsSource)
-				.mainDate (LocalDate.fromDateFields (dateField.date))
-				.timeScheme (SmsStatsWeeklyTimeScheme.instance)
+
+				.groupedStatsSource (
+					groupedStatsSource)
+
+				.mainDate (
+					dateField.date)
+
+				.timeScheme (
+					SmsStatsWeeklyTimeScheme.instance)
+
 				.go ();
 
 			break;
@@ -498,9 +485,16 @@ class SmsStatsPart
 		case monthly:
 
 			statsFormatterProvider.get ()
-				.groupedStatsSource (groupedStatsSource)
-				.mainDate (LocalDate.fromDateFields (dateField.date))
-				.timeScheme (SmsStatsMonthlyTimeScheme.instance)
+
+				.groupedStatsSource (
+					groupedStatsSource)
+
+				.mainDate (
+					dateField.date)
+
+				.timeScheme (
+					SmsStatsMonthlyTimeScheme.instance)
+
 				.go ();
 
 			break;

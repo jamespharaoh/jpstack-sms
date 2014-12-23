@@ -1,7 +1,8 @@
 package wbs.sms.message.core.console;
 
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.Interval;
 
 import wbs.sms.message.core.model.MessageRec;
 
@@ -19,8 +20,7 @@ interface MessageSource {
 	};
 
 	List<MessageRec> findMessages (
-		Date start,
-		Date end,
+		Interval interval,
 		ViewMode viewMode);
 
 }

@@ -1,6 +1,5 @@
 package wbs.sms.message.core.console;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,6 +7,9 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import org.joda.time.Interval;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -33,15 +35,21 @@ class MessageSourceImpl
 	@Override
 	public
 	List<MessageRec> findMessages (
-			Date start,
-			Date end,
+			Interval interval,
 			ViewMode viewMode) {
 
 		MessageSearch search =
-			new MessageSearch (searchTemplate)
-				.createdTimeAfter (start)
-				.createdTimeBefore (end)
-				.orderBy (MessageSearchOrder.createdTime);
+			new MessageSearch (
+				searchTemplate)
+
+			.createdTimeAfter (
+				interval.getStart ().toInstant ())
+
+			.createdTimeBefore (
+				interval.getEnd ().toInstant ())
+
+			.orderBy (
+				MessageSearchOrder.createdTime);
 
 		switch (viewMode) {
 
@@ -66,9 +74,14 @@ class MessageSourceImpl
 
 			search.statusNotIn (
 				ImmutableSet.<MessageStatus>builder ()
-					.addAll (MessageStatus.goodStatus)
-					.addAll (MessageStatus.badStatus)
-					.build ());
+
+				.addAll (
+					MessageStatus.goodStatus)
+
+				.addAll (
+					MessageStatus.badStatus)
+
+				.build ());
 
 			break;
 
