@@ -15,6 +15,7 @@ class SmsCustomerSessionDaoHibernate
 	extends HibernateDao
 	implements SmsCustomerSessionDao {
 
+	@Override
 	public
 	List<SmsCustomerSessionRec> findToTimeout (
 			SmsCustomerManagerRec manager,

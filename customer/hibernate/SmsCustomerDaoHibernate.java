@@ -21,6 +21,7 @@ class SmsCustomerDaoHibernate
 	extends HibernateDao
 	implements SmsCustomerDao {
 
+	@Override
 	public
 	List<Integer> searchIds (
 			SmsCustomerSearch search) {

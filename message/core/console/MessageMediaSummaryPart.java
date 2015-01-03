@@ -103,8 +103,10 @@ class MessageMediaSummaryPart
 			"<tr>\n",
 			"<th>Content</th>\n",
 			"<td>%s</td>\n",
-			mediaConsoleLogic.mediaContent (
-				media),
+			mediaConsoleLogic.mediaContentScaled (
+				media,
+				600,
+				600),
 			"</tr>\n");
 
 		printFormat (

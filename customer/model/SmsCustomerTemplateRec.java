@@ -68,6 +68,7 @@ class SmsCustomerTemplateRec
 
 	// compare to
 
+	@Override
 	public
 	int compareTo (
 			Record<SmsCustomerTemplateRec> otherRecord) {

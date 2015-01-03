@@ -49,6 +49,7 @@ class SmsCustomerLogicImpl
 
 	// implementation
 
+	@Override
 	public
 	void sessionStart (
 			SmsCustomerRec customer,
@@ -224,6 +225,7 @@ class SmsCustomerLogicImpl
 
 	}
 
+	@Override
 	public
 	void sessionTimeoutAuto (
 			@NonNull SmsCustomerSessionRec session) {

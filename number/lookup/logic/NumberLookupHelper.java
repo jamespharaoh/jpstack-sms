@@ -7,6 +7,7 @@ public
 interface NumberLookupHelper
 	extends Helper {
 
+	@Override
 	String parentObjectTypeCode ();
 
 	boolean lookupNumber (

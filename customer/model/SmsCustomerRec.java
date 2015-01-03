@@ -75,6 +75,7 @@ class SmsCustomerRec
 
 	// compare to
 
+	@Override
 	public
 	int compareTo (
 			Record<SmsCustomerRec> otherRecord) {
@@ -139,6 +140,7 @@ class SmsCustomerRec
 
 		// implementation
 
+		@Override
 		public
 		SmsCustomerRec findOrCreate (
 				SmsCustomerManagerRec manager,
