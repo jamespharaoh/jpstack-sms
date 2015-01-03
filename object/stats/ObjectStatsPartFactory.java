@@ -32,6 +32,8 @@ public
 class ObjectStatsPartFactory
 	implements Provider<PagePart> {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
@@ -41,21 +43,29 @@ class ObjectStatsPartFactory
 	@Inject
 	Database database;
 
+	// collection dependencies
+
 	@Inject
 	List<ObjectStatsSourceBuilder> objectStatsSourceBuilders =
 		Collections.emptyList ();
 
-	@Inject
-	Provider<SmsStatsPart> objectStatsPart;
+	// prototype dependencies
 
 	@Inject
-	Provider<SmsStatsSourceImpl> statsSourceImpl;
+	Provider<SmsStatsPart> smsStatsPartProvider;
+
+	@Inject
+	Provider<SmsStatsSourceImpl> smsStatsSourceProvider;
+
+	// properties
 
 	@Getter @Setter
 	String localName;
 
 	@Getter @Setter
 	ObjectLookup<? extends Record<?>> objectLookup;
+
+	// implementation
 
 	@Override
 	public
@@ -119,7 +129,7 @@ class ObjectStatsPartFactory
 
 		// now create the stats part
 
-		return objectStatsPart.get ()
+		return smsStatsPartProvider.get ()
 
 			.url (
 				requestContext.resolveLocalUrl (

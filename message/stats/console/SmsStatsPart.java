@@ -14,9 +14,6 @@ import javax.inject.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import org.joda.time.LocalDate;
-
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.UrlParams;
 import wbs.platform.console.html.ObsoleteDateField;
@@ -204,7 +201,8 @@ class SmsStatsPart
 					smsStatsViewMode.toString (),
 					smsStatsViewMode.toString ());
 
-			viewTabs.add(newTab);
+			viewTabs.add (
+				newTab);
 
 			if (smsStatsViewMode == this.viewMode)
 				viewTab = newTab;
@@ -272,10 +270,13 @@ class SmsStatsPart
 	public
 	void goBodyStuff () {
 
-		splitTabsPrepared.go(requestContext);
-		viewTabsPrepared.go(requestContext);
+		splitTabsPrepared.go (
+			requestContext);
 
-		if (criteriaInfo.size() > 0) {
+		viewTabsPrepared.go (
+			requestContext);
+
+		if (criteriaInfo.size () > 0) {
 
 			printFormat (
 				"<table class=\"details\">\n");
@@ -359,7 +360,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().minusWeeks (1)));
+					dateField.date.minusWeeks (1)));
 
 			printFormat (
 				"<a href=\"%h\">Prev week</a>\n",
@@ -368,7 +369,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().plusWeeks (1)));
+					dateField.date.plusWeeks (1)));
 
 			printFormat (
 				"<a href=\"%h\">Next week</a>\n",
@@ -385,7 +386,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().minusDays (49)));
+					dateField.date.minusDays (49)));
 
 			printFormat (
 				"<a href=\"%h\">Prev weeks</a>\n",
@@ -394,7 +395,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().plusDays (98)));
+					dateField.date.plusDays (98)));
 
 			printFormat (
 				"<a href=\"%h\">Next weeks</a>\n",
@@ -411,7 +412,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().minusMonths (6)));
+					dateField.date.minusMonths (6)));
 
 			printFormat (
 				"<a href=\"%h\">Prev months</a>\n",
@@ -420,7 +421,7 @@ class SmsStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					LocalDate.now ().plusMonths (12)));
+					dateField.date.plusMonths (12)));
 
 			printFormat (
 				"<a href=\"%h\">Next months</a>",
