@@ -55,7 +55,7 @@ class MagicNumberUpdateAction
 	@Override
 	protected
 	Responder backupResponder () {
-		return responder ("magicNumberCreateResponder");
+		return responder ("magicNumberUpdateResponder");
 	}
 
 	// implementation
@@ -138,9 +138,9 @@ class MagicNumberUpdateAction
 
 			}
 
-		} else if (requestContext.parameter ("remove") != null) {
+		} else if (requestContext.parameter ("delete") != null) {
 
-			// add numbers
+			// delete numbers
 
 			int numDeleted = 0;
 
