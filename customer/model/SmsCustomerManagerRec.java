@@ -14,10 +14,12 @@ import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.MajorEntity;
 import wbs.framework.entity.annotations.NameField;
 import wbs.framework.entity.annotations.ParentField;
+import wbs.framework.entity.annotations.ReferenceField;
 import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.MajorRecord;
 import wbs.framework.record.Record;
 import wbs.platform.scaffold.model.SliceRec;
+import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (chain = true)
 @Data
@@ -57,6 +59,10 @@ class SmsCustomerManagerRec
 	@SimpleField (
 		nullable = true)
 	Integer sessionTimeout;
+
+	@ReferenceField (
+		nullable = true)
+	NumberListRec stopNumberList;
 
 	// compare to
 

@@ -28,3 +28,8 @@ SELECT priv_type_insert (
 	'View message history',
 	'View message history for this SMS customer manager',
 	true);
+
+SELECT command_type_insert (
+	'sms_customer_manager',
+	'stop',
+	'Stop');

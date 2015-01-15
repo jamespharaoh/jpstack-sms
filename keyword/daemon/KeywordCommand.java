@@ -6,6 +6,9 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -25,11 +28,15 @@ import wbs.sms.message.inbox.daemon.CommandManager;
 import wbs.sms.message.inbox.daemon.ReceivedMessage;
 import wbs.sms.message.inbox.logic.InboxLogic;
 
+import com.google.common.base.Optional;
+
 @Log4j
 @PrototypeComponent ("keywordCommand")
 public
 class KeywordCommand
 	implements CommandHandler {
+
+	// dependencies
 
 	@Inject
 	CommandObjectHelper commandHelper;
@@ -58,7 +65,15 @@ class KeywordCommand
 	@Inject
 	CommandManager commandManager;
 
-	Status status;
+	// state
+
+	ReceivedMessage receivedMessage;
+
+	CommandRec invokedCommand;
+	KeywordSetRec keywordSet;
+	MessageRec message;
+
+	// details
 
 	@Override
 	public
@@ -69,6 +84,8 @@ class KeywordCommand
 		};
 
 	}
+
+	// implementation
 
 	@Override
 	public
@@ -90,36 +107,27 @@ class KeywordCommand
 		Transaction transaction =
 			database.beginReadWrite ();
 
-		CommandRec invokedCommand =
+		invokedCommand =
 			commandHelper.find (
 				commandId);
 
-		KeywordSetRec keywordSet =
+		keywordSet =
 			keywordSetHelper.find (
 				invokedCommand.getParentObjectId ());
 
-		MessageRec message =
+		message =
 			messageHelper.find (
 				receivedMessage.getMessageId ());
 
 		// try and find a keyword
 
-		for (
-			KeywordFinder.Match match
-				: keywordFinder.find (
-					receivedMessage.getRest ())
-		) {
+		Optional<Pair<KeywordRec,String>> matchResult =
+			performMatch ();
 
-			String keyword =
-				match.simpleKeyword ();
-
-			// lookup keyword
+		if (matchResult.isPresent ()) {
 
 			KeywordRec keywordRecord =
-				keywordSet.getKeywords ().get (keyword);
-
-			if (keywordRecord == null)
-				continue;
+				matchResult.get ().getLeft ();
 
 			CommandRec nextCommand =
 				keywordRecord.getCommand ();
@@ -150,7 +158,7 @@ class KeywordCommand
 			String messageRest =
 				keywordRecord.getLeaveIntact ()
 					? receivedMessage.getRest ()
-					: match.rest ();
+					: matchResult.get ().getRight ();
 
 			if (log.isDebugEnabled ()) {
 
@@ -263,6 +271,70 @@ class KeywordCommand
 		// fail to handle
 
 		return null;
+
+	}
+
+	Optional<Pair<KeywordRec,String>> performMatch () {
+
+		switch (keywordSet.getType ()) {
+
+		case keyword:
+			return matchKeyword ();
+
+		case numTo:
+			return matchNumTo ();
+
+		default:
+			throw new RuntimeException ();
+
+		}
+
+	}
+
+	Optional<Pair<KeywordRec,String>> matchKeyword () {
+
+		for (
+			KeywordFinder.Match match
+				: keywordFinder.find (
+					receivedMessage.getRest ())
+		) {
+
+			String keyword =
+				match.simpleKeyword ();
+
+			// lookup keyword
+
+			KeywordRec keywordRecord =
+				keywordSet.getKeywords ().get (keyword);
+
+			if (keywordRecord != null) {
+
+				return Optional.of (
+					Pair.of (
+						keywordRecord,
+						match.rest ()));
+
+			}
+
+		}
+
+		return Optional.absent ();
+
+	}
+
+	Optional<Pair<KeywordRec,String>> matchNumTo () {
+
+		KeywordRec keywordRecord =
+			keywordSet.getKeywords ().get (
+				message.getNumTo ());
+
+		if (keywordRecord == null)
+			return Optional.absent ();
+
+		return Optional.of (
+			Pair.of (
+				keywordRecord,
+				receivedMessage.getRest ()));
 
 	}
 

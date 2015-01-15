@@ -23,7 +23,8 @@
 			<object-list-page
 				fields="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				fields="create"/>
 
 		</list>
 
@@ -55,6 +56,24 @@
 		<name-field/>
 		<description-field/>
 
+		<enum-field
+			name="type"
+			helper="keywordSetTypeConsoleHelper"/>
+
+	</field-set>
+
+	<field-set
+		name="create"
+		object-name="keywordSet">
+
+		<parent-field/>
+		<name-field/>
+		<description-field/>
+
+		<enum-field
+			name="type"
+			helper="keywordSetTypeConsoleHelper"/>
+
 	</field-set>
 
 	<field-set
@@ -67,6 +86,10 @@
 		<name-field/>
 		<description-field/>
 		<deleted-field/>
+
+		<enum-field
+			name="type"
+			helper="keywordSetTypeConsoleHelper"/>
 
 		<object-field
 			name="fallbackCommand"
@@ -83,6 +106,10 @@
 		<name-field/>
 		<description-field/>
 		<deleted-field/>
+
+		<enum-field
+			name="type"
+			helper="keywordSetTypeConsoleHelper"/>
 
 		<object-field
 			name="fallbackCommand"

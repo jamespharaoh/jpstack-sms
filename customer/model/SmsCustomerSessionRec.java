@@ -61,6 +61,10 @@ class SmsCustomerSessionRec
 		nullable = true)
 	MessageRec warningMessage;
 
+	@ReferenceField (
+		nullable = true)
+	MessageRec stopMessage;
+
 	// compare to
 
 	@Override

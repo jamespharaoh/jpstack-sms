@@ -19,6 +19,7 @@ import wbs.framework.entity.annotations.MajorEntity;
 import wbs.framework.entity.annotations.NameField;
 import wbs.framework.entity.annotations.ParentField;
 import wbs.framework.entity.annotations.ReferenceField;
+import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.MajorRecord;
 import wbs.framework.record.Record;
 import wbs.platform.scaffold.model.SliceRec;
@@ -58,6 +59,9 @@ class KeywordSetRec
 	Boolean deleted = false;
 
 	// settings
+
+	@SimpleField
+	KeywordSetType type;
 
 	@ReferenceField (
 		nullable = true)

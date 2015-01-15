@@ -11,6 +11,7 @@ import wbs.platform.menu.model.MenuRec;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.sms.keyword.model.KeywordSetObjectHelper;
 import wbs.sms.keyword.model.KeywordSetRec;
+import wbs.sms.keyword.model.KeywordSetType;
 
 @PrototypeComponent ("keywordFixtureProvider")
 public
@@ -53,6 +54,9 @@ class KeywordFixtureProvider
 
 			.setDescription (
 				"Inbound")
+
+			.setType (
+				KeywordSetType.keyword)
 
 		);
 

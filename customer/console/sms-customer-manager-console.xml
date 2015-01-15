@@ -78,6 +78,10 @@
 			name="sessionTimeout"
 			nullable="yes"/>
 
+		<object-field
+			name="stopNumberList"
+			finder="numberList"/>
+
 	</field-set>
 
 	<field-set
@@ -94,6 +98,10 @@
 		<seconds-field
 			name="sessionTimeout"
 			nullable="yes"/>
+
+		<object-field
+			name="stopNumberList"
+			finder="numberList"/>
 
 	</field-set>
 

@@ -12,6 +12,7 @@
 	</sql-scripts>
 
 	<models>
+		<enum-type name="keywordSetType"/>
 		<model name="keyword"/>
 		<model name="keywordSet"/>
 		<model name="keywordSetFallback"/>
