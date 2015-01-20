@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.daemon;
 
-public 
+public
 interface CommandManagerMethods {
 
 	void handle (

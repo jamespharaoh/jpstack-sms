@@ -19,7 +19,7 @@ import wbs.platform.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.platform.console.context.ConsoleContextBuilderContainer;
 import wbs.platform.console.context.ResolvedConsoleContextExtensionPoint;
 import wbs.platform.console.helper.ConsoleHelper;
-import wbs.platform.console.metamodule.ConsoleMetaManager;
+import wbs.platform.console.module.ConsoleMetaManager;
 import wbs.platform.console.module.ConsoleModuleImpl;
 import wbs.platform.console.part.PagePart;
 import wbs.platform.console.responder.ConsoleFile;
