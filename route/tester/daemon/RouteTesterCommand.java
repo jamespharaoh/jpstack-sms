@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -15,23 +14,30 @@ import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
 import wbs.sms.message.inbox.daemon.ReceivedMessage;
+import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.route.tester.model.RouteTestObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
 
-@Log4j
 @SingletonComponent ("routeTesterCommand")
 public
 class RouteTesterCommand
 	implements CommandHandler {
 
+	// dependencies
+
 	@Inject
 	Database database;
+
+	@Inject
+	InboxLogic inboxLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
 
 	@Inject
 	RouteTestObjectHelper routeTestHelper;
+
+	// details
 
 	@Override
 	public
@@ -43,9 +49,11 @@ class RouteTesterCommand
 
 	}
 
+	// implementation
+
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			ReceivedMessage receivedMessage) {
 
@@ -63,10 +71,16 @@ class RouteTesterCommand
 
 		if (! matcher.find ()) {
 
-			log.error (
-				"No route test found in message: " + message.getId ());
+			inboxLogic.inboxNotProcessed (
+				message,
+				null,
+				null,
+				null,
+				"No route test info found in message body");
 
-			return Status.notprocessed;
+			transaction.commit ();
+
+			return;
 
 		}
 
@@ -79,10 +93,16 @@ class RouteTesterCommand
 
 		if (routeTest == null) {
 
-			log.error (
-				"Response for unknown route test!?: " + routeTestId);
+			inboxLogic.inboxNotProcessed (
+				message,
+				null,
+				null,
+				null,
+				"Response to unknown route test id");
 
-			return Status.notprocessed;
+			transaction.commit ();
+
+			return;
 
 		}
 
@@ -91,10 +111,16 @@ class RouteTesterCommand
 
 		if (routeTest.getReturnedTime () != null) {
 
-			log.error (
-				"Duplicate response for route test " + routeTestId);
+			inboxLogic.inboxNotProcessed (
+				message,
+				null,
+				null,
+				null,
+				"Duplicate response for route test");
 
-			return Status.processed;
+			transaction.commit ();
+			
+			return;
 
 		}
 
@@ -102,9 +128,13 @@ class RouteTesterCommand
 			.setReturnedTime (new Date ())
 			.setReturnedMessage (message);
 
-		transaction.commit ();
+		inboxLogic.inboxProcessed (
+			message,
+			null,
+			null,
+			null);
 
-		return Status.processed;
+		transaction.commit ();
 
 	}
 

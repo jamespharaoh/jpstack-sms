@@ -19,7 +19,6 @@ import wbs.platform.exception.logic.ExceptionLogic;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.command.model.CommandTypeRec;
-import wbs.sms.message.inbox.daemon.CommandHandler.Status;
 
 @SingletonComponent ("commandManagerImpl")
 public
@@ -132,7 +131,7 @@ class CommandManagerImpl
 
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			ReceivedMessage message) {
 
@@ -151,7 +150,7 @@ class CommandManagerImpl
 
 		transaction.close ();
 
-		return handler.handle (
+		handler.handle (
 			commandId,
 			message);
 
@@ -159,12 +158,12 @@ class CommandManagerImpl
 
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			ReceivedMessage message,
 			String rest) {
 
-		return handle (
+		handle (
 			commandId,
 			new ReceivedMessageImpl (
 				message,

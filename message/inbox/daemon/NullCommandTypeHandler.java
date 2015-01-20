@@ -40,7 +40,7 @@ class NullCommandTypeHandler
 
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			@NonNull ReceivedMessage receivedMessage) {
 
@@ -58,8 +58,6 @@ class NullCommandTypeHandler
 			null,
 			command,
 			"Null command handler");
-
-		return null;
 
 	}
 

@@ -89,9 +89,12 @@ class KeywordCommand
 
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
-			ReceivedMessage receivedMessage) {
+			ReceivedMessage _receivedMessage) {
+
+		receivedMessage =
+			_receivedMessage;
 
 		if (log.isDebugEnabled ()) {
 
@@ -151,7 +154,7 @@ class KeywordCommand
 
 				transaction.commit ();
 
-				return null;
+				return;
 
 			}
 
@@ -185,10 +188,12 @@ class KeywordCommand
 
 			transaction.commit ();
 
-			return commandManager.handle (
+			commandManager.handle (
 				nextCommand.getId (),
 				receivedMessage,
 				messageRest);
+
+			return;
 
 		}
 
@@ -216,9 +221,11 @@ class KeywordCommand
 
 			transaction.close ();
 
-			return commandManager.handle (
+			commandManager.handle (
 				nextCommand.getId (),
 				receivedMessage);
+
+			return;
 
 		}
 
@@ -240,9 +247,11 @@ class KeywordCommand
 
 			transaction.close ();
 
-			return commandManager.handle (
+			commandManager.handle (
 				nextCommand.getId (),
 				receivedMessage);
+
+			return;
 
 		}
 
@@ -267,10 +276,6 @@ class KeywordCommand
 				keywordSet));
 
 		transaction.commit ();
-
-		// fail to handle
-
-		return null;
 
 	}
 

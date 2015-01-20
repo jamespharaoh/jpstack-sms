@@ -1,5 +1,7 @@
 package wbs.sms.magicnumber.daemon;
 
+import static wbs.framework.utils.etc.Misc.stringFormat;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
@@ -16,14 +18,20 @@ import wbs.sms.message.inbox.daemon.CommandHandler;
 import wbs.sms.message.inbox.daemon.CommandManager;
 import wbs.sms.message.inbox.daemon.ReceivedMessage;
 import wbs.sms.message.inbox.daemon.ReceivedMessageImpl;
+import wbs.sms.message.inbox.logic.InboxLogic;
 
 @PrototypeComponent ("magicNumberCommandTypeHandler")
 public
 class MagicNumberCommandTypeHandler
 	implements CommandHandler {
 
+	// dependencies
+
 	@Inject
 	Database database;
+
+	@Inject
+	InboxLogic inboxLogic;
 
 	@Inject
 	MagicNumberObjectHelper magicNumberHelper;
@@ -37,6 +45,8 @@ class MagicNumberCommandTypeHandler
 	@Inject
 	CommandManager commandManager;
 
+	// details
+
 	@Override
 	public
 	String[] getCommandTypes () {
@@ -47,9 +57,11 @@ class MagicNumberCommandTypeHandler
 
 	}
 
+	// implementation
+
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			ReceivedMessage receivedMessage) {
 
@@ -67,8 +79,20 @@ class MagicNumberCommandTypeHandler
 			magicNumberHelper.findByNumber (
 				message.getNumTo ());
 
-		if (magicNumber == null)
-			return Status.notprocessed;
+		if (magicNumber == null) {
+
+			inboxLogic.inboxNotProcessed (
+				message,
+				null,
+				null,
+				null,
+				stringFormat (
+					"Magic number does not exist",
+					message.getNumTo ()));
+
+			return;
+
+		}
 
 		// lookup the MagicNumberUse
 
@@ -77,14 +101,24 @@ class MagicNumberCommandTypeHandler
 				magicNumber,
 				message.getNumber ());
 
-		if (magicNumberUse == null)
-			return Status.notprocessed;
+		if (magicNumberUse == null) {
+
+			inboxLogic.inboxNotProcessed (
+				message,
+				null,
+				null,
+				null,
+				"Magic number has not been used");
+
+			return;
+
+		}
 
 		// and delegate
 
 		transaction.close ();
 
-		return commandManager.handle (
+		commandManager.handle (
 			magicNumberUse.getCommand ().getId (),
 			new ReceivedMessageImpl (
 				receivedMessage,

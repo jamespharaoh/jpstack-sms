@@ -81,7 +81,7 @@ class SmsCustomerStopCommand
 
 	@Override
 	public
-	Status handle (
+	void handle (
 			int commandId,
 			ReceivedMessage receivedMessage) {
 
@@ -204,8 +204,6 @@ class SmsCustomerStopCommand
 		// commit
 
 		transaction.commit ();
-
-		return null;
 
 	}
 

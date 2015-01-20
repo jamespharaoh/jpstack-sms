@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.utils.etc.Tries;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -25,8 +24,6 @@ import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.inbox.daemon.CommandHandler.Status;
 import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
@@ -177,14 +174,11 @@ class ReceivedManager
 			dumpMessageInfo (
 				messageStuff.message);
 
-			Status status = null;
-
 			// mark as not processed if there is no command handler
 
 			if (messageStuff.commandId == null) {
 
-				doSaveResult (
-					Status.notprocessed,
+				saveError (
 					receivedMessage);
 
 				log.warn (
@@ -200,8 +194,7 @@ class ReceivedManager
 					&& "0".equals (messageStuff.message.getAdultVerified ())
 					&& ! isStopKeyword (messageStuff.message.getText ().getText ())) {
 
-				doSaveResult (
-					CommandHandler.Status.notprocessed,
+				saveError (
 					receivedMessage);
 
 				log.warn (
@@ -215,10 +208,9 @@ class ReceivedManager
 
 			try {
 
-				status =
-					commandManager.handle (
-						messageStuff.commandId,
-						receivedMessage);
+				commandManager.handle (
+					messageStuff.commandId,
+					receivedMessage);
 
 				log.debug (
 					stringFormat (
@@ -241,59 +233,14 @@ class ReceivedManager
 					false);
 			}
 
-			if (status != null)
-				doSaveResult (
-					status,
-					receivedMessage);
-
-		}
-
-		void doSaveResult (
-				CommandHandler.Status status,
-				ReceivedMessageImpl receivedMessage) {
-
-			MessageStatus messageStatus =
-				status == CommandHandler.Status.processed
-					? MessageStatus.processed
-					: MessageStatus.notProcessed;
-
-			Tries tries =
-				new Tries ();
-
-			while (tries.next ()) {
-
-				try {
-
-					trySaveResult (
-						messageStatus,
-						receivedMessage);
-
-					tries.done ();
-
-				} catch (RuntimeException exception) {
-
-					log.error (
-						stringFormat (
-							"Error processing message %d",
-							receivedMessage.getMessageId ()),
-						exception);
-
-					tries.error (
-						exception);
-
-				}
-
-			}
-
 		}
 
 		private
-		void trySaveResult (
-				MessageStatus status,
+		void saveError (
 				ReceivedMessageImpl receivedMessage) {
 
 			@Cleanup
-			Transaction transaction1 =
+			Transaction transaction =
 				database.beginReadWrite ();
 
 			MessageRec message =
@@ -312,26 +259,14 @@ class ReceivedManager
 					: affiliateHelper.find (
 						receivedMessage.getAffiliateId ());
 
-			if (status == MessageStatus.processed) {
+			inboxLogic.inboxNotProcessed (
+				message,
+				service,
+				affiliate,
+				null,
+				"Command handler returned not processed");
 
-				inboxLogic.inboxProcessed (
-					message,
-					service,
-					affiliate,
-					null);
-
-			} else {
-
-				inboxLogic.inboxNotProcessed (
-					message,
-					service,
-					affiliate,
-					null,
-					"Command handler returned not processed");
-
-			}
-
-			transaction1.commit ();
+			transaction.commit ();
 
 		}
 

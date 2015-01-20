@@ -61,11 +61,13 @@
 		<description-field/>
 
 		<double-field
-			name="longLat.longitude"
+			delegate="longLat"
+			name="longitude"
 			label="Longitude"/>
 
 		<double-field
-			name="longLat.latitude"
+			delegate="longLat"
+			name="latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -81,11 +83,13 @@
 		<description-field/>
 
 		<double-field
-			name="longLat.longitude"
+			delegate="longLat"
+			name="longitude"
 			label="Longitude"/>
 
 		<double-field
-			name="longLat.latitude"
+			delegate="longLat"
+			name="latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -105,11 +109,13 @@
 		<deleted-field/>
 
 		<double-field
-			name="longLat.longitude"
+			delegate="longLat"
+			name="longitude"
 			label="Longitude"/>
 
 		<double-field
-			name="longLat.latitude"
+			delegate="longLat"
+			name="latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -128,11 +134,13 @@
 		<deleted-field/>
 
 		<double-field
-			name="longLat.longitude"
+			delegate="longLat"
+			name="longitude"
 			label="Longitude"/>
 
 		<double-field
-			name="longLat.latitude"
+			delegate="longLat"
+			name="latitude"
 			label="Latitude"/>
 
 		<yes-no-field

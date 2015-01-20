@@ -66,30 +66,6 @@ class ReceivedMessageImpl
 
 	@Override
 	public
-	void setServiceId (
-			int serviceId) {
-
-		if (parent != null)
-			parent.setServiceId (serviceId);
-		else
-			this.serviceId = serviceId;
-
-	}
-
-	@Override
-	public
-	void setAffiliateId (
-			int affiliateId) {
-
-		if (parent != null)
-			parent.setAffiliateId (affiliateId);
-		else
-			this.affiliateId = affiliateId;
-
-	}
-
-	@Override
-	public
 	Integer getAffiliateId () {
 
 		if (parent != null)

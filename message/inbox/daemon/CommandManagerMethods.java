@@ -1,14 +1,13 @@
 package wbs.sms.message.inbox.daemon;
 
-import wbs.sms.message.inbox.daemon.CommandHandler.Status;
+public 
+interface CommandManagerMethods {
 
-public interface CommandManagerMethods {
-
-	Status handle (
+	void handle (
 		int commandId,
 		ReceivedMessage message);
 
-	Status handle (
+	void handle (
 		int commandId,
 		ReceivedMessage message,
 		String rest);
