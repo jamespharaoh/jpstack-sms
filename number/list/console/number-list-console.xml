@@ -43,8 +43,10 @@
 				<context-tab-action-page
 					name="update"/>
 
+				<!--
 				<context-tab-action-page
 					name="copy"/>
+				-->
 
 			</section>
 

@@ -186,7 +186,7 @@ class ObjectSmsMessageSetPageBuilder {
 
 			@Override
 			public
-			Responder go ()
+			Responder handle ()
 				throws ServletException {
 
 				Action action =
@@ -194,7 +194,7 @@ class ObjectSmsMessageSetPageBuilder {
 						.lookup (canViewLookup)
 						.normalResponder (responder);
 
-				return action.go ();
+				return action.handle ();
 
 			}
 
@@ -205,7 +205,7 @@ class ObjectSmsMessageSetPageBuilder {
 
 			@Override
 			public
-			Responder go ()
+			Responder handle ()
 				throws ServletException {
 
 				Action action =
@@ -214,7 +214,7 @@ class ObjectSmsMessageSetPageBuilder {
 						.messageSetFinder (messageSetFinder)
 						.privLookup (canUpdateLookup);
 
-				return action.go ();
+				return action.handle ();
 
 			}
 

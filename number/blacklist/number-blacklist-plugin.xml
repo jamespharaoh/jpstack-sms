@@ -9,6 +9,7 @@
 	<layer name="console">
 		<bean class="console.BlacklistAddAction"/>
 		<bean class="console.BlacklistAddPart"/>
+		<bean class="console.BlacklistSearchAction"/>
 		<bean class="console.BlacklistSearchPart"/>
 	</layer>
 
