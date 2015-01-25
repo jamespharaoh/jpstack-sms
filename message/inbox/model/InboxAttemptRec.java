@@ -44,7 +44,7 @@ class InboxAttemptRec
 	Instant timestamp;
 
 	@SimpleField
-	Boolean success;
+	InboxState result;
 
 	// compare to
 

@@ -15,7 +15,8 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.InboxLogicImpl"/>
+		<bean class="logic.InboxLogicImplementation"/>
+		<bean class="logic.InboxMultipartLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

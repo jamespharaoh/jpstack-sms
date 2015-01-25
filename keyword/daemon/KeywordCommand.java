@@ -4,14 +4,17 @@ import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.platform.affiliate.model.AffiliateRec;
+import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.core.logic.KeywordFinder;
@@ -25,11 +28,13 @@ import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
 import wbs.sms.message.inbox.daemon.CommandManager;
-import wbs.sms.message.inbox.daemon.ReceivedMessage;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 
 import com.google.common.base.Optional;
 
+@Accessors (fluent = true)
 @Log4j
 @PrototypeComponent ("keywordCommand")
 public
@@ -65,11 +70,22 @@ class KeywordCommand
 	@Inject
 	CommandManager commandManager;
 
+	// properties
+
+	@Getter @Setter
+	InboxRec inbox;
+
+	@Getter @Setter
+	CommandRec command;
+
+	@Getter @Setter
+	Optional<Integer> commandRef;
+
+	@Getter @Setter
+	String rest;
+
 	// state
 
-	ReceivedMessage receivedMessage;
-
-	CommandRec invokedCommand;
 	KeywordSetRec keywordSet;
 	MessageRec message;
 
@@ -89,38 +105,25 @@ class KeywordCommand
 
 	@Override
 	public
-	void handle (
-			int commandId,
-			ReceivedMessage _receivedMessage) {
-
-		receivedMessage =
-			_receivedMessage;
+	InboxAttemptRec handle () {
 
 		if (log.isDebugEnabled ()) {
 
 			log.debug (
 				stringFormat (
-					"About to handle message %s with command %s",
-					receivedMessage.getMessageId (),
-					commandId));
+					"About to handle message %s ",
+					inbox.getId (),
+					"with command %s",
+					command.getId ()));
 
 		}
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite ();
-
-		invokedCommand =
-			commandHelper.find (
-				commandId);
-
 		keywordSet =
 			keywordSetHelper.find (
-				invokedCommand.getParentObjectId ());
+				command.getParentObjectId ());
 
 		message =
-			messageHelper.find (
-				receivedMessage.getMessageId ());
+			inbox.getMessage ();
 
 		// try and find a keyword
 
@@ -143,33 +146,30 @@ class KeywordCommand
 						keywordRecord,
 						message));
 
-				inboxLogic.inboxNotProcessed (
+				return inboxLogic.inboxNotProcessed (
 					message,
-					null,
-					null,
-					invokedCommand,
+					Optional.<ServiceRec>absent (),
+					Optional.<AffiliateRec>absent (),
+					Optional.of (command),
 					stringFormat (
 						"No command for %s",
 						keywordRecord));
-
-				transaction.commit ();
-
-				return;
 
 			}
 
 			String messageRest =
 				keywordRecord.getLeaveIntact ()
-					? receivedMessage.getRest ()
+					? rest
 					: matchResult.get ().getRight ();
 
 			if (log.isDebugEnabled ()) {
 
 				log.debug (
 					stringFormat (
-						"Found keyword %s for message %s",
+						"Found keyword %s ",
 						keywordRecord.getId (),
-						receivedMessage.getMessageId ()));
+						"for message %s",
+						inbox.getId ()));
 
 			}
 
@@ -186,14 +186,11 @@ class KeywordCommand
 
 			// hand off
 
-			transaction.commit ();
-
-			commandManager.handle (
-				nextCommand.getId (),
-				receivedMessage,
+			return commandManager.handle (
+				inbox,
+				nextCommand,
+				Optional.<Integer>absent (),
 				messageRest);
-
-			return;
 
 		}
 
@@ -210,22 +207,21 @@ class KeywordCommand
 
 				log.debug (
 					stringFormat (
-						"Using keyword set fallback %s for message %s",
+						"Using keyword set fallback %s ",
 						keywordSetFallback.getId (),
-						receivedMessage.getMessageId ()));
+						"for message %s",
+						inbox.getId ()));
 
 			}
 
 			CommandRec nextCommand =
 				keywordSetFallback.getCommand ();
 
-			transaction.close ();
-
-			commandManager.handle (
-				nextCommand.getId (),
-				receivedMessage);
-
-			return;
+			return commandManager.handle (
+				inbox,
+				nextCommand,
+				Optional.<Integer>absent (),
+				rest);
 
 		}
 
@@ -238,20 +234,18 @@ class KeywordCommand
 				log.debug (
 					stringFormat (
 						"Using fallback command for message %s",
-						receivedMessage.getMessageId ()));
+						inbox.getId ()));
 
 			}
 
 			CommandRec nextCommand =
 				keywordSet.getFallbackCommand ();
 
-			transaction.close ();
-
-			commandManager.handle (
-				nextCommand.getId (),
-				receivedMessage);
-
-			return;
+			return commandManager.handle (
+				inbox,
+				nextCommand,
+				Optional.<Integer>absent (),
+				rest);
 
 		}
 
@@ -261,21 +255,20 @@ class KeywordCommand
 
 			log.debug (
 				stringFormat (
-					"Marking message %s as not processed",
-					receivedMessage.getMessageId ()));
+					"Marking message %s ",
+					inbox.getId (),
+					"as not processed"));
 
 		}
 
-		inboxLogic.inboxNotProcessed (
+		return inboxLogic.inboxNotProcessed (
 			message,
-			null,
-			null,
-			invokedCommand,
+			Optional.<ServiceRec>absent (),
+			Optional.<AffiliateRec>absent (),
+			Optional.of (command),
 			stringFormat (
 				"No keyword matched in %s",
 				keywordSet));
-
-		transaction.commit ();
 
 	}
 
@@ -301,7 +294,7 @@ class KeywordCommand
 		for (
 			KeywordFinder.Match match
 				: keywordFinder.find (
-					receivedMessage.getRest ())
+					rest)
 		) {
 
 			String keyword =
@@ -339,7 +332,7 @@ class KeywordCommand
 		return Optional.of (
 			Pair.of (
 				keywordRecord,
-				receivedMessage.getRest ()));
+				rest));
 
 	}
 

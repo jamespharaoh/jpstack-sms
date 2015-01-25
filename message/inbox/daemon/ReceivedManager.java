@@ -23,18 +23,26 @@ import wbs.platform.daemon.ThreadManager;
 import wbs.platform.exception.logic.ExceptionLogic;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
+import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptObjectHelper;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
+import wbs.sms.message.inbox.model.InboxState;
 import wbs.sms.route.core.model.RouteRec;
+
+import com.google.common.base.Optional;
 
 @Log4j
 @SingletonComponent ("receivedManager")
 public
 class ReceivedManager
 	extends AbstractDaemonService {
+
+	// dependencies
 
 	@Inject
 	AffiliateObjectHelper affiliateHelper;
@@ -47,6 +55,9 @@ class ReceivedManager
 
 	@Inject
 	ExceptionLogic exceptionLogic;
+
+	@Inject
+	InboxAttemptObjectHelper inboxAttemptHelper;
 
 	@Inject
 	InboxObjectHelper inboxHelper;
@@ -63,6 +74,8 @@ class ReceivedManager
 	@Inject
 	ThreadManager threadManager;
 
+	// configuration
+
 	final
 	int sleepInterval = 1000;
 
@@ -71,6 +84,8 @@ class ReceivedManager
 
 	final
 	int numWorkerThreads = 8;
+
+	// state
 
 	QueueBuffer<Integer,Integer> buffer =
 		new QueueBuffer<Integer,Integer> (bufferSize);
@@ -108,43 +123,101 @@ class ReceivedManager
 		void doMessage (
 				int messageId) {
 
-			class MessageStuff {
-				MessageRec message;
-				RouteRec route;
-				Integer commandId;
-			}
-
-			MessageStuff messageStuff =
-				new MessageStuff ();
-
-			// begin transaction
-
 			@Cleanup
-			Transaction transaction0 =
+			Transaction transaction =
 				database.beginReadWrite ();
-
-			// save some information about the message
-
-			messageStuff.message =
-				messageHelper.find (messageId);
-
-			messageStuff.message.getText ().getText ();
-
-			messageStuff.route =
-				messageStuff.message.getRoute ();
-
-			if (messageStuff.route.getCommand () != null) {
-
-				messageStuff.commandId =
-					messageStuff.route.getCommand ().getId ();
-
-			}
-
-			// update the inbox tries and retrytime
 
 			InboxRec inbox =
 				inboxHelper.find (
 					messageId);
+
+			MessageRec message =
+				messageHelper.find (
+					messageId);
+
+			dumpMessageInfo (
+				message);
+
+			RouteRec route =
+				message.getRoute ();
+
+			if (route.getCommand () != null) {
+
+				InboxAttemptRec inboxAttempt =
+					commandManager.handle (
+						inbox,
+						route.getCommand (),
+						Optional.fromNullable (
+							message.getRef ()),
+						message.getText ().getText ());
+
+				if (inboxAttempt == null)
+					throw new NullPointerException ();
+
+			} else {
+
+				inboxLogic.inboxNotProcessed (
+					message,
+					Optional.<ServiceRec>absent (),
+					Optional.<AffiliateRec>absent (),
+					Optional.<CommandRec>absent (),
+					"No command for route");
+
+			}
+
+			transaction.commit ();
+
+		}
+
+		void doError (
+				int messageId,
+				Throwable exception) {
+
+			log.error (
+				stringFormat (
+					"Error processing command for message %d",
+					messageId),
+				exception);
+
+			@Cleanup
+			Transaction transaction =
+				database.beginReadWrite ();
+
+			InboxRec inbox =
+				inboxHelper.find (
+					messageId);
+
+			MessageRec message =
+				inbox.getMessage ();
+
+			RouteRec route =
+				message.getRoute ();
+
+			exceptionLogic.logThrowable (
+				"daemon",
+				stringFormat (
+					"Route %s",
+					route.getCode ()),
+				exception,
+				null,
+				false);
+
+			inboxAttemptHelper.insert (
+				new InboxAttemptRec ()
+
+				.setInbox (
+					inbox)
+
+				.setIndex (
+					inbox.getNumAttempts ())
+
+				.setResult (
+					InboxState.pending)
+
+				.setTimestamp (
+					transaction.now ())
+
+			);
 
 			inbox
 
@@ -152,132 +225,11 @@ class ReceivedManager
 					inbox.getNumAttempts () + 1)
 
 				.setNextAttempt (
-					transaction0.now ().plus (
+					inbox.getNextAttempt ().plus (
 						Duration.standardSeconds (
 							inbox.getNumAttempts ())));
 
-			// commit transaction
-
-			transaction0.commit ();
-
-			final
-			ReceivedMessageImpl receivedMessage =
-				new ReceivedMessageImpl (
-					null,
-					messageStuff.message.getId (),
-					messageStuff.message.getText ().getText (),
-					0);
-
-			dumpMessageInfo (
-				messageStuff.message);
-
-			// mark as not processed if there is no command handler
-
-			if (messageStuff.commandId == null) {
-
-				saveError (
-					receivedMessage);
-
-				log.warn (
-					"Message not processed because there is no command.");
-
-				return;
-
-			}
-
-			// mark not processed if stop message on adult route (?)
-			// TODO wtf is this? should not be here
-
-			if (messageStuff.route.getAvRequired ()
-					&& "0".equals (messageStuff.message.getAdultVerified ())
-					&& ! isStopKeyword (messageStuff.message.getText ().getText ())) {
-
-				saveError (
-					receivedMessage);
-
-				log.warn (
-					"Number is not adult verified and this route requires verification.");
-
-				return;
-
-			}
-
-			// run the message through the handler
-
-			try {
-
-				commandManager.handle (
-					messageStuff.commandId,
-					receivedMessage);
-
-				log.debug (
-					stringFormat (
-						"Command handler finished for message %d",
-						messageId));
-
-			} catch (Exception exception) {
-
-				log.error (
-					stringFormat (
-						"Error processing command for message %d",
-						messageId),
-					exception);
-
-				exceptionLogic.logThrowable (
-					"daemon",
-					"Route " + messageStuff.route.getCode (),
-					exception,
-					null,
-					false);
-
-			}
-
-		}
-
-		private
-		void saveError (
-				ReceivedMessageImpl receivedMessage) {
-
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite ();
-
-			MessageRec message =
-				messageHelper.find (
-					receivedMessage.getMessageId ());
-
-			ServiceRec service =
-				receivedMessage.getServiceId () == null
-					? null
-					: serviceHelper.find (
-						receivedMessage.getServiceId ());
-
-			AffiliateRec affiliate =
-				receivedMessage.getAffiliateId () == null
-					? null
-					: affiliateHelper.find (
-						receivedMessage.getAffiliateId ());
-
-			inboxLogic.inboxNotProcessed (
-				message,
-				service,
-				affiliate,
-				null,
-				"Command handler returned not processed");
-
 			transaction.commit ();
-
-		}
-
-		// TODO could be done much better as a regexp
-		// TODO wtf is this doing here?
-		boolean isStopKeyword (
-				String text) {
-
-			if (text == null || text.length () < 4)
-				return false;
-			else
-				return text.toLowerCase ().startsWith ("stop");
 
 		}
 
@@ -301,11 +253,23 @@ class ReceivedManager
 
 				// handle it
 
-				doMessage (messageId);
+				try {
+
+					doMessage (
+						messageId);
+
+				} catch (Exception exception) {
+
+					doError (
+						messageId,
+						exception);
+
+				}
 
 				// remove the item from the buffer
 
-				buffer.remove (messageId);
+				buffer.remove (
+					messageId);
 
 			}
 

@@ -4,10 +4,14 @@ import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.platform.affiliate.model.AffiliateRec;
+import wbs.platform.service.model.ServiceRec;
+import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberUseObjectHelper;
@@ -16,10 +20,13 @@ import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
 import wbs.sms.message.inbox.daemon.CommandManager;
-import wbs.sms.message.inbox.daemon.ReceivedMessage;
-import wbs.sms.message.inbox.daemon.ReceivedMessageImpl;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 
+import com.google.common.base.Optional;
+
+@Accessors (fluent = true)
 @PrototypeComponent ("magicNumberCommandTypeHandler")
 public
 class MagicNumberCommandTypeHandler
@@ -45,6 +52,20 @@ class MagicNumberCommandTypeHandler
 	@Inject
 	CommandManager commandManager;
 
+	// properties
+
+	@Getter @Setter
+	InboxRec inbox;
+
+	@Getter @Setter
+	CommandRec command;
+
+	@Getter @Setter
+	Optional<Integer> commandRef;
+
+	@Getter @Setter
+	String rest;
+
 	// details
 
 	@Override
@@ -61,17 +82,10 @@ class MagicNumberCommandTypeHandler
 
 	@Override
 	public
-	void handle (
-			int commandId,
-			ReceivedMessage receivedMessage) {
-
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly ();
+	InboxAttemptRec handle () {
 
 		MessageRec message =
-			messageHelper.find (
-				receivedMessage.getMessageId ());
+			inbox.getMessage ();
 
 		// lookup the MagicNumber
 
@@ -81,16 +95,14 @@ class MagicNumberCommandTypeHandler
 
 		if (magicNumber == null) {
 
-			inboxLogic.inboxNotProcessed (
+			return inboxLogic.inboxNotProcessed (
 				message,
-				null,
-				null,
-				null,
+				Optional.<ServiceRec>absent (),
+				Optional.<AffiliateRec>absent (),
+				Optional.of (command),
 				stringFormat (
 					"Magic number does not exist",
 					message.getNumTo ()));
-
-			return;
 
 		}
 
@@ -103,28 +115,22 @@ class MagicNumberCommandTypeHandler
 
 		if (magicNumberUse == null) {
 
-			inboxLogic.inboxNotProcessed (
+			return inboxLogic.inboxNotProcessed (
 				message,
-				null,
-				null,
-				null,
+				Optional.<ServiceRec>absent (),
+				Optional.<AffiliateRec>absent (),
+				Optional.of (command),
 				"Magic number has not been used");
-
-			return;
 
 		}
 
 		// and delegate
 
-		transaction.close ();
-
-		commandManager.handle (
-			magicNumberUse.getCommand ().getId (),
-			new ReceivedMessageImpl (
-				receivedMessage,
-				receivedMessage.getMessageId (),
-				receivedMessage.getRest (),
-				magicNumberUse.getRefId ()));
+		return commandManager.handle (
+			inbox,
+			magicNumberUse.getCommand (),
+			Optional.<Integer>absent (),
+			rest);
 
 	}
 

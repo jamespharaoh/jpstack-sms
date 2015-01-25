@@ -1,6 +1,7 @@
 package wbs.sms.message.inbox.daemon;
 
-public interface CommandManager
+public
+interface CommandManager
 	extends CommandManagerMethods {
 
 }

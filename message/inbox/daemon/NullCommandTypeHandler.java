@@ -2,19 +2,30 @@ package wbs.sms.message.inbox.daemon;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
+import wbs.platform.affiliate.model.AffiliateRec;
+import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 
+import com.google.common.base.Optional;
+
+@Accessors (fluent = true)
 @SingletonComponent ("nullCommandTypeHandler")
 public
 class NullCommandTypeHandler
 	implements CommandHandler {
+
+	// dependencies
 
 	@Inject
 	CommandObjectHelper commandHelper;
@@ -28,6 +39,22 @@ class NullCommandTypeHandler
 	@Inject
 	MessageObjectHelper messageHelper;
 
+	// properties
+
+	@Getter @Setter
+	InboxRec inbox;
+
+	@Getter @Setter
+	CommandRec command;
+
+	@Getter @Setter
+	Optional<Integer> commandRef;
+
+	@Getter @Setter
+	String rest;
+
+	// details
+
 	@Override
 	public
 	String[] getCommandTypes () {
@@ -38,25 +65,20 @@ class NullCommandTypeHandler
 
 	}
 
+	// implementation
+
 	@Override
 	public
-	void handle (
-			int commandId,
-			@NonNull ReceivedMessage receivedMessage) {
-
-		CommandRec command =
-			commandHelper.find (
-				commandId);
+	InboxAttemptRec handle () {
 
 		MessageRec message =
-			messageHelper.find (
-				receivedMessage.getMessageId ());
+			inbox.getMessage ();
 
-		inboxLogic.inboxNotProcessed (
+		return inboxLogic.inboxNotProcessed (
 			message,
-			null,
-			null,
-			command,
+			Optional.<ServiceRec>absent (),
+			Optional.<AffiliateRec>absent (),
+			Optional.of (command),
 			"Null command handler");
 
 	}

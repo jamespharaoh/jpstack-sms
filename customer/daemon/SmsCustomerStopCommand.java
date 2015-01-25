@@ -5,11 +5,14 @@ import static wbs.framework.utils.etc.Misc.isNotNull;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.Cleanup;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
+import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
@@ -23,11 +26,15 @@ import wbs.sms.customer.model.SmsCustomerTemplateRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
-import wbs.sms.message.inbox.daemon.ReceivedMessage;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.outbox.logic.MessageSender;
 import wbs.sms.number.list.logic.NumberListLogic;
 
+import com.google.common.base.Optional;
+
+@Accessors (fluent = true)
 @PrototypeComponent ("smsCustomerStopCommand")
 public
 class SmsCustomerStopCommand
@@ -67,35 +74,43 @@ class SmsCustomerStopCommand
 	@Inject
 	Provider<MessageSender> messageSenderProvider;
 
+	// properties
+
+	@Getter @Setter
+	InboxRec inbox;
+
+	@Getter @Setter
+	CommandRec command;
+
+	@Getter @Setter
+	Optional<Integer> commandRef;
+
+	@Getter @Setter
+	String rest;
+
 	// details
 
 	@Override
 	public
 	String[] getCommandTypes () {
+
 		return new String [] {
 			"sms_customer_manager.stop",
 		};
+
 	}
 
 	// implementation
 
 	@Override
 	public
-	void handle (
-			int commandId,
-			ReceivedMessage receivedMessage) {
+	InboxAttemptRec handle () {
 
-		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
-
-		CommandRec command =
-			commandHelper.find (
-				commandId);
+			database.currentTransaction ();
 
 		MessageRec inboundMessage =
-			messageHelper.find (
-				receivedMessage.getMessageId ());
+			inbox.getMessage ();
 
 		SmsCustomerManagerRec customerManager =
 			(SmsCustomerManagerRec)
@@ -195,15 +210,11 @@ class SmsCustomerStopCommand
 
 		// process message
 
-		inboxLogic.inboxProcessed (
+		return inboxLogic.inboxProcessed (
 			inboundMessage,
-			stopService,
-			null,
+			Optional.of (stopService),
+			Optional.<AffiliateRec>absent (),
 			command);
-
-		// commit
-
-		transaction.commit ();
 
 	}
 

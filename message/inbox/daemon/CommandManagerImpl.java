@@ -10,20 +10,25 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.Cleanup;
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.application.context.ApplicationContext;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.platform.exception.logic.ExceptionLogic;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.command.model.CommandTypeRec;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
+
+import com.google.common.base.Optional;
 
 @SingletonComponent ("commandManagerImpl")
 public
 class CommandManagerImpl
 	implements CommandManagerMethods {
+
+	// dependencies
 
 	@Inject
 	ApplicationContext applicationContext;
@@ -40,25 +45,81 @@ class CommandManagerImpl
 	@Inject
 	CommandManagerProxy proxy;
 
+	// collection dependencies
+
 	@Inject
 	Map<String,Provider<CommandHandler>> commandTypeHandlersByBeanName =
 		Collections.emptyMap ();
 
-	private
+	// state
+
 	Map<String,String> commandTypeHandlerBeanNamesByCommandType;
 
+	// life cycle
+
+	@PostConstruct
 	public
-	CommandHandler get (
+	void init ()
+		throws Exception {
+
+		proxy.setDelegate (this);
+
+		commandTypeHandlerBeanNamesByCommandType =
+			new HashMap<String,String> ();
+
+		for (
+			Map.Entry<String,Provider<CommandHandler>> entry
+				: commandTypeHandlersByBeanName.entrySet ()
+		) {
+
+			String beanName =
+				entry.getKey ();
+
+			CommandHandler commandTypeHandler =
+				entry.getValue ().get ();
+
+			String[] commandTypes =
+				commandTypeHandler.getCommandTypes ();
+
+			if (commandTypes == null) {
+
+				throw new NullPointerException (
+					stringFormat (
+						"Command type handler factory %s returned null from ",
+						beanName,
+						"getCommandTypes ()"));
+
+			}
+
+			for (
+				String commandType
+					: commandTypeHandler.getCommandTypes ()
+			) {
+
+				commandTypeHandlerBeanNamesByCommandType.put (
+					commandType,
+					beanName);
+
+			}
+
+		}
+
+	}
+
+	// implementation
+
+	public
+	CommandHandler getHandler (
 			CommandTypeRec commandType) {
 
-		return get (
+		return getHandler (
 			commandType.getParentObjectType ().getCode (),
 			commandType.getCode ());
 
 	}
 
 	public
-	CommandHandler get (
+	CommandHandler getHandler (
 			String parentObjectTypeCode,
 			String commandTypeCode) {
 
@@ -84,90 +145,30 @@ class CommandManagerImpl
 
 	}
 
-	@PostConstruct
-	public
-	void init ()
-		throws Exception {
-
-		proxy.setDelegate (this);
-
-		commandTypeHandlerBeanNamesByCommandType =
-			new HashMap<String,String> ();
-
-		for (Map.Entry<String,Provider<CommandHandler>> ent
-				: commandTypeHandlersByBeanName.entrySet ()) {
-
-			String beanName =
-				ent.getKey ();
-
-			CommandHandler commandTypeHandler =
-				ent.getValue ().get ();
-
-			String[] commandTypes =
-				commandTypeHandler.getCommandTypes ();
-
-			if (commandTypes == null) {
-
-				throw new NullPointerException (
-					stringFormat (
-						"Command type handler factory %s returned null from ",
-						beanName,
-						"getCommandTypes ()"));
-
-			}
-
-			for (String commandType
-					: commandTypeHandler.getCommandTypes ()) {
-
-				commandTypeHandlerBeanNamesByCommandType.put (
-					commandType,
-					beanName);
-
-			}
-
-		}
-
-	}
-
 	@Override
 	public
-	void handle (
-			int commandId,
-			ReceivedMessage message) {
+	InboxAttemptRec handle (
+			@NonNull InboxRec inbox,
+			@NonNull CommandRec command,
+			@NonNull Optional<Integer> ref,
+			@NonNull String rest) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly ();
+		return getHandler (
+			command.getCommandType ())
 
-		CommandRec command =
-			commandHelper.find (commandId);
+			.inbox (
+				inbox)
 
-		CommandTypeRec commandType =
-			command.getCommandType ();
+			.command (
+				command)
 
-		CommandHandler handler =
-			get (commandType);
+			.commandRef (
+				ref)
 
-		transaction.close ();
+			.rest (
+				rest)
 
-		handler.handle (
-			commandId,
-			message);
-
-	}
-
-	@Override
-	public
-	void handle (
-			int commandId,
-			ReceivedMessage message,
-			String rest) {
-
-		handle (
-			commandId,
-			new ReceivedMessageImpl (
-				message,
-				rest));
+			.handle ();
 
 	}
 

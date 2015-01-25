@@ -1,23 +1,33 @@
 package wbs.sms.route.tester.daemon;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.platform.affiliate.model.AffiliateRec;
+import wbs.platform.service.model.ServiceRec;
+import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
-import wbs.sms.message.inbox.daemon.ReceivedMessage;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.tester.model.RouteTestObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
 
+import com.google.common.base.Optional;
+
+@Accessors (fluent = true)
 @SingletonComponent ("routeTesterCommand")
 public
 class RouteTesterCommand
@@ -37,6 +47,20 @@ class RouteTesterCommand
 	@Inject
 	RouteTestObjectHelper routeTestHelper;
 
+	// properties
+
+	@Getter @Setter
+	InboxRec inbox;
+
+	@Getter @Setter
+	CommandRec command;
+
+	@Getter @Setter
+	Optional<Integer> commandRef;
+
+	@Getter @Setter
+	String rest;
+
 	// details
 
 	@Override
@@ -53,17 +77,13 @@ class RouteTesterCommand
 
 	@Override
 	public
-	void handle (
-			int commandId,
-			ReceivedMessage receivedMessage) {
+	InboxAttemptRec handle () {
 
-		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.currentTransaction ();
 
 		MessageRec message =
-			messageHelper.find (
-				receivedMessage.getMessageId());
+			inbox.getMessage ();
 
 		Matcher matcher =
 			routeTestPattern.matcher (
@@ -71,16 +91,12 @@ class RouteTesterCommand
 
 		if (! matcher.find ()) {
 
-			inboxLogic.inboxNotProcessed (
+			return inboxLogic.inboxNotProcessed (
 				message,
-				null,
-				null,
-				null,
+				Optional.<ServiceRec>absent (),
+				Optional.<AffiliateRec>absent (),
+				Optional.of (command),
 				"No route test info found in message body");
-
-			transaction.commit ();
-
-			return;
 
 		}
 
@@ -93,16 +109,12 @@ class RouteTesterCommand
 
 		if (routeTest == null) {
 
-			inboxLogic.inboxNotProcessed (
+			return inboxLogic.inboxNotProcessed (
 				message,
-				null,
-				null,
-				null,
+				Optional.<ServiceRec>absent (),
+				Optional.<AffiliateRec>absent (),
+				Optional.of (command),
 				"Response to unknown route test id");
-
-			transaction.commit ();
-
-			return;
 
 		}
 
@@ -111,30 +123,29 @@ class RouteTesterCommand
 
 		if (routeTest.getReturnedTime () != null) {
 
-			inboxLogic.inboxNotProcessed (
+			return inboxLogic.inboxNotProcessed (
 				message,
-				null,
-				null,
-				null,
+				Optional.<ServiceRec>absent (),
+				Optional.<AffiliateRec>absent (),
+				Optional.of (command),
 				"Duplicate response for route test");
-
-			transaction.commit ();
-
-			return;
 
 		}
 
 		routeTest
-			.setReturnedTime (new Date ())
-			.setReturnedMessage (message);
 
-		inboxLogic.inboxProcessed (
+			.setReturnedTime (
+				instantToDate (
+					transaction.now ()))
+
+			.setReturnedMessage (
+				message);
+
+		return inboxLogic.inboxProcessed (
 			message,
-			null,
-			null,
-			null);
-
-		transaction.commit ();
+			Optional.<ServiceRec>absent (),
+			Optional.<AffiliateRec>absent (),
+			command);
 
 	}
 
