@@ -2,8 +2,6 @@ package wbs.sms.message.inbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +9,9 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Duration;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -101,6 +102,7 @@ class ReceivedManager
 				message.getNumFrom () + " " +
 				message.getNumTo () + " " +
 				message.getText ());
+
 		}
 
 		void doMessage (
@@ -144,20 +146,15 @@ class ReceivedManager
 				inboxHelper.find (
 					messageId);
 
-			inbox.setTries (
-				inbox.getTries () + 1);
-
-			Calendar calendar =
-				new GregorianCalendar ();
-
-			calendar.add (
-				Calendar.SECOND,
-				inbox.getTries ());
-
 			inbox
 
-				.setRetryTime (
-					calendar.getTime ());
+				.setNumAttempts (
+					inbox.getNumAttempts () + 1)
+
+				.setNextAttempt (
+					transaction0.now ().plus (
+						Duration.standardSeconds (
+							inbox.getNumAttempts ())));
 
 			// commit transaction
 
@@ -185,6 +182,7 @@ class ReceivedManager
 					"Message not processed because there is no command.");
 
 				return;
+
 			}
 
 			// mark not processed if stop message on adult route (?)
@@ -231,6 +229,7 @@ class ReceivedManager
 					exception,
 					null,
 					false);
+
 			}
 
 		}
@@ -320,18 +319,19 @@ class ReceivedManager
 		Set<Integer> activeMessageids =
 			buffer.getKeys ();
 
-		List<InboxRec> indexes;
-
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly ();
 
-		indexes =
-			inboxHelper.findRetryLimit (
+		List<InboxRec> inboxes =
+			inboxHelper.findPendingLimit (
+				transaction.now (),
 				buffer.getFullSize ());
 
-		for (InboxRec inbox
-				: indexes) {
+		for (
+			InboxRec inbox
+				: inboxes
+		) {
 
 			MessageRec message =
 				inbox.getMessage ();
@@ -346,7 +346,7 @@ class ReceivedManager
 
 		}
 
-		return indexes.size () == buffer.getFullSize ();
+		return inboxes.size () == buffer.getFullSize ();
 
 	}
 

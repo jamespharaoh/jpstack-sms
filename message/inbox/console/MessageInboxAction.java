@@ -20,6 +20,7 @@ import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
+import wbs.sms.message.inbox.model.InboxState;
 
 @PrototypeComponent ("messageInboxAction")
 public
@@ -52,8 +53,10 @@ class MessageInboxAction
 		List<String> notices =
 			new ArrayList<String> ();
 
-		for (String paramName
-				: requestContext.parameterMap ().keySet ()) {
+		for (
+			String paramName
+				: requestContext.parameterMap ().keySet ()
+		) {
 
 			Matcher matcher =
 				ignorePattern.matcher (
@@ -70,30 +73,41 @@ class MessageInboxAction
 				inboxHelper.find (
 					messageId);
 
-			if (inbox == null) {
+			if (inbox == null)
+				throw new RuntimeException ();
+
+			MessageRec message =
+				inbox.getMessage ();
+
+			// check state
+
+			if (inbox.getState () != InboxState.pending) {
 
 				requestContext.addError (
 					stringFormat (
 						"Inbox message %s ",
 						messageId,
-						"not found"));
-
-				return null;
+						"is not pending"));
 
 			}
 
-			MessageRec message =
-				inbox.getMessage ();
+			// update inbox
 
-			message.setStatus (
-				MessageStatus.ignored);
+			inbox
 
-			inboxHelper.remove (
-				inbox);
+				.setState (
+					InboxState.ignored);
+
+			// update message
+
+			message
+
+				.setStatus (
+					MessageStatus.ignored);
 
 			notices.add (
 				stringFormat (
-					"Removed inbox message %s",
+					"Ignored inbox message %s",
 					messageId));
 
 		}

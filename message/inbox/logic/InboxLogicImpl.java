@@ -1,6 +1,8 @@
 package wbs.sms.message.inbox.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Calendar;
@@ -12,6 +14,8 @@ import javax.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.GlobalId;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -38,6 +42,7 @@ import wbs.sms.message.inbox.model.InboxMultipartLogObjectHelper;
 import wbs.sms.message.inbox.model.InboxMultipartLogRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
+import wbs.sms.message.inbox.model.InboxState;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.logic.NumberLogic;
@@ -59,6 +64,9 @@ class InboxLogicImpl
 
 	@Inject
 	BatchObjectHelper batchHelper;
+
+	@Inject
+	Database database;
 
 	@Inject
 	EventLogic eventLogic;
@@ -530,6 +538,15 @@ class InboxLogicImpl
 			AffiliateRec affiliate,
 			CommandRec command) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
+		InboxRec inbox =
+			inboxHelper.find (
+				message.getId ());
+
+		// sanity check
+
 		if (message.getStatus () != MessageStatus.pending) {
 
 			throw new RuntimeException (
@@ -540,30 +557,45 @@ class InboxLogicImpl
 
 		}
 
-		InboxRec inbox =
-			inboxHelper.find (
-				message.getId ());
-
 		if (inbox == null)
 			throw new RuntimeException ();
 
-		inboxHelper.remove (
-			inbox);
+		if (inbox.getState () != InboxState.pending)
+			throw new RuntimeException ();
+
+		// update inbox
+
+		inbox
+
+			.setState (
+				InboxState.processed);
+
+		// update message
 
 		messageLogic.messageStatus (
 			message,
 			MessageStatus.processed);
 
-		message.setProcessedTime (new Date ());
+		message
 
-		if (service != null)
-			message.setService (service);
+			.setProcessedTime (
+				instantToDate (
+					transaction.now ()))
 
-		if (affiliate != null)
-			message.setAffiliate (affiliate);
+			.setService (
+				ifNull (
+					service,
+					message.getService ()))
 
-		if (command != null)
-			message.setCommand (command);
+			.setAffiliate (
+				ifNull (
+					affiliate,
+					message.getAffiliate ()))
+
+			.setCommand (
+				ifNull (
+					command,
+					message.getCommand ()));
 
 	}
 
@@ -581,6 +613,15 @@ class InboxLogicImpl
 				"Not processed message: %s",
 				information));
 
+		Transaction transaction =
+			database.currentTransaction ();
+
+		InboxRec inbox =
+			inboxHelper.find (
+				message.getId ());
+
+		// sanity check
+
 		if (message.getStatus () != MessageStatus.pending) {
 
 			throw new RuntimeException (
@@ -591,30 +632,45 @@ class InboxLogicImpl
 
 		}
 
-		InboxRec inbox =
-			inboxHelper.find (
-				message.getId ());
-
 		if (inbox == null)
 			throw new RuntimeException ();
 
-		inboxHelper.remove (
-			inbox);
+		if (inbox.getState () != InboxState.pending)
+			throw new RuntimeException ();
+
+		// update inbox
+
+		inbox
+
+			.setState (
+				InboxState.notProcessed);
+
+		// update message
 
 		messageLogic.messageStatus (
 			message,
 			MessageStatus.notProcessed);
 
-		message.setProcessedTime (new Date ());
+		message
 
-		if (service != null)
-			message.setService (service);
+			.setProcessedTime (
+				instantToDate (
+					transaction.now ()))
 
-		if (affiliate != null)
-			message.setAffiliate (affiliate);
+			.setService (
+				ifNull (
+					service,
+					message.getService ()))
 
-		if (command != null)
-			message.setCommand (command);
+			.setAffiliate (
+				ifNull (
+					affiliate,
+					message.getAffiliate ()))
+
+			.setCommand (
+				ifNull (
+					command,
+					message.getCommand ()));
 
 	}
 

@@ -7,7 +7,9 @@
 	</sql-scripts>
 
 	<models>
+		<enum-type name="inboxState"/>
 		<model name="inbox"/>
+		<model name="inboxAttempt"/>
 		<model name="inboxMultipartBuffer"/>
 		<model name="inboxMultipartLog"/>
 	</models>

@@ -1,6 +1,5 @@
 package wbs.sms.message.inbox.model;
 
-import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
@@ -9,12 +8,13 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.joda.time.Instant;
 
-import wbs.framework.entity.annotations.EphemeralEntity;
+import wbs.framework.entity.annotations.CommonEntity;
 import wbs.framework.entity.annotations.ForeignIdField;
 import wbs.framework.entity.annotations.MasterField;
 import wbs.framework.entity.annotations.SimpleField;
-import wbs.framework.record.EphemeralRecord;
+import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
 import wbs.sms.message.core.model.MessageRec;
 
@@ -22,23 +22,40 @@ import wbs.sms.message.core.model.MessageRec;
 @Data
 @EqualsAndHashCode (of = "id")
 @ToString (of = "id")
-@EphemeralEntity
+@CommonEntity
 public
 class InboxRec
-	implements EphemeralRecord<InboxRec> {
+	implements CommonRecord<InboxRec> {
+
+	// id
 
 	@ForeignIdField (
 		field = "message")
 	Integer id;
 
+	// identity
+
 	@MasterField
 	MessageRec message;
 
-	@SimpleField
-	Integer tries = 0;
+	// details
 
 	@SimpleField
-	Date retryTime = new Date ();
+	Instant createdTime;
+
+	// statistics
+
+	@SimpleField
+	Integer numAttempts = 0;
+
+	// state
+
+	@SimpleField
+	InboxState state;
+
+	@SimpleField (
+		nullable = true)
+	Instant nextAttempt;
 
 	// compare to
 
@@ -53,8 +70,8 @@ class InboxRec
 		return new CompareToBuilder ()
 
 			.append (
-				other.getMessage ().getCreatedTime (),
-				getMessage ().getCreatedTime ())
+				other.getCreatedTime (),
+				getCreatedTime ())
 
 			.append (
 				other.getId (),
@@ -71,10 +88,11 @@ class InboxRec
 
 		int count ();
 
-		List<InboxRec> findRetryLimit (
+		List<InboxRec> findPendingLimit (
+				Instant now,
 				int maxResults);
 
-		List<InboxRec> findAllLimit (
+		List<InboxRec> findPendingLimit (
 				int maxResults);
 
 	}

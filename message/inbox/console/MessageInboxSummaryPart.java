@@ -18,20 +18,26 @@ public
 class MessageInboxSummaryPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	InboxObjectHelper inboxHelper;
 
 	@Inject
 	TimeFormatter timeFormatter;
 
-	List<InboxRec> list;
+	// state
+
+	List<InboxRec> inboxes;
+
+	// implementation
 
 	@Override
 	public
 	void prepare () {
 
-		list =
-			inboxHelper.findAllLimit (
+		inboxes =
+			inboxHelper.findPendingLimit (
 				1000);
 
 	}
@@ -56,43 +62,51 @@ class MessageInboxSummaryPart
 			"<th>Actions</th>\n",
 			"</tr>\n");
 
-		for (InboxRec inbox : list) {
+		for (
+			InboxRec inbox
+				: inboxes
+		) {
 
 			MessageRec message =
 				inbox.getMessage ();
 
 			printFormat (
-				"<tr>\n",
+				"<tr>\n");
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getId (),
+				message.getId ());
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getNumFrom (),
+				message.getNumFrom ());
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getNumTo (),
+				message.getNumTo ());
 
+			printFormat (
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimestampString (
 					timeFormatter.defaultTimezone (),
 					dateToInstant (
-						message.getCreatedTime ())),
+						message.getCreatedTime ())));
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getRoute ().getCode (),
+				message.getRoute ().getCode ());
 
-				"<td rowspan=\"2\">\n",
-
-				"<input",
+			printFormat (
+				"<td",
+				" rowspan=\"2\"",
+				"><input",
 				" type=\"submit\"",
 				" name=\"ignore_%h\"",
 				message.getId (),
 				" value=\"cancel\"",
-				">\n",
+				"></td>\n");
 
-				"</td>\n",
-
+			printFormat (
 				"</tr>\n");
 
 			printFormat (
