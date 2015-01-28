@@ -11,6 +11,7 @@ import wbs.platform.text.model.TextRec;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
+import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -32,16 +33,20 @@ interface InboxLogic {
 			Optional<String> subject);
 
 	InboxAttemptRec inboxProcessed (
-			MessageRec message,
+			InboxRec inbox,
 			Optional<ServiceRec> service,
 			Optional<AffiliateRec> affiliate,
 			CommandRec command);
 
 	InboxAttemptRec inboxNotProcessed (
-			MessageRec message,
+			InboxRec inbox,
 			Optional<ServiceRec> service,
 			Optional<AffiliateRec> affiliate,
 			Optional<CommandRec> command,
-			String information);
+			String statusMessage);
+
+	InboxAttemptRec inboxProcessingFailed (
+			InboxRec inbox,
+			String statusMessage);
 
 }

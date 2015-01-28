@@ -26,6 +26,8 @@ import wbs.sms.message.delivery.model.DeliveryRec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 import wbs.sms.message.delivery.model.DeliveryTypeRec;
 
+import com.google.common.base.Optional;
+
 @SingletonComponent ("deliveryDaemon")
 public
 class DeliveryDaemon
@@ -271,7 +273,7 @@ class DeliveryDaemon
 						"daemon",
 						"Delivery notice daemon",
 						exception,
-						null,
+						Optional.<Integer>absent (),
 						false);
 
 				}

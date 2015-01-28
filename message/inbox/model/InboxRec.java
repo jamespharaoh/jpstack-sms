@@ -57,6 +57,10 @@ class InboxRec
 		nullable = true)
 	Instant nextAttempt;
 
+	@SimpleField (
+		nullable = true)
+	String statusMessage;
+
 	// compare to
 
 	@Override
@@ -86,7 +90,7 @@ class InboxRec
 	public static
 	interface InboxDaoMethods {
 
-		int count ();
+		int countPending ();
 
 		List<InboxRec> findPendingLimit (
 				Instant now,

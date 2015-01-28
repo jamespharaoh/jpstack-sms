@@ -92,7 +92,7 @@ class RouteTesterCommand
 		if (! matcher.find ()) {
 
 			return inboxLogic.inboxNotProcessed (
-				message,
+				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
 				Optional.of (command),
@@ -110,7 +110,7 @@ class RouteTesterCommand
 		if (routeTest == null) {
 
 			return inboxLogic.inboxNotProcessed (
-				message,
+				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
 				Optional.of (command),
@@ -124,7 +124,7 @@ class RouteTesterCommand
 		if (routeTest.getReturnedTime () != null) {
 
 			return inboxLogic.inboxNotProcessed (
-				message,
+				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
 				Optional.of (command),
@@ -142,7 +142,7 @@ class RouteTesterCommand
 				message);
 
 		return inboxLogic.inboxProcessed (
-			message,
+			inbox,
 			Optional.<ServiceRec>absent (),
 			Optional.<AffiliateRec>absent (),
 			command);

@@ -25,7 +25,7 @@ class MessageNumInboxCache
 	public
 	Integer refresh () {
 
-		return inboxHelper.count ();
+		return inboxHelper.countPending ();
 
 	}
 

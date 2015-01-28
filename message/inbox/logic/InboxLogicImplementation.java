@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.SingletonComponent;
@@ -318,7 +319,7 @@ class InboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxProcessed (
-			@NonNull MessageRec message,
+			@NonNull InboxRec inbox,
 			@NonNull Optional<ServiceRec> service,
 			@NonNull Optional<AffiliateRec> affiliate,
 			@NonNull CommandRec command) {
@@ -326,27 +327,13 @@ class InboxLogicImplementation
 		Transaction transaction =
 			database.currentTransaction ();
 
-		InboxRec inbox =
-			inboxHelper.find (
-				message.getId ());
+		MessageRec message =
+			inbox.getMessage ();
 
 		// sanity check
 
-		if (message.getStatus () != MessageStatus.pending) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Message %d status %s invalid",
-					message.getId (),
-					message.getStatus ()));
-
-		}
-
-		if (inbox == null)
-			throw new RuntimeException ();
-
-		if (inbox.getState () != InboxState.pending)
-			throw new RuntimeException ();
+		checkInboxPending (
+			inbox);
 
 		// create inbox attempt
 
@@ -379,6 +366,9 @@ class InboxLogicImplementation
 				inbox.getNumAttempts () + 1)
 
 			.setNextAttempt (
+				null)
+
+			.setStatusMessage (
 				null);
 
 		// update message
@@ -413,41 +403,24 @@ class InboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxNotProcessed (
-			@NonNull MessageRec message,
+			@NonNull InboxRec inbox,
 			@NonNull Optional<ServiceRec> service,
 			@NonNull Optional<AffiliateRec> affiliate,
 			@NonNull Optional<CommandRec> command,
-			@NonNull String information) {
+			@NonNull String statusMessage) {
 
 		log.info (
 			stringFormat (
 				"Not processed message: %s",
-				information));
+				statusMessage));
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		InboxRec inbox =
-			inboxHelper.find (
-				message.getId ());
-
 		// sanity check
 
-		if (message.getStatus () != MessageStatus.pending) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Message %d status %s invalid",
-					message.getId (),
-					message.getStatus ()));
-
-		}
-
-		if (inbox == null)
-			throw new RuntimeException ();
-
-		if (inbox.getState () != InboxState.pending)
-			throw new RuntimeException ();
+		checkInboxPending (
+			inbox);
 
 		// create inbox attempt
 
@@ -467,6 +440,9 @@ class InboxLogicImplementation
 			.setResult (
 				InboxState.notProcessed)
 
+			.setStatusMessage (
+				statusMessage)
+
 		);
 
 		// update inbox
@@ -480,9 +456,15 @@ class InboxLogicImplementation
 				inbox.getNumAttempts () + 1)
 
 			.setNextAttempt (
-				null);
+				null)
+
+			.setStatusMessage (
+				statusMessage);
 
 		// update message
+
+		MessageRec message =
+			inbox.getMessage ();
 
 		messageLogic.messageStatus (
 			message,
@@ -605,6 +587,97 @@ class InboxLogicImplementation
 			oldNetwork,
 			newNetwork,
 			message);
+
+	}
+
+	@Override
+	public
+	InboxAttemptRec inboxProcessingFailed (
+			InboxRec inbox,
+			String statusMessage) {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		// sanity check
+
+		checkInboxPending (
+			inbox);
+
+		// create inbox attempt
+
+		InboxAttemptRec inboxAttempt =
+			inboxAttemptHelper.insert (
+				new InboxAttemptRec ()
+
+			.setInbox (
+				inbox)
+
+			.setIndex (
+				inbox.getNumAttempts ())
+
+			.setResult (
+				InboxState.pending)
+
+			.setTimestamp (
+				transaction.now ())
+
+			.setStatusMessage (
+				statusMessage)
+
+		);
+
+		// update inbox
+
+		inbox
+
+			.setNumAttempts (
+				inbox.getNumAttempts () + 1)
+
+			.setNextAttempt (
+				inbox.getNextAttempt ().plus (
+					Duration.standardSeconds (
+						inbox.getNumAttempts ())))
+
+			.setStatusMessage (
+				statusMessage);
+
+		// return
+
+		return inboxAttempt;
+
+	}
+
+	void checkInboxPending (
+			InboxRec inbox) {
+
+		// check inbox state
+
+		if (inbox.getState () != InboxState.pending) {
+
+			throw new RuntimeException (
+				stringFormat (
+					"Unable to process inbox %d ",
+					inbox.getId (),
+					"in state %s"));
+
+		}
+
+		// check message status
+
+		MessageRec message =
+			inbox.getMessage ();
+
+		if (message.getStatus () != MessageStatus.pending) {
+
+			throw new RuntimeException (
+				stringFormat (
+					"Unable to process message %d ",
+					message.getId (),
+					"with status %s",
+					message.getStatus ()));
+
+		}
 
 	}
 

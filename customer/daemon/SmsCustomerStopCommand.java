@@ -211,7 +211,7 @@ class SmsCustomerStopCommand
 		// process message
 
 		return inboxLogic.inboxProcessed (
-			inboundMessage,
+			inbox,
 			Optional.of (stopService),
 			Optional.<AffiliateRec>absent (),
 			command);

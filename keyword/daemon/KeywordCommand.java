@@ -147,7 +147,7 @@ class KeywordCommand
 						message));
 
 				return inboxLogic.inboxNotProcessed (
-					message,
+					inbox,
 					Optional.<ServiceRec>absent (),
 					Optional.<AffiliateRec>absent (),
 					Optional.of (command),
@@ -262,7 +262,7 @@ class KeywordCommand
 		}
 
 		return inboxLogic.inboxNotProcessed (
-			message,
+			inbox,
 			Optional.<ServiceRec>absent (),
 			Optional.<AffiliateRec>absent (),
 			Optional.of (command),

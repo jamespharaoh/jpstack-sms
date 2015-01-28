@@ -17,6 +17,8 @@ import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.exception.logic.ExceptionLogic;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 
+import com.google.common.base.Optional;
+
 /**
  * Daemon to periodicaly scan the entire outbox and gather statistics on the
  * messages ready for delivery, summarised by route. Clients can query the
@@ -134,7 +136,7 @@ class SmsOutboxMonitor
 						"daemon",
 						"Outbox monitor",
 						exception,
-						null,
+						Optional.<Integer>absent (),
 						false);
 
 					// sleep 1 minute

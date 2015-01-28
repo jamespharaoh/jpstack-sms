@@ -9,9 +9,6 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
-
-import org.joda.time.Duration;
-
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -31,7 +28,6 @@ import wbs.sms.message.inbox.model.InboxAttemptObjectHelper;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
-import wbs.sms.message.inbox.model.InboxState;
 import wbs.sms.route.core.model.RouteRec;
 
 import com.google.common.base.Optional;
@@ -157,7 +153,7 @@ class ReceivedManager
 			} else {
 
 				inboxLogic.inboxNotProcessed (
-					message,
+					inbox,
 					Optional.<ServiceRec>absent (),
 					Optional.<AffiliateRec>absent (),
 					Optional.<CommandRec>absent (),
@@ -199,35 +195,15 @@ class ReceivedManager
 					"Route %s",
 					route.getCode ()),
 				exception,
-				null,
+				Optional.<Integer>absent (),
 				false);
 
-			inboxAttemptHelper.insert (
-				new InboxAttemptRec ()
-
-				.setInbox (
-					inbox)
-
-				.setIndex (
-					inbox.getNumAttempts ())
-
-				.setResult (
-					InboxState.pending)
-
-				.setTimestamp (
-					transaction.now ())
-
-			);
-
-			inbox
-
-				.setNumAttempts (
-					inbox.getNumAttempts () + 1)
-
-				.setNextAttempt (
-					inbox.getNextAttempt ().plus (
-						Duration.standardSeconds (
-							inbox.getNumAttempts ())));
+			inboxLogic.inboxProcessingFailed (
+				inbox,
+				stringFormat (
+					"Threw %s: %s",
+					exception.getClass ().getSimpleName (),
+					exception.getMessage ()));
 
 			transaction.commit ();
 

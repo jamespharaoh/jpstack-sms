@@ -12,7 +12,6 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
-import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
@@ -71,11 +70,8 @@ class NullCommandTypeHandler
 	public
 	InboxAttemptRec handle () {
 
-		MessageRec message =
-			inbox.getMessage ();
-
 		return inboxLogic.inboxNotProcessed (
-			message,
+			inbox,
 			Optional.<ServiceRec>absent (),
 			Optional.<AffiliateRec>absent (),
 			Optional.of (command),

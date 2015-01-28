@@ -31,6 +31,8 @@ import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.OutboxLogic;
 import wbs.sms.route.core.model.RouteObjectHelper;
 
+import com.google.common.base.Optional;
+
 @Log4j
 @SingletonComponent ("messageDaemon")
 public
@@ -94,7 +96,7 @@ class MessageDaemon
 					"daemon",
 					"MessageDaemon",
 					exception,
-					null,
+					Optional.<Integer>absent (),
 					false);
 
 			}

@@ -46,6 +46,10 @@ class InboxAttemptRec
 	@SimpleField
 	InboxState result;
 
+	@SimpleField (
+		nullable = true)
+	String statusMessage;
+
 	// compare to
 
 	@Override

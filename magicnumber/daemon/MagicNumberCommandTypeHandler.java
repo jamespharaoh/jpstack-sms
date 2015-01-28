@@ -96,7 +96,7 @@ class MagicNumberCommandTypeHandler
 		if (magicNumber == null) {
 
 			return inboxLogic.inboxNotProcessed (
-				message,
+				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
 				Optional.of (command),
@@ -116,7 +116,7 @@ class MagicNumberCommandTypeHandler
 		if (magicNumberUse == null) {
 
 			return inboxLogic.inboxNotProcessed (
-				message,
+				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
 				Optional.of (command),
@@ -129,7 +129,7 @@ class MagicNumberCommandTypeHandler
 		return commandManager.handle (
 			inbox,
 			magicNumberUse.getCommand (),
-			Optional.<Integer>absent (),
+			Optional.of (magicNumberUse.getRefId ()),
 			rest);
 
 	}

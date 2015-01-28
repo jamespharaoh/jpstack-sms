@@ -57,7 +57,8 @@ class MessageInboxSummaryPart
 			"<th>ID</th>\n",
 			"<th>From</th>\n",
 			"<th>To</th>\n",
-			"<th>Time</th>\n",
+			"<th>Created</th>\n",
+			"<th>Tries</th>\n",
 			"<th>Route</th>\n",
 			"<th>Actions</th>\n",
 			"</tr>\n");
@@ -66,6 +67,10 @@ class MessageInboxSummaryPart
 			InboxRec inbox
 				: inboxes
 		) {
+
+			printFormat (
+				"<tr class=\"sep\">\n",
+				"</tr>\n");
 
 			MessageRec message =
 				inbox.getMessage ();
@@ -94,11 +99,16 @@ class MessageInboxSummaryPart
 
 			printFormat (
 				"<td>%h</td>\n",
+				inbox.getNumAttempts ());
+
+			printFormat (
+				"<td>%h</td>\n",
 				message.getRoute ().getCode ());
 
 			printFormat (
 				"<td",
-				" rowspan=\"2\"",
+				" rowspan=\"%h\"",
+				inbox.getStatusMessage () != null ? 3 : 2,
 				"><input",
 				" type=\"submit\"",
 				" name=\"ignore_%h\"",
@@ -109,13 +119,33 @@ class MessageInboxSummaryPart
 			printFormat (
 				"</tr>\n");
 
+			// message text
+
 			printFormat (
-				"<tr>\n",
+				"<tr>\n");
 
-				"<td colspan=\"5\">%h</td>\n",
-				message.getText ().getText (),
+			printFormat (
+				"<td colspan=\"6\">%h</td>\n",
+				message.getText ().getText ());
 
+			printFormat (
 				"</tr>\n");
+
+			// status message
+
+			if (inbox.getStatusMessage () != null) {
+
+				printFormat (
+					"<tr>\n");
+
+				printFormat (
+					"<td colspan=\"6\">%h</td>\n",
+					inbox.getStatusMessage ());
+
+				printFormat (
+					"</tr>\n");
+
+			}
 
 		}
 

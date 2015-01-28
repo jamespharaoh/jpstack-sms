@@ -69,6 +69,8 @@
 			<context-tab-responder-page
 				name="thread"/>
 
+			<object-events-page/>
+
 		</object>
 
 	</object-context>

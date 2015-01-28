@@ -21,7 +21,7 @@ class InboxDaoHibernate
 
 	@Override
 	public
-	int count () {
+	int countPending () {
 
 		return (int) (long) findOne (
 			Long.class,
@@ -56,6 +56,11 @@ class InboxDaoHibernate
 				"_inbox")
 
 			.add (
+				Restrictions.eq (
+					"_inbox.state",
+					InboxState.pending))
+
+			.add (
 				Restrictions.le (
 					"_inbox.nextAttempt",
 					now))
@@ -87,9 +92,14 @@ class InboxDaoHibernate
 				InboxRec.class,
 				"_inbox")
 
+			.add (
+				Restrictions.eq (
+					"_inbox.state",
+					InboxState.pending))
+
 			.addOrder (
 				Order.desc (
-					"_inbox.timestamp"))
+					"_inbox.createdTime"))
 
 			.addOrder (
 				Order.desc (
