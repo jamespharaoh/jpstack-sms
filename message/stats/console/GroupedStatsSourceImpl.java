@@ -27,11 +27,15 @@ public
 class GroupedStatsSourceImpl
 	implements GroupedStatsSource {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
 	@Inject
 	RouteConsoleHelper routeHelper;
+
+	// properties
 
 	@Getter @Setter
 	SmsStatsCriteria groupCriteria;
@@ -51,6 +55,8 @@ class GroupedStatsSourceImpl
 	@Getter @Setter
 	UrlParams urlParams;
 
+	// implementation
+
 	@Override
 	public
 	Map<String,GroupStats> load (
@@ -63,8 +69,10 @@ class GroupedStatsSourceImpl
 		RouteRec route =
 			statsSource.findRoute ();
 
-		if (route == null
-				&& critMap.containsKey (SmsStatsCriteria.route)) {
+		if (
+			route == null
+			&& critMap.containsKey (SmsStatsCriteria.route)
+		) {
 
 			Set<Integer> routeIds =
 				critMap.get (SmsStatsCriteria.route);
@@ -79,12 +87,14 @@ class GroupedStatsSourceImpl
 
 		}
 
-		for (MessageStatsRec messageStats
+		for (
+			MessageStatsRec messageStats
 				: statsSource.findMessageStats (
 					start,
 					end,
 					critMap,
-					filterMap)) {
+					filterMap)
+		) {
 
 			String groupName =
 				groupName (messageStats);
@@ -141,7 +151,7 @@ class GroupedStatsSourceImpl
 
 	}
 
-	private String groupName (
+	String groupName (
 			MessageStatsRec mse) {
 
 		if (groupCriteria == null)
@@ -178,7 +188,7 @@ class GroupedStatsSourceImpl
 
 	}
 
-	private String groupUrl (
+	String groupUrl (
 			MessageStatsRec mse) {
 
 		if (groupCriteria == null)
@@ -195,7 +205,7 @@ class GroupedStatsSourceImpl
 
 	}
 
-	private Integer groupId (
+	Integer groupId (
 			MessageStatsRec mse) {
 
 		if (groupCriteria == null)
@@ -225,17 +235,15 @@ class GroupedStatsSourceImpl
 
 		}
 
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException ();
+
 	}
 
-	private String objectName (
+	String objectName (
 			Record<?> object) {
 
-		return objectManager.objectPath (
-			object,
-			null,
-			true,
-			false);
+		return objectManager.objectPathMini (
+			object);
 
 	}
 

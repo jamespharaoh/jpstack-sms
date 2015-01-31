@@ -317,7 +317,7 @@ class SmsStatsFormatter {
 							route != null && route.getInCharge () > 0
 								? currencyLogic.formatText (
 									route.getCurrency (),
-									route.getInCharge () * messageCount)
+									Long.valueOf(route.getInCharge () * messageCount))
 								: noZero (messageCount);
 
 						break;
@@ -328,7 +328,7 @@ class SmsStatsFormatter {
 							route != null && route.getOutCharge () > 0
 								? currencyLogic.formatText (
 									route.getCurrency (),
-									route.getOutCharge () * messageCount)
+									Long.valueOf(route.getOutCharge () * messageCount))
 								: noZero (messageCount);
 
 						break;

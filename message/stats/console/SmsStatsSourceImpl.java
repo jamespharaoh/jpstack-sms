@@ -17,6 +17,7 @@ import org.joda.time.LocalDate;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
+import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -53,21 +54,21 @@ class SmsStatsSourceImpl
 				fixedCriteriaMap,
 				dynamicCriteriaMap);
 
-		Map<String,Object> searchMap =
-			smsStatsConsoleLogic.critMapToMessageStatsEntrySearchMap (
+		MessageStatsSearch search =
+			smsStatsConsoleLogic.critMapToMessageStatsSearch (
 				intersectedCriteriaMap,
 				filterMap);
 
-		searchMap.put (
-			"dateAfter",
-			startDate);
+		search
 
-		searchMap.put (
-			"dateBefore",
-			endDate);
+			.dateAfter (
+				startDate)
+
+			.dateBefore (
+				endDate);
 
 		return messageStatsHelper.search (
-			searchMap);
+			search);
 
 	}
 

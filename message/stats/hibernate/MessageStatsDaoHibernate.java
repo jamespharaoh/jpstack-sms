@@ -1,10 +1,6 @@
 package wbs.sms.message.stats.hibernate;
 
-import static wbs.framework.utils.etc.Misc.equal;
-
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -12,6 +8,7 @@ import org.hibernate.criterion.Restrictions;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.stats.model.MessageStatsDao;
 import wbs.sms.message.stats.model.MessageStatsRec;
+import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
 
 public
 class MessageStatsDaoHibernate
@@ -21,143 +18,142 @@ class MessageStatsDaoHibernate
 	@Override
 	public
 	List<MessageStatsRec> search (
-			Map<String,Object> searchMap) {
+			MessageStatsSearch search) {
 
-		Criteria crit =
-			createCriteria (MessageStatsRec.class);
+		Criteria criteria =
+			createCriteria (
+				MessageStatsRec.class);
 
-		for (Map.Entry<String,Object> entry
-				: searchMap.entrySet ()) {
+		if (search.dateAfter () != null) {
 
-			String key =
-				entry.getKey ();
+			criteria.add (
+				Restrictions.ge (
+					"messageStatsId.date",
+					search.dateAfter ()));
 
-			Object value =
-				entry.getValue ();
+		}
 
-			if (equal (key, "dateAfter")) {
+		if (search.dateBefore () != null) {
 
-				crit.add (
-					Restrictions.ge (
-						"messageStatsId.date",
-						value));
+			criteria.add (
+				Restrictions.lt (
+					"messageStatsId.date",
+					search.dateBefore ()));
 
-			} else if (equal (key, "dateBefore")) {
+		}
 
-				crit.add (
-					Restrictions.lt (
-						"messageStatsId.date",
-						value));
+		if (search.routeId () != null) {
 
-			} else if (equal (key, "routeId")) {
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.route.id",
+					search.routeId ()));
 
-				crit.add (
-					Restrictions.eq (
-						"messageStatsId.route.id",
-						(Integer) value));
+		}
 
-			} else if (equal (key, "routeIdIn")) {
+		if (search.routeIdIn () != null) {
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.route.id",
-						(Collection<?>) value));
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.route.id",
+					search.routeIdIn ()));
 
-			} else if (equal (key, "serviceId")) {
+		}
 
-				crit.add (
-					Restrictions.eq (
-						"messageStatsId.service.id",
-						(Integer) value));
+		if (search.serviceId () != null) {
 
-			} else if (equal (key, "serviceIdIn")) {
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.service.id",
+					search.serviceId ()));
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.service.id",
-						(Collection<?>) value));
+		}
 
-			} else if (equal (key, "affiliateIdIn")) {
+		if (search.serviceIdIn () != null) {
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.affiliate.id",
-						(Collection<?>) value));
+			criteria.add (
+				Restrictions.in (
+					"messageStatsId.service.id",
+					search.serviceIdIn ()));
 
-			} else if (equal (key, "affiliateId")) {
+		}
 
-				crit.add (
-					Restrictions.eq (
-						"messageStatsId.affiliate.id",
-						(Integer) value));
+		if (search.affiliateId () != null) {
 
-			} else if (equal (key, "batchIdIn")) {
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.affiliate.id",
+					search.affiliateId ()));
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.batch.id",
-						(Collection<?>) value));
+		}
 
-			} else if (equal (key, "batchId")) {
+		if (search.affiliateIdIn () != null) {
 
-				crit.add (
-					Restrictions.eq (
-						"messageStatsId.batch.id",
-						(Integer) value));
+			criteria.add (
+				Restrictions.in (
+					"messageStatsId.affiliate.id",
+					search.affiliateIdIn ()));
 
-			} else if (equal (key, "networkIdIn")) {
+		}
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.network.id",
-						(Collection<?>) value));
+		if (search.batchId () != null) {
 
-			} else if (equal (key, "revenueIdIn")) {
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.batch.id",
+					search.batchId ()));
 
-				crit.add (
-					Restrictions.in (
-						"messageStatsId.network.id",
-						(Collection<?>) value));
+		}
 
-			} else if (equal (key, "networkId")) {
+		if (search.batchIdIn () != null) {
 
-				crit.add (
-					Restrictions.eq (
-						"messageStatsId.network.id",
-						(Integer) value));
+			criteria.add (
+				Restrictions.in (
+					"messageStatsId.batch.id",
+					search.batchIdIn ()));
 
-			} else if (equal (key, "filter")) {
+		}
 
-				@SuppressWarnings ("unchecked")
-				Map<String,Collection<?>> map =
-					(Map<String,Collection<?>>) value;
+		if (search.networkId () != null) {
 
-				crit.add (Restrictions.or (
+			criteria.add (
+				Restrictions.eq (
+					"messageStatsId.network.id",
+					search.networkId ()));
 
-					Restrictions.in (
-						"messageStatsId.service.id",
-						map.get ("serviceIds")),
+		}
 
-					Restrictions.in (
-						"messageStatsId.affiliate.id",
-						map.get ("affiliateIds")),
+		if (search.networkIdIn () != null) {
 
-					Restrictions.in (
-						"messageStatsId.route.id",
-						map.get ("routeIds"))));
+			criteria.add (
+				Restrictions.in (
+					"messageStatsId.network.id",
+					search.networkIdIn ()));
 
-			} else {
+		}
 
-				throw new IllegalArgumentException (
-					"Unrecognised search key " + key);
+		if (search.filter ()) {
 
-			}
+			criteria.add (
+				Restrictions.or (
+
+				Restrictions.in (
+					"messageStatsId.service.id",
+					search.filterServiceIds ()),
+
+				Restrictions.in (
+					"messageStatsId.affiliate.id",
+					search.filterAffiliateIds ()),
+
+				Restrictions.in (
+					"messageStatsId.route.id",
+					search.filterRouteIds ())));
 
 		}
 
 		return findMany (
 			MessageStatsRec.class,
-			crit.list ());
+			criteria.list ());
 
 	}
 

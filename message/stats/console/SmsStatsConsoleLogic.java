@@ -1,7 +1,10 @@
 package wbs.sms.message.stats.console;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
 
 public
 interface SmsStatsConsoleLogic {
@@ -16,11 +19,13 @@ interface SmsStatsConsoleLogic {
 			Map<SmsStatsCriteria,
 			Set<Integer>>... critMaps);
 
-	String nameForCriteria (
-			SmsStatsCriteria statsCriteria);
+	MessageStatsSearch setSearchCriteria (
+			MessageStatsSearch messageStatsSearch,
+			SmsStatsCriteria statsCriteria,
+			Collection<Integer> value);
 
-	Map<String,Object> critMapToMessageStatsEntrySearchMap (
-			Map<SmsStatsCriteria, Set<Integer>> critMap,
-			Map<SmsStatsCriteria, Set<Integer>> filterMap);
+	MessageStatsSearch critMapToMessageStatsSearch (
+			Map<SmsStatsCriteria,Set<Integer>> critMap,
+			Map<SmsStatsCriteria,Set<Integer>> filterMap);
 
 }

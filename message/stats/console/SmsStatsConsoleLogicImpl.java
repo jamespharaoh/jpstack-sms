@@ -21,6 +21,7 @@ import wbs.platform.priv.console.PrivChecker;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
+import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
 import wbs.sms.network.console.NetworkConsoleHelper;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
@@ -267,72 +268,83 @@ class SmsStatsConsoleLogicImpl
 	 */
 	@Override
 	public
-	Map<String,Object> critMapToMessageStatsEntrySearchMap (
+	MessageStatsSearch critMapToMessageStatsSearch (
 			Map<SmsStatsCriteria,Set<Integer>> critMap,
 			Map<SmsStatsCriteria,Set<Integer>> filterMap) {
 
-		Map<String,Object> ret =
-			new HashMap<String, Object>();
+		MessageStatsSearch search =
+			new MessageStatsSearch ();
 
-		for (Map.Entry<SmsStatsCriteria,Set<Integer>> ent
-				: critMap.entrySet ()) {
+		for (
+			Map.Entry<SmsStatsCriteria,Set<Integer>> ent
+				: critMap.entrySet ()
+		) {
 
-			ret.put (
-				nameForCriteria (ent.getKey ()),
-				new HashSet<Integer> (ent.getValue ()));
+			setSearchCriteria (
+				search,
+				ent.getKey (),
+				ent.getValue ());
 
 		}
 
 		if (filterMap != null) {
 
-			Map<String,Object> retFilter =
-				new HashMap<String,Object> ();
+			search
 
-			retFilter.put (
-				"serviceIds",
-				new HashSet<Integer> (
-					filterMap.get (SmsStatsCriteria.service)));
+				.filter (
+					true)
 
-			retFilter.put (
-				"affiliateIds",
-				new HashSet<Integer> (
-					filterMap.get (SmsStatsCriteria.affiliate)));
+				.filterServiceIds (
+					filterMap.get (
+						SmsStatsCriteria.service))
 
-			retFilter.put (
-				"routeIds",
-				new HashSet<Integer> (
-					filterMap.get (SmsStatsCriteria.route)));
+				.filterAffiliateIds (
+					filterMap.get (
+						SmsStatsCriteria.affiliate))
 
-			ret.put (
-				"filter",
-				retFilter);
+				.filterRouteIds (
+					filterMap.get (
+						SmsStatsCriteria.route));
 
 		}
 
-		return ret;
+		return search;
+
 	}
 
 	@Override
 	public
-	String nameForCriteria (
-			SmsStatsCriteria statsCriteria) {
+	MessageStatsSearch setSearchCriteria (
+			MessageStatsSearch search,
+			SmsStatsCriteria statsCriteria,
+			Collection<Integer> value) {
 
 		switch (statsCriteria) {
 
 		case route:
-			return "routeIdIn";
+
+			return search.routeIdIn (
+				value);
 
 		case service:
-			return "serviceIdIn";
+
+			return search.serviceIdIn (
+				value);
 
 		case affiliate:
-			return "affiliateIdIn";
+
+			return search.affiliateIdIn (
+				value);
 
 		case batch:
-			return "batchIdIn";
+
+			return search.batchIdIn (
+				value);
 
 		case network:
-			return "networkIdIn";
+
+			return search.networkIdIn (
+				value);
 
 		}
 
