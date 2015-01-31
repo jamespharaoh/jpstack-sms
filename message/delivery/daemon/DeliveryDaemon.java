@@ -210,10 +210,10 @@ class DeliveryDaemon
 
 				// make sure the delivery notice type is not a proxy
 
-				delivery
-					.getMessage ()
-					.getDeliveryType ()
-					.getId ();
+				transaction.fetch (
+					delivery,
+					delivery.getMessage (),
+					delivery.getMessage ().getDeliveryType ());
 
 				// and add this to the buffer
 

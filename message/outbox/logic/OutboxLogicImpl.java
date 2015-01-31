@@ -251,8 +251,9 @@ class OutboxLogicImpl
 			outboxHelper.remove (
 				outbox);
 
-		} else if (message.getStatus ()
-				== MessageStatus.held) {
+		} else if (
+			message.getStatus () == MessageStatus.held
+		) {
 
 			// cancel message
 

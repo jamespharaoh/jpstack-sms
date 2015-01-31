@@ -112,10 +112,17 @@ class ReportLogicImpl
 
 		// update received time if appropriate
 
-		if (newMessageStatus == MessageStatus.delivered
-				&& message.getProcessedTime () == null)
+		if (
+			newMessageStatus == MessageStatus.delivered
+			&& message.getProcessedTime () == null
+		) {
 
-			message.setProcessedTime (new Date ());
+			message
+
+				.setProcessedTime (
+					new Date ());
+
+		}
 
 		// depending on the new and old status, update it
 
@@ -124,11 +131,13 @@ class ReportLogicImpl
 
 			case sent:
 
-				if (in (newMessageStatus,
+				if (
+					in (newMessageStatus,
 						MessageStatus.sent,
 						MessageStatus.submitted,
 						MessageStatus.undelivered,
-						MessageStatus.delivered)) {
+						MessageStatus.delivered)
+				) {
 
 					messageLogic.messageStatus (
 						message,
@@ -140,10 +149,12 @@ class ReportLogicImpl
 
 			case submitted:
 
-				if (in (newMessageStatus,
+				if (
+					in (newMessageStatus,
 						MessageStatus.submitted,
 						MessageStatus.delivered,
-						MessageStatus.undelivered)) {
+						MessageStatus.undelivered)
+				) {
 
 					messageLogic.messageStatus (
 						message,
@@ -155,9 +166,11 @@ class ReportLogicImpl
 
 			case reportTimedOut:
 
-				if (in (newMessageStatus,
+				if (
+					in (newMessageStatus,
 						MessageStatus.delivered,
-						MessageStatus.undelivered)) {
+						MessageStatus.undelivered)
+				) {
 
 					messageLogic.messageStatus (
 						message,
@@ -169,8 +182,10 @@ class ReportLogicImpl
 
 			case undelivered:
 
-				if (in (newMessageStatus,
-						MessageStatus.delivered)) {
+				if (
+					in (newMessageStatus,
+						MessageStatus.delivered)
+				) {
 
 					messageLogic.messageStatus (
 						message,
@@ -206,8 +221,9 @@ class ReportLogicImpl
 				message.getOtherId (),
 				message.getStatus (),
 				ifNull (
-					messageReportCode != null ?
-						messageReportCode.getDescription () : "",
+					messageReportCode != null
+						? messageReportCode.getDescription ()
+						: "",
 					"")));
 
 	}
