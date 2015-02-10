@@ -2,20 +2,29 @@ package wbs.sms.route.test.console;
 
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.console.action.ConsoleAction;
 import wbs.platform.console.request.ConsoleRequestContext;
+import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
+
+import com.google.common.base.Optional;
 
 @PrototypeComponent ("routeTestTwoWayAction")
 public
@@ -77,36 +86,32 @@ class RouteTestTwoWayAction
 
 			MessageRec messageRecord =
 				inboxLogic.inboxInsert (
-					null,
+					Optional.<String>absent (),
 					textHelper.findOrCreate (messageString),
 					numFrom,
 					numTo,
 					route,
-					null,
-					null,
-					null,
-					null,
-					null);
+					Optional.<NetworkRec>absent (),
+					Optional.<Instant>absent (),
+					Collections.<MediaRec>emptyList (),
+					Optional.<String>absent (),
+					Optional.<String>absent ());
 
 			requestContext.addNotice (
 				stringFormat (
 					"Message %s inserted",
 					messageRecord.getId ()));
 
-			// wait a couple of seconds for the message to be processed
-			// TODO say what?
-
-			try {
-
-				Thread.sleep (2000);
-
-			} catch (InterruptedException exception) {
-
-			}
-
 		}
 
 		transaction.commit ();
+
+		// wait a couple of seconds for the message to be processed
+
+		try {
+			Thread.sleep (2000);
+		} catch (InterruptedException exception) {
+		}
 
 		return null;
 

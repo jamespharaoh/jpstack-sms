@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,17 +23,24 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Instant;
+
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.daemon.AbstractDaemonService;
+import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.gsm.Pdu;
 import wbs.sms.gsm.SmsDeliverPdu;
 import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.modempoll.model.ModemPollQueueObjectHelper;
 import wbs.sms.modempoll.model.ModemPollQueueRec;
+import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
+
+import com.google.common.base.Optional;
 
 @Log4j
 public
@@ -525,16 +533,16 @@ class ModemPollDaemon
 				routeHelper.find (routeId);
 
 			inboxLogic.inboxInsert (
-				null,
+				Optional.<String>absent (),
 				textHelper.findOrCreate (pdu.getMessage ()),
 				pdu.getOriginatingAddress ().getAddressValue (),
 				destinationNumber,
 				route,
-				null,
-				null,
-				null,
-				null,
-				null);
+				Optional.<NetworkRec>absent (),
+				Optional.<Instant>absent (),
+				Collections.<MediaRec>emptyList (),
+				Optional.<String>absent (),
+				Optional.<String>absent ());
 
 			transaction.commit ();
 
