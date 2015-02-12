@@ -27,6 +27,8 @@ public
 class SmsStatsSourceImpl
 	implements SmsStatsSource {
 
+	// dependencies
+
 	@Inject
 	MessageStatsObjectHelper messageStatsHelper;
 
@@ -36,9 +38,13 @@ class SmsStatsSourceImpl
 	@Inject
 	SmsStatsConsoleLogic smsStatsConsoleLogic;
 
+	// state
+
 	@Getter @Setter
 	Map<SmsStatsCriteria,Set<Integer>> fixedCriteriaMap =
 		Collections.emptyMap ();
+
+	// implementation
 
 	@Override
 	public

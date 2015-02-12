@@ -54,7 +54,7 @@ class MessageStatsDaoHibernate
 		if (search.routeIdIn () != null) {
 
 			criteria.add (
-				Restrictions.eq (
+				Restrictions.in (
 					"messageStatsId.route.id",
 					search.routeIdIn ()));
 
