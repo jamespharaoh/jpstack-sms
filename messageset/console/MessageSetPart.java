@@ -20,8 +20,6 @@ import wbs.framework.utils.etc.Html;
 import wbs.platform.console.context.ConsoleContextScriptRef;
 import wbs.platform.console.html.ScriptRef;
 import wbs.platform.console.part.AbstractPagePart;
-import wbs.platform.console.request.FormData;
-import wbs.platform.console.request.MapFormData;
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
@@ -41,7 +39,7 @@ class MessageSetPart
 	@Getter @Setter
 	MessageSetFinder messageSetFinder;
 
-	FormData formData;
+	Map<String,String> formData;
 	int numMessages;
 
 	Collection<RouteRec> routes;
@@ -70,11 +68,8 @@ class MessageSetPart
 	void prepareFormData (
 			MessageSetRec messageSet) {
 
-		Map<String,String> map =
-			new HashMap<String,String>();
-
 		formData =
-			new MapFormData (map);
+			new HashMap<String,String>();
 
 		numMessages =
 			messageSet.getMessages ().size () + 2;
@@ -82,7 +77,7 @@ class MessageSetPart
 		if (numMessages < 4)
 			numMessages = 4;
 
-		map.put (
+		formData.put (
 			"num_messages",
 			Integer.toString (numMessages));
 
@@ -99,34 +94,34 @@ class MessageSetPart
 
 			if (messageSetMessage != null) {
 
-				map.put (
+				formData.put (
 					"enabled_" + index,
 					"on");
 
-				map.put (
+				formData.put (
 					"route_" + index,
 					Integer.toString (
 						messageSetMessage.getRoute ().getId ()));
 
-				map.put (
+				formData.put (
 					"number_" + index,
 					messageSetMessage.getNumber ());
 
-				map.put (
+				formData.put (
 					"message_" + index,
 					messageSetMessage.getMessage ());
 
 			} else {
 
-				map.put (
+				formData.put (
 					"route_" + index,
 					"");
 
-				map.put (
+				formData.put (
 					"number_" + index,
 					"");
 
-				map.put (
+				formData.put (
 					"message_" + index,
 					"");
 
@@ -187,8 +182,10 @@ class MessageSetPart
 		// output checkbox
 		out.print("<td rowspan=\"2\"><input type=\"checkbox\" id=\"enabled_"
 				+ row + "\" name=\"enabled_" + row + "\"");
-		if (formData.contains("enabled_" + row))
+
+		if (formData.containsKey ("enabled_" + row))
 			out.print(" checked");
+
 		out.println(" onclick=\"form_magic ()\"></td>");
 
 		// output i
