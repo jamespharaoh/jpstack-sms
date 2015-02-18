@@ -12,9 +12,11 @@ import wbs.framework.entity.annotations.CommonEntity;
 import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.IndexField;
 import wbs.framework.entity.annotations.ParentField;
+import wbs.framework.entity.annotations.ReferenceField;
 import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
+import wbs.platform.exception.model.ExceptionLogRec;
 
 @Accessors (chain = true)
 @Data
@@ -49,6 +51,10 @@ class InboxAttemptRec
 	@SimpleField (
 		nullable = true)
 	String statusMessage;
+
+	@ReferenceField (
+		nullable = true)
+	ExceptionLogRec exceptionLog;
 
 	// compare to
 

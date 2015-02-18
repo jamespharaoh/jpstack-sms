@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.console.helper.ConsoleObjectManager;
 import wbs.platform.console.misc.TimeFormatter;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.message.core.model.MessageRec;
@@ -22,6 +23,9 @@ class MessageInboxSummaryPart
 
 	@Inject
 	InboxObjectHelper inboxHelper;
+
+	@Inject
+	ConsoleObjectManager objectManager;
 
 	@Inject
 	TimeFormatter timeFormatter;
@@ -54,7 +58,7 @@ class MessageInboxSummaryPart
 
 		printFormat (
 			"<tr>\n",
-			"<th>ID</th>\n",
+			"<th>Message</th>\n",
 			"<th>From</th>\n",
 			"<th>To</th>\n",
 			"<th>Created</th>\n",
@@ -79,12 +83,14 @@ class MessageInboxSummaryPart
 				"<tr>\n");
 
 			printFormat (
-				"<td>%h</td>\n",
-				message.getId ());
+				"%s\n",
+				objectManager.tdForObjectMiniLink (
+					message));
 
 			printFormat (
-				"<td>%h</td>\n",
-				message.getNumFrom ());
+				"%s\n",
+				objectManager.tdForObjectMiniLink (
+					message.getNumber ()));
 
 			printFormat (
 				"<td>%h</td>\n",
@@ -102,8 +108,9 @@ class MessageInboxSummaryPart
 				inbox.getNumAttempts ());
 
 			printFormat (
-				"<td>%h</td>\n",
-				message.getRoute ().getCode ());
+				"%s\n",
+				objectManager.tdForObjectMiniLink (
+					message.getRoute ()));
 
 			printFormat (
 				"<td",

@@ -593,8 +593,8 @@ class InboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxProcessingFailed (
-			InboxRec inbox,
-			String statusMessage) {
+			@NonNull InboxRec inbox,
+			@NonNull String statusMessage) {
 
 		Transaction transaction =
 			database.currentTransaction ();

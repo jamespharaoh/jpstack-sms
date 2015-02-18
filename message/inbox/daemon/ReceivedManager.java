@@ -18,6 +18,7 @@ import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.daemon.ThreadManager;
 import wbs.platform.exception.logic.ExceptionLogic;
+import wbs.platform.exception.model.ExceptionLogObjectHelper;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -48,6 +49,9 @@ class ReceivedManager
 
 	@Inject
 	Database database;
+
+	@Inject
+	ExceptionLogObjectHelper exceptionLogHelper;
 
 	@Inject
 	ExceptionLogic exceptionLogic;
