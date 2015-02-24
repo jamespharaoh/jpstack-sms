@@ -1,5 +1,6 @@
 package wbs.sms.keyword.daemon;
 
+import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -10,9 +11,12 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
@@ -196,34 +200,11 @@ class KeywordCommand
 
 		// ok that didn't work, try a fallback thingy
 
-		KeywordSetFallbackRec keywordSetFallback =
-			keywordSetFallbackHelper.find (
-				keywordSet,
-				message.getNumber ());
+		Optional<InboxAttemptRec> keywordSetFallbackResult =
+			tryKeywordSetFallback ();
 
-		if (keywordSetFallback != null) {
-
-			if (log.isDebugEnabled ()) {
-
-				log.debug (
-					stringFormat (
-						"Using keyword set fallback %s ",
-						keywordSetFallback.getId (),
-						"for message %s",
-						inbox.getId ()));
-
-			}
-
-			CommandRec nextCommand =
-				keywordSetFallback.getCommand ();
-
-			return commandManager.handle (
-				inbox,
-				nextCommand,
-				Optional.<Integer>absent (),
-				rest);
-
-		}
+		if (keywordSetFallbackResult.isPresent ())
+			return keywordSetFallbackResult.get ();
 
 		// then try the keyword set's fallback
 
@@ -332,6 +313,66 @@ class KeywordCommand
 		return Optional.of (
 			Pair.of (
 				keywordRecord,
+				rest));
+
+	}
+
+	Optional<InboxAttemptRec> tryKeywordSetFallback () {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		// find fallback
+
+		KeywordSetFallbackRec keywordSetFallback =
+			keywordSetFallbackHelper.find (
+				keywordSet,
+				message.getNumber ());
+
+		if (keywordSetFallback == null)
+			return Optional.absent ();
+
+		// check age
+
+		if (keywordSet.getFallbackTimeout () != null) {
+
+			Instant maxAge =
+				transaction.now ().minus (
+					Duration.standardSeconds (
+						keywordSet.getFallbackTimeout ()));
+
+			Instant timestamp =
+				dateToInstant (
+					keywordSetFallback.getTimestamp ());
+
+			if (timestamp.isBefore (maxAge))
+				return Optional.absent ();
+
+		}
+
+		// debug
+
+		if (log.isDebugEnabled ()) {
+
+			log.debug (
+				stringFormat (
+					"Using keyword set fallback %s ",
+					keywordSetFallback.getId (),
+					"for message %s",
+					inbox.getId ()));
+
+		}
+
+		// chain fallback command
+
+		CommandRec nextCommand =
+			keywordSetFallback.getCommand ();
+
+		return Optional.of (
+			commandManager.handle (
+				inbox,
+				nextCommand,
+				Optional.<Integer>absent (),
 				rest));
 
 	}

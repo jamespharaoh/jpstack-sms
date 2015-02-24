@@ -43,7 +43,8 @@ class KeywordSetFallbackRec
 	// details
 
 	@SimpleField
-	Date timestamp = new Date ();
+	Date timestamp =
+		new Date ();
 
 	@ReferenceField
 	CommandRec command;

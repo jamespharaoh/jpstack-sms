@@ -95,6 +95,9 @@
 			name="fallbackCommand"
 			finder="command"/>
 
+		<seconds-field
+			name="fallbackTimeout"/>
+
 	</field-set>
 
 	<field-set
@@ -114,6 +117,10 @@
 		<object-field
 			name="fallbackCommand"
 			finder="command"/>
+
+		<seconds-field
+			name="fallbackTimeout"
+			nullable="yes"/>
 
 	</field-set>
 

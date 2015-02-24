@@ -67,6 +67,10 @@ class KeywordSetRec
 		nullable = true)
 	CommandRec fallbackCommand;
 
+	@SimpleField (
+		nullable = true)
+	Integer fallbackTimeout;
+
 	// children
 
 	@CollectionField (
