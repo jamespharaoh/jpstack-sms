@@ -1,7 +1,5 @@
 package wbs.sms.customer.model;
 
-import static wbs.framework.utils.etc.Misc.generateSixDigitCode;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +24,7 @@ import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.object.AbstractObjectHooks;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
+import wbs.framework.utils.RandomLogic;
 import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (chain = true)
@@ -133,6 +132,9 @@ class SmsCustomerRec
 		@Inject
 		Database database;
 
+		@Inject
+		RandomLogic randomLogic;
+
 		// indirect dependencies
 
 		@Inject
@@ -171,7 +173,7 @@ class SmsCustomerRec
 					number)
 
 				.setCode (
-					generateSixDigitCode ())
+					randomLogic.generateNumericNoZero (6))
 
 				.setCreatedTime (
 					transaction.now ())
