@@ -44,7 +44,7 @@ class MessageSearchResultsPart
 	@Inject
 	ConsoleObjectManager objectManager;
 
-	// implementatino
+	// implementation
 
 	@Override
 	public
