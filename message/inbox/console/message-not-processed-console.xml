@@ -1,16 +1,21 @@
 <console-module
 	name="message-not-processed">
 
-	<simple-context
-		name="messageNotProcessed">
+	<object-context
+		name="message.notProcessed"
+		bean-name="messageNotProcessed"
+		object-name="message">
 
-		<context-tab-responder-page
-			name="list"/>
+		<object>
 
-		<context-tab-action-page
-			name="summary"
-			hide-tab="yes"/>
+			<context-tab-responder-page
+				name="summary"/>
+	
+			<context-action-page
+				name="form"/>
 
-	</simple-context>
+		</object>
+
+	</object-context>
 
 </console-module>

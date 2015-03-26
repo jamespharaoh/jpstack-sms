@@ -28,6 +28,7 @@ import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.queue.model.QueueItemRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextRec;
 import wbs.platform.user.model.UserRec;
@@ -52,10 +53,12 @@ class MessageRec
 	@GeneratedIdField
 	Integer id;
 
-	@SimpleField (column = "thread_message_id")
+	@SimpleField (
+		column = "thread_message_id")
 	Integer threadId;
 
-	@SimpleField (nullable = true)
+	@SimpleField (
+		nullable = true)
 	String otherId;
 
 	@ReferenceField
@@ -166,6 +169,10 @@ class MessageRec
 	@SimpleField (
 		nullable = true)
 	Integer numAttempts;
+
+	@ReferenceField (
+		nullable = true)
+	QueueItemRec notProcessedQueueItem;
 
 	// TODO move this elsewhere
 	public

@@ -23,6 +23,8 @@ import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.queue.logic.QueueLogic;
+import wbs.platform.queue.model.QueueItemRec;
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
 import wbs.platform.service.model.ServiceObjectHelper;
@@ -92,6 +94,12 @@ class InboxLogicImplementation
 	NumberLogic numberLogic;
 
 	@Inject
+	ObjectManager objectManager;
+
+	@Inject
+	QueueLogic queueLogic;
+
+	@Inject
 	RootObjectHelper rootHelper;
 
 	@Inject
@@ -99,9 +107,6 @@ class InboxLogicImplementation
 
 	@Inject
 	TextObjectHelper textHelper;
-
-	@Inject
-	ObjectManager objectManager;
 
 	// implementation
 
@@ -461,10 +466,22 @@ class InboxLogicImplementation
 			.setStatusMessage (
 				statusMessage);
 
-		// update message
+		// create queue item
 
 		MessageRec message =
 			inbox.getMessage ();
+
+		QueueItemRec queueItem =
+			queueLogic.createQueueItem (
+				queueLogic.findQueue (
+					message.getRoute (),
+					"not_processed"),
+				message.getNumber (),
+				message,
+				message.getNumFrom (),
+				message.getText ().getText ());
+
+		// update message
 
 		messageLogic.messageStatus (
 			message,
@@ -489,7 +506,10 @@ class InboxLogicImplementation
 			.setCommand (
 				command.isPresent ()
 					? command.get ()
-					: message.getCommand ());
+					: message.getCommand ())
+
+			.setNotProcessedQueueItem (
+				queueItem);
 
 		// return
 

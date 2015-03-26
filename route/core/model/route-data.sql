@@ -39,3 +39,11 @@ SELECT priv_type_insert (
 	'Create routes',
 	'Create new routes in this slice',
 	true);
+
+SELECT queue_type_insert (
+	'route',
+	'not_processed',
+	'Not processed',
+	'number',
+	'message');
+	
