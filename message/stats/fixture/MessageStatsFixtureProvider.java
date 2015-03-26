@@ -6,8 +6,8 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
-import wbs.platform.menu.model.MenuObjectHelper;
-import wbs.platform.menu.model.MenuRec;
+import wbs.platform.menu.model.MenuItemObjectHelper;
+import wbs.platform.menu.model.MenuItemRec;
 
 @PrototypeComponent ("messageStatsFixtureProvider")
 public
@@ -20,7 +20,7 @@ class MessageStatsFixtureProvider
 	MenuGroupObjectHelper menuGroupHelper;
 
 	@Inject
-	MenuObjectHelper menuHelper;
+	MenuItemObjectHelper menuItemHelper;
 
 	// implementation
 
@@ -28,22 +28,34 @@ class MessageStatsFixtureProvider
 	public
 	void createFixtures () {
 
-		menuHelper.insert (
-			new MenuRec ()
+		menuItemHelper.insert (
+			new MenuItemRec ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (
 					GlobalId.root,
+					"test",
 					"sms"))
 
 			.setCode (
-				"stats")
+				"sms_stats")
+
+			.setName (
+				"SMS Stats")
+
+			.setDescription (
+				"View SMS message stats")
 
 			.setLabel (
-				"Stats")
+				"SMS Stats")
 
-			.setPath (
-				"/stats"));
+			.setTargetPath (
+				"/stats")
+
+			.setTargetFrame (
+				"main")
+
+		);
 
 	}
 
