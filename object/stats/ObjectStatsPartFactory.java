@@ -22,7 +22,7 @@ import wbs.platform.console.lookup.ObjectLookup;
 import wbs.platform.console.part.PagePart;
 import wbs.platform.console.request.ConsoleRequestContext;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
-import wbs.sms.message.stats.console.SmsStatsPart;
+import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsSource;
 import wbs.sms.message.stats.console.SmsStatsSourceImpl;
 
@@ -52,7 +52,7 @@ class ObjectStatsPartFactory
 	// prototype dependencies
 
 	@Inject
-	Provider<SmsStatsPart> smsStatsPartProvider;
+	Provider<GenericMessageStatsPart> smsStatsPartProvider;
 
 	@Inject
 	Provider<SmsStatsSourceImpl> smsStatsSourceProvider;

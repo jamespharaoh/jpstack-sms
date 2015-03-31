@@ -17,7 +17,7 @@ import wbs.sms.message.core.model.MessageStatus;
 import com.google.common.collect.ImmutableSet;
 
 @PrototypeComponent ("messageNotProcessedFormResponder")
-public 
+public
 class MessageNotProcessedFormResponder
 	extends HtmlResponder {
 
@@ -61,7 +61,7 @@ class MessageNotProcessedFormResponder
 	}
 
 	@Override
-	protected 
+	protected
 	void goHeadStuff () {
 
 		super.goHeadStuff ();
@@ -126,28 +126,28 @@ class MessageNotProcessedFormResponder
 				requestContext.resolveLocalUrl (
 					"/message.notProcessed.form"),
 				">\n");
-	
+
 			printFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"process_again\"",
 				" value=\"process again\"",
 				">\n");
-	
+
 			printFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"ignore\"",
 				" value=\"ignore\"",
 				">\n");
-	
+
 			printFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"processed_manually\"",
 				" value=\"processed manually\"",
 				">\n");
-	
+
 			printFormat (
 				"</form>\n");
 

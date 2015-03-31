@@ -2,6 +2,7 @@ package wbs.sms.gsm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 public
 class MessageSplitter {
@@ -101,15 +102,21 @@ class MessageSplitter {
 
 			.replaceFirst (
 				"\\{page}",
-				Integer.toString (page))
+				Matcher.quoteReplacement (
+					Integer.toString (
+						page)))
 
 			.replaceFirst (
 				"\\{pages}",
-				Integer.toString (pages));
+				Matcher.quoteReplacement (
+					Integer.toString (
+						pages)));
 
 		int spareLength =
 			160 - Gsm.length (
-				template.replaceFirst ("\\{message}", ""));
+				template.replaceFirst (
+					"\\{message}",
+					""));
 
 		if (spareLength < 2) {
 
@@ -123,8 +130,15 @@ class MessageSplitter {
 		if (Gsm.length (message) <= spareLength) {
 
 			return new String [] {
-				template.replaceFirst ("\\{message}", message),
-				null };
+
+				template.replaceFirst (
+					"\\{message}",
+					Matcher.quoteReplacement (
+						message)),
+
+				null
+
+			};
 		}
 
 		// find how much we can fit in
@@ -156,9 +170,16 @@ class MessageSplitter {
 				String part2 =
 					message.substring(d).trim();
 
-				return new String[] {
-					template.replaceFirst ("\\{message}", part1),
-					part2 };
+				return new String [] {
+
+					template.replaceFirst (
+						"\\{message}",
+						Matcher.quoteReplacement (
+							part1)),
+
+					part2
+
+				};
 
 			}
 
@@ -172,9 +193,16 @@ class MessageSplitter {
 		String part2 =
 			message.substring (maxSplit).trim ();
 
-		return new String[] {
-			template.replaceFirst ("\\{message}", part1),
-			part2 };
+		return new String [] {
+
+			template.replaceFirst (
+				"\\{message}",
+				Matcher.quoteReplacement (
+					part1)),
+
+			part2
+
+		};
 
 	}
 
@@ -216,17 +244,18 @@ class MessageSplitter {
 		String singleMessage =
 			templates.single
 
-				.replaceFirst (
-					"\\{page}",
-					"1")
+			.replaceFirst (
+				"\\{page}",
+				"1")
 
-				.replaceFirst (
-					"\\{pages}",
-					"1")
+			.replaceFirst (
+				"\\{pages}",
+				"1")
 
-				.replaceFirst (
-					"\\{message}",
-					message.trim ());
+			.replaceFirst (
+				"\\{message}",
+				Matcher.quoteReplacement (
+					message.trim ()));
 
 		if (Gsm.length (singleMessage) <= 160) {
 

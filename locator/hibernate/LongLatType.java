@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import lombok.NonNull;
+
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.StandardBasicTypes;
@@ -23,7 +25,7 @@ class LongLatType
 	public
 	String[] getPropertyNames () {
 
-		return new String[] {
+		return new String [] {
 			"longitude",
 			"latitude"
 		};
@@ -34,7 +36,7 @@ class LongLatType
 	public
 	Type[] getPropertyTypes () {
 
-		return new Type[] {
+		return new Type [] {
 			StandardBasicTypes.DOUBLE,
 			StandardBasicTypes.DOUBLE
 		};
@@ -44,7 +46,7 @@ class LongLatType
 	@Override
 	public
 	Object getPropertyValue (
-			Object component,
+			@NonNull Object component,
 			int property)
 		throws HibernateException {
 
@@ -54,10 +56,10 @@ class LongLatType
 		switch (property) {
 
 		case 0:
-			return longLat.getLongitude ();
+			return longLat.longitude ();
 
 		case 1:
-			return longLat.getLatitude ();
+			return longLat.latitude ();
 
 		}
 
@@ -92,33 +94,16 @@ class LongLatType
 			Object rightObject)
 		throws HibernateException {
 
-		if (leftObject == rightObject)
-			return true;
-
-		if (leftObject == null
-				|| rightObject == null)
-			return false;
-
-		LongLat leftLongLat =
-			(LongLat) leftObject;
-
-		LongLat rightLongLat =
-			(LongLat) rightObject;
-
-		return
-			equal (
-				leftLongLat.getLongitude (),
-				rightLongLat.getLongitude ())
-			&& equal (
-				leftLongLat.getLatitude (),
-				rightLongLat.getLatitude ());
+		return equal (
+			leftObject,
+			rightObject);
 
 	}
 
 	@Override
 	public
 	int hashCode (
-			Object value)
+			@NonNull Object value)
 		throws HibernateException {
 
 		return value.hashCode ();
@@ -128,64 +113,96 @@ class LongLatType
 	@Override
 	public
 	Object nullSafeGet (
-			ResultSet result,
-			String[] names,
-			SessionImplementor session,
-			Object owner)
-		throws HibernateException,
+			@NonNull ResultSet result,
+			@NonNull String[] names,
+			@NonNull SessionImplementor session,
+			@NonNull Object owner)
+		throws
+			HibernateException,
 			SQLException {
 
-		Double longitude = (Double)
+		Double longitude =
+			(Double)
 			StandardBasicTypes.DOUBLE.nullSafeGet (
 				result,
 				names [0],
 				session);
 
-		Double latitude = (Double)
+		Double latitude =
+			(Double)
 			StandardBasicTypes.DOUBLE.nullSafeGet (
 				result,
 				names [1],
 				session);
 
-		if (longitude == null || latitude == null)
+		if (
+			longitude == null
+			&& latitude == null
+		) {
+
 			return null;
 
-		return new LongLat (longitude, latitude);
+		}
+
+		if (
+			longitude == null
+			|| latitude == null
+		) {
+
+			throw new RuntimeException ();
+
+		}
+
+		return new LongLat (
+			longitude,
+			latitude);
+
 	}
 
 	@Override
 	public
 	void nullSafeSet (
-			PreparedStatement statement,
+			@NonNull PreparedStatement statement,
 			Object value,
 			int index,
-			SessionImplementor session)
-		throws HibernateException,
+			@NonNull SessionImplementor session)
+		throws
+			HibernateException,
 			SQLException {
 
-		LongLat longLat = (LongLat) value;
+		if (value == null) {
 
-		Double longitude =
-			longLat != null
-				? longLat.getLongitude ()
-				: null;
+			StandardBasicTypes.DOUBLE.nullSafeSet (
+				statement,
+				null,
+				index,
+				session);
 
-		Double latitude =
-			longLat != null
-				? longLat.getLatitude ()
-				: null;
+			StandardBasicTypes.DOUBLE.nullSafeSet (
+				statement,
+				null,
+				index + 1,
+				session);
 
-		StandardBasicTypes.DOUBLE.nullSafeSet (
-			statement,
-			longitude,
-			index,
-			session);
+		} else {
 
-		StandardBasicTypes.DOUBLE.nullSafeSet (
-			statement,
-			latitude,
-			index + 1,
-			session);
+			LongLat longLat =
+				(LongLat) value;
+
+			StandardBasicTypes.DOUBLE.nullSafeSet (
+				statement,
+				longLat.longitude (),
+				index,
+				session);
+
+			StandardBasicTypes.DOUBLE.nullSafeSet (
+				statement,
+				longLat.latitude (),
+				index + 1,
+				session);
+
+		}
+
 	}
 
 	@Override
@@ -207,8 +224,8 @@ class LongLatType
 	@Override
 	public
 	Serializable disassemble (
-			Object value,
-			SessionImplementor session)
+			@NonNull Object value,
+			@NonNull SessionImplementor session)
 		throws HibernateException {
 
 		return (Serializable) value;
@@ -218,9 +235,9 @@ class LongLatType
 	@Override
 	public
 	Object assemble (
-			Serializable cached,
-			SessionImplementor session,
-			Object object)
+			@NonNull Serializable cached,
+			@NonNull SessionImplementor session,
+			@NonNull Object object)
 		throws HibernateException {
 
 		return cached;
@@ -230,13 +247,14 @@ class LongLatType
 	@Override
 	public
 	Object replace (
-			Object original,
-			Object target,
-			SessionImplementor session,
-			Object owner)
+			@NonNull Object original,
+			@NonNull Object target,
+			@NonNull SessionImplementor session,
+			@NonNull Object owner)
 		throws HibernateException {
 
 		return original;
+
 	}
 
 }

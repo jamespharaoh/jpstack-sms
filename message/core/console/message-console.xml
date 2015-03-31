@@ -49,6 +49,11 @@
 				tab="message.search"
 				name="searchResultsCsv"/>
 
+			<!-- extensions -->
+
+			<extension-point
+				name="message.stats"/>
+
 		</list>
 
 		<object>

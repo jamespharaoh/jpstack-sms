@@ -1,8 +1,15 @@
 <console-module
 	name="sms-stats">
 
-	<simple-responder-file
-		path="/stats"
-		name=""/>
+	<extend-context
+		name="message.stats"
+		base-name="message"
+		extension-point="message.stats"
+		object-name="message">
+
+		<context-tab-responder-page
+			name="stats"/>
+
+	</extend-context>
 
 </console-module>

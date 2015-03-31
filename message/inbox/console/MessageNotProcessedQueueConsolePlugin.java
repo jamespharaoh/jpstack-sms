@@ -12,7 +12,7 @@ import wbs.platform.queue.model.QueueItemRec;
 import wbs.platform.queue.model.QueueRec;
 
 @PrototypeComponent ("messageNotProcessedQueueConsolePlugin")
-public 
+public
 class MessageNotProcessedQueueConsolePlugin
 	extends AbstractQueueConsolePlugin {
 

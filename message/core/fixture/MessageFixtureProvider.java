@@ -38,16 +38,16 @@ class MessageFixtureProvider
 					"sms"))
 
 			.setCode (
-				"sms_message")
+				"message")
 
 			.setName (
-				"SMS Message")
+				"Message")
 
 			.setDescription (
-				"Manage individual SMS messages")
+				"")
 
 			.setLabel (
-				"SMS Message")
+				"Messages")
 
 			.setTargetPath (
 				"/messages")

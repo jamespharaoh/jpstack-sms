@@ -19,7 +19,7 @@ import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.inbox.model.InboxRec;
 
 @PrototypeComponent ("messageNotProcessedFormAction")
-public 
+public
 class MessageNotProcessedFormAction
 	extends ConsoleAction {
 
@@ -122,7 +122,7 @@ class MessageNotProcessedFormAction
 				"queueHomeResponder");
 
 		}
-		
+
 		if (requestContext.parameter ("ignore") != null) {
 
 			queueLogic.processQueueItem (
@@ -147,7 +147,7 @@ class MessageNotProcessedFormAction
 				"queueHomeResponder");
 
 		}
-		
+
 		if (requestContext.parameter ("processed_manually") != null) {
 
 			queueLogic.processQueueItem (

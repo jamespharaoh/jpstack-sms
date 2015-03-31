@@ -46,4 +46,3 @@ SELECT queue_type_insert (
 	'Not processed',
 	'number',
 	'message');
-	
