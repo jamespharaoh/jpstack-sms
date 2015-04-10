@@ -117,11 +117,8 @@ class MessageOutboxRoutePart
 
 				printFormat (
 					"%s\n",
-					objectManager.tdForObject (
-						message.getNumber (),
-						null,
-						true,
-						true));
+					objectManager.tdForObjectMiniLink (
+						message.getNumber ()));
 
 			} else {
 
@@ -135,11 +132,8 @@ class MessageOutboxRoutePart
 
 				printFormat (
 					"%s\n",
-					objectManager.tdForObject (
-						message.getNumber (),
-						null,
-						true,
-						true));
+					objectManager.tdForObjectMiniLink (
+						message.getNumber ()));
 
 			} else {
 

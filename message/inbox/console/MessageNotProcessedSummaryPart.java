@@ -102,11 +102,8 @@ class MessageNotProcessedSummaryPart
 			"<th>Route</th>\n",
 
 			"%s\n",
-			objectManager.tdForObject (
-				message.getRoute (),
-				null,
-				true,
-				true),
+			objectManager.tdForObjectMiniLink (
+				message.getRoute ()),
 
 			"</tr>\n");
 

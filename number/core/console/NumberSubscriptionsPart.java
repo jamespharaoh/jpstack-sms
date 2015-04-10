@@ -97,20 +97,15 @@ class NumberSubscriptionsPart
 
 			printFormat (
 				"%s\n",
-				objectManager.tdForObject (
-					link.getParentObject (),
-					null,
-					false,
-					true));
+				objectManager.tdForObjectLink (
+					link.getParentObject ()));
 
 			printFormat (
 				"%s\n",
 				link.getSubscriptionObject () != null
-					? objectManager.tdForObject (
+					? objectManager.tdForObjectLink (
 						link.getSubscriptionObject (),
-						link.getParentObject (),
-						false,
-						true)
+						link.getParentObject ())
 					: "-");
 
 			printFormat (

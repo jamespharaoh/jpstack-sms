@@ -102,11 +102,8 @@ class MessageSearchResultsCsvPart
 					message.getStatus ()),
 
 				"\"%s\",",
-				objectManager.tdForObject (
-					message.getService (),
-					null,
-					true,
-					true),
+				objectManager.tdForObjectMiniLink (
+					message.getService ()),
 
 				"\"%h\",",
 				rowClass);

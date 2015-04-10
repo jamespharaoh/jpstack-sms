@@ -143,19 +143,13 @@ class MessageSearchResultsPart
 
 			printFormat (
 				"%s\n",
-				objectManager.tdForObject (
-					message.getService (),
-					null,
-					true,
-					true));
+				objectManager.tdForObjectMiniLink (
+					message.getService ()));
 
 			printFormat (
 				"%s\n",
-				objectManager.tdForObject (
-					message.getUser (),
-					null,
-					true,
-					true));
+				objectManager.tdForObjectMiniLink (
+					message.getUser ()));
 
 			printFormat (
 				"</tr>\n");
