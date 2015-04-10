@@ -83,7 +83,8 @@ class LocatorManager {
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		// index locators by type
 
@@ -155,7 +156,8 @@ class LocatorManager {
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		LocatorLogRec locatorLog =
 			locatorLogHelper.find (
@@ -178,7 +180,8 @@ class LocatorManager {
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		LocatorLogRec locatorLog =
 			locatorLogHelper.find (
@@ -207,7 +210,8 @@ class LocatorManager {
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		LocatorRec locatorRec =
 			locatorHelper.find (

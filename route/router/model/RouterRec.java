@@ -122,13 +122,16 @@ class RouterRec
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadOnly ();
+				database.beginReadOnly (
+					this);
 
 			List<ObjectTypeRec> objectTypes =
 				objectTypeDao.findAll ();
 
-			for (ObjectTypeRec objectType
-					: objectTypes) {
+			for (
+				ObjectTypeRec objectType
+					: objectTypes
+			) {
 
 				List<RouterTypeRec> routerTypes =
 					routerDao.findByParentObjectType (

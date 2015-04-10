@@ -48,7 +48,8 @@ class MessageInboxAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		List<String> notices =
 			new ArrayList<String> ();

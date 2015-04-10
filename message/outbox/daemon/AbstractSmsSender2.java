@@ -103,7 +103,8 @@ class AbstractSmsSender2
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		// get a list of routes
 
@@ -247,7 +248,8 @@ class AbstractSmsSender2
 
 				@Cleanup
 				Transaction transaction =
-					database.beginReadWrite ();
+					database.beginReadWrite (
+						this);
 
 				RouteRec route =
 					routeHelper.find (
@@ -511,7 +513,8 @@ class AbstractSmsSender2
 
 					@Cleanup
 					Transaction transaction =
-						database.beginReadWrite ();
+						database.beginReadWrite (
+							this);
 
 					outboxLogic.messageSuccess (
 						messageId,
@@ -603,7 +606,8 @@ class AbstractSmsSender2
 
 					@Cleanup
 					Transaction transaction =
-						database.beginReadWrite ();
+						database.beginReadWrite (
+							this);
 
 					outboxLogic.messageFailure (
 						messageId,

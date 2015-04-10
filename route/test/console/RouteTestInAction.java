@@ -62,7 +62,8 @@ class RouteTestInAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		int routeId =
 			requestContext.stuffInt ("routeId");

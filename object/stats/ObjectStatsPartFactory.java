@@ -73,7 +73,8 @@ class ObjectStatsPartFactory
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		// lookup object
 

@@ -79,7 +79,8 @@ class SmsOutboxUnstickDaemon
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			Instant sendingBefore =
 				transaction.now ()

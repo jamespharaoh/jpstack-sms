@@ -67,7 +67,8 @@ class MessageNotProcessedFormAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		MessageRec message =
 			messageHelper.find (

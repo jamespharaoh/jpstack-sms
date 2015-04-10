@@ -31,6 +31,8 @@ public
 class RouteTestTwoWayAction
 	extends ConsoleAction {
 
+	// dependencies
+
 	@Inject
 	ConsoleRequestContext requestContext;
 
@@ -46,11 +48,15 @@ class RouteTestTwoWayAction
 	@Inject
 	TextObjectHelper textHelper;
 
+	// details
+
 	@Override
 	public
 	Responder backupResponder () {
 		return responder ("routeTestTwoWayResponder");
 	}
+
+	// implementation
 
 	@Override
 	public
@@ -58,7 +64,8 @@ class RouteTestTwoWayAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		int routeId =
 			requestContext.stuffInt ("routeId");

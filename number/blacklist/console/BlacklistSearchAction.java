@@ -74,7 +74,8 @@ class BlacklistSearchAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		NumberFormatRec ukNumberFormat =
 			numberFormatHelper.findByCode (

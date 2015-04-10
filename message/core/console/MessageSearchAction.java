@@ -84,7 +84,8 @@ class MessageSearchAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		// get parameters
 

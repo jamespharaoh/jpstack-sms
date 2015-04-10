@@ -416,7 +416,8 @@ class ModemPollDaemon
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			modemPollQueueHelper.insert (
 				new ModemPollQueueRec ()
@@ -465,7 +466,8 @@ class ModemPollDaemon
 
 					@Cleanup
 					Transaction transaction =
-						database.beginReadWrite ();
+						database.beginReadWrite (
+							this);
 
 					ModemPollQueueRec modemPollQueue =
 						modemPollQueueHelper.findNext ();
@@ -521,7 +523,8 @@ class ModemPollDaemon
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			log.info (
 				stringFormat (

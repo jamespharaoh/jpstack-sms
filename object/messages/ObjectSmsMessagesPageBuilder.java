@@ -149,7 +149,8 @@ class ObjectSmsMessagesPageBuilder {
 
 				@Cleanup
 				Transaction transaction =
-					database.beginReadOnly ();
+					database.beginReadOnly (
+						this);
 
 				Record<?> object =
 					consoleHelper.lookupObject (
