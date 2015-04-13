@@ -74,11 +74,11 @@ class LocatorLogicImpl
 
 		double phi =
 			degToRad (
-				longLat.getLatitude ());
+				longLat.latitude ());
 
 		double lambda =
 			degToRad (
-				longLat.getLongitude ());
+				longLat.longitude ());
 
 		// workings 1
 
@@ -221,14 +221,19 @@ class LocatorLogicImpl
 		// if they are really close just return zero as we tend to get NaN
 		// otherwise
 
-		if (	abs (
-						+ longLat1.getLongitude ()
-						- longLat2.getLongitude ())
-					< dmsToDeg (0, 0, 0.0001D)
-				&& abs (
-						+ longLat2.getLatitude ()
-						- longLat2.getLatitude ())
-					< dmsToDeg (0, 0, 0.0001D)) {
+		if (
+
+			abs (
+				+ longLat1.longitude ()
+				- longLat2.longitude ()
+			) < dmsToDeg (0, 0, 0.0001D)
+
+			&& abs (
+				+ longLat2.latitude ()
+				- longLat2.latitude ()
+			) < dmsToDeg (0, 0, 0.0001D)
+
+		) {
 
 			return 0.0D;
 
@@ -250,17 +255,17 @@ class LocatorLogicImpl
 
 		double lat1 =
 			degToRad (
-				longLat1.getLatitude ());
+				longLat1.latitude ());
 
 		double lat2 =
 			degToRad (
-				longLat2.getLatitude ());
+				longLat2.latitude ());
 
 		double L =
 			+ degToRad (
-				longLat1.getLongitude ())
+				longLat1.longitude ())
 			- degToRad (
-				longLat2.getLongitude ());
+				longLat2.longitude ());
 
 		// workings 1
 

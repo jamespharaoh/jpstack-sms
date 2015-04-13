@@ -79,18 +79,23 @@ class DeliveryDaemon
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
-		for (Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
-				: handlersByBeanName.entrySet ()) {
+		for (
+			Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
+				: handlersByBeanName.entrySet ()
+		) {
 
 			//String beanName = ent.getKey ();
 
 			DeliveryHandler handler =
 				handlerEntry.getValue ().get ();
 
-			for (String deliveryTypeCode
-					: handler.getDeliveryTypeCodes ()) {
+			for (
+				String deliveryTypeCode
+					: handler.getDeliveryTypeCodes ()
+			) {
 
 				DeliveryTypeRec deliveryType =
 					deliveryTypeHelper.findByCode (
@@ -191,14 +196,17 @@ class DeliveryDaemon
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadOnly ();
+				database.beginReadOnly (
+					this);
 
 			List<DeliveryRec> deliveries =
 				deliveryHelper.findAllLimit (
 					buffer.getFullSize ());
 
-			for (DeliveryRec delivery
-					: deliveries) {
+			for (
+				DeliveryRec delivery
+					: deliveries
+			) {
 
 				numFound ++;
 

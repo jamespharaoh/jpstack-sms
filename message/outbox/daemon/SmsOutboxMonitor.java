@@ -162,7 +162,8 @@ class SmsOutboxMonitor
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadOnly ();
+				database.beginReadOnly (
+					this);
 
 			Map<Integer,Integer> routeSummary =
 				outboxHelper.generateRouteSummary ();

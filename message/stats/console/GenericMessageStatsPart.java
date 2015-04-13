@@ -23,9 +23,9 @@ import wbs.platform.console.tab.Tab;
 import wbs.platform.console.tab.TabList;
 
 @Accessors (fluent = true)
-@PrototypeComponent ("smsStatsPart")
+@PrototypeComponent ("genericMessageStatsPart")
 public
-class SmsStatsPart
+class GenericMessageStatsPart
 	extends AbstractPagePart {
 
 	// dependencies

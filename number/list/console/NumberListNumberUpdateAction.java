@@ -83,7 +83,8 @@ class NumberListNumberUpdateAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		int loop = 0;
 

@@ -72,14 +72,14 @@ class LocatorLogicTest
 
 		assertTrue (
 			Math.abs (
-				+ longLat.getLongitude ()
-				- expected.getLongitude ()
+				+ longLat.longitude ()
+				- expected.longitude ()
 			) < 0.0001);
 
 		assertTrue (
 			Math.abs (
-				+ longLat.getLatitude ()
-				- expected.getLatitude ()
+				+ longLat.latitude ()
+				- expected.latitude ()
 			) < 0.0001);
 
 	}

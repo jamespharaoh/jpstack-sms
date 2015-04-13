@@ -6,8 +6,8 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
-import wbs.platform.menu.model.MenuObjectHelper;
-import wbs.platform.menu.model.MenuRec;
+import wbs.platform.menu.model.MenuItemObjectHelper;
+import wbs.platform.menu.model.MenuItemRec;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 
@@ -22,7 +22,7 @@ class NetworkFixtureProvider
 	MenuGroupObjectHelper menuGroupHelper;
 
 	@Inject
-	MenuObjectHelper menuHelper;
+	MenuItemObjectHelper menuItemHelper;
 
 	@Inject
 	NetworkObjectHelper networkHelper;
@@ -84,22 +84,32 @@ class NetworkFixtureProvider
 
 		);
 
-		menuHelper.insert (
-			new MenuRec ()
+		menuItemHelper.insert (
+			new MenuItemRec ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (
 					GlobalId.root,
+					"test",
 					"sms"))
 
 			.setCode (
 				"network")
 
-			.setLabel (
-				"Networks")
+			.setName (
+				"Network")
 
-			.setPath (
+			.setDescription (
+				"Manage telephony network providers")
+
+			.setLabel (
+				"Network")
+
+			.setTargetPath (
 				"/networks")
+
+			.setTargetFrame (
+				"main")
 
 		);
 

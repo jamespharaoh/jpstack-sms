@@ -85,7 +85,8 @@ class SmsCustomerSessionTimeoutDaemon
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		List<SmsCustomerManagerRec> managers =
 			smsCustomerManagerHelper.findAll ();
@@ -112,7 +113,8 @@ class SmsCustomerSessionTimeoutDaemon
 
 		@Cleanup
 		Transaction readTransaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		SmsCustomerManagerRec manager =
 			smsCustomerManagerHelper.find (
@@ -148,7 +150,8 @@ class SmsCustomerSessionTimeoutDaemon
 
 			@Cleanup
 			Transaction writeTransaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			session =
 				smsCustomerSessionHelper.find (

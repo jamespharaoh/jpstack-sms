@@ -56,8 +56,7 @@ class GazetteerEntryRec
 
 	@SimpleField (
 		columns = { "longitude", "latitude" })
-	LongLat longLat =
-		new LongLat ();
+	LongLat longLat;
 
 	@SimpleField
 	Boolean canonical;

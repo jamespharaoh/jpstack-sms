@@ -125,7 +125,8 @@ class ReceivedManager
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			InboxRec inbox =
 				inboxHelper.find (
@@ -181,7 +182,8 @@ class ReceivedManager
 
 			@Cleanup
 			Transaction transaction =
-				database.beginReadWrite ();
+				database.beginReadWrite (
+					this);
 
 			InboxRec inbox =
 				inboxHelper.find (
@@ -265,7 +267,8 @@ class ReceivedManager
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		List<InboxRec> inboxes =
 			inboxHelper.findPendingLimit (

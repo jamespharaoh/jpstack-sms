@@ -155,11 +155,8 @@ class MessageSummaryPart
 				"<th>Number from</th>\n",
 
 				"%s\n",
-				objectManager.tdForObject (
-					message.getNumber (),
-					null,
-					true,
-					true),
+				objectManager.tdForObjectMiniLink (
+					message.getNumber ()),
 
 				"</tr>\n");
 
@@ -179,12 +176,13 @@ class MessageSummaryPart
 				message.getNumFrom());
 
 			printFormat (
-				"<tr> <th>Number to</th> %s </tr>\n",
-				objectManager.tdForObject (
-					message.getNumber (),
-					null,
-					true,
-					true));
+				"<tr>\n",
+				"<th>Number to</th>\n",
+				"%s\n",
+				objectManager.tdForObjectMiniLink (
+					message.getNumber ()),
+				"</tr>\n");
+
 		}
 
 		printFormat (
@@ -196,12 +194,12 @@ class MessageSummaryPart
 			message.getDirection ());
 
 		printFormat (
-			"<tr> <th>Route</th> %s </tr>\n",
-			objectManager.tdForObject (
-				message.getRoute (),
-				null,
-				true,
-				true));
+			"<tr>\n",
+			"<th>Route</th>\n",
+			"%s\n",
+			objectManager.tdForObjectMiniLink (
+				message.getRoute ()),
+			"</tr>\n");
 
 		printFormat (
 			"<tr> <th>Network</th> <td>%h</td> </tr>\n",
@@ -209,19 +207,13 @@ class MessageSummaryPart
 
 		printFormat (
 			"<tr> <th>Service</th> %s </tr>\n",
-			objectManager.tdForObject (
-				message.getService (),
-				null,
-				true,
-				true));
+			objectManager.tdForObjectMiniLink (
+				message.getService ()));
 
 		printFormat (
 			"<tr> <th>Affiliate</th> %s </tr>\n",
-			objectManager.tdForObject (
-				message.getAffiliate (),
-				null,
-				true,
-				true));
+			objectManager.tdForObjectMiniLink (
+				message.getAffiliate ()));
 
 		if (message.getDirection () == MessageDirection.in) {
 
@@ -271,11 +263,8 @@ class MessageSummaryPart
 				"<th>Command</th>\n",
 
 				"%s\n",
-				objectManager.tdForObject (
-					message.getCommand (),
-					null,
-					true,
-					true),
+				objectManager.tdForObjectMiniLink (
+					message.getCommand ()),
 
 				"</tr>\n");
 
@@ -392,11 +381,8 @@ class MessageSummaryPart
 			"<tr>\n",
 			"<th>User</th>\n",
 			"%s\n",
-			objectManager.tdForObject (
-				message.getUser (),
-				null,
-				true,
-				true),
+			objectManager.tdForObjectMiniLink (
+				message.getUser ()),
 			"</tr>\n");
 
 		printFormat (

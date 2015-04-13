@@ -1,8 +1,8 @@
 package wbs.sms.message.inbox.daemon;
 
-import lombok.Delegate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Delegate;
 import wbs.framework.application.annotations.SingletonComponent;
 
 @SingletonComponent ("commandManager")

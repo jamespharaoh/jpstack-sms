@@ -23,8 +23,9 @@
 	<layer name="console">
 		<bean class="console.MessageInboxAction"/>
 		<bean class="console.MessageInboxSummaryPart"/>
-		<bean class="console.MessageNotProcessedListPart"/>
-		<bean class="console.MessageNotProcessedSummaryAction"/>
+		<bean class="console.MessageNotProcessedFormAction"/>
+		<bean class="console.MessageNotProcessedFormResponder"/>
+		<bean class="console.MessageNotProcessedQueueConsolePlugin"/>
 		<bean class="console.MessageNotProcessedSummaryPart"/>
 	</layer>
 

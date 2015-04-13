@@ -107,7 +107,8 @@ class MessageMediaContext
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadOnly ();
+			database.beginReadOnly (
+				this);
 
 		MessageRec message =
 			messageHelper.find (

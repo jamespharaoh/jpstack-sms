@@ -104,7 +104,8 @@ class MessageSetAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		// lookup the message set
 

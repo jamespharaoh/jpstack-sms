@@ -2,6 +2,10 @@
 	name="sms-core"
 	package="wbs.sms.core">
 
+	<plugin-dependencies>
+		<plugin-dependency name="platform-common"/>
+	</plugin-dependencies>
+
 	<layer name="logic">
 		<bean class="logic.KeywordFinder"/>
 	</layer>

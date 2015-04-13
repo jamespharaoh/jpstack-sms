@@ -6,8 +6,8 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
-import wbs.platform.menu.model.MenuObjectHelper;
-import wbs.platform.menu.model.MenuRec;
+import wbs.platform.menu.model.MenuItemObjectHelper;
+import wbs.platform.menu.model.MenuItemRec;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.sms.keyword.model.KeywordSetObjectHelper;
 import wbs.sms.keyword.model.KeywordSetRec;
@@ -27,7 +27,7 @@ class KeywordFixtureProvider
 	MenuGroupObjectHelper menuGroupHelper;
 
 	@Inject
-	MenuObjectHelper menuHelper;
+	MenuItemObjectHelper menuItemHelper;
 
 	@Inject
 	SliceObjectHelper sliceHelper;
@@ -60,22 +60,32 @@ class KeywordFixtureProvider
 
 		);
 
-		menuHelper.insert (
-			new MenuRec ()
+		menuItemHelper.insert (
+			new MenuItemRec ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (
 					GlobalId.root,
+					"test",
 					"sms"))
 
 			.setCode (
 				"keyword_set")
 
+			.setName (
+				"Keyword Set")
+
+			.setDescription (
+				"Route inbound messages based on keyword")
+
 			.setLabel (
 				"Keyword sets")
 
-			.setPath (
+			.setTargetPath (
 				"/keywordSets")
+
+			.setTargetFrame (
+				"main")
 
 		);
 

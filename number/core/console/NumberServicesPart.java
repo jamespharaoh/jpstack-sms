@@ -98,18 +98,13 @@ class NumberServicesPart
 				"<tr>\n",
 
 				"%s\n",
-				objectManager.tdForObject (
-					parent,
-					null,
-					false,
-					true),
+				objectManager.tdForObjectLink (
+					parent),
 
 				"%s\n",
-				objectManager.tdForObject (
+				objectManager.tdForObjectMiniLink (
 					service,
-					parent,
-					true,
-					true),
+					parent),
 
 				"</tr>\n");
 

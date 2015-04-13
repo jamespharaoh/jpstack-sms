@@ -66,7 +66,8 @@ class BlacklistAddAction
 
 		@Cleanup
 		Transaction transaction =
-			database.beginReadWrite ();
+			database.beginReadWrite (
+				this);
 
 		// TODO this is messy
 

@@ -17,6 +17,8 @@ public
 class MessageStatusLine
 	implements StatusLine {
 
+	// dependencies
+
 	@Inject
 	ConsoleRequestContext requestContext;
 
@@ -27,18 +29,22 @@ class MessageStatusLine
 	MessageNumOutboxCache numOutboxCache;
 
 	@Inject
-	MessageNumNotProcessedCache numNotProcessedCache;
-
-	@Inject
 	PrivChecker privChecker;
 
-	@Inject Provider<MessageStatusLinePart> messageStatusLinePart;
+	// prototype dependencies
+
+	@Inject
+	Provider<MessageStatusLinePart> messageStatusLinePart;
+
+	// details
 
 	@Override
 	public
 	String getName () {
 		return "message";
 	}
+
+	// implementation
 
 	@Override
 	public
@@ -54,13 +60,14 @@ class MessageStatusLine
 
 		int numInbox = 0;
 		int numOutbox = 0;
-		int numNotProcessed = 0;
 
 		// count inboxes (if visible)
 
-		if (privChecker.can (
+		if (
+			privChecker.can (
 				GlobalId.root,
-				"inbox_view")) {
+				"inbox_view")
+		) {
 
 			numInbox =
 				numInboxCache.get ();
@@ -69,33 +76,23 @@ class MessageStatusLine
 
 		// count outboxes (if visible)
 
-		if (privChecker.can (
+		if (
+			privChecker.can (
 				GlobalId.root,
-				"outbox_view")) {
+				"outbox_view")
+		) {
 
 			numOutbox =
 				numOutboxCache.get ();
 
 		}
 
-		// count not processed (if visible)
-
-		if (privChecker.can (
-				GlobalId.root,
-				"message_notprocessed_view")) {
-
-			numNotProcessed =
-				numNotProcessedCache.get ();
-
-		}
-
 		// return
 
 		return stringFormat (
-			"updateMessage (%d, %d, %d);\n",
+			"updateMessage (%d, %d);\n",
 			numInbox,
-			numOutbox,
-			numNotProcessed);
+			numOutbox);
 
 	}
 

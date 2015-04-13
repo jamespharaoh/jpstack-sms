@@ -116,10 +116,13 @@ class MessageDaemon
 
 	}
 
-	private void expireMessages () {
+	private
+	void expireMessages () {
 
-		@Cleanup Transaction transaction =
-			database.beginReadWrite ();
+		@Cleanup
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
 		Collection<MessageExpiryRec> messageExpiries =
 			messageExpiryHelper.findPendingLimit (
@@ -128,8 +131,10 @@ class MessageDaemon
 		if (messageExpiries.size () == 0)
 			return;
 
-		for (MessageExpiryRec messageExpiry
-				: messageExpiries) {
+		for (
+			MessageExpiryRec messageExpiry
+				: messageExpiries
+		) {
 
 			MessageRec message =
 				messageExpiry.getMessage ();

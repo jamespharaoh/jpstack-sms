@@ -6,8 +6,8 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
-import wbs.platform.menu.model.MenuObjectHelper;
-import wbs.platform.menu.model.MenuRec;
+import wbs.platform.menu.model.MenuItemObjectHelper;
+import wbs.platform.menu.model.MenuItemRec;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatPatternObjectHelper;
 import wbs.sms.number.format.model.NumberFormatPatternRec;
@@ -24,7 +24,7 @@ class NumberFormatFixtureProvider
 	MenuGroupObjectHelper menuGroupHelper;
 
 	@Inject
-	MenuObjectHelper menuHelper;
+	MenuItemObjectHelper menuItemHelper;
 
 	@Inject
 	NumberFormatObjectHelper numberFormatHelper;
@@ -118,22 +118,32 @@ class NumberFormatFixtureProvider
 
 		);
 
-		menuHelper.insert (
-			new MenuRec ()
+		menuItemHelper.insert (
+			new MenuItemRec ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (
 					GlobalId.root,
+					"test",
 					"sms"))
 
 			.setCode (
 				"number_format")
 
-			.setLabel (
-				"Number formats")
+			.setName (
+				"Number Format")
 
-			.setPath (
+			.setDescription (
+				"Manage localized telephony number conventions")
+
+			.setLabel (
+				"Number format")
+
+			.setTargetPath (
 				"/numberFormats")
+
+			.setTargetFrame (
+				"main")
 
 		);
 
