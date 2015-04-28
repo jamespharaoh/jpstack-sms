@@ -14,7 +14,7 @@ import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.exception.logic.ExceptionLogic;
+import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 
 import com.google.common.base.Optional;
@@ -38,7 +38,7 @@ class SmsOutboxMonitor
 	Database database;
 
 	@Inject
-	ExceptionLogic exceptionLogic;
+	ExceptionLogLogic exceptionLogic;
 
 	@Inject
 	OutboxObjectHelper outboxHelper;

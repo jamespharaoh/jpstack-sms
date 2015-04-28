@@ -20,7 +20,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
-import wbs.platform.exception.logic.ExceptionLogic;
+import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.sms.message.delivery.model.DeliveryObjectHelper;
 import wbs.sms.message.delivery.model.DeliveryRec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
@@ -45,7 +45,7 @@ class DeliveryDaemon
 	DeliveryTypeObjectHelper deliveryTypeHelper;
 
 	@Inject
-	ExceptionLogic exceptionLogic;
+	ExceptionLogLogic exceptionLogic;
 
 	@Inject
 	Map<String,Provider<DeliveryHandler>> handlersByBeanName =

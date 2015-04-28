@@ -26,6 +26,8 @@
 	</layer>
 
 	<layer name="console">
+		<bean class="console.MessageActionsAction"/>
+		<bean class="console.MessageActionsPart"/>
 		<bean class="console.MessageConsolePluginManager"/>
 		<bean class="console.MessageConsoleStuff"/>
 		<bean class="console.MessageMediaContext"/>

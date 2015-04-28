@@ -28,6 +28,11 @@
 			delegate="affiliate.parent"
 			priv="messages"/>
 
+		<priv-key
+			name="message.manage"
+			delegate="route"
+			priv="manage"/>
+
 	</console-helper-provider>
 
 	<object-context
@@ -73,6 +78,9 @@
 
 			<context-tab-responder-page
 				name="thread"/>
+
+			<context-tab-action-page
+				name="actions"/>
 
 			<object-events-page/>
 

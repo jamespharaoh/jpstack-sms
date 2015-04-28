@@ -28,6 +28,7 @@ class MessageStatusType
 		add (11, MessageStatus.reportTimedOut);
 		add (12, MessageStatus.held);
 		add (13, MessageStatus.blacklisted);
+		add (14, MessageStatus.manuallyUndelivered);
 
 	}
 

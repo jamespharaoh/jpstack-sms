@@ -18,11 +18,12 @@ enum MessageStatus {
 	undelivered (6, "undelivered", -1),
 	notProcessed (7, "not processed", -1),
 	ignored (8, "ignored", -1),
-	manuallyProcessed (9, "processed manually", 1),
+	manuallyProcessed (9, "manually processed", 1),
 	submitted (10, "submitted", 0),
 	reportTimedOut (11, "report timed out", -1),
 	held (12, "held", 0),
-	blacklisted (13, "blacklisted", -1);
+	blacklisted (13, "blacklisted", -1),
+	manuallyUndelivered (14, "manually undelivered", -1);
 
 	@Getter
 	int ordinal;

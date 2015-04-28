@@ -123,6 +123,7 @@ class MessageConsoleStuff {
 			return 'd';
 
 		case undelivered:
+		case manuallyUndelivered:
 			return 'u';
 
 		case notProcessed:
