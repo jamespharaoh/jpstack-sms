@@ -32,3 +32,7 @@ SELECT priv_type_insert (
 	'View message stats',
 	'View message status for all services in this slice',
 	true);
+
+SELECT event_type_insert (
+	'message_manually_undelivered',
+	'%0 manually undelivered %1');

@@ -17,7 +17,7 @@ import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.daemon.ThreadManager;
-import wbs.platform.exception.logic.ExceptionLogic;
+import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.platform.exception.model.ExceptionLogObjectHelper;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
@@ -54,7 +54,7 @@ class ReceivedManager
 	ExceptionLogObjectHelper exceptionLogHelper;
 
 	@Inject
-	ExceptionLogic exceptionLogic;
+	ExceptionLogLogic exceptionLogic;
 
 	@Inject
 	InboxAttemptObjectHelper inboxAttemptHelper;
