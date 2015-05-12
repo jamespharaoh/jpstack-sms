@@ -142,15 +142,17 @@ class MessageDaemon
 			MessageStatus oldMessageStatus =
 				message.getStatus ();
 
-			if (in (oldMessageStatus,
+			if (
+				in (oldMessageStatus,
 					MessageStatus.sent,
-					MessageStatus.submitted)) {
+					MessageStatus.submitted)
+			) {
+
+				// perform expiry
 
 				messageLogic.messageStatus (
 					message,
 					MessageStatus.reportTimedOut);
-
-				// smsUtils.messageRebill(message,MessageStatus.reportTimedOut);
 
 				log.debug (
 					stringFormat (
@@ -158,9 +160,14 @@ class MessageDaemon
 						message.getId (),
 						oldMessageStatus));
 
-			} else if (in (oldMessageStatus,
+			} else if (
+				in (oldMessageStatus,
 					MessageStatus.delivered,
-					MessageStatus.undelivered)) {
+					MessageStatus.undelivered,
+					MessageStatus.manuallyUndelivered)
+			) {
+
+				// ignore expiry
 
 				log.debug (
 					stringFormat (
@@ -169,6 +176,8 @@ class MessageDaemon
 						oldMessageStatus));
 
 			} else {
+
+				// error
 
 				throw new RuntimeException (
 					stringFormat (
@@ -201,8 +210,10 @@ class MessageDaemon
 	public
 	void afterPropertiesSet () {
 
-		for (Map.Entry<String,MessageRetrierFactory> entry
-				: messageRetrierFactories.entrySet ()) {
+		for (
+			Map.Entry<String,MessageRetrierFactory> entry
+				: messageRetrierFactories.entrySet ()
+		) {
 
 			messageRetriers.putAll (
 				entry.getValue ()
