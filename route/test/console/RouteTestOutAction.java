@@ -97,7 +97,7 @@ class RouteTestOutAction
 				ServiceRec.class,
 				GlobalId.root,
 				"test");
-
+		
 		if (testService == null) {
 
 			log.fatal (

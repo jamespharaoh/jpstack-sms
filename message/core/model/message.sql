@@ -1,5 +1,7 @@
 ---------------------------------------- TABLE message
 
+SELECT setval('message_id_seq', cast(trunc(random()*999999 + 1) as bigint), false);
+
 ALTER TABLE MESSAGE
 ADD CHECK (
 	(direction = 0 AND status IN (0, 1, 7, 8, 9))

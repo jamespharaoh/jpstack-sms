@@ -624,7 +624,21 @@ class AbstractSmsSender2
 							SmsOutboxAttemptState.failure)
 
 						.setEndTime (
-							transaction.now ());
+							transaction.now ())
+
+						.setResponseTrace (
+							responseTrace != null
+							? stringToBytes (
+								responseTrace.toJSONString (),
+								"utf-8")
+							: null)
+
+						.setErrorTrace (
+							errorTrace != null
+							? stringToBytes (
+								errorTrace.toJSONString (),
+								"utf-8")
+							: null);
 
 					transaction.commit ();
 
