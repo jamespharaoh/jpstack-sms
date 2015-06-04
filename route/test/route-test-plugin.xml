@@ -15,8 +15,4 @@
 		<console-module name="route-test"/>
 	</console-modules>
 	
-	<fixtures>
-		<fixture name="routeTest"/>
-	</fixtures>
-
 </plugin>
