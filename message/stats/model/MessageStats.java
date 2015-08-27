@@ -88,6 +88,15 @@ class MessageStats {
 		outReportTimedOut +=
 			messageStats.outReportTimedOut;
 
+		outHeld +=
+			messageStats.outHeld;
+
+		outBlacklisted +=
+			messageStats.outBlacklisted;
+
+		outManuallyUndelivered +=
+			messageStats.outManuallyUndelivered;
+
 		return this;
 
 	}
