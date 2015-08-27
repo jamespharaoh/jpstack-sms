@@ -1,12 +1,17 @@
 ---------------------------------------- TABLE message
 
-ALTER TABLE MESSAGE
+ALTER TABLE message
 ADD CHECK (
 	(direction = 0 AND status IN (0, 1, 7, 8, 9))
 OR	(direction = 1 AND status IN (0, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14)));
 
+ALTER TABLE message
+ADD CHECK date = created_time :: date;
+
 CREATE UNIQUE INDEX message_other_id
 ON message (route_id, direction, other_id);
+
+-- TODO more indexes surely?
 
 ---------------------------------------- TABLE message_tag
 
@@ -17,6 +22,8 @@ CREATE TABLE message_tag (
 );
 
 ---------------------------------------- TRIGGER message
+
+-- TODO replace triggers with code
 
 CREATE OR REPLACE FUNCTION message_after_insert ()
 RETURNS trigger AS $$
