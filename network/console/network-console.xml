@@ -54,7 +54,7 @@
 		<object-field
 			name="virtualNetworkOfNetwork"
 			label="Virtual of"
-			finder="network"/>
+			object-type="network"/>
 
 	</field-set>
 
@@ -70,7 +70,7 @@
 		<object-field
 			name="virtualNetworkOfNetwork"
 			label="Virtual of"
-			finder="network"/>
+			object-type="network"/>
 
 		<yes-no-field
 			name="shortMultipartMessages"/>
@@ -89,7 +89,7 @@
 		<object-field
 			name="virtualNetworkOfNetwork"
 			label="Virtual of"
-			finder="network"/>
+			object-type="network"/>
 
 		<yes-no-field
 			name="shortMultipartMessages"/>

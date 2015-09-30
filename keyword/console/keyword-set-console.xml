@@ -93,7 +93,7 @@
 
 		<object-field
 			name="fallbackCommand"
-			finder="command"/>
+			object-type="command"/>
 
 		<seconds-field
 			name="fallbackTimeout"/>
@@ -116,7 +116,7 @@
 
 		<object-field
 			name="fallbackCommand"
-			finder="command"/>
+			object-type="command"/>
 
 		<seconds-field
 			name="fallbackTimeout"

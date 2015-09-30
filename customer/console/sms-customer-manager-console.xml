@@ -80,7 +80,7 @@
 
 		<object-field
 			name="stopNumberList"
-			finder="numberList"/>
+			object-type="numberList"/>
 
 	</field-set>
 
@@ -101,7 +101,7 @@
 
 		<object-field
 			name="stopNumberList"
-			finder="numberList"/>
+			object-type="numberList"/>
 
 	</field-set>
 
