@@ -439,7 +439,7 @@ CREATE OR REPLACE FUNCTION message_stats_recalculate (
 	date
 ) RETURNS int AS $$
 
-DECALRE
+DECLARE
 
 	start_date ALIAS FOR $1;
 	end_date ALIAS FOR $2;

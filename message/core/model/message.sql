@@ -6,7 +6,7 @@ ADD CHECK (
 OR	(direction = 1 AND status IN (0, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14)));
 
 ALTER TABLE message
-ADD CHECK date = created_time :: date;
+ADD CHECK (date = created_time :: date);
 
 CREATE UNIQUE INDEX message_other_id
 ON message (route_id, direction, other_id);
