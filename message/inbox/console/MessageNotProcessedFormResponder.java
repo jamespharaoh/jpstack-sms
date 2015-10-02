@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.context.ConsoleContextScriptRef;
+import wbs.platform.console.context.ConsoleApplicationScriptRef;
 import wbs.platform.console.html.ScriptRef;
 import wbs.platform.console.responder.HtmlResponder;
 import wbs.sms.message.core.console.MessageConsoleHelper;
@@ -53,7 +53,7 @@ class MessageNotProcessedFormResponder
 				super.scriptRefs ())
 
 			.add (
-				ConsoleContextScriptRef.javascript (
+				ConsoleApplicationScriptRef.javascript (
 					"/js/jquery-1.4.2.js"))
 
 			.build ();
