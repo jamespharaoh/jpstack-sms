@@ -1,0 +1,31 @@
+<model-meta
+	name="route">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a route"
+			template="yes"/>
+
+		<priv-type
+			name="Messages"
+			description="View message history for a route"
+			template="yes"/>
+
+		<priv-type
+			name="Stats"
+			description="View message statistics for a route"
+			template="yes"/>
+
+		<!-- slice -->
+
+		<priv-type
+			subject="slice"
+			name="Route create"
+			description="Create new routes in a slice"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

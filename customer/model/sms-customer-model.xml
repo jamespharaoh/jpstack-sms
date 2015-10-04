@@ -1,0 +1,23 @@
+<model-meta
+	name="smsCustomerManager">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of an SMS customer manager"
+			template="yes"/>
+
+		<priv-type
+			name="Messages"
+			description="View message history for an SMS customer manager"
+			template="yes"/>
+
+		<priv-type
+			name="Stats"
+			description="View message statistics for an SMS customer manager"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

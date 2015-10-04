@@ -1,0 +1,13 @@
+<model-meta
+	name="magicNumberSet">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a magic number set"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

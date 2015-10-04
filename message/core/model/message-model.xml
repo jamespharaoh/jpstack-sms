@@ -1,0 +1,42 @@
+<model-meta
+	name="message">
+
+	<priv-types>
+
+		<!-- root -->
+
+		<priv-type
+			subject="root"
+			name="Message notprocessed view"
+			description="View messages which were not able to be processed correctly"
+			template="yes"/>
+
+		<priv-type
+			subject="root"
+			name="Messages"
+			description="View all message history"
+			template="yes"/>
+
+		<priv-type
+			subject="root"
+			name="Stats"
+			description="View all message statistics"
+			template="yes"/>
+
+		<!-- slice -->
+
+		<priv-type
+			subject="slice"
+			name="Messages"
+			description="View message history for a slice"
+			template="yes"/>
+
+		<priv-type
+			subject="slice"
+			name="Stats"
+			description="View message statistics for a slice"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

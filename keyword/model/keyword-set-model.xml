@@ -1,0 +1,13 @@
+<model-meta
+	name="keywordSet">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a keyword set"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

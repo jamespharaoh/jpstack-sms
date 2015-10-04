@@ -1,0 +1,13 @@
+<model-meta
+	name="gazetteer">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a gazetteer"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

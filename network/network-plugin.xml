@@ -8,7 +8,6 @@
 
 	<sql-scripts>
 		<sql-schema name="network"/>
-		<sql-data name="network-data"/>
 	</sql-scripts>
 
 	<models>

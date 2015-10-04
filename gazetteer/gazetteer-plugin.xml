@@ -6,10 +6,6 @@
 		<plugin-dependency name="sms-core"/>
 	</plugin-dependencies>
 
-	<sql-scripts>
-		<sql-data name="gazetteer-data"/>
-	</sql-scripts>
-
 	<layer name="logic">
 		<bean class="logic.GazetteerLogicImpl"/>
 	</layer>

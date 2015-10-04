@@ -1,0 +1,13 @@
+<model-meta
+	name="router">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a router"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

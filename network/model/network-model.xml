@@ -1,0 +1,13 @@
+<model-meta
+	name="network">
+
+	<priv-types>
+
+		<priv-type
+			name="Manage"
+			description="Full control of a network"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

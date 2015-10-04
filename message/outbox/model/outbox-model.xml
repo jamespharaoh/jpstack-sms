@@ -1,0 +1,14 @@
+<model-meta
+	name="outbox">
+
+	<priv-types>
+
+		<priv-type
+			subject="root"
+			name="Outbox view"
+			description="View outbox messages waiting to be sent"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>
