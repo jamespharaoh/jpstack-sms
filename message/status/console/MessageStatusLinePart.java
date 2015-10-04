@@ -10,7 +10,7 @@ class MessageStatusLinePart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
 		printFormat (
 			"<style type=\"text/css\">\n",
@@ -42,7 +42,7 @@ class MessageStatusLinePart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		printFormat (
 			"<tr",

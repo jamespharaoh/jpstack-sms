@@ -32,7 +32,7 @@ class MessageSearchResultsCsvPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		List<?> messageSearchResult =
 			(List<?>)
@@ -112,7 +112,7 @@ class MessageSearchResultsCsvPart
 
 			if (summaryPart != null) {
 
-				summaryPart.goBodyStuff ();
+				summaryPart.renderHtmlBodyContent ();
 
 			} else {
 

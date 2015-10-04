@@ -48,7 +48,7 @@ class WapPushMessageSummaryPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (isWithMarkup ()) {
 

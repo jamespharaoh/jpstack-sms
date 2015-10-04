@@ -58,7 +58,7 @@ class MessageOutboxRoutePart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (outboxes.size () == 30) {
 

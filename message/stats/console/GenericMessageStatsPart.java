@@ -244,9 +244,9 @@ class GenericMessageStatsPart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContent ();
 
 		printFormat (
 			"<style type=\"text/css\">\n",
@@ -268,7 +268,7 @@ class GenericMessageStatsPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		splitTabsPrepared.go (
 			requestContext);

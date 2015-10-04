@@ -61,9 +61,9 @@ class MessageNotProcessedFormResponder
 
 	@Override
 	protected
-	void goHeadStuff () {
+	void renderHtmlHeadContents () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContents ();
 
 		printFormat (
 			"<script language=\"JavaScript\">\n");
@@ -87,7 +87,7 @@ class MessageNotProcessedFormResponder
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContents () {
 
 		printFormat (
 			"<h1>Message&mdash;not processed</h1>\n");

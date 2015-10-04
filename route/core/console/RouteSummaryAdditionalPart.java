@@ -57,11 +57,11 @@ class RouteSummaryAdditionalPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (summaryAdditionalPart != null) {
 
-			summaryAdditionalPart.goBodyStuff ();
+			summaryAdditionalPart.renderHtmlBodyContent ();
 
 		}
 

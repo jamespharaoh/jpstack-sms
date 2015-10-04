@@ -39,7 +39,7 @@ class MessageActionsPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (
 			message.getDirection () == MessageDirection.out

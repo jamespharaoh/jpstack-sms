@@ -155,7 +155,7 @@ class MessageSetPart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
 		out.println("<script language=\"JavaScript\">");
 		out.println("function form_magic () {");
@@ -258,7 +258,7 @@ class MessageSetPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		out.println("<form method=\"post\">");
 

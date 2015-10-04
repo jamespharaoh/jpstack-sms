@@ -89,16 +89,16 @@ class MessageSummaryPart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
 		if (summaryPart != null)
-			summaryPart.goHeadStuff ();
+			summaryPart.renderHtmlHeadContent ();
 
 	}
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (message == null) {
 
@@ -133,7 +133,7 @@ class MessageSummaryPart
 
 		if (summaryPart != null) {
 
-			summaryPart.goBodyStuff ();
+			summaryPart.renderHtmlBodyContent ();
 
 		} else {
 

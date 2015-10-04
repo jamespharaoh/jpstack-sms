@@ -40,9 +40,9 @@ class MessageTickerResponder
 
 	@Override
 	protected
-	void goHeadStuff () {
+	void renderHtmlHeadContents () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContents ();
 
 		printFormat (
 			"<script type=\"text/javascript\">\n",
@@ -56,7 +56,7 @@ class MessageTickerResponder
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContents () {
 
 		printFormat (
 			"<h2>Message ticker</h1>\n");
