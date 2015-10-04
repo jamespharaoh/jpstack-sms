@@ -113,7 +113,7 @@ class ObjectSmsMessagesPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		/*
 		viewTabsPrepared.go (

@@ -48,7 +48,7 @@ class MessageNotProcessedSummaryPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		if (message.getStatus () != MessageStatus.notProcessed) {
 

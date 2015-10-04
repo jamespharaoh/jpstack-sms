@@ -157,6 +157,13 @@ class SmsStatsFormatter {
 
 		rows.add (
 			new Row ()
+				.name ("Out held")
+				.className ("unknown")
+				.direction (RowDirection.out)
+				.fieldName ("outHeld"));
+
+		rows.add (
+			new Row ()
 				.name ("Out pending")
 				.className ("unknown")
 				.direction (RowDirection.out)
@@ -210,6 +217,20 @@ class SmsStatsFormatter {
 				.className ("failed")
 				.direction (RowDirection.out)
 				.fieldName ("outReportTimedOut"));
+
+		rows.add (
+			new Row ()
+				.name ("Out blacklisted")
+				.className ("failed")
+				.direction (RowDirection.out)
+				.fieldName ("outBlacklisted"));
+
+		rows.add (
+			new Row ()
+				.name ("Out manually undelivered")
+				.className ("failed")
+				.direction (RowDirection.out)
+				.fieldName ("outManuallyUndelivered"));
 
 	}
 

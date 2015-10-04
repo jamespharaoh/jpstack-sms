@@ -305,6 +305,20 @@ BEGIN
 				out_held = out_held + the_diff
 			WHERE id = the_message_stats_id;
 
+		ELSIF the_status = 13 THEN
+
+			UPDATE message_stats
+			SET out_total = out_total + the_diff,
+				out_blacklisted = out_blacklisted + the_diff
+			WHERE id = the_message_stats_id;
+
+		ELSIF the_status = 14 THEN
+
+			UPDATE message_stats
+			SET out_total = out_total + the_diff,
+				out_manually_undelivered = out_manually_undelivered + the_diff
+			WHERE id = the_message_stats_id;
+
 		ELSE
 
 			UPDATE message_stats
@@ -317,44 +331,143 @@ BEGIN
 
 	RETURN;
 
-	END;
+END;
 
 $$ LANGUAGE 'plpgsql';
 
-/*
+CREATE OR REPLACE FUNCTION message_stats_recalculate (
+	date
+) RETURNS int AS $$
 
--- recreate message_stats table from scratch
+DECLARE
 
-BEGIN;
+	the_date ALIAS FOR $1;
 
-LOCK TABLE message_stats;
-LOCK TABLE message_stats_queue;
+	message_count int;
 
-DELETE FROM message_stats;
-DELETE FROM message_stats_queue;
+BEGIN
 
-INSERT INTO message_stats (
-	service_id, route_id, affiliate_id, batch_id, network_id, date,
-	in_total, out_total,
-	out_pending, out_cancelled, out_failed,
-	out_sent, out_submitted, out_delivered, out_undelivered, out_report_timed_out, out_held)
-SELECT
-	service_id, m.routeid, m.affiliate_id, m.batch_id, m.networkid, m.date,
-	count (CASE WHEN m.direction = 0 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 0 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 2 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 3 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 4 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 10 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 5 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 6 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 11 THEN 1 ELSE NULL END),
-	count (CASE WHEN m.direction = 1 AND m.status = 12 THEN 1 ELSE NULL END)
-FROM message AS m
-WHERE service_id IS NOT NULL
-GROUP BY m.service_id, m.routeid, m.affiliate_id, m.batch_id, m.networkid, m.date;
+	CREATE TABLE message_temp (
+		status int NOT NULL,
+		direction int NOT NULL,
+		route_id int NOT NULL,
+		service_id int NOT NULL,
+		affiliate_id int NOT NULL,
+		batch_id int NOT NULL,
+		network_id int NOT NULL
+	);
 
-COMMIT;
+	INSERT INTO message_temp
+	SELECT
+		status,
+		direction,
+		route_id,
+		service_id,
+		affiliate_id,
+		batch_id,
+		network_id
+	FROM message
+	WHERE created_time > the_date
+		AND created_time <= (the_date + 1);
 
-*/
+	DELETE FROM message_stats
+	WHERE date = the_date;
+
+	INSERT INTO message_stats (
+		id,
+		route_id,
+		service_id,
+		affiliate_id,
+		batch_id,
+		network_id,
+		date,
+		in_total,
+		out_total,
+		out_pending,
+		out_cancelled,
+		out_failed,
+		out_sent,
+		out_delivered,
+		out_undelivered,
+		out_submitted,
+		out_report_timed_out,
+		out_held,
+		out_blacklisted,
+		out_manually_undelivered
+	)
+	SELECT
+		nextval ('message_stats_id_seq'),
+		route_id,
+		service_id,
+		affiliate_id,
+		batch_id,
+		network_id,
+		the_date,
+		sum (CASE WHEN message_temp.direction = 0 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 0 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 2 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 3 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 4 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 5 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 6 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 10 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 11 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 12 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 13 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 14 THEN 1 ELSE 0 END)
+	FROM message_temp
+	GROUP BY
+		route_id,
+		service_id,
+		affiliate_id,
+		batch_id,
+		network_id;
+
+	message_count := (SELECT count (*) FROM message_temp);
+
+	DROP TABLE message_temp;
+
+	RETURN message_count;
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION message_stats_recalculate (
+	date,
+	date
+) RETURNS int AS $$
+
+DECLARE
+
+	start_date ALIAS FOR $1;
+	end_date ALIAS FOR $2;
+
+	the_date date;
+
+	message_count int;
+	message_total int;
+
+BEGIN
+
+	the_date := start_date;
+	message_total := 0;
+
+	WHILE the_date < end_date LOOP
+
+		message_count := (SELECT message_stats_recalculate (the_date));
+
+		message_total := message_total + message_count;
+
+		RAISE NOTICE '%: % messages', the_date, message_count;
+
+		the_date := the_date + 1;
+
+	END LOOP;
+
+	RETURN message_total;
+
+END;
+
+$$ LANGUAGE plpgsql;

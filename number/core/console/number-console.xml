@@ -78,7 +78,7 @@
 
 		<object-field
 			name="network"
-			finder="network"/>
+			object-type="network"/>
 
 		<timestamp-field
 			name="archiveDate"/>
@@ -97,7 +97,7 @@
 
 		<object-field
 			name="network"
-			finder="network"/>
+			object-type="network"/>
 
 		<timestamp-field
 			name="archiveDate"/>
@@ -116,7 +116,7 @@
 
 		<object-field
 			name="network"
-			finder="network"/>
+			object-type="network"/>
 
 		<yes-no-field
 			name="free"/>

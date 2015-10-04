@@ -48,7 +48,7 @@ class MessageSearchResultsPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		List<?> messageSearchResult =
 			(List<?>)
@@ -172,7 +172,7 @@ class MessageSearchResultsPart
 
 			if (summaryPart != null) {
 
-				summaryPart.goBodyStuff ();
+				summaryPart.renderHtmlBodyContent ();
 
 			} else if (! medias.isEmpty ()) {
 

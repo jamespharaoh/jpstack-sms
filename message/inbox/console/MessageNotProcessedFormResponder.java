@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.context.ConsoleContextScriptRef;
+import wbs.platform.console.html.JqueryScriptRef;
 import wbs.platform.console.html.ScriptRef;
 import wbs.platform.console.responder.HtmlResponder;
 import wbs.sms.message.core.console.MessageConsoleHelper;
@@ -53,8 +53,7 @@ class MessageNotProcessedFormResponder
 				super.scriptRefs ())
 
 			.add (
-				ConsoleContextScriptRef.javascript (
-					"/js/jquery-1.4.2.js"))
+				JqueryScriptRef.instance)
 
 			.build ();
 
@@ -62,9 +61,9 @@ class MessageNotProcessedFormResponder
 
 	@Override
 	protected
-	void goHeadStuff () {
+	void renderHtmlHeadContents () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContents ();
 
 		printFormat (
 			"<script language=\"JavaScript\">\n");
@@ -88,7 +87,7 @@ class MessageNotProcessedFormResponder
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContents () {
 
 		printFormat (
 			"<h1>Message&mdash;not processed</h1>\n");

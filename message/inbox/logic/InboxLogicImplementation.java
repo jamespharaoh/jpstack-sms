@@ -679,7 +679,8 @@ class InboxLogicImplementation
 				stringFormat (
 					"Unable to process inbox %d ",
 					inbox.getId (),
-					"in state %s"));
+					"in state %s",
+					inbox.getState ()));
 
 		}
 

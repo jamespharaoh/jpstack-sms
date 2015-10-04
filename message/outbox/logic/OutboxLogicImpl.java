@@ -337,8 +337,10 @@ class OutboxLogicImpl
 		MessageRec message =
 			outbox.getMessage ();
 
-		if (message.getStatus () != MessageStatus.pending
-				&& message.getStatus () != MessageStatus.cancelled) {
+		if (
+			message.getStatus () != MessageStatus.pending
+			&& message.getStatus () != MessageStatus.cancelled
+		) {
 
 			throw new RuntimeException (
 				stringFormat (
@@ -369,18 +371,23 @@ class OutboxLogicImpl
 		RouteRec route =
 			message.getRoute ();
 
-		if (route.getDeliveryReports ()
-				&& route.getExpirySecs () != null) {
+		if (
+			route.getDeliveryReports ()
+			&& route.getExpirySecs () != null
+		) {
 
 			messageExpiryHelper.insert (
 				new MessageExpiryRec ()
-					.setMessage (message)
-					.setExpiryTime (
-						Instant.now ()
-							.toDateTime ()
-							.plusSeconds (route.getExpirySecs ())
-							.toInstant ()
-							.toDate ()));
+
+				.setMessage (
+					message)
+
+				.setExpiryTime (
+					Instant.now ()
+						.toDateTime ()
+						.plusSeconds (route.getExpirySecs ())
+						.toInstant ()
+						.toDate ()));
 
 		}
 

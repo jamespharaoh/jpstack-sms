@@ -35,7 +35,7 @@ class MessageOutboxSummaryPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		Date now =
 			new Date ();

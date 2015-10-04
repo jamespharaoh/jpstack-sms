@@ -706,7 +706,8 @@ class AbstractSmsSender2
 	enum SetupSendStatus {
 		success,
 		configError,
-		unknownError;
+		unknownError,
+		validationError;
 	}
 
 	@Accessors (fluent = true)

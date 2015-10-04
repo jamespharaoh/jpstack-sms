@@ -172,9 +172,9 @@ class MessageSearchPart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContent ();
 
 		printFormat (
 			"<script type=\"text/javascript\">\n");
@@ -255,7 +255,7 @@ class MessageSearchPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		printFormat (
 			"<form",

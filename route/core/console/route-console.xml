@@ -86,7 +86,7 @@
 
 		<object-field
 			name="sender"
-			finder="sender"/>
+			object-type="sender"/>
 
 	</field-set>
 
@@ -103,11 +103,11 @@
 
 		<object-field
 			name="sender"
-			finder="sender"/>
+			object-type="sender"/>
 
 		<object-field
 			name="command"
-			finder="command"/>
+			object-type="command"/>
 
 		<integer-field
 			name="inCharge"
@@ -147,11 +147,11 @@
 
 		<object-field
 			name="currency"
-			finder="currency"/>
+			object-type="currency"/>
 
 		<object-field
 			name="blockNumberLookup"
-			finder="numberLookup"/>
+			object-type="numberLookup"/>
 
 	</field-set>
 
@@ -168,11 +168,11 @@
 
 		<object-field
 			name="sender"
-			finder="sender"/>
+			object-type="sender"/>
 
 		<object-field
 			name="command"
-			finder="command"/>
+			object-type="command"/>
 
 		<integer-field
 			name="inCharge"
@@ -212,11 +212,11 @@
 
 		<object-field
 			name="currency"
-			finder="currency"/>
+			object-type="currency"/>
 
 		<object-field
 			name="blockNumberLookup"
-			finder="numberLookup"/>
+			object-type="numberLookup"/>
 
 	</field-set>
 

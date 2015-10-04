@@ -39,10 +39,6 @@
 		<parent-field/>
 		<code-field/>
 
-		<object-field
-			name="batchSubject"
-			finder="batchSubject"/>
-
 	</field-set>
 
 </console-module>

@@ -141,7 +141,7 @@ class MessageTickerUpdateResponder
 
 	@Override
 	public
-	void goHeaders () {
+	void setHtmlHeaders () {
 
 		requestContext.setHeader (
 			"Content-Type",
@@ -151,7 +151,7 @@ class MessageTickerUpdateResponder
 
 	@Override
 	public
-	void goContent () {
+	void render () {
 
 		PrintWriter writer =
 			requestContext.writer ();

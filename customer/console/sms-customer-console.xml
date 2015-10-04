@@ -78,7 +78,7 @@
 
 		<object-field
 			name="number"
-			finder="number"/>
+			object-type="number"/>
 
 		<timestamp-field
 			name="createdTime"/>
@@ -99,7 +99,7 @@
 
 		<object-field
 			name="number"
-			finder="number"/>
+			object-type="number"/>
 
 		<timestamp-field
 			name="createdTime"/>
@@ -109,7 +109,7 @@
 
 		<object-field
 			name="activeSession"
-			finder="smsCustomerSession"/>
+			object-type="smsCustomerSession"/>
 
 		<integer-field
 			name="numSessions"/>

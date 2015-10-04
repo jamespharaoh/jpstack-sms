@@ -48,6 +48,12 @@ class MessageStats {
 	@SimpleField
 	Integer outHeld = 0;
 
+	@SimpleField
+	Integer outBlacklisted = 0;
+
+	@SimpleField
+	Integer outManuallyUndelivered = 0;
+
 	public
 	MessageStats plusEq (
 			MessageStats messageStats) {
@@ -81,6 +87,15 @@ class MessageStats {
 
 		outReportTimedOut +=
 			messageStats.outReportTimedOut;
+
+		outHeld +=
+			messageStats.outHeld;
+
+		outBlacklisted +=
+			messageStats.outBlacklisted;
+
+		outManuallyUndelivered +=
+			messageStats.outManuallyUndelivered;
 
 		return this;
 

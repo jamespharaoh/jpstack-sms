@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
+import wbs.platform.currency.model.CurrencyObjectHelper;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
 import wbs.platform.menu.model.MenuItemRec;
@@ -23,6 +24,9 @@ class RouteFixtureProvider
 
 	@Inject
 	CommandObjectHelper commandHelper;
+
+	@Inject
+	CurrencyObjectHelper currencyHelper;
 
 	@Inject
 	KeywordSetObjectHelper keywordSetHelper;
@@ -129,6 +133,11 @@ class RouteFixtureProvider
 
 			.setOutCharge (
 				500)
+
+			.setCurrency (
+				currencyHelper.findByCode (
+					GlobalId.root,
+					"gbp"))
 
 		);
 

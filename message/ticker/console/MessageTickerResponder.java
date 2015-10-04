@@ -3,7 +3,7 @@ package wbs.sms.message.ticker.console;
 import java.util.Set;
 
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.context.ConsoleContextScriptRef;
+import wbs.platform.console.context.ConsoleApplicationScriptRef;
 import wbs.platform.console.html.ScriptRef;
 import wbs.platform.console.responder.HtmlResponder;
 
@@ -27,11 +27,11 @@ class MessageTickerResponder
 				super.scriptRefs ())
 
 			.add (
-				ConsoleContextScriptRef.javascript (
+				ConsoleApplicationScriptRef.javascript (
 					"/js/rpc.js"))
 
 			.add (
-				ConsoleContextScriptRef.javascript (
+				ConsoleApplicationScriptRef.javascript (
 					"/js/message-ticker.js"))
 
 			.build ();
@@ -40,9 +40,9 @@ class MessageTickerResponder
 
 	@Override
 	protected
-	void goHeadStuff () {
+	void renderHtmlHeadContents () {
 
-		super.goHeadStuff ();
+		super.renderHtmlHeadContents ();
 
 		printFormat (
 			"<script type=\"text/javascript\">\n",
@@ -56,7 +56,7 @@ class MessageTickerResponder
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContents () {
 
 		printFormat (
 			"<h2>Message ticker</h1>\n");

@@ -40,7 +40,7 @@ class NumberListNumberUpdatePart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		goDetails ();
 

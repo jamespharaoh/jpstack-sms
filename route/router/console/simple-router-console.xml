@@ -52,7 +52,7 @@
 
 		<object-field
 			name="route"
-			finder="route"/>
+			object-type="route"/>
 
 	</field-set>
 
@@ -66,7 +66,7 @@
 
 		<object-field
 			name="route"
-			finder="route"/>
+			object-type="route"/>
 
 	</field-set>
 
@@ -83,7 +83,7 @@
 
 		<object-field
 			name="route"
-			finder="route"/>
+			object-type="route"/>
 
 	</field-set>
 
@@ -97,7 +97,7 @@
 
 		<object-field
 			name="route"
-			finder="route"/>
+			object-type="route"/>
 
 	</field-set>
 

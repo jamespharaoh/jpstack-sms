@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.platform.console.context.ConsoleContextScriptRef;
+import wbs.platform.console.context.ConsoleApplicationScriptRef;
 import wbs.platform.console.html.ScriptRef;
 import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.messageset.model.MessageSetMessageRec;
@@ -54,11 +54,11 @@ class MessageSetPart
 				super.scriptRefs ())
 
 			.add (
-				ConsoleContextScriptRef.javascript (
+				ConsoleApplicationScriptRef.javascript (
 					"/js/DOM.js"))
 
 			.add (
-				ConsoleContextScriptRef.javascript (
+				ConsoleApplicationScriptRef.javascript (
 					"/js/gsm.js"))
 
 			.build ();
@@ -155,7 +155,7 @@ class MessageSetPart
 
 	@Override
 	public
-	void goHeadStuff () {
+	void renderHtmlHeadContent () {
 
 		out.println("<script language=\"JavaScript\">");
 		out.println("function form_magic () {");
@@ -258,7 +258,7 @@ class MessageSetPart
 
 	@Override
 	public
-	void goBodyStuff () {
+	void renderHtmlBodyContent () {
 
 		out.println("<form method=\"post\">");
 

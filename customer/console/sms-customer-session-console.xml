@@ -75,11 +75,11 @@
 
 		<object-field
 			name="welcomeMessage"
-			finder="message"/>
+			object-type="message"/>
 
 		<object-field
 			name="warningMessage"
-			finder="message"/>
+			object-type="message"/>
 
 	</field-set>
 
