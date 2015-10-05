@@ -2,14 +2,17 @@
 	name="delivery"
 	package="wbs.sms.message.delivery">
 
-	<sql-scripts>
-		<sql-schema name="delivery"/>
-	</sql-scripts>
-
 	<models>
 		<model name="delivery"/>
 		<model name="deliveryType"/>
 	</models>
+
+	<layer name="entity">
+		<bean class="model.DeliveryTypeBuilder"/>
+		<bean class="model.DeliveryTypeSpec"/>
+		<bean class="model.DeliveryTypesBuilder"/>
+		<bean class="model.DeliveryTypesSpec"/>
+	</layer>
 
 	<layer name="daemon">
 		<bean class="daemon.DeliveryDaemon"/>
