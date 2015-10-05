@@ -1,0 +1,12 @@
+<model-meta
+	name="simpleRouter">
+
+	<router-types>
+
+		<router-type
+			name="Default"
+			description="Send via the currently configured route"/>
+
+	</router-types>
+
+</model-meta>

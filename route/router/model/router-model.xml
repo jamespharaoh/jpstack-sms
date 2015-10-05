@@ -10,4 +10,15 @@
 
 	</priv-types>
 
+	<router-types>
+
+		<!-- route -->
+
+		<router-type
+			subject="route"
+			name="Static"
+			description="Always send via a specific route"/>
+
+	</router-types>
+
 </model-meta>
