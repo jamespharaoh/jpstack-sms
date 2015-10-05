@@ -1,6 +1,0 @@
-SELECT priv_type_insert (
-	'root',
-	'inbox_view',
-	'View inbox',
-	'View received messages waiting to be processed',
-	true);

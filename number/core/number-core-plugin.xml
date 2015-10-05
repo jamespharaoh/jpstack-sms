@@ -8,7 +8,6 @@
 
 	<sql-scripts>
 		<sql-schema name="number"/>
-		<sql-data name="number-data"/>
 	</sql-scripts>
 
 	<models>

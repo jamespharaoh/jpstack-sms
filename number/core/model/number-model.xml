@@ -1,0 +1,12 @@
+<model-meta
+	name="number">
+
+	<event-types>
+
+		<event-type
+			name="Number network from message"
+			text="Network for %0 changed from %1 to %2 due to %3"/>
+
+	</event-types>
+
+</model-meta>

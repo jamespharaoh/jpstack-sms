@@ -1,0 +1,16 @@
+<model-meta
+	name="inbox">
+
+	<priv-types>
+
+		<!-- root -->
+
+		<priv-type
+			subject="root"
+			name="Inbox view"
+			description="View SMS messages in the inbox"
+			template="yes"/>
+
+	</priv-types>
+
+</model-meta>

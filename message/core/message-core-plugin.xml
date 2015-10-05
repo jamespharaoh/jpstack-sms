@@ -10,7 +10,6 @@
 		<sql-schema name="message"/>
 		<sql-schema name="message-media"/>
 		<sql-schema name="message-type"/>
-		<sql-data name="message-data"/>
 	</sql-scripts>
 
 	<models>

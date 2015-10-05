@@ -39,4 +39,12 @@
 
 	</priv-types>
 
+	<event-types>
+
+		<event-type
+			name="Message manually undelivered"
+			text="%0 manually undelivered %1"/>
+
+	</event-types>
+
 </model-meta>
