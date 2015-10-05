@@ -10,4 +10,15 @@
 
 	</command-types>
 
+	<service-types>
+
+		<!-- root -->
+
+		<service-type
+			subject="root"
+			name="Test"
+			description="Route tester service"/>
+
+	</service-types>
+
 </model-meta>

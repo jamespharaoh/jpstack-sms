@@ -1,5 +1,6 @@
 package wbs.sms.command.model;
 
+import static wbs.framework.utils.etc.Misc.camelToUnderscore;
 import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -13,7 +14,6 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
@@ -52,10 +52,34 @@ class CommandTypeBuilder {
 	// build
 
 	@BuildMethod
-	@SneakyThrows (SQLException.class)
 	public
 	void build (
 			Builder builder) {
+
+		try {
+
+			createCommandType ();
+
+		} catch (Exception exception) {
+
+			throw new RuntimeException (
+				stringFormat (
+					"Error creating command type %s.%s",
+					camelToUnderscore (
+						ifNull (
+							spec.subject (),
+							parent.name ())),
+					codify (
+						spec.name ())),
+				exception);
+
+		}
+
+	}
+
+	private
+	void createCommandType ()
+		throws SQLException {
 
 		@Cleanup
 		Connection connection =

@@ -28,4 +28,16 @@
 
 	</command-types>
 
+	<service-types>
+
+		<service-type
+			name="Welcome"
+			description="Welcome messages for an SMS customer manager"/>
+
+		<service-type
+			name="Warning"
+			description="Warning messages for an SMS customer manager"/>
+
+	</service-types>
+
 </model-meta>
