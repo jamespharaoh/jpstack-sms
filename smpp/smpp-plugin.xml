@@ -2,10 +2,6 @@
 	name="smpp"
 	package="wbs.sms.smpp">
 
-	<sql-scripts>
-		<sql-data name="smpp-data"/>
-	</sql-scripts>
-
 	<models>
 		<model name="smppRoute"/>
 	</models>

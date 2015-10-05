@@ -1,0 +1,12 @@
+<model-meta
+	name="smpp">
+
+	<senders>
+
+		<sender
+			name="SMPP"
+			description="SMPP sender"/>
+
+	</senders>
+
+</model-meta>

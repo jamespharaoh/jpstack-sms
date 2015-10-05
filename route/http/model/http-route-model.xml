@@ -1,0 +1,12 @@
+<model-meta
+	name="httpRoute">
+
+	<senders>
+
+		<sender
+			name="HTTP"
+			description="HTTP SMS sender"/>
+
+	</senders>
+
+</model-meta>

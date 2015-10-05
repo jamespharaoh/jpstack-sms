@@ -2,10 +2,6 @@
 	name="wap-push"
 	package="wbs.sms.message.wap">
 
-	<sql-scripts>
-		<sql-data name="wap-push-data"/>
-	</sql-scripts>
-
 	<models>
 		<model name="wapPushMessage"/>
 	</models>

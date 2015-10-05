@@ -6,10 +6,6 @@
 		<plugin-dependency name="sms-core"/>
 	</plugin-dependencies>
 
-	<sql-scripts>
-		<sql-schema name="sender"/>
-	</sql-scripts>
-
 	<models>
 		<model name="sender"/>
 	</models>
@@ -17,6 +13,13 @@
 	<fixtures>
 		<fixture name="sender"/>
 	</fixtures>
+
+	<layer name="entity">
+		<bean class="model.SenderBuilder"/>
+		<bean class="model.SenderSpec"/>
+		<bean class="model.SendersBuilder"/>
+		<bean class="model.SendersSpec"/>
+	</layer>
 
 	<console-modules>
 		<console-module name="sender"/>
