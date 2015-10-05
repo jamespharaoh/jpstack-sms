@@ -2,15 +2,18 @@
 	name="message-set"
 	package="wbs.sms.messageset">
 
-	<sql-scripts>
-		<sql-schema name="message-set"/>
-	</sql-scripts>
-
 	<models>
 		<model name="messageSet"/>
 		<model name="messageSetMessage"/>
 		<model name="messageSetType"/>
 	</models>
+
+	<layer name="entity">
+		<bean class="model.MessageSetTypeBuilder"/>
+		<bean class="model.MessageSetTypeSpec"/>
+		<bean class="model.MessageSetTypesBuilder"/>
+		<bean class="model.MessageSetTypesSpec"/>
+	</layer>
 
 	<layer name="logic">
 		<bean class="logic.MessageSetLogicImpl"/>
