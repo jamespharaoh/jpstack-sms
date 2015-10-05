@@ -2,14 +2,17 @@
 	name="number-lookup"
 	package="wbs.sms.number.lookup">
 
-	<sql-scripts>
-		<sql-schema name="number-lookup"/>
-	</sql-scripts>
-
 	<models>
 		<model name="numberLookup"/>
 		<model name="numberLookupType"/>
 	</models>
+
+	<layer name="entity">
+		<bean class="model.NumberLookupTypeBuilder"/>
+		<bean class="model.NumberLookupTypeSpec"/>
+		<bean class="model.NumberLookupTypesBuilder"/>
+		<bean class="model.NumberLookupTypesSpec"/>
+	</layer>
 
 	<layer name="logic">
 		<bean class="logic.NumberLookupHelperManager"/>

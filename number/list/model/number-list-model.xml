@@ -50,4 +50,12 @@
 
 	</event-types>
 
+	<number-lookup-types>
+
+		<number-lookup-type
+			name="Default"
+			description="Numbers which appear in a number list"/>
+
+	</number-lookup-types>
+
 </model-meta>

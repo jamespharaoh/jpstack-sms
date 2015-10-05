@@ -8,7 +8,6 @@
 
 	<sql-scripts>
 		<sql-schema name="number-list"/>
-		<sql-data name="number-list-data"/>
 	</sql-scripts>
 
 	<models>
