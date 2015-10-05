@@ -2,14 +2,17 @@
 	name="command"
 	package="wbs.sms.command">
 
-	<sql-scripts>
-		<sql-schema name="command"/>
-	</sql-scripts>
-
 	<models>
 		<model name="command"/>
 		<model name="commandType"/>
 	</models>
+
+	<layer name="entity">
+		<bean class="model.CommandTypeBuilder"/>
+		<bean class="model.CommandTypeSpec"/>
+		<bean class="model.CommandTypesBuilder"/>
+		<bean class="model.CommandTypesSpec"/>
+	</layer>
 
 	<layer name="logic">
 		<bean class="logic.CommandLogicImpl"/>

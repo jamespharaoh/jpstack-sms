@@ -10,4 +10,13 @@
 
 	</priv-types>
 
+	<command-types>
+
+		<command-type
+			subject="root"
+			name="Magic number"
+			description="Process an inbound message to a magic number"/>
+
+	</command-types>
+
 </model-meta>

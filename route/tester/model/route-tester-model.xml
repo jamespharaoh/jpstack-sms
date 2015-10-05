@@ -1,0 +1,13 @@
+<model-meta
+	name="routeTester">
+
+	<command-types>
+
+		<command-type
+			subject="root"
+			name="Route tester response"
+			description="Process the inbound message for a route tester"/>
+
+	</command-types>
+
+</model-meta>

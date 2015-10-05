@@ -40,11 +40,6 @@ $$ LANGUAGE 'plpgsql';
 
 ---------------------------------------- INSERT command_type
 
-SELECT command_type_insert (
-	'root',
-	'route_tester_response',
-	'Route tester response');
-
 SELECT service_type_insert (
 	'root',
 	'test',

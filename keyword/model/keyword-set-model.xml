@@ -10,4 +10,12 @@
 
 	</priv-types>
 
+	<command-types>
+
+		<command-type
+			name="Default"
+			description="Process message according to a keyword set"/>
+
+	</command-types>
+
 </model-meta>

@@ -20,4 +20,12 @@
 
 	</priv-types>
 
+	<command-types>
+
+		<command-type
+			name="Stop"
+			description="Process a stop request for an SMS customer manager"/>
+
+	</command-types>
+
 </model-meta>
