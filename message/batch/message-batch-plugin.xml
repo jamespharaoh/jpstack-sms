@@ -3,7 +3,6 @@
 	package="wbs.sms.message.batch">
 
 	<sql-scripts>
-		<sql-schema name="batch"/>
 		<sql-data name="batch-data"/>
 	</sql-scripts>
 
@@ -12,6 +11,13 @@
 		<model name="batchSubject"/>
 		<model name="batchType"/>
 	</models>
+
+	<layer name="entity">
+		<bean class="model.BatchTypeBuilder"/>
+		<bean class="model.BatchTypeSpec"/>
+		<bean class="model.BatchTypesBuilder"/>
+		<bean class="model.BatchTypesSpec"/>
+	</layer>
 
 	<layer name="logic">
 		<bean class="logic.BatchLogicImpl"/>
