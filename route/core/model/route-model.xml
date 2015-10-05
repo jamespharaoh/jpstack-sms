@@ -28,4 +28,14 @@
 
 	</priv-types>
 
+	<queue-types>
+
+		<queue-type
+			name="Not processed"
+			description="Inbound messages which were unable to be processed for a route"
+			subject="number"
+			ref="message"/>
+
+	</queue-types>
+
 </model-meta>
