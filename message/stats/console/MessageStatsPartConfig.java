@@ -3,9 +3,9 @@ package wbs.sms.message.stats.console;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.platform.console.part.PagePart;
 
 @SingletonComponent ("messageStatsPartConfig")
 public

@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.misc.TimeFormatter;
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.misc.TimeFormatter;
-import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 

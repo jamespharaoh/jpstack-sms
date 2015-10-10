@@ -2,11 +2,11 @@ package wbs.sms.message.inbox.console;
 
 import javax.inject.Inject;
 
+import wbs.console.context.ConsoleContext;
+import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.module.ConsoleManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.Responder;
-import wbs.platform.console.context.ConsoleContext;
-import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.module.ConsoleManager;
 import wbs.platform.queue.console.AbstractQueueConsolePlugin;
 import wbs.platform.queue.model.QueueItemRec;
 import wbs.platform.queue.model.QueueRec;

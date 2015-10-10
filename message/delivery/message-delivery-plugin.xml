@@ -7,11 +7,14 @@
 		<model name="deliveryType"/>
 	</models>
 
-	<layer name="entity">
-		<bean class="model.DeliveryTypeBuilder"/>
-		<bean class="model.DeliveryTypeSpec"/>
-		<bean class="model.DeliveryTypesBuilder"/>
-		<bean class="model.DeliveryTypesSpec"/>
+	<layer name="fixture">
+		<bean class="fixture.DeliveryTypeBuilder"/>
+		<bean class="fixture.DeliveryTypesBuilder"/>
+	</layer>
+
+	<layer name="model-meta">
+		<bean class="metamodel.DeliveryTypeSpec"/>
+		<bean class="metamodel.DeliveryTypesSpec"/>
 	</layer>
 
 	<layer name="daemon">

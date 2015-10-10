@@ -14,13 +14,13 @@ import javax.inject.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import wbs.console.html.ObsoleteDateField;
+import wbs.console.misc.TimeFormatter;
+import wbs.console.part.AbstractPagePart;
+import wbs.console.tab.Tab;
+import wbs.console.tab.TabList;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.UrlParams;
-import wbs.platform.console.html.ObsoleteDateField;
-import wbs.platform.console.misc.TimeFormatter;
-import wbs.platform.console.part.AbstractPagePart;
-import wbs.platform.console.tab.Tab;
-import wbs.platform.console.tab.TabList;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("genericMessageStatsPart")

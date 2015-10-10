@@ -2,10 +2,10 @@ package wbs.sms.message.ticker.console;
 
 import java.util.Set;
 
+import wbs.console.context.ConsoleApplicationScriptRef;
+import wbs.console.html.ScriptRef;
+import wbs.console.responder.HtmlResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.context.ConsoleApplicationScriptRef;
-import wbs.platform.console.html.ScriptRef;
-import wbs.platform.console.responder.HtmlResponder;
 
 import com.google.common.collect.ImmutableSet;
 

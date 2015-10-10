@@ -1,6 +1,6 @@
 package wbs.sms.route.core.console;
 
-import wbs.platform.console.part.PagePart;
+import wbs.console.part.PagePart;
 
 public
 interface RouteSummaryAdditionalPartFactory {

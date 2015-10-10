@@ -12,13 +12,12 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.exception.ExceptionLogger;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.daemon.ThreadManager;
-import wbs.platform.exception.logic.ExceptionLogLogic;
-import wbs.platform.exception.model.ExceptionLogObjectHelper;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -51,10 +50,7 @@ class ReceivedManager
 	Database database;
 
 	@Inject
-	ExceptionLogObjectHelper exceptionLogHelper;
-
-	@Inject
-	ExceptionLogLogic exceptionLogic;
+	ExceptionLogger exceptionLogger;
 
 	@Inject
 	InboxAttemptObjectHelper inboxAttemptHelper;
@@ -195,7 +191,7 @@ class ReceivedManager
 			RouteRec route =
 				message.getRoute ();
 
-			exceptionLogic.logThrowable (
+			exceptionLogger.logThrowable (
 				"daemon",
 				stringFormat (
 					"Route %s",

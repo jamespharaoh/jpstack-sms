@@ -1,6 +1,6 @@
 package wbs.sms.messageset.console;
 
-import wbs.platform.console.request.ConsoleRequestContext;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.sms.messageset.model.MessageSetRec;
 
 public

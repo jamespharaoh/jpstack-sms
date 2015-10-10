@@ -15,10 +15,10 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
+import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.BeanLogic;
 import wbs.framework.utils.etc.Html;
-import wbs.platform.console.request.ConsoleRequestContext;
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.sms.message.stats.console.GroupedStatsSource.GroupStats;
 import wbs.sms.message.stats.model.MessageStats;

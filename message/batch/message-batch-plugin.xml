@@ -12,11 +12,14 @@
 		<model name="batchType"/>
 	</models>
 
-	<layer name="entity">
-		<bean class="model.BatchTypeBuilder"/>
-		<bean class="model.BatchTypeSpec"/>
-		<bean class="model.BatchTypesBuilder"/>
-		<bean class="model.BatchTypesSpec"/>
+	<layer name="fixture">
+		<bean class="fixture.BatchTypeBuilder"/>
+		<bean class="fixture.BatchTypesBuilder"/>
+	</layer>
+
+	<layer name="model-meta">
+		<bean class="metamodel.BatchTypeSpec"/>
+		<bean class="metamodel.BatchTypesSpec"/>
 	</layer>
 
 	<layer name="logic">

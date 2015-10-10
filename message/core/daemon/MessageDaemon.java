@@ -18,8 +18,8 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.exception.ExceptionLogger;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.core.daemon.MessageRetrier;
 import wbs.sms.core.daemon.MessageRetrierFactory;
@@ -43,7 +43,7 @@ class MessageDaemon
 	Database database;
 
 	@Inject
-	ExceptionLogLogic exceptionLogic;
+	ExceptionLogger exceptionLogger;
 
 	@Inject
 	MessageExpiryObjectHelper messageExpiryHelper;
@@ -92,7 +92,7 @@ class MessageDaemon
 
 			} catch (Exception exception) {
 
-				exceptionLogic.logThrowable (
+				exceptionLogger.logThrowable (
 					"daemon",
 					"MessageDaemon",
 					exception,

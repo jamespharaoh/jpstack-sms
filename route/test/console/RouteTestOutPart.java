@@ -1,7 +1,7 @@
 package wbs.sms.route.test.console;
 
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.part.AbstractPagePart;
 
 @PrototypeComponent ("routeTestOutPart")
 public

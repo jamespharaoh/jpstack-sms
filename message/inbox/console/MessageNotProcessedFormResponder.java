@@ -6,10 +6,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import wbs.console.html.JqueryScriptRef;
+import wbs.console.html.ScriptRef;
+import wbs.console.responder.HtmlResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.html.JqueryScriptRef;
-import wbs.platform.console.html.ScriptRef;
-import wbs.platform.console.responder.HtmlResponder;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;

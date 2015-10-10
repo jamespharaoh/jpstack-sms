@@ -12,11 +12,14 @@
 		<model name="simpleRouter"/>
 	</models>
 
-	<layer name="entity">
-		<bean class="model.RouterTypeBuilder"/>
-		<bean class="model.RouterTypeSpec"/>
-		<bean class="model.RouterTypesBuilder"/>
-		<bean class="model.RouterTypesSpec"/>
+	<layer name="fixture">
+		<bean class="fixture.RouterTypeBuilder"/>
+		<bean class="fixture.RouterTypesBuilder"/>
+	</layer>
+
+	<layer name="model-meta">
+		<bean class="metamodel.RouterTypeSpec"/>
+		<bean class="metamodel.RouterTypesSpec"/>
 	</layer>
 
 	<layer name="logic">

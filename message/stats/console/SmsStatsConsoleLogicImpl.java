@@ -11,13 +11,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import lombok.extern.log4j.Log4j;
+import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.priv.PrivChecker;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.GlobalId;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
-import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.request.ConsoleRequestContext;
-import wbs.platform.priv.console.PrivChecker;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;

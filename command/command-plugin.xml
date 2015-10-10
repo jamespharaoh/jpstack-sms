@@ -7,11 +7,14 @@
 		<model name="commandType"/>
 	</models>
 
-	<layer name="entity">
-		<bean class="model.CommandTypeBuilder"/>
-		<bean class="model.CommandTypeSpec"/>
-		<bean class="model.CommandTypesBuilder"/>
-		<bean class="model.CommandTypesSpec"/>
+	<layer name="fixture">
+		<bean class="fixture.CommandTypeBuilder"/>
+		<bean class="fixture.CommandTypesBuilder"/>
+	</layer>
+
+	<layer name="model-meta">
+		<bean class="metamodel.CommandTypeSpec"/>
+		<bean class="metamodel.CommandTypesSpec"/>
 	</layer>
 
 	<layer name="logic">

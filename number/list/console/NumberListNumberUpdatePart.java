@@ -3,9 +3,9 @@ package wbs.sms.number.list.console;
 import javax.inject.Inject;
 
 import lombok.experimental.Accessors;
+import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.PrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.part.AbstractPagePart;
-import wbs.platform.priv.console.PrivChecker;
 import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (fluent = true)

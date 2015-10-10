@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;

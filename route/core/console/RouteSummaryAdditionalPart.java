@@ -4,9 +4,9 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
+import wbs.console.part.AbstractPagePart;
+import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.part.AbstractPagePart;
-import wbs.platform.console.part.PagePart;
 import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")

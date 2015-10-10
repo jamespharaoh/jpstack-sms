@@ -13,8 +13,8 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.exception.ExceptionLogger;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 
 import com.google.common.base.Optional;
@@ -31,17 +31,29 @@ public
 class SmsOutboxMonitor
 	extends AbstractDaemonService {
 
-	public final static
-	int sleepInterval = 1000;
+	// dependencies
 
 	@Inject
 	Database database;
 
 	@Inject
-	ExceptionLogLogic exceptionLogic;
+	ExceptionLogger exceptionLogger;
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
+
+	// details
+
+	public final static
+	int sleepInterval = 1000;
+
+	@Override
+	protected
+	String getThreadName () {
+		throw new UnsupportedOperationException ();
+	}
+
+	// state
 
 	private
 	Object waitersLock =
@@ -51,11 +63,7 @@ class SmsOutboxMonitor
 	Map<Integer,CountDownLatch> waiters =
 		new HashMap<Integer,CountDownLatch> ();
 
-	@Override
-	protected
-	String getThreadName () {
-		throw new UnsupportedOperationException ();
-	}
+	// implementation
 
 	@Override
 	protected
@@ -132,7 +140,7 @@ class SmsOutboxMonitor
 
 					// log error
 
-					exceptionLogic.logThrowable (
+					exceptionLogger.logThrowable (
 						"daemon",
 						"Outbox monitor",
 						exception,

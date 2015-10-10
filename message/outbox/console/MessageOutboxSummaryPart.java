@@ -7,9 +7,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;

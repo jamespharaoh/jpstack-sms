@@ -9,22 +9,22 @@ import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import wbs.console.annotations.ConsoleModuleBuilderHandler;
+import wbs.console.context.ConsoleContextBuilderContainer;
+import wbs.console.context.ResolvedConsoleContextExtensionPoint;
+import wbs.console.helper.ConsoleHelper;
+import wbs.console.module.ConsoleMetaManager;
+import wbs.console.module.ConsoleModuleImpl;
+import wbs.console.part.PagePart;
+import wbs.console.responder.ConsoleFile;
+import wbs.console.tab.ConsoleContextTab;
+import wbs.console.tab.TabContextResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
-import wbs.platform.console.annotations.ConsoleModuleBuilderHandler;
-import wbs.platform.console.context.ConsoleContextBuilderContainer;
-import wbs.platform.console.context.ResolvedConsoleContextExtensionPoint;
-import wbs.platform.console.helper.ConsoleHelper;
-import wbs.platform.console.module.ConsoleMetaManager;
-import wbs.platform.console.module.ConsoleModuleImpl;
-import wbs.platform.console.part.PagePart;
-import wbs.platform.console.responder.ConsoleFile;
-import wbs.platform.console.tab.ConsoleContextTab;
-import wbs.platform.console.tab.TabContextResponder;
 
 @PrototypeComponent ("objectSmsStatsPageBuilder")
 @ConsoleModuleBuilderHandler

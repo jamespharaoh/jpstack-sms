@@ -3,10 +3,10 @@ package wbs.sms.number.core.console;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import wbs.console.part.PagePart;
+import wbs.console.request.Cryptor;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.platform.console.part.PagePart;
-import wbs.platform.console.request.Cryptor;
 
 @SingletonComponent ("numberConsoleConfig")
 public

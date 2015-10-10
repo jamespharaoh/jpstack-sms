@@ -7,11 +7,11 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import wbs.console.lookup.ObjectLookup;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.Record;
-import wbs.platform.console.lookup.ObjectLookup;
-import wbs.platform.console.request.ConsoleRequestContext;
 import wbs.sms.messageset.model.MessageSetRec;
 
 @Accessors (fluent = true)

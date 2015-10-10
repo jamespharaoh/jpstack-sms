@@ -10,16 +10,19 @@
 		<model name="sender"/>
 	</models>
 
+	<layer name="fixture">
+		<bean class="fixture.SenderBuilder"/>
+		<bean class="fixture.SendersBuilder"/>
+	</layer>
+
+	<layer name="model-meta">
+		<bean class="metamodel.SenderSpec"/>
+		<bean class="metamodel.SendersSpec"/>
+	</layer>
+
 	<fixtures>
 		<fixture name="sender"/>
 	</fixtures>
-
-	<layer name="entity">
-		<bean class="model.SenderBuilder"/>
-		<bean class="model.SenderSpec"/>
-		<bean class="model.SendersBuilder"/>
-		<bean class="model.SendersSpec"/>
-	</layer>
 
 	<console-modules>
 		<console-module name="sender"/>

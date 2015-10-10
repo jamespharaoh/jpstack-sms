@@ -6,11 +6,11 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
+import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.PrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.record.Record;
-import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.part.AbstractPagePart;
-import wbs.platform.priv.console.PrivChecker;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.number.core.model.NumberObjectHelper;

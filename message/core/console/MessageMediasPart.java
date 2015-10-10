@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.platform.console.part.AbstractPagePart;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageObjectHelper;

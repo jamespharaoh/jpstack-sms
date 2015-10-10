@@ -1,7 +1,7 @@
 package wbs.sms.magicnumber.console;
 
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.part.AbstractPagePart;
 
 @PrototypeComponent ("magicNumberUpdatePart")
 public

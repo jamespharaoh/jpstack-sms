@@ -6,9 +6,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.Record;
-import wbs.platform.console.helper.ConsoleObjectManager;
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
 import wbs.sms.route.core.model.RouteRec;
 

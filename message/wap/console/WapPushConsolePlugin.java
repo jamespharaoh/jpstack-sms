@@ -3,9 +3,9 @@ package wbs.sms.message.wap.console;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.utils.etc.StringFormatter;
-import wbs.platform.console.part.PagePart;
 import wbs.sms.message.core.console.MessageConsolePlugin;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;

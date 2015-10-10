@@ -9,15 +9,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import wbs.console.misc.TimeFormatter;
+import wbs.console.priv.PrivChecker;
+import wbs.console.request.ConsoleRequestContext;
+import wbs.console.responder.ConsoleResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.platform.console.misc.TimeFormatter;
-import wbs.platform.console.request.ConsoleRequestContext;
-import wbs.platform.console.responder.ConsoleResponder;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
-import wbs.platform.priv.console.PrivChecker;
 import wbs.sms.message.core.console.MessageConsoleStuff;
 import wbs.sms.message.core.model.MessageDirection;
 

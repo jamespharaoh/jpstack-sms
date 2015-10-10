@@ -4,10 +4,10 @@ import static wbs.framework.utils.etc.Misc.dateToInstant;
 
 import javax.inject.Inject;
 
+import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.misc.TimeFormatter;
+import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.platform.console.helper.ConsoleObjectManager;
-import wbs.platform.console.misc.TimeFormatter;
-import wbs.platform.console.part.AbstractPagePart;
 import wbs.sms.message.core.console.MessageConsoleStuff;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
