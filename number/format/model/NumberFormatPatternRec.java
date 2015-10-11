@@ -13,7 +13,6 @@ import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.IndexField;
 import wbs.framework.entity.annotations.ParentField;
 import wbs.framework.entity.annotations.SimpleField;
-import wbs.framework.object.AbstractObjectHooks;
 import wbs.framework.record.EphemeralRecord;
 import wbs.framework.record.Record;
 
@@ -79,30 +78,6 @@ class NumberFormatPatternRec
 				other.getIndex ())
 
 			.toComparison ();
-
-	}
-
-	// hooks
-
-	public static
-	class NumberFormatPatternHooks
-		extends AbstractObjectHooks<NumberFormatPatternRec> {
-
-		@Override
-		public
-		void beforeInsert (
-				NumberFormatPatternRec numberFormatPattern) {
-
-			NumberFormatRec numberFormat =
-				numberFormatPattern.getNumberFormat ();
-
-			numberFormatPattern.setIndex (
-				numberFormat.getNumPatterns ());
-
-			numberFormat.setNumPatterns (
-				numberFormat.getNumPatterns () + 1);
-
-		}
 
 	}
 

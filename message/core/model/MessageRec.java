@@ -13,7 +13,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import wbs.framework.entity.annotations.CollectionField;
@@ -23,7 +22,6 @@ import wbs.framework.entity.annotations.LinkField;
 import wbs.framework.entity.annotations.ReferenceField;
 import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.entity.annotations.SlaveField;
-import wbs.framework.object.AbstractObjectHooks;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -251,33 +249,6 @@ class MessageRec
 
 		List<MessageRec> search (
 				MessageSearch search);
-
-	}
-
-	// object hooks
-
-	public static
-	class MessageHooks
-		extends AbstractObjectHooks<MessageRec> {
-
-		@Override
-		public
-		void beforeInsert (
-				MessageRec message) {
-
-			if (message.getDate () == null) {
-
-				if (message.getCreatedTime () == null)
-					throw new RuntimeException ();
-
-				message.setDate (
-					new DateTime (
-						message.getCreatedTime ()
-					).toLocalDate ());
-
-			}
-
-		}
 
 	}
 

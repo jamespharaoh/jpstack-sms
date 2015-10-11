@@ -18,7 +18,6 @@ import wbs.framework.entity.annotations.CommonEntity;
 import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.ReferenceField;
 import wbs.framework.entity.annotations.SimpleField;
-import wbs.framework.object.AbstractObjectHooks;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.GlobalId;
 import wbs.framework.record.Record;
@@ -148,32 +147,6 @@ class NumberRec
 					defaultNetwork)
 
 			);
-
-		}
-
-	}
-
-	// object hooks
-
-	public static
-	class NumberHooks
-		extends AbstractObjectHooks<NumberRec> {
-
-		// dependencies
-
-		@Inject
-		NumberDao numberDao;
-
-		@Override
-		public
-		List<Integer> searchIds (
-				Object search) {
-
-			NumberSearch numberSearch =
-				(NumberSearch) search;
-
-			return numberDao.searchIds (
-				numberSearch);
 
 		}
 
