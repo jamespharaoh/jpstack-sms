@@ -100,15 +100,4 @@ class HttpRouteRec
 
 	}
 
-	// dao methods
-
-	public static
-	interface HttpRouteDaoMethods {
-
-		HttpRouteRec find (
-				RouteRec route,
-				NetworkRec network);
-
-	}
-
 }

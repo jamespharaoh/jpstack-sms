@@ -1,7 +1,5 @@
 package wbs.sms.number.lookup.model;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -66,16 +64,6 @@ class NumberLookupTypeRec
 				other.getCode ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface NumberLookupTypeDaoMethods {
-
-		List<NumberLookupTypeRec> findByParentObjectType (
-				ObjectTypeRec parentObjectType);
 
 	}
 

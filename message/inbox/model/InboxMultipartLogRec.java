@@ -1,7 +1,6 @@
 package wbs.sms.message.inbox.model;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -66,17 +65,6 @@ class InboxMultipartLogRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface InboxMultipartLogDaoMethods {
-
-		List<InboxMultipartLogRec> findRecent (
-				InboxMultipartBufferRec inboxMultipartBuffer,
-				Date timestamp);
 
 	}
 

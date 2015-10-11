@@ -1,8 +1,5 @@
 package wbs.sms.message.report.model;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -66,99 +63,6 @@ class MessageReportCodeRec
 				other.getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface MessageReportCodeDaoMethods {
-
-		MessageReportCodeRec find (
-				MessageReportCodeType type,
-				Integer status,
-				Integer statusType,
-				Integer reason);
-
-	}
-
-	// object helper methods
-
-	public static
-	interface MessageReportCodeObjectHelperMethods {
-
-		MessageReportCodeRec findOrCreate (
-				Integer status,
-				Integer statusType,
-				Integer reason,
-				MessageReportCodeType type,
-				boolean success,
-				boolean permanent,
-				String description);
-
-	}
-
-	// object helper implementation
-
-	public static
-	class MessageReportCodeObjectHelperImplementation
-		implements MessageReportCodeObjectHelperMethods {
-
-		@Inject
-		Provider<MessageReportCodeObjectHelper> messageReportCodeHelperProvider;
-
-		@Override
-		public
-		MessageReportCodeRec findOrCreate (
-				Integer status,
-				Integer statusType,
-				Integer reason,
-				MessageReportCodeType type,
-				boolean success,
-				boolean permanent,
-				String description) {
-
-			MessageReportCodeObjectHelper messageReportCodeHelper =
-				messageReportCodeHelperProvider.get ();
-
-			// TODO move this
-
-			if (description != null && description.length () == 0)
-				description = null;
-
-			MessageReportCodeRec reportCode =
-				messageReportCodeHelper.find (
-					type,
-					status,
-					statusType,
-					reason);
-
-			if (reportCode != null) {
-
-				// update description
-
-				if (description != null) {
-
-					reportCode
-						.setDescription (description);
-
-				}
-
-				return reportCode;
-
-			}
-
-			return messageReportCodeHelper.insert (
-				new MessageReportCodeRec ()
-					.setPermanent (permanent)
-					.setReason (reason)
-					.setStatus (status)
-					.setStatusType (statusType)
-					.setSuccess (success)
-					.setDescription (description)
-					.setType (type));
-
-		}
 
 	}
 

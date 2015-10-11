@@ -66,13 +66,4 @@ class ModemPollQueueRec
 
 	}
 
-	// dao methods
-
-	public static
-	interface ModemPollQueueDaoMethods {
-
-		ModemPollQueueRec findNext ();
-
-	}
-
 }

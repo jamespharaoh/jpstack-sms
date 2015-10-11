@@ -75,23 +75,4 @@ class MagicNumberUseRec
 
 	}
 
-	public static
-	interface MagicNumberUseDaoMethods {
-
-		MagicNumberUseRec find (
-				MagicNumberRec magicNumber,
-				NumberRec number);
-
-		MagicNumberUseRec findExistingByRef (
-				MagicNumberSetRec magicNumberSet,
-				NumberRec number,
-				CommandRec command,
-				Integer ref);
-
-		MagicNumberUseRec findExistingLeastRecentlyUsed (
-				MagicNumberSetRec magicNumberSet,
-				NumberRec number);
-
-	}
-
 }

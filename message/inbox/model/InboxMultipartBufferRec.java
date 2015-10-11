@@ -1,7 +1,6 @@
 package wbs.sms.message.inbox.model;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -85,19 +84,6 @@ class InboxMultipartBufferRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	public static
-	interface InboxMultipartBufferDaoMethods {
-
-		List<InboxMultipartBufferRec> findByOtherId (
-				RouteRec route,
-				String otherId);
-
-		List<InboxMultipartBufferRec> findRecent (
-				InboxMultipartBufferRec inboxMultipartBuffer,
-				Date timestamp);
 
 	}
 

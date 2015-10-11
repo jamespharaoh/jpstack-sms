@@ -1,7 +1,6 @@
 package wbs.sms.tracker.model;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import lombok.Data;
@@ -22,8 +21,6 @@ import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.MajorRecord;
 import wbs.framework.record.Record;
 import wbs.platform.scaffold.model.SliceRec;
-import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (chain = true)
 @Data
@@ -86,17 +83,6 @@ class SmsSimpleTrackerRec
 				other.getCode ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface SmsSimpleTrackerDaoMethods {
-
-		List<MessageRec> findMessages (
-				SmsSimpleTrackerRec smsSimpleTracker,
-				NumberRec number);
 
 	}
 

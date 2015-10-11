@@ -1,7 +1,5 @@
 package wbs.sms.message.delivery.model;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -54,16 +52,6 @@ class DeliveryRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface DeliveryDaoMethods {
-
-		List<DeliveryRec> findAllLimit (
-				int maxResults);
 
 	}
 

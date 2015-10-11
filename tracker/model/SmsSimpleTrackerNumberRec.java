@@ -71,15 +71,4 @@ class SmsSimpleTrackerNumberRec
 
 	}
 
-	// dao methods
-
-	public static
-	interface SmsSimpleTrackerNumberDaoMethods {
-
-		SmsSimpleTrackerNumberRec find (
-				SmsSimpleTrackerRec smsSimpleTracker,
-				NumberRec number);
-
-	}
-
 }

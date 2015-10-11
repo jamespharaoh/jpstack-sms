@@ -1,7 +1,5 @@
 package wbs.sms.message.inbox.model;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -82,22 +80,6 @@ class InboxRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface InboxDaoMethods {
-
-		int countPending ();
-
-		List<InboxRec> findPendingLimit (
-				Instant now,
-				int maxResults);
-
-		List<InboxRec> findPendingLimit (
-				int maxResults);
 
 	}
 

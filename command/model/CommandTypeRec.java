@@ -1,6 +1,5 @@
 package wbs.sms.command.model;
 
-import java.util.List;
 import java.util.Set;
 
 import lombok.Data;
@@ -75,16 +74,6 @@ class CommandTypeRec
 				other.getCode ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface CommandTypeDaoMethods {
-
-		List<CommandTypeRec> findByParentObjectType (
-				ObjectTypeRec parentObjectType);
 
 	}
 

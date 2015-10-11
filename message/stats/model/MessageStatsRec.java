@@ -1,7 +1,6 @@
 package wbs.sms.message.stats.model;
 
 import java.util.Collection;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -53,14 +52,6 @@ class MessageStatsRec
 				other.getId ())
 
 			.toComparison ();
-
-	}
-
-	public static
-	interface MessageStatsDaoMethods {
-
-		List<MessageStatsRec> search (
-				MessageStatsSearch search);
 
 	}
 

@@ -1,8 +1,6 @@
 package wbs.sms.message.outbox.model;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +8,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.joda.time.Instant;
 
 import wbs.framework.entity.annotations.EphemeralEntity;
 import wbs.framework.entity.annotations.ForeignIdField;
@@ -97,35 +94,6 @@ class OutboxRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface OutboxDaoMethods {
-
-		int count ();
-
-		OutboxRec find (
-				MessageRec message);
-
-		List<OutboxRec> findLimit (
-				RouteRec route,
-				int maxResults);
-
-		OutboxRec findNext (
-				RouteRec route);
-
-		List<OutboxRec> findNextLimit (
-				RouteRec route,
-				int maxResults);
-
-		List<OutboxRec> findSendingBeforeLimit (
-				Instant sendingBefore,
-				int maxResults);
-
-		Map<Integer,Integer> generateRouteSummary ();
 
 	}
 

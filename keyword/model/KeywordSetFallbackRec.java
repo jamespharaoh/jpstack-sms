@@ -77,16 +77,4 @@ class KeywordSetFallbackRec
 
 	}
 
-	// dao methods
-
-	public static
-	interface KeywordSetFallbackDaoMethods {
-
-		KeywordSetFallbackRec find (
-				KeywordSetRec keywordSet,
-				NumberRec number);
-
-	}
-
-
 }

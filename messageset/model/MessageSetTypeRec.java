@@ -1,6 +1,5 @@
 package wbs.sms.messageset.model;
 
-import java.util.List;
 import java.util.Set;
 
 import lombok.Data;
@@ -74,16 +73,6 @@ class MessageSetTypeRec
 				other.getCode ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface MessageSetTypeDaoMethods {
-
-		List<MessageSetTypeRec> findByParentObjectType (
-				ObjectTypeRec parentObjectType);
 
 	}
 

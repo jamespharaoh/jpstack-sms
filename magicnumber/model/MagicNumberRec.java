@@ -18,7 +18,6 @@ import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.ParentField;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
-import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (chain = true)
 @Data
@@ -66,20 +65,6 @@ class MagicNumberRec
 				other.getNumber ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface MagicNumberDaoMethods {
-
-		MagicNumberRec findByNumber (
-				String number);
-
-		MagicNumberRec findExistingUnused (
-				MagicNumberSetRec magicNumberSet,
-				NumberRec number);
 
 	}
 

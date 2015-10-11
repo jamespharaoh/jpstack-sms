@@ -1,7 +1,6 @@
 package wbs.sms.message.core.model;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,16 +56,6 @@ class MessageExpiryRec
 				getId ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface MessageExpiryDaoMethods {
-
-		List<MessageExpiryRec> findPendingLimit (
-				int maxResults);
 
 	}
 

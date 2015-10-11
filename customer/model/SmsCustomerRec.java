@@ -1,10 +1,5 @@
 package wbs.sms.customer.model;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -13,8 +8,6 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.joda.time.Instant;
 
-import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.entity.annotations.CodeField;
 import wbs.framework.entity.annotations.GeneratedIdField;
 import wbs.framework.entity.annotations.MajorEntity;
@@ -23,7 +16,6 @@ import wbs.framework.entity.annotations.ReferenceField;
 import wbs.framework.entity.annotations.SimpleField;
 import wbs.framework.record.CommonRecord;
 import wbs.framework.record.Record;
-import wbs.framework.utils.RandomLogic;
 import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (chain = true)
@@ -92,96 +84,6 @@ class SmsCustomerRec
 				other.getSmsCustomerManager ())
 
 			.toComparison ();
-
-	}
-
-	// dao methods
-
-	public static
-	interface SmsCustomerDaoMethods {
-
-		List<Integer> searchIds (
-				SmsCustomerSearch search);
-
-		SmsCustomerRec find (
-				SmsCustomerManagerRec manager,
-				NumberRec number);
-
-	}
-
-	// helper methods
-
-	public static
-	interface SmsCustomerObjectHelperMethods {
-
-		SmsCustomerRec findOrCreate (
-				SmsCustomerManagerRec manager,
-				NumberRec number);
-
-	}
-
-	// helper implementation
-
-	public static
-	class SmsCustomerObjectHelperImplementation
-		implements SmsCustomerObjectHelperMethods {
-
-		// dependencies
-
-		@Inject
-		Database database;
-
-		@Inject
-		RandomLogic randomLogic;
-
-		// indirect dependencies
-
-		@Inject
-		Provider<SmsCustomerObjectHelper> smsCustomerHelperProvider;
-
-		// implementation
-
-		@Override
-		public
-		SmsCustomerRec findOrCreate (
-				SmsCustomerManagerRec manager,
-				NumberRec number) {
-
-			Transaction transaction =
-				database.currentTransaction ();
-
-			SmsCustomerObjectHelper smsCustomerHelper =
-				smsCustomerHelperProvider.get ();
-
-			SmsCustomerRec customer =
-				smsCustomerHelper.find (
-					manager,
-					number);
-
-			if (customer != null)
-				return customer;
-
-			customer =
-				smsCustomerHelper.insert (
-					new SmsCustomerRec ()
-
-				.setSmsCustomerManager (
-					manager)
-
-				.setNumber (
-					number)
-
-				.setCode (
-					randomLogic.generateNumericNoZero (6))
-
-				.setCreatedTime (
-					transaction.now ())
-
-			);
-
-			return customer;
-
-		}
 
 	}
 

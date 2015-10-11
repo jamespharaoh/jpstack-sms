@@ -224,32 +224,4 @@ class MessageRec
 
 	};
 
-	// dao methods
-
-	public static
-	interface MessageDaoMethods {
-
-		MessageRec findByOtherId (
-				MessageDirection direction,
-				RouteRec route,
-				String otherId);
-
-		List<MessageRec> findByThreadId (
-				int threadId);
-
-		List<MessageRec> findNotProcessed ();
-
-		List<MessageRec> findRecentLimit (
-				int maxResults);
-
-		int countNotProcessed ();
-
-		List<ServiceRec> projectServices (
-				NumberRec number);
-
-		List<MessageRec> search (
-				MessageSearch search);
-
-	}
-
 }
