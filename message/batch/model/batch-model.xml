@@ -1,4 +1,27 @@
 <model-meta
-	name="batch">
+	name="batch"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-type-field/>
+
+		<parent-id-field/>
+
+		<code-field/>
+
+		<!-- details -->
+
+		<reference-field
+			name="subject"
+			type="batchSubject"/>
+
+	</fields>
 
 </model-meta>

@@ -88,10 +88,10 @@ class BatchLogicImpl
 			.setType (
 				batchType)
 
-			.setParentObjectType (
+			.setParentType (
 				parentType)
 
-			.setParentObjectId (
+			.setParentId (
 				parent.getId ()));
 
 	}
