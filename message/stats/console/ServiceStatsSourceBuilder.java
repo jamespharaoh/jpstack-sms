@@ -64,11 +64,13 @@ class ServiceStatsSourceBuilder
 				: objectManager.objectHelpers ()
 		) {
 
-			if (! objectHelper.major ())
+			if (
+				! objectHelper.major ()
+				|| objectHelper.isRoot ()
+				|| ! objectHelper.parentClass ().isInstance (parent)
+			) {
 				continue;
-
-			if (! objectHelper.parentClass ().isInstance (parent))
-				continue;
+			}
 
 			List<? extends Record<?>> children =
 				objectHelper.findByParent (
