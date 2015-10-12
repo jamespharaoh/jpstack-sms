@@ -184,11 +184,13 @@ class BatchTypeBuilder {
 				stringFormat (
 					"INSERT INTO batch_type (",
 						"id, ",
-						"subject_object_type_id, ",
+						"subject_type_id, ",
 						"code, ",
-						"batch_object_type_id, ",
+						"name, ",
+						"batch_type_id, ",
 						"description) ",
 					"VALUES (",
+						"?, ",
 						"?, ",
 						"?, ",
 						"?, ",
@@ -208,12 +210,16 @@ class BatchTypeBuilder {
 			codify (
 				spec.name ()));
 
-		insertBatchTypeStatement.setInt (
+		insertBatchTypeStatement.setString (
 			4,
+			spec.name ());
+
+		insertBatchTypeStatement.setInt (
+			5,
 			batchObjectTypeId);
 
 		insertBatchTypeStatement.setString (
-			5,
+			6,
 			spec.description ());
 
 		insertBatchTypeStatement.executeUpdate ();

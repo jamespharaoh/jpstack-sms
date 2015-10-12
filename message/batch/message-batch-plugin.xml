@@ -2,10 +2,6 @@
 	name="message-batch"
 	package="wbs.sms.message.batch">
 
-	<sql-scripts>
-		<sql-data name="batch-data"/>
-	</sql-scripts>
-
 	<models>
 		<model name="batch"/>
 		<model name="batchSubject"/>
@@ -30,5 +26,9 @@
 		<console-module name="batch"/>
 		<console-module name="batch-subject"/>
 	</console-modules>
+
+	<fixtures>
+		<fixture name="batch"/>
+	</fixtures>
 
 </plugin>
