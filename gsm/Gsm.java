@@ -46,8 +46,17 @@ class Gsm {
 	int length (
 			String string) {
 
-		Matcher matcher = gsmDoubleCharsPattern.matcher(string);
-		return matcher.replaceAll("12").length();
+		if (! isGsm (string)) {
+
+			throw new IllegalArgumentException (
+				"Provided string contains invalid GSM characters");
+
+		}
+
+		Matcher matcher =
+			gsmDoubleCharsPattern.matcher (string);
+
+		return matcher.replaceAll ("12").length ();
 
 	}
 

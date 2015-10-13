@@ -45,7 +45,7 @@ class BatchFixtureProvider
 				"root");
 
 		BatchTypeRec systemBatchType =
-			batchTypeHelper.insert (
+			batchTypeHelper.insertSpecial (
 				new BatchTypeRec ()
 
 			.setId (
@@ -69,8 +69,11 @@ class BatchFixtureProvider
 		);
 
 		BatchSubjectRec systemBatchSubject =
-			batchSubjectHelper.insert (
+			batchSubjectHelper.insertSpecial (
 				new BatchSubjectRec ()
+
+			.setId (
+				0)
 
 			.setParentType (
 				rootType)
@@ -86,8 +89,11 @@ class BatchFixtureProvider
 
 		);
 
-		batchHelper.insert (
+		batchHelper.insertSpecial (
 			new BatchRec ()
+
+			.setId (
+				0)
 
 			.setParentType (
 				rootType)

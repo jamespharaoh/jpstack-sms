@@ -15,6 +15,8 @@ ALTER TABLE message_stats ALTER out_undelivered SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_submitted SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_report_timed_out SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_held SET DEFAULT 0;
+ALTER TABLE message_stats ALTER out_blacklisted SET DEFAULT 0;
+ALTER TABLE message_stats ALTER out_manually_undelivered SET DEFAULT 0;
 
 ---------------------------------------- TABLE message_stats_queue
 
