@@ -163,3 +163,159 @@ $(function () {
 		updateFunc ();
 	});
 });
+
+function gsmMessageSplit (templates, message) {
+
+	function splitOne (template, message, page, pages) {
+
+		template =
+			template
+
+			.replace (
+				"{page}",
+				String (page))
+
+			.replace (
+				"{pages}",
+				String (pages));
+
+		var spareLength =
+			160 - gsmlen (
+				template.replace (
+					"{message}",
+					""));
+
+		// check if whole message will fit
+
+		if (gsmlen (message) <= spareLength) {
+
+			return {
+
+				part: template.replace (
+					"{message}",
+					message),
+
+				rest: "",
+
+			};
+
+		}
+
+		// work out what will fit
+
+		var maxSplit = spareLength;
+
+		while (
+			gsmlen (
+				message.substring (0, maxSplit)
+			) > spareLength
+		) {
+
+			maxSplit --;
+
+		}
+
+		// reduce further to a word boundary
+
+		var minSplit =
+			(maxSplit + 2) * 2 / 3;
+
+		for (var d = maxSplit; d >= minSplit; d --) {
+
+			if (message.charAt (d) != " ") {
+				continue;
+			}
+
+			return {
+
+				part:
+					template.replace (
+						"{message}",
+						message.substring (0, d).trim ()),
+
+				rest:
+					message.substring (d).trim (),
+
+			};
+
+		}
+
+		// fall back to a forced split
+
+		return {
+
+			part:
+				template.replace (
+					"{message}",
+					message.substring (0, maxSplit)),
+
+			rest:
+				message.substring (maxSplit).trim (),
+
+		};
+
+	}
+
+	// try and split message
+
+	for (
+		totalParts = 1;
+		true;
+		totalParts ++
+	) {
+
+		var messageParts = []
+		var rest = message;
+
+		for (
+			thisPart = 0;
+			thisPart < totalParts;
+			thisPart ++
+		) {
+
+			var thisTemplate;
+
+			if (totalParts == 1) {
+
+				thisTemplate =
+					templates.single;
+
+			} else if (thisPart == 0) {
+
+				thisTemplate =
+					templates.first;
+
+			} else if (thisPart == totalParts - 1) {
+
+				thisTemplate =
+					templates.last;
+
+			} else {
+
+				thisTemplate =
+					templates.middle;
+
+			}
+
+			var result =
+				splitOne (
+					thisTemplate,
+					rest,
+					thisPart + 1,
+					totalParts);
+
+			messageParts.push (
+				result.part);
+
+			rest =
+				result.rest;
+
+		}
+
+		if (rest == "") {
+			return messageParts;
+		}
+
+	}
+
+}
