@@ -10,9 +10,11 @@
 
 		<!-- identity -->
 
-		<parent-type-field/>
+		<parent-type-field
+			column="parent_object_type_id"/>
 
-		<parent-id-field/>
+		<parent-id-field
+			column="parent_object_id"/>
 
 		<code-field/>
 
