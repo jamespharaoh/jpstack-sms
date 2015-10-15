@@ -11,6 +11,14 @@
 		<model name="mercatorProjection"/>
 	</models>
 
+	<layer name="model-meta">
+		<bean class="metamodel.LongitudeLatitudeFieldSpec"/>
+	</layer>
+
+	<layer name="model-generate">
+		<bean class="generate.LongitudeLatitudeFieldWriter"/>
+	</layer>
+
 	<layer name="logic">
 		<bean class="logic.LocatorLogicImpl"/>
 		<bean class="logic.LocatorManager"/>
