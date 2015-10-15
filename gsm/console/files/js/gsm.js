@@ -152,9 +152,9 @@ function gsmCharCountMultiple (control, container) {
 		);
 
 	}
-	
+
 	// set the text
-	
+
 	text.data =
 		textToDisplay;
 
