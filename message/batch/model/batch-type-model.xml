@@ -10,8 +10,10 @@
 
 		<!-- identity -->
 
-		<parent-type-field
-			name="subjectType"/>
+		<parent-field
+			name="subjectType"
+			type="objectType"
+			column="subject_object_type_id"/>
 
 		<code-field/>
 
@@ -23,7 +25,8 @@
 
 		<reference-field
 			name="batchType"
-			type="objectType"/>
+			type="objectType"
+			column="batch_object_type_id"/>
 
 	</fields>
 

@@ -184,10 +184,10 @@ class BatchTypeBuilder {
 				stringFormat (
 					"INSERT INTO batch_type (",
 						"id, ",
-						"subject_type_id, ",
+						"subject_object_type_id, ",
 						"code, ",
 						"name, ",
-						"batch_type_id, ",
+						"batch_object_type_id, ",
 						"description) ",
 					"VALUES (",
 						"?, ",

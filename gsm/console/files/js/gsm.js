@@ -85,6 +85,81 @@ outerLoop:
 
 }
 
+function gsmCharCountMultiple (control, container) {
+
+	var options =
+		options || {};
+
+	var maxForSingleMessage =
+		options.maxForSingleMessage || 160;
+
+	var maxForMessagePart =
+		options.maxForMessagePart || 153;
+
+	var fixedLength =
+		options.fixedLength || 0;
+
+	var text =
+		container.firstChild;
+
+	// check its valid
+
+	if (! isGsm (control.value)) {
+		text.data = "ERR";
+		return;
+	}
+
+	// get string length
+
+	var length =
+		gsmlen (zapParams (control.value));
+
+	// work out the text
+
+	var textToDisplay;
+
+	if (length <= maxForSingleMessage - fixedLength) {
+
+		textToDisplay = (
+			String (length) +
+			" (-" +
+			String (maxForSingleMessage - fixedLength - length) +
+			")"
+		);
+
+	} else {
+
+		var remainingLength =
+			length;
+
+		var messagePartCount = 1;
+
+		while (remainingLength + fixedLength > maxForMessagePart) {
+
+			messagePartCount ++;
+
+			remainingLength -=
+				maxForMessagePart;
+
+		}
+
+		textToDisplay = (
+			String (length) +
+			" (-" +
+			String (maxForMessagePart - remainingLength - fixedLength) +
+			") / " +
+			String (messagePartCount)
+		);
+
+	}
+	
+	// set the text
+	
+	text.data =
+		textToDisplay;
+
+}
+
 // TODO this is hideous, fix it
 function gsmCharCountMultiple2 (control, container) {
 
