@@ -636,11 +636,11 @@ class InboxLogicImplementation
 			.setIndex (
 				inbox.getNumAttempts ())
 
-			.setResult (
-				InboxState.pending)
-
 			.setTimestamp (
 				transaction.now ())
+
+			.setResult (
+				InboxState.pending)
 
 			.setStatusMessage (
 				statusMessage)
