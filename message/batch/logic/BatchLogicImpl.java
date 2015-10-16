@@ -85,7 +85,7 @@ class BatchLogicImpl
 			.setCode (
 				code)
 
-			.setType (
+			.setBatchType (
 				batchType)
 
 			.setParentType (

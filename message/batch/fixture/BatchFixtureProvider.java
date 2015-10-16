@@ -84,7 +84,7 @@ class BatchFixtureProvider
 			.setCode (
 				"system")
 
-			.setType (
+			.setBatchType (
 				systemBatchType)
 
 		);

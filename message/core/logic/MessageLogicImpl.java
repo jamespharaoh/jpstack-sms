@@ -33,7 +33,7 @@ class MessageLogicImpl
 
 		return message
 			.getService ()
-			.getParentObjectType ()
+			.getParentType ()
 			.getCode ()
 			.equals ("chat");
 

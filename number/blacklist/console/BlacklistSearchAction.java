@@ -20,6 +20,7 @@ import wbs.framework.web.Responder;
 import wbs.platform.event.model.EventLinkObjectHelper;
 import wbs.platform.event.model.EventLinkRec;
 import wbs.platform.event.model.EventRec;
+import wbs.platform.event.model.EventTypeRec;
 import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.blacklist.model.BlacklistRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
@@ -130,14 +131,22 @@ class BlacklistSearchAction
 		for (EventLinkRec eventLink : eventLinks)
 			events.add (eventLink.getEvent ());
 
-		for (EventRec event : events) {
+		for (
+			EventRec event
+				: events
+		) {
+
+			EventTypeRec eventType =
+				event.getEventType ();
 
 			String text =
 				Html.encode (
-					event.getEventType ().getDescription ());
+					eventType.getDescription ());
 
-			for (EventLinkRec eventLink
-					: event.getEventLinks ().values ()) {
+			for (
+				EventLinkRec eventLink
+					: event.getEventLinks ()
+			) {
 
 				if (eventLink.getTypeId () == -1) {
 
