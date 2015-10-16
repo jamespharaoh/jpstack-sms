@@ -1,4 +1,33 @@
 <model-meta
-	name="inboxMultipartLog">
+	name="inboxMultipartLog"
+	type="event">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="route"/>
+
+		<timestamp-field
+			name="timestamp"
+			column-type="postgresql"/>
+
+		<!-- data -->
+
+		<string-field
+			name="msgFrom"/>
+
+		<integer-field
+			name="multipartId"/>
+
+		<integer-field
+			name="multipartSegMax"/>
+
+	</fields>
 
 </model-meta>

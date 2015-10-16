@@ -8,7 +8,7 @@ import org.hibernate.criterion.Restrictions;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.stats.model.MessageStatsDao;
 import wbs.sms.message.stats.model.MessageStatsRec;
-import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
+import wbs.sms.message.stats.model.MessageStatsSearch;
 
 public
 class MessageStatsDaoHibernate

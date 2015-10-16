@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
+import wbs.sms.message.stats.model.MessageStatsSearch;
 
 public
 interface SmsStatsConsoleLogic {

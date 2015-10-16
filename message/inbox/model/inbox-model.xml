@@ -1,5 +1,47 @@
 <model-meta
-	name="inbox">
+	name="inbox"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<foreign-id-field
+			field="message"/>
+
+		<!-- identity -->
+
+		<master-field
+			type="message"/>
+
+		<!-- data -->
+
+		<timestamp-field
+			name="createdTime"
+			column-type="iso"/>
+
+		<!-- statistics -->
+
+		<integer-field
+			name="numAttempts"
+			default="0"/>
+
+		<!-- state -->
+
+		<enum-field
+			name="state"
+			type="inboxState"/>
+
+		<timestamp-field
+			name="nextAttempt"
+			column-type="iso"
+			nullable="yes"/>
+
+		<string-field
+			name="statusMessage"
+			nullable="yes"/>
+
+	</fields>
 
 	<priv-types>
 

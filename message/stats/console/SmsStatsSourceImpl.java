@@ -17,7 +17,7 @@ import org.joda.time.LocalDate;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
-import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
+import wbs.sms.message.stats.model.MessageStatsSearch;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 

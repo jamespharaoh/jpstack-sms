@@ -1,4 +1,22 @@
 <model-meta
-	name="messageStats">
+	name="messageStats"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- data -->
+
+		<component-field
+			type="messageStatsId"/>
+
+		<component-field
+			name="stats"
+			type="messageStats"/>
+
+	</fields>
 
 </model-meta>

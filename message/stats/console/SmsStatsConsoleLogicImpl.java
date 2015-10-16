@@ -21,7 +21,7 @@ import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
-import wbs.sms.message.stats.model.MessageStatsRec.MessageStatsSearch;
+import wbs.sms.message.stats.model.MessageStatsSearch;
 import wbs.sms.network.console.NetworkConsoleHelper;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;

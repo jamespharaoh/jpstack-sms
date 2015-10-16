@@ -1,4 +1,28 @@
 <model-meta
-	name="delivery">
+	name="delivery"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="message"/>
+
+		<!-- data -->
+
+		<enum-field
+			name="oldMessageStatus"
+			type="messageStatus"/>
+
+		<enum-field
+			name="newMessageStatus"
+			type="messageStatus"/>
+
+	</fields>
 
 </model-meta>
