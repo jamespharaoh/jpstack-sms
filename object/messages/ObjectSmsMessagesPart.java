@@ -1,6 +1,7 @@
 package wbs.sms.object.messages;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
+import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Calendar;
@@ -315,8 +316,10 @@ class ObjectSmsMessagesPart
 				requestContext.resolveLocalUrl (
 					localName),
 				"?date=%u",
-				requestContext.request (
-					"date"));
+				ifNull (
+					requestContext.request (
+						"date"),
+					""));
 
 		}
 
@@ -379,6 +382,7 @@ class ObjectSmsMessagesPart
 		viewModesByName.put (name, newViewMode);
 
 		return newViewMode;
+
 	}
 
 	{

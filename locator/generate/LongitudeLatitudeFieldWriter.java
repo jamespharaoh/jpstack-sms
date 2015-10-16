@@ -78,14 +78,14 @@ class LongitudeLatitudeFieldWriter {
 
 		// write member
 
-		javaWriter.write (
+		javaWriter.writeFormat (
 			"\t%s.LongLat %s;\n",
 			"wbs.sms.locator.model",
 			spec.name ());
 
 		// write blank line
 
-		javaWriter.write (
+		javaWriter.writeFormat (
 			"\n");
 
 	}
