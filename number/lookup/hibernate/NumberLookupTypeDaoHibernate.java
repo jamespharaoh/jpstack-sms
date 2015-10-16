@@ -17,7 +17,7 @@ class NumberLookupTypeDaoHibernate
 	@Override
 	public
 	List<NumberLookupTypeRec> findByParentObjectType (
-			ObjectTypeRec parentObjectType) {
+			ObjectTypeRec parentType) {
 
 		return findMany (
 			NumberLookupTypeRec.class,
@@ -28,8 +28,8 @@ class NumberLookupTypeDaoHibernate
 
 			.add (
 				Restrictions.eq (
-					"_numberLookupType.parentObjectType",
-					parentObjectType))
+					"_numberLookupType.parentType",
+					parentType))
 
 			.list ());
 

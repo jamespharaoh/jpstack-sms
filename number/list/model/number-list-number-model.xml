@@ -1,4 +1,27 @@
 <model-meta
-	name="numberListNumber">
+	name="numberListNumber"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="numberList"/>
+
+		<identity-reference-field
+			type="number"/>
+
+		<!-- state -->
+
+		<yes-no-field
+			name="present"
+			default="no"/>
+
+	</fields>
 
 </model-meta>

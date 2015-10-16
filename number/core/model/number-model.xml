@@ -1,5 +1,33 @@
 <model-meta
-	name="number">
+	name="number"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<code-field
+			name="number"/>
+
+		<!-- state -->
+
+		<reference-field
+			type="network"/>
+
+		<timestamp-field
+			name="archiveDate"
+			column-type="postgresql"
+			nullable="yes"/>
+
+		<yes-no-field
+			name="free"
+			default="no"/>
+
+	</fields>
 
 	<event-types>
 

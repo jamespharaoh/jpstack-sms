@@ -26,7 +26,7 @@ class NumberLookupManagerImpl
 
 		NumberLookupHelper helper =
 			numberLookupHelperManager.forParentObjectTypeCode (
-				numberLookup.getParentObjectType ().getCode (),
+				numberLookup.getParentType ().getCode (),
 				true);
 
 		return helper.lookupNumber (

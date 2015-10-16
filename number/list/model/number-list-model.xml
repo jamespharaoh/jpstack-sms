@@ -1,5 +1,40 @@
 <model-meta
-	name="numberList">
+	name="numberList"
+	type="major">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="slice"/>
+
+		<code-field/>
+
+		<!-- details -->
+
+		<name-field/>
+
+		<description-field/>
+
+		<deleted-field/>
+
+		<!-- settings -->
+
+		<reference-field
+			type="numberFormat"/>
+
+		<!-- statistics -->
+
+		<integer-field
+			name="numberCount"
+			default="0"/>
+
+	</fields>
 
 	<priv-types>
 

@@ -1,5 +1,7 @@
 package wbs.sms.number.lookup.model;
 
+import static wbs.framework.utils.etc.Misc.doesNotContain;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,8 +46,10 @@ class NumberLookupHooks
 		List<ObjectTypeRec> objectTypes =
 			objectTypeDao.findAll ();
 
-		for (ObjectTypeRec objectType
-				: objectTypes) {
+		for (
+			ObjectTypeRec objectType
+				: objectTypes
+		) {
 
 			List<NumberLookupTypeRec> numberLookupTypes =
 				numberLookupTypeDao.findByParentObjectType (
@@ -68,9 +72,13 @@ class NumberLookupHooks
 			ObjectHelper<?> parentHelper,
 			Record<?> parent) {
 
-		if (! parentObjectTypeIds.contains (
-				parentHelper.objectTypeId ()))
+		if (
+			doesNotContain (
+				parentObjectTypeIds,
+				parentHelper.objectTypeId ())
+		) {
 			return;
+		}
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
@@ -80,16 +88,18 @@ class NumberLookupHooks
 			numberLookupTypeDao.findByParentObjectType (
 				parentType);
 
-		for (NumberLookupTypeRec numberLookupType
-				: numberLookupTypes) {
+		for (
+			NumberLookupTypeRec numberLookupType
+				: numberLookupTypes
+		) {
 
 			numberLookupHelper.insert (
 				new NumberLookupRec ()
 
-				.setParentObjectType (
+				.setParentType (
 					parentType)
 
-				.setParentObjectId (
+				.setParentId (
 					parent.getId ())
 
 				.setCode (
