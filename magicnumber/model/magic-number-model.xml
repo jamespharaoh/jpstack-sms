@@ -1,4 +1,25 @@
 <model-meta
-	name="magicNumber">
+	name="magicNumber"
+	type="minor">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="magicNumberSet"/>
+
+		<code-field
+			name="number"/>
+
+		<!-- details -->
+
+		<deleted-field/>
+
+	</fields>
 
 </model-meta>

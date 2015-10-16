@@ -1,5 +1,149 @@
 <model-meta
-	name="message">
+	name="message"
+	type="event">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<timestamp-field
+			name="createdTime"
+			column-type="postgresql"/>
+
+		<!-- data -->
+
+		<integer-field
+			name="threadId"
+			column="thread_message_id"/>
+
+		<string-field
+			name="otherId"
+			nullable="yes"/>
+
+		<reference-field
+			type="text"/>
+
+		<string-field
+			name="numFrom"/>
+
+		<string-field
+			name="numTo"/>
+
+		<enum-field
+			name="direction"
+			type="messageDirection"/>
+
+		<enum-field
+			name="status"
+			type="messageStatus"/>
+
+		<reference-field
+			type="number"/>
+
+		<reference-field
+			type="route"/>
+
+		<reference-field
+			type="service"/>
+
+		<reference-field
+			type="network"/>
+
+		<reference-field
+			type="batch"/>
+
+		<reference-field
+			type="affiliate"/>
+
+		<date-field
+			name="date"/>
+
+		<timestamp-field
+			name="processedTime"
+			column-type="postgresql"
+			nullable="yes"/>
+
+		<timestamp-field
+			name="networkTime"
+			column-type="postgresql"
+			nullable="yes"/>
+
+		<integer-field
+			name="charge"/>
+
+		<slave-field
+			type="outbox"/>
+
+		<integer-field
+			name="pri"
+			default="0"/>
+
+		<reference-field
+			type="deliveryType"
+			nullable="yes"/>
+
+		<reference-field
+			name="subjectText"
+			type="text"/>
+
+		<integer-field
+			name="ref"
+			nullable="yes"/>
+
+		<reference-field
+			type="messageType"/>
+
+		<reference-field
+			type="user"
+			nullable="yes"/>
+
+		<reference-field
+			type="command"
+			nullable="yes"/>
+
+		<!-- TODO why is this a string???? -->
+		<string-field
+			name="adultVerified"
+			nullable="yes"/>
+
+		<!-- TODO what is this???? -->
+		<string-field
+			name="notes"
+			nullable="yes"/>
+
+		<integer-field
+			name="numAttempts"
+			nullable="yes"/>
+
+		<reference-field
+			name="notProcessedQueueItem"
+			type="queueItem"
+			nullable="yes"/>
+
+	</fields>
+
+	<collections>
+
+		<associative-list
+			type="media"
+			list-column="i"
+			table="message_media"/>
+
+		<children-collection
+			name="reports"
+			type="messageReport"/>
+
+		<associative-collection
+			name="tags"
+			type="string"
+			table="message_tag"
+			value-column="tag"/>
+
+	</collections>
 
 	<priv-types>
 

@@ -182,22 +182,39 @@ class SmsTrackerLogicImpl
 			messagesSource);
 
 		Collections.sort (
-			messages,
-			Collections.reverseOrder (
-				MessageRec.createdTimeComparator));
+			messages);
 
-		long lastTime = 0, lastCountedTime = 0, firstTime = 0;
+		long lastTime = 0;
+		long lastCountedTime = 0;
+		long firstTime = 0;
+
 		int numFound = 0;
-		for (MessageRec message : messages) {
-			long thisTime = message.getCreatedTime().getTime();
+
+		for (
+			MessageRec message
+				: messages
+		) {
+
+			long thisTime =
+				message.getCreatedTime ().getTime ();
 
 			// if we see a message delivered we stop straight away
-			if (simpleTrackerStatusIsPositive(message.getStatus()))
+
+			if (
+				simpleTrackerStatusIsPositive (
+					message.getStatus ())
+			) {
 				return SimpleTrackerResult.ok;
+			}
 
 			// then we are only interested in undelivereds
-			if (!simpleTrackerStatusIsNegative(message.getStatus()))
+
+			if (
+				! simpleTrackerStatusIsNegative (
+					message.getStatus ())
+			) {
 				continue;
+			}
 
 			if (
 
