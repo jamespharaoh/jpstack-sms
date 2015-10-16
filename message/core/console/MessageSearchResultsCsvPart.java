@@ -38,8 +38,11 @@ class MessageSearchResultsCsvPart
 			(List<?>)
 			requestContext.request ("messageSearchResult");
 
-		out.println ("<pre>");
-		out.println ("ID,From,To,Time,Route,Status,Service,Direction,Message");
+		printFormat (
+			"<pre>");
+
+		printFormat (
+			"ID,From,To,Time,Route,Status,Service,Direction,Message");
 
 		for (Object messageIdObject
 				: messageSearchResult) {

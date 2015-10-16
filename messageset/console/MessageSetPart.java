@@ -19,7 +19,6 @@ import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.Html;
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
@@ -157,140 +156,216 @@ class MessageSetPart
 	public
 	void renderHtmlHeadContent () {
 
-		out.println("<script language=\"JavaScript\">");
-		out.println("function form_magic () {");
-		out.println("  for (var i = 0; i < " + numMessages + "; i++) { ");
-		out.println("    var check = document.getElementById ('enabled_' + i)");
-		out.println("    var route = document.getElementById ('route_' + i)");
-		out.println("    var number = document.getElementById ('number_' + i)");
-		out
-				.println("    var message = document.getElementById ('message_' + i)");
-		out.println("    route.disabled = ! check.checked");
-		out.println("    number.disabled = ! check.checked");
-		out.println("    message.disabled = ! check.checked");
-		out.println("  }");
-		out.println("}");
-		out.println("</script>");
+		printFormat (
+			"<script language=\"JavaScript\">\n",
+			"function form_magic () {\n",
+			"  for (var i = 0; i < " + numMessages + "; i++) {\n",
+			"    var check = document.getElementById ('enabled_' + i)\n",
+			"    var route = document.getElementById ('route_' + i)\n",
+			"    var number = document.getElementById ('number_' + i)\n",
+			"    var message = document.getElementById ('message_' + i)\n",
+			"    route.disabled = ! check.checked\n",
+			"    number.disabled = ! check.checked\n",
+			"    message.disabled = ! check.checked\n",
+			"  }\n",
+			"}\n",
+			"</script>\n");
+
 	}
+
 
 	public
 	void goRow (
 			int row) {
 
-		out.println ("<tr>");
+		printFormat (
+			"<tr>\n");
 
 		// output checkbox
-		out.print("<td rowspan=\"2\"><input type=\"checkbox\" id=\"enabled_"
-				+ row + "\" name=\"enabled_" + row + "\"");
 
-		if (formData.containsKey ("enabled_" + row))
-			out.print(" checked");
-
-		out.println(" onclick=\"form_magic ()\"></td>");
+		printFormat (
+			"<td",
+			" rowspan=\"2\"",
+			"><input",
+			" type=\"checkbox\"",
+			" id=\"enabled_%h\"",
+			row,
+			" name=\"enabled_%h\"",
+			row,
+			formData.containsKey ("enabled_" + row)
+				? " checked"
+				: "",
+			" onclick=\"form_magic ()\"",
+			"></td>\n");
 
 		// output i
-		out.println("<td>" + (row + 1) + "</td>");
+
+		printFormat (
+			"<td>%h</td>\n",
+			row + 1);
 
 		// output route
 
 		String routeStr =
-			formData.get ("route_" + row);
+			formData.get (
+				"route_" + row);
 
-		out.print (
-			stringFormat (
-				"<td><select",
-				" id=\"route_%h\"",
-				row,
-				" name=\"route_%h\"",
-				row,
-				">\n",
+		printFormat (
+			"<td><select",
+			" id=\"route_%h\"",
+			row,
+			" name=\"route_%h\"",
+			row,
+			">\n");
 
-				"<option>\n"));
+		printFormat (
+			"<option>\n");
 
 		for (RouteRec route
 				: routes) {
 
-			out.print (
-				stringFormat (
-					"<option",
-					" value=\"%h\"",
-					route.getId (),
-					equal (
-						Integer.toString (
-							route.getId ()),
-							routeStr)
-						? " selected" : "",
-					">%h.%h</option>\n",
-					route.getSlice ().getCode (),
-					route.getCode ()));
+			printFormat (
+				"<option",
+				" value=\"%h\"",
+				route.getId (),
+				equal (
+					Integer.toString (
+						route.getId ()),
+						routeStr)
+					? " selected" : "",
+				">%h.%h</option>\n",
+				route.getSlice ().getCode (),
+				route.getCode ());
 
 		}
 
-		out.println("</select></td>");
+		printFormat (
+			"</select></td>");
 
 		// output number
-		out.println("<td><input type=\"text\" id=\"number_" + row
-				+ "\" name=\"number_" + row + "\" size=\"16\"" + " value=\""
-				+ Html.encode(formData.get("number_" + row)) + "\"></td>");
+
+		printFormat (
+			"<td><input",
+			" type=\"text\"",
+			" id=\"number_%h\"",
+			row,
+			" name=\"number_%h\"",
+			row,
+			" size=\"16\"",
+			" value=\"%h\"",
+			formData.get ("number_" + row),
+			"></td>\n");
 
 		// output chars
-		out.println("<td><span id=\"chars_" + row + "\">&nbsp;</span></td>");
 
-		out.println("</tr>");
+		printFormat (
+			"<td><span",
+			" id=\"chars_%h\"",
+			row,
+			">&nbsp;</span></td>\n");
+
+		printFormat (
+			"</tr>\n");
 
 		// output second row
-		out.println("<tr> <td colspan=\"4\">");
-		out
-				.println("<textarea rows=\"3\" cols=\"96\" id=\"message_"
-						+ row
-						+ "\" name=\"message_"
-						+ row
-						+ "\""
-						+ " onkeyup=\"gsmCharCount (this, document.getElementById ('chars_"
-						+ row
-						+ "'))\""
-						+ " onfocus=\"gsmCharCount (this, document.getElementById ('chars_"
-						+ row + "'))\">"
-						+ Html.encode(formData.get("message_" + row))
-						+ "</textarea>");
-		out.println("</td> </tr>");
+
+		printFormat (
+			"<tr>\n");
+
+		printFormat (
+			"<td",
+			" colspan=\"4\"><textarea",
+			" rows=\"3\"",
+			" cols=\"96\"",
+			" id=\"message_%h\"",
+			row,
+			" name=\"message_%h\"",
+			row,
+			" onkeyup=\"%h\"",
+			stringFormat (
+				"gsmCharCount (this, document.getElementById ('chars_%j'))",
+				row),
+			" onfocus=\"%h\"",
+			stringFormat (
+				"gsmCharCount (this, document.getElementById ('chars_%j'))",
+				row),
+			">%h</textarea></td>\n",
+			formData.get (
+				"message_" + row));
+
+		printFormat (
+			"</tr>\n");
+
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent () {
 
-		out.println("<form method=\"post\">");
+		printFormat (
+			"<form method=\"post\">\n");
 
-		out.println("<input type=\"hidden\" name=\"num_messages\"" + "value=\""
-				+ Html.encode(formData.get("num_messages")) + "\">");
+		printFormat (
+			"<input",
+			" type=\"hidden\"",
+			" name=\"num_messages\"",
+			" value=\"%h\"",
+			formData.get (
+				"num_messages"),
+			">\n");
 
-		out.println("<p><input type=\"submit\" value=\"save changes\"></p>");
+		printFormat (
+			"<p><input",
+			" type=\"submit\"",
+			" value=\"save changes\"",
+			"></p>\n");
 
-		out.println("<table class=\"list\" border=\"0\" cellspacing=\"1\">");
+		printFormat (
+			"<table",
+			" class=\"list\"",
+			" border=\"0\"",
+			" cellspacing=\"1\"",
+			">\n");
 
-		out.println("<tr>");
-		out.println("<th>&nbsp;</th>");
-		out.println("<th>i</th>");
-		out.println("<th>Route</th>");
-		out.println("<th>Number</th>");
-		out.println("<th>Chars</th>");
-		out.println("</tr>");
+		printFormat (
+			"<tr>\n",
+			"<th>&nbsp;</th>\n",
+			"<th>i</th>\n",
+			"<th>Route</th>\n",
+			"<th>Number</th>\n",
+			"<th>Chars</th>\n",
+			"</tr>\n");
 
-		for (int i = 0; i < numMessages; i++) {
-			out.println("<tr class=\"sep\">");
-			goRow(i);
+		for (
+			int index = 0;
+			index < numMessages;
+			index ++
+		) {
+
+			printFormat (
+				"<tr class=\"sep\">\n");
+
+			goRow (
+				index);
+
 		}
 
-		out.println("</table>");
+		printFormat (
+			"</table>\n");
 
-		out.println("<p><input type=\"submit\" value=\"save changes\"></p>");
+		printFormat (
+			"<p><input",
+			" type=\"submit\"",
+			" value=\"save changes\"",
+			"></p>\n");
 
-		out.println("</form>");
+		printFormat (
+			"</form>\n");
 
-		out.println("<script language=\"JavaScript\">");
-		out.println("form_magic ()");
-		out.println("</script>");
+		printFormat (
+			"<script language=\"JavaScript\">\n",
+			"form_magic ()\n",
+			"</script>\n");
 
 	}
 

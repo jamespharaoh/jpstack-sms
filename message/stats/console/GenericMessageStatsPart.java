@@ -323,7 +323,7 @@ class GenericMessageStatsPart
 			"date");
 
 		urlParams.printHidden (
-			out);
+			printWriter);
 
 		printFormat (
 			"<p>Date<br>\n",
