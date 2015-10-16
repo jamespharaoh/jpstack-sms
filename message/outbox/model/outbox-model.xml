@@ -1,5 +1,60 @@
 <model-meta
-	name="outbox">
+	name="outbox"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<foreign-id-field
+			field="message"/>
+
+		<!-- identity -->
+
+		<master-field
+			type="message"/>
+
+		<!-- data -->
+
+		<reference-field
+			type="route"/>
+
+		<timestamp-field
+			name="createdTime"
+			column-type="postgresql"/>
+
+		<integer-field
+			name="pri"
+			default="0"/>
+
+		<!-- state -->
+
+		<timestamp-field
+			name="retryTime"
+			column-type="postgresql"/>
+
+		<integer-field
+			name="tries"
+			default="0"/>
+
+		<integer-field
+			name="remainingTries"
+			nullable="yes"/>
+
+		<string-field
+			name="error"
+			nullable="yes"/>
+
+		<yes-no-field
+			name="dailyFailure"
+			default="no"/>
+
+		<timestamp-field
+			name="sending"
+			column-type="postgresql"
+			nullable="yes"/>
+
+	</fields>
 
 	<priv-types>
 

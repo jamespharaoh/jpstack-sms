@@ -1,4 +1,50 @@
 <model-meta
-	name="smsOutboxAttempt">
+	name="smsOutboxAttempt"
+	type="event">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="message"/>
+
+		<index-field/>
+
+		<timestamp-field
+			name="startTime"
+			column-type="iso"/>
+
+		<!-- data -->
+
+		<enum-field
+			name="state"
+			type="smsOutboxAttemptState"/>
+
+		<reference-field
+			type="route"/>
+
+		<timestamp-field
+			name="endTime"
+			column-type="iso"
+			nullable="yes"/>
+
+		<binary-field
+			name="requestTrace"
+			nullable="yes"/>
+
+		<binary-field
+			name="responseTrace"
+			nullable="yes"/>
+
+		<binary-field
+			name="errorTrace"
+			nullable="yes"/>
+
+	</fields>
 
 </model-meta>

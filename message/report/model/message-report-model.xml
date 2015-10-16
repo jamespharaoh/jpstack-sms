@@ -1,4 +1,39 @@
 <model-meta
-	name="messageReport">
+	name="messageReport"
+	type="event">
+
+	<!-- TODO this is horrible -->
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="message"/>
+
+		<timestamp-field
+			name="receivedTime"
+			column-type="postgresql"/>
+
+		<!-- data -->
+
+		<enum-field
+			name="newMessageStatus"
+			type="messageStatus"/>
+
+		<string-field
+			name="code"
+			nullable="yes"/>
+
+		<reference-field
+			type="messageReportCode"
+			column="report_code_id"
+			nullable="yes"/>
+
+	</fields>
 
 </model-meta>
