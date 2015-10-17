@@ -56,21 +56,22 @@ class LongitudeLatitudeFieldWriter {
 
 		}
 
-		if (spec.columnNames () != null) {
+		String columnNamesPattern =
+			ifNull (
+				spec.columnNames (),
+				"%");
 
-			String longitudeColumnName =
-				spec.columnNames ().replace ("%", "longitude");
+		String longitudeColumnName =
+			columnNamesPattern.replace ("%", "longitude");
 
-			String latitudeColumnName =
-				spec.columnNames ().replace ("%", "latitude");
+		String latitudeColumnName =
+			columnNamesPattern.replace ("%", "latitude");
 
-			annotationWriter.addAttributeFormat (
-				"columns",
-				"{ \"%s\", \"%s\" }",
-				longitudeColumnName.replace ("\"", "\\\""),
-				latitudeColumnName.replace ("\"", "\\\""));
-
-		}
+		annotationWriter.addAttributeFormat (
+			"columns",
+			"{ \"%s\", \"%s\" }",
+			longitudeColumnName.replace ("\"", "\\\""),
+			latitudeColumnName.replace ("\"", "\\\""));
 
 		annotationWriter.write (
 			javaWriter,

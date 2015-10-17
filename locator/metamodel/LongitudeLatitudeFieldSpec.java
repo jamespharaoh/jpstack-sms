@@ -10,8 +10,8 @@ import wbs.framework.entity.meta.ModelMetaData;
 
 @Accessors (fluent = true)
 @Data
-@DataClass ("longitude-lattitude-field")
-@PrototypeComponent ("longitudeLattitudeFieldSpec")
+@DataClass ("longitude-latitude-field")
+@PrototypeComponent ("longitudeLatitudeFieldSpec")
 @ModelMetaData
 public
 class LongitudeLatitudeFieldSpec

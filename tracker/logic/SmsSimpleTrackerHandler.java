@@ -42,7 +42,7 @@ class SmsSimpleTrackerHandler
 
 		SmsSimpleTrackerRec simpleTracker =
 			smsSimpleTrackerHelper.find (
-				tracker.getParentObjectId ());
+				tracker.getParentId ());
 
 		return smsTrackerLogic.simpleTrackerConsult (
 			simpleTracker,
