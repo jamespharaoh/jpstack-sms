@@ -1,5 +1,36 @@
 <model-meta
-	name="messageSet">
+	name="messageSet"
+	type="minor">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-type-field
+			column="parent_object_type_id"/>
+
+		<parent-id-field
+			column="parent_object_id"/>
+
+		<code-field/>
+
+		<!-- details -->
+
+		<type-field/>
+
+	</fields>
+
+	<collections>
+
+		<children-list
+			name="messages"
+			type="messageSetMessage"/>
+
+	</collections>
 
 	<event-types>
 

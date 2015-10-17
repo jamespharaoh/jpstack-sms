@@ -1,4 +1,34 @@
 <model-meta
-	name="keywordSetFallback">
+	name="keywordSetFallback"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="keywordSet"/>
+
+		<identity-reference-field
+			type="number"/>
+
+		<!-- data -->
+
+		<timestamp-field
+			name="timestamp"
+			column-type="postgresql"/>
+
+		<reference-field
+			type="command"/>
+
+		<integer-field
+			name="ref"
+			nullable="yes"/>
+
+	</fields>
 
 </model-meta>

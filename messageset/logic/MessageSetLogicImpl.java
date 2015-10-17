@@ -48,19 +48,36 @@ class MessageSetLogicImpl
 			ServiceRec service,
 			AffiliateRec affiliate) {
 
-		for (MessageSetMessageRec messageSetMessage
-				: messageSet.getMessages ().values ()) {
+		for (
+			MessageSetMessageRec messageSetMessage
+				: messageSet.getMessages ()
+		) {
 
 			MessageRec message =
 				messageSender.get ()
-					.threadId (threadId)
-					.number (number)
-					.messageString (messageSetMessage.getMessage ())
-					.numFrom (messageSetMessage.getNumber ())
-					.route (messageSetMessage.getRoute ())
-					.service (service)
-					.affiliate (affiliate)
-					.send ();
+
+				.threadId (
+					threadId)
+
+				.number (
+					number)
+
+				.messageString (
+					messageSetMessage.getMessage ())
+
+				.numFrom (
+					messageSetMessage.getNumber ())
+
+				.route (
+					messageSetMessage.getRoute ())
+
+				.service (
+					service)
+
+				.affiliate (
+					affiliate)
+
+				.send ();
 
 			if (threadId == null)
 				threadId = message.getId ();

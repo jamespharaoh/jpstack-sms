@@ -231,17 +231,26 @@ class MessageSetAction
 
 					messageSetMessage =
 						new MessageSetMessageRec ()
-							.setMessageSet (messageSet)
-							.setIndex (index)
-							.setRoute (newRoute)
-							.setNumber (newNumber)
-							.setMessage (newMessage);
+
+						.setMessageSet (
+							messageSet)
+
+						.setIndex (
+							index)
+
+						.setRoute (
+							newRoute)
+
+						.setNumber (
+							newNumber)
+
+						.setMessage (
+							newMessage);
 
 					messageSetMessageHelper.insert (
 						messageSetMessage);
 
-					messageSet.getMessages ().put (
-						new Integer (index),
+					messageSet.getMessages ().add (
 						messageSetMessage);
 
 					// and create event

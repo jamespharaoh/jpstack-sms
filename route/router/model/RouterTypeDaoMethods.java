@@ -5,9 +5,9 @@ import java.util.List;
 import wbs.platform.object.core.model.ObjectTypeRec;
 
 public
-interface RouterDaoMethods {
+interface RouterTypeDaoMethods {
 
-	List<RouterTypeRec> findByParentObjectType (
-			ObjectTypeRec parentObjectType);
+	List<RouterTypeRec> findByParentType (
+			ObjectTypeRec parentType);
 
 }

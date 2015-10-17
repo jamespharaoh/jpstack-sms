@@ -1,6 +1,7 @@
 package wbs.sms.route.tester.daemon;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -122,16 +123,23 @@ final class RouteTesterDaemon
 	void doOne (
 			RouteTesterRec routeTester) {
 
-		Date now =
-			new Date ();
+		Transaction transaction =
+			database.currentTransaction ();
 
 		// create the RouteTest
 
 		RouteTestRec routeTest =
 			routeTesterHelper.insert (
 				new RouteTestRec ()
-					.setRoute (routeTester.getRoute ())
-					.setSentTime (now));
+
+			.setRoute (
+				routeTester.getRoute ())
+
+			.setSentTime (
+				instantToDate (
+					transaction.now ()))
+
+		);
 
 		// construct the message text
 
@@ -178,11 +186,18 @@ final class RouteTesterDaemon
 
 		// connect the message to the RouteTest
 
-		routeTest.setSentMessage (message);
+		routeTest
+
+			.setSentMessage (
+				message);
 
 		// and update the tester's last test time
 
-		routeTester.setLastTest (now);
+		routeTester
+
+			.setLastTest (
+				instantToDate (
+					transaction.now ()));
 
 	}
 

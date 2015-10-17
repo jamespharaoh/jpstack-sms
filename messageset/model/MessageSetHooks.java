@@ -1,5 +1,7 @@
 package wbs.sms.messageset.model;
 
+import static wbs.framework.utils.etc.Misc.doesNotContain;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,9 +69,13 @@ class MessageSetHooks
 			ObjectHelper<?> parentHelper,
 			Record<?> parent) {
 
-		if (! parentObjectTypeIds.contains (
-				parentHelper.objectTypeId ()))
+		if (
+			doesNotContain (
+				parentObjectTypeIds,
+				parentHelper.objectTypeId ())
+		) {
 			return;
+		}
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
@@ -79,15 +85,27 @@ class MessageSetHooks
 			messageSetTypeDao.findByParentObjectType (
 				parentType);
 
-		for (MessageSetTypeRec messageSetType
-				: messageSetTypes) {
+		for (
+			MessageSetTypeRec messageSetType
+				: messageSetTypes
+		) {
 
 			objectHelper.insert (
 				new MessageSetRec ()
-					.setMessageSetType (messageSetType)
-					.setCode (messageSetType.getCode ())
-					.setParentObjectType (parentType)
-					.setParentObjectId (parent.getId ()));
+
+				.setMessageSetType (
+					messageSetType)
+
+				.setCode (
+					messageSetType.getCode ())
+
+				.setParentType (
+					parentType)
+
+				.setParentId (
+					parent.getId ())
+
+			);
 
 		}
 

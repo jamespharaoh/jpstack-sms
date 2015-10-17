@@ -30,7 +30,7 @@ class RouterLogicImpl
 
 		RouterHelper routerHelper =
 			routerHelperManager.forParentObjectTypeCode (
-				routerType.getParentObjectType ().getCode (),
+				routerType.getParentType ().getCode (),
 				true);
 
 		return routerHelper.resolve (

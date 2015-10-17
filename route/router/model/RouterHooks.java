@@ -1,5 +1,7 @@
 package wbs.sms.route.router.model;
 
+import static wbs.framework.utils.etc.Misc.doesNotContain;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +22,8 @@ public
 class RouterHooks
 	extends AbstractObjectHooks<RouterRec> {
 
+	// dependencies
+
 	@Inject
 	Database database;
 
@@ -27,10 +31,14 @@ class RouterHooks
 	ObjectTypeDao objectTypeDao;
 
 	@Inject
-	RouterDao routerDao;
+	RouterTypeDao routerTypeDao;
+
+	// state
 
 	Set<Integer> parentObjectTypeIds =
 		new HashSet<Integer> ();
+
+	// lifecycle
 
 	@PostConstruct
 	public
@@ -50,7 +58,7 @@ class RouterHooks
 		) {
 
 			List<RouterTypeRec> routerTypes =
-				routerDao.findByParentObjectType (
+				routerTypeDao.findByParentType (
 					objectType);
 
 			if (routerTypes.isEmpty ())
@@ -70,20 +78,26 @@ class RouterHooks
 			ObjectHelper<?> parentHelper,
 			Record<?> parent) {
 
-		if (! parentObjectTypeIds.contains (
-				parentHelper.objectTypeId ()))
+		if (
+			doesNotContain (
+				parentObjectTypeIds,
+				parentHelper.objectTypeId ())
+		) {
 			return;
+		}
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
 				parentHelper.objectTypeId ());
 
 		List<RouterTypeRec> routerTypes =
-			routerDao.findByParentObjectType (
+			routerTypeDao.findByParentType (
 				parentType);
 
-		for (RouterTypeRec routerType
-				: routerTypes) {
+		for (
+			RouterTypeRec routerType
+				: routerTypes
+		) {
 
 			routerHelper.insert (
 				new RouterRec ()
@@ -94,10 +108,10 @@ class RouterHooks
 				.setCode (
 					routerType.getCode ())
 
-				.setParentObjectType (
+				.setParentType (
 					parentType)
 
-				.setParentObjectId (
+				.setParentId (
 					parent.getId ())
 
 			);

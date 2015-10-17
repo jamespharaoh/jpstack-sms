@@ -2,33 +2,34 @@ package wbs.sms.route.router.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
-import wbs.sms.route.router.model.RouterDao;
+import wbs.sms.route.router.model.RouterTypeDao;
 import wbs.sms.route.router.model.RouterTypeRec;
 
-@SingletonComponent ("routerDao")
+@SingletonComponent ("routerTypeDao")
 public
-class RouterDaoHibernate
+class RouterTypeDaoHibernate
 	extends HibernateDao
-	implements RouterDao {
+	implements RouterTypeDao {
 
 	@Override
 	public
-	List<RouterTypeRec> findByParentObjectType (
-			ObjectTypeRec parentObjectType) {
+	List<RouterTypeRec> findByParentType (
+			@NonNull ObjectTypeRec parentType) {
 
 		return findMany (
 			RouterTypeRec.class,
 
 			createQuery (
 				"FROM RouterTypeRec routerType " +
-				"WHERE routerType.parentObjectType = :parentObjectType")
+				"WHERE routerType.parentType = :parentType")
 
 			.setEntity (
-				"parentObjectType",
-				parentObjectType)
+				"parentType",
+				parentType)
 
 			.list ());
 

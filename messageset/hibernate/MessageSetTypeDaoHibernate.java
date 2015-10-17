@@ -15,18 +15,18 @@ class MessageSetTypeDaoHibernate
 	@Override
 	public
 	List<MessageSetTypeRec> findByParentObjectType (
-			ObjectTypeRec parentObjectType) {
+			ObjectTypeRec parentType) {
 
 		return findMany (
 			MessageSetTypeRec.class,
 
 			createQuery (
 				"FROM MessageSetTypeRec messageSetType " +
-				"WHERE messageSetType.parentObjectType = :parentObjectType")
+				"WHERE messageSetType.parentType = :parentType")
 
 			.setEntity (
-				"parentObjectType",
-				parentObjectType)
+				"parentType",
+				parentType)
 
 			.list ());
 

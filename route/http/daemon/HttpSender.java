@@ -1,6 +1,7 @@
 package wbs.sms.route.http.daemon;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.io.IOException;
@@ -294,11 +295,14 @@ class HttpSender
 
 		// check for known failures...
 
-		if (httpOutbox.httpRoute.getTempFailureRegex () != null) {
+		if (
+			isNotNull (
+				httpOutbox.httpRoute.getTemporaryFailureRegex ())
+		) {
 
 			Pattern tempFailurePattern =
 				Pattern.compile (
-					httpOutbox.httpRoute.getTempFailureRegex ());
+					httpOutbox.httpRoute.getTemporaryFailureRegex ());
 
 			Matcher tempFailureMatcher =
 				tempFailurePattern.matcher (response);
@@ -320,11 +324,14 @@ class HttpSender
 
 		}
 
-		if (httpOutbox.httpRoute.getPermFailureRegex () != null) {
+		if (
+			isNotNull (
+				httpOutbox.httpRoute.getPermanentFailureRegex ())
+		) {
 
 			Pattern permFailurePattern =
 				Pattern.compile (
-					httpOutbox.httpRoute.getPermFailureRegex ());
+					httpOutbox.httpRoute.getPermanentFailureRegex ());
 
 			Matcher permFailureMatcher =
 				permFailurePattern.matcher (

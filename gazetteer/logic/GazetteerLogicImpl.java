@@ -35,8 +35,10 @@ class GazetteerLogicImpl
 
 		double closestDistance = 0;
 
-		for (GazetteerEntryRec thisEntry
-				: allEntries) {
+		for (
+			GazetteerEntryRec thisEntry
+				: allEntries
+		) {
 
 			if (! thisEntry.getCanonical ())
 				continue;

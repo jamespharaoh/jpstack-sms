@@ -1,13 +1,36 @@
 <model-meta
-	name="gazetteer">
+	name="gazetteer"
+	type="major">
 
-	<priv-types>
+	<fields>
 
-		<priv-type
-			name="Manage"
-			description="Full control of a gazetteer"
-			template="yes"/>
+		<!-- id -->
 
-	</priv-types>
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="slice"/>
+
+		<code-field/>
+
+		<!-- details -->
+
+		<name-field/>
+
+		<description-field/>
+
+		<deleted-field/>
+
+	</fields>
+
+	<collections>
+
+		<children-collection
+			name="entries"
+			type="gazetteerEntry"/>
+
+	</collections>
 
 </model-meta>

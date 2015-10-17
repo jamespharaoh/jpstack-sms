@@ -1,4 +1,31 @@
 <model-meta
-	name="messageSetMessage">
+	name="messageSetMessage"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="messageSet"/>
+
+		<index-field/>
+
+		<!-- settings -->
+
+		<reference-field
+			type="route"/>
+
+		<string-field
+			name="number"/>
+
+		<string-field
+			name="message"/>
+
+	</fields>
 
 </model-meta>
