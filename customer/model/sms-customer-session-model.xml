@@ -1,4 +1,47 @@
 <model-meta
-	name="smsCustomerSession">
+	name="smsCustomerSession"
+	type="event">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			name="customer"
+			type="smsCustomer"/>
+
+		<index-field/>
+
+		<timestamp-field
+			name="startTime"
+			column-type="iso"/>
+
+		<!-- data -->
+
+		<timestamp-field
+			name="endTime"
+			column-type="iso"
+			nullable="yes"/>
+
+		<reference-field
+			name="welcomeMessage"
+			type="message"
+			nullable="yes"/>
+
+		<reference-field
+			name="warningMessage"
+			type="message"
+			nullable="yes"/>
+
+		<reference-field
+			name="stopMessage"
+			type="message"
+			nullable="yes"/>
+
+	</fields>
 
 </model-meta>

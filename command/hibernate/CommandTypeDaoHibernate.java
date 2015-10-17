@@ -15,18 +15,18 @@ class CommandTypeDaoHibernate
 	@Override
 	public
 	List<CommandTypeRec> findByParentObjectType (
-			ObjectTypeRec parentObjectType) {
+			ObjectTypeRec parentType) {
 
 		return findMany (
 			CommandTypeRec.class,
 
 			createQuery (
 				"FROM CommandTypeRec ct " +
-				"WHERE ct.parentObjectType = :parentObjectType")
+				"WHERE ct.parentType = :parentType")
 
 			.setEntity (
-				"parentObjectType",
-				parentObjectType)
+				"parentType",
+				parentType)
 
 			.list ());
 

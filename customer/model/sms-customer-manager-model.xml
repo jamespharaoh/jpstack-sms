@@ -1,5 +1,40 @@
 <model-meta
-	name="smsCustomerManager">
+	name="smsCustomerManager"
+	type="major">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="slice"/>
+
+		<code-field/>
+
+		<!-- details -->
+
+		<name-field/>
+
+		<description-field/>
+
+		<deleted-field/>
+
+		<!-- settings -->
+
+		<integer-field
+			name="sessionTimeout"
+			nullable="yes"/>
+
+		<reference-field
+			name="stopNumberList"
+			type="numberList"
+			nullable="yes"/>
+
+	</fields>
 
 	<priv-types>
 

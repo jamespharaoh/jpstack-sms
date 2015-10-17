@@ -113,7 +113,7 @@ class CommandManagerImpl
 			CommandTypeRec commandType) {
 
 		return getHandler (
-			commandType.getParentObjectType ().getCode (),
+			commandType.getParentType ().getCode (),
 			commandType.getCode ());
 
 	}

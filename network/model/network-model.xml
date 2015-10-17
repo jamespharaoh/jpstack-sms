@@ -1,13 +1,34 @@
 <model-meta
-	name="network">
+	name="network"
+	type="major">
 
-	<priv-types>
+	<fields>
 
-		<priv-type
-			name="Manage"
-			description="Full control of a network"
-			template="yes"/>
+		<!-- id -->
 
-	</priv-types>
+		<assigned-id-field/>
+
+		<!-- identity -->
+
+		<code-field/>
+
+		<!-- details -->
+
+		<name-field/>
+
+		<description-field/>
+
+		<!-- settings -->
+
+		<reference-field
+			name="virtualNetworkOfNetwork"
+			type="network"
+			nullable="yes"/>
+
+		<yes-no-field
+			name="shortMultipartMessages"
+			default="no"/>
+
+	</fields>
 
 </model-meta>

@@ -1,4 +1,44 @@
 <model-meta
-	name="smsCustomer">
+	name="smsCustomer"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="smsCustomerManager"/>
+
+		<code-field/>
+
+		<!-- data -->
+
+		<reference-field
+			type="number"/>
+
+		<timestamp-field
+			name="createdTime"
+			column-type="iso"/>
+
+		<timestamp-field
+			name="lastActionTime"
+			column-type="iso"
+			nullable="yes"/>
+
+		<reference-field
+			name="activeSession"
+			type="smsCustomerSession"/>
+
+		<!-- statistics -->
+
+		<integer-field
+			name="numSessions"
+			default="0"/>
+
+	</fields>
 
 </model-meta>

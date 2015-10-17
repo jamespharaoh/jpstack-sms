@@ -1,4 +1,23 @@
 <model-meta
-	name="networkPrefix">
+	name="networkPrefix"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<code-field
+			name="prefix"/>
+
+		<!-- settings -->
+
+		<reference-field
+			type="network"/>
+
+	</fields>
 
 </model-meta>

@@ -124,7 +124,7 @@ class KeywordCommand
 
 		keywordSet =
 			keywordSetHelper.find (
-				command.getParentObjectId ());
+				command.getParentId ());
 
 		message =
 			inbox.getMessage ();

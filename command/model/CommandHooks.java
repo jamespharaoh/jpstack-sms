@@ -92,10 +92,20 @@ class CommandHooks
 
 			commandHelper.insert (
 				new CommandRec ()
-					.setCommandType (commandType)
-					.setCode (commandType.getCode ())
-					.setParentObjectType (parentType)
-					.setParentObjectId (parent.getId ()));
+
+				.setCommandType (
+					commandType)
+
+				.setCode (
+					commandType.getCode ())
+
+				.setParentType (
+					parentType)
+
+				.setParentId (
+					parent.getId ())
+
+			);
 
 		}
 
