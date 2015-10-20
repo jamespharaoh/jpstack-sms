@@ -1,7 +1,7 @@
 package wbs.sms.message.ticker.console;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
-import static wbs.framework.utils.etc.Misc.lessThan;
+import static wbs.framework.utils.etc.Misc.earlierThan;
 
 import java.util.Collection;
 import java.util.List;
@@ -59,9 +59,10 @@ class MessageTickerManagerImpl
 			Instant.now ();
 
 		if (
-			lessThan (
-				now.getMillis (),
-				lastUpdate.getMillis () + updateTimeMs)
+			earlierThan (
+				now,
+				lastUpdate.plus (
+					updateTimeMs))
 		) {
 			return;
 		}

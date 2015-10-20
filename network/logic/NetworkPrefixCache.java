@@ -1,6 +1,6 @@
 package wbs.sms.network.logic;
 
-import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.Misc.laterThan;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,9 +66,10 @@ class NetworkPrefixCache {
 			Instant.now ();
 
 		if (
-			moreThan (
-				now.getMillis (),
-				lastReload.getMillis () + reloadSecs * 1000)
+			laterThan (
+				now,
+				lastReload.plus (
+					reloadSecs * 1000))
 		) {
 
 			reloadEntries ();
