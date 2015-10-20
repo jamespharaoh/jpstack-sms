@@ -174,7 +174,8 @@ class SmsOutboxMonitor
 					this);
 
 			Map<Integer,Integer> routeSummary =
-				outboxHelper.generateRouteSummary ();
+				outboxHelper.generateRouteSummary (
+					transaction.now ());
 
 			transaction.close ();
 
@@ -182,14 +183,16 @@ class SmsOutboxMonitor
 
 			synchronized (waitersLock) {
 
-				for (Map.Entry<Integer,Integer> entry
-						: routeSummary.entrySet ()) {
+				for (
+					Map.Entry<Integer,Integer> routeSummaryEntry
+						: routeSummary.entrySet ()
+				) {
 
 					int routeId =
-						entry.getKey ();
+						routeSummaryEntry.getKey ();
 
 					int count =
-						entry.getValue ();
+						routeSummaryEntry.getValue ();
 
 					log.debug (
 						stringFormat (

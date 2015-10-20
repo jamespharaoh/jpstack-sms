@@ -1,6 +1,7 @@
 package wbs.sms.network.logic;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.moreThan;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,9 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
@@ -36,7 +40,8 @@ class NetworkPrefixCache {
 	Map<String, Integer> entries;
 
 	private
-	long lastReload = 0;
+	Instant lastReload =
+		new Instant (0);
 
 	private synchronized
 	void reloadEntries () {
@@ -57,10 +62,14 @@ class NetworkPrefixCache {
 	private synchronized
 	Map<String,Integer> getEntries () {
 
-		long now =
-			new Date ().getTime ();
+		Instant now =
+			Instant.now ();
 
-		if (now >= lastReload + reloadSecs * 1000) {
+		if (
+			moreThan (
+				now.getMillis (),
+				lastReload.getMillis () + reloadSecs * 1000)
+		) {
 
 			reloadEntries ();
 

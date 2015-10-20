@@ -1,12 +1,14 @@
 package wbs.sms.number.core.logic;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.isNull;
 
 import javax.inject.Inject;
 
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.network.model.NetworkObjectHelper;
@@ -67,6 +69,9 @@ class NumberLogicImpl
 			String numTo,
 			MessageStatus status) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		NumberRec number =
 			numberHelper.findOrCreate (
 				numTo);
@@ -89,14 +94,26 @@ class NumberLogicImpl
 		if (status.isGoodType()) {
 
 			chatUserNumberReportRec
-				.setLastSuccess (new Date ());
 
-		} else if (status.isBadType () || status.isPending ()) {
+				.setLastSuccess (
+					instantToDate (
+						transaction.now ()));
 
-			if (chatUserNumberReportRec.getFirstFailure () == null) {
+		} else if (
+			status.isBadType ()
+			|| status.isPending ()
+		) {
+
+			if (
+				isNull (
+					chatUserNumberReportRec.getFirstFailure ())
+			) {
 
 				chatUserNumberReportRec
-					.setFirstFailure (new Date ());
+
+					.setFirstFailure (
+						instantToDate (
+							transaction.now ()));
 
 			}
 
@@ -109,6 +126,9 @@ class NumberLogicImpl
 	NumberRec archiveNumberFromMessage (
 			MessageRec message) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		// TODO i don't like this at all
 
 		NumberRec oldNumber =
@@ -120,8 +140,13 @@ class NumberLogicImpl
 		// re-name old number
 
 		oldNumber
-			.setArchiveDate (new Date ())
-			.setNumber (currentNumber + "." + oldNumber.getId ());
+
+			.setArchiveDate (
+				instantToDate (
+					transaction.now ()))
+
+			.setNumber (
+				currentNumber + "." + oldNumber.getId ());
 
 		database.flush ();
 
@@ -130,12 +155,21 @@ class NumberLogicImpl
 		NumberRec newNumber =
 			numberHelper.insert (
 				new NumberRec ()
-					.setNumber (currentNumber)
-					.setNetwork (oldNumber.getNetwork ()));
+
+			.setNumber (
+				currentNumber)
+
+			.setNetwork (
+				oldNumber.getNetwork ())
+
+		);
 
 		// assign message to new number
 
-		message.setNumber (newNumber);
+		message
+
+			.setNumber (
+				newNumber);
 
 		database.flush ();
 

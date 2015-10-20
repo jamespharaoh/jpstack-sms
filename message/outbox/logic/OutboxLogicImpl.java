@@ -3,10 +3,10 @@ package wbs.sms.message.outbox.logic;
 import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earliest;
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -171,6 +171,10 @@ class OutboxLogicImpl
 				instantToDate (
 					transaction.now ()))
 
+			.setRetryTime (
+				instantToDate (
+					transaction.now ()))
+
 			.setRemainingTries (
 				message.getRoute ().getMaxTries ()));
 
@@ -182,6 +186,9 @@ class OutboxLogicImpl
 	public
 	void unholdMessage (
 			MessageRec message) {
+
+		Transaction transaction =
+			database.currentTransaction ();
 
 		if (message.getStatus () != MessageStatus.held) {
 
@@ -206,7 +213,12 @@ class OutboxLogicImpl
 				message.getRoute ())
 
 			.setCreatedTime (
-				new Date ())
+				instantToDate (
+					transaction.now ()))
+
+			.setRetryTime (
+				instantToDate (
+					transaction.now ()))
 
 			.setRemainingTries (
 				message.getRoute ().getMaxTries ())
@@ -275,18 +287,27 @@ class OutboxLogicImpl
 	OutboxRec claimNextMessage (
 			RouteRec route) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		OutboxRec outbox =
 			outboxHelper.findNext (
+				transaction.now (),
 				route);
 
 		if (outbox == null)
 			return null;
 
-		outbox.setSending (
-			new Date ());
+		outbox
 
-		if (outbox.getRemainingTries () != null)
-			outbox.setRemainingTries (outbox.getRemainingTries () - 1);
+			.setSending (
+				instantToDate (
+					transaction.now ()))
+
+			.setRemainingTries (
+				outbox.getRemainingTries () != null
+					? outbox.getRemainingTries () - 1
+					: null);
 
 		return outbox;
 
@@ -298,21 +319,32 @@ class OutboxLogicImpl
 			RouteRec route,
 			int limit) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		List<OutboxRec> outboxes =
 			outboxDao.findNextLimit (
+				transaction.now (),
 				route,
 				limit);
 
-		for (OutboxRec outbox
-				: outboxes) {
+		for (
+			OutboxRec outbox
+				: outboxes
+		) {
 
-			outbox.setSending (
-				new Date ());
+			outbox
+
+				.setSending (
+					instantToDate (
+						transaction.now ()));
 
 			if (outbox.getRemainingTries () != null) {
 
-				outbox.setRemainingTries (
-				outbox.getRemainingTries () - 1);
+				outbox
+
+					.setRemainingTries (
+						outbox.getRemainingTries () - 1);
 
 			}
 
@@ -327,6 +359,9 @@ class OutboxLogicImpl
 	void messageSuccess (
 			int messageId,
 			String[] otherIds) {
+
+		Transaction transaction =
+			database.currentTransaction ();
 
 		log.debug ("outbox success id = " + messageId);
 
@@ -364,7 +399,11 @@ class OutboxLogicImpl
 		if (otherIds != null)
 			message.setOtherId (otherIds [0]);
 
-		message.setProcessedTime (new Date ());
+		message
+
+			.setProcessedTime (
+				instantToDate (
+					transaction.now ()));
 
 		// create expiry if appropriate
 
@@ -480,6 +519,9 @@ class OutboxLogicImpl
 			String error,
 			@NonNull FailureType failureType) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		log.debug (
 			"outbox failure id = " + messageId);
 
@@ -491,10 +533,10 @@ class OutboxLogicImpl
 			outbox.getMessage ();
 
 		if (
-			message.getStatus ()
-				!= MessageStatus.pending
-			&& message.getStatus ()
-				!= MessageStatus.cancelled
+			notIn (
+				message.getStatus (),
+				MessageStatus.pending,
+				MessageStatus.cancelled)
 		) {
 
 			throw new RuntimeException (
@@ -519,12 +561,21 @@ class OutboxLogicImpl
 				MessageStatus.failed);
 
 			message
-				.setProcessedTime (new Date ());
+
+				.setProcessedTime (
+					instantToDate (
+						transaction.now ()));
 
 			failedMessageHelper.insert (
 				new FailedMessageRec ()
-					.setMessage (message)
-					.setError (error));
+
+				.setMessage (
+					message)
+
+				.setError (
+					error)
+
+			);
 
 		} else {
 

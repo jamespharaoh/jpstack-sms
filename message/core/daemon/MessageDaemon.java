@@ -126,6 +126,7 @@ class MessageDaemon
 
 		Collection<MessageExpiryRec> messageExpiries =
 			messageExpiryHelper.findPendingLimit (
+				transaction.now (),
 				batchSize);
 
 		if (messageExpiries.size () == 0)

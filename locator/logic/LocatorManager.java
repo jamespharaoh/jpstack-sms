@@ -1,9 +1,9 @@
 package wbs.sms.locator.logic;
 
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -164,9 +164,16 @@ class LocatorManager {
 				locatorLogId);
 
 		locatorLog
-			.setEndTime (new Date ())
-			.setSuccess (true)
-			.setLongLat (longLat);
+
+			.setEndTime (
+				instantToDate (
+					transaction.now ()))
+
+			.setSuccess (
+				true)
+
+			.setLongLat (
+				longLat);
 
 		transaction.commit ();
 
@@ -238,11 +245,24 @@ class LocatorManager {
 		LocatorLogRec locatorLog =
 			locatorLogHelper.insert (
 				new LocatorLogRec ()
-					.setLocator (locatorRec)
-					.setNumber (number)
-					.setStartTime (new Date ())
-					.setService (service)
-					.setAffiliate (affiliate));
+
+			.setLocator (
+				locatorRec)
+
+			.setNumber (
+				number)
+
+			.setStartTime (
+				instantToDate (
+					transaction.now ()))
+
+			.setService (
+				service)
+
+			.setAffiliate (
+				affiliate)
+
+		);
 
 		locatorLogId =
 			locatorLog.getId ();

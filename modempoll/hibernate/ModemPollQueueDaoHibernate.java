@@ -1,6 +1,8 @@
 package wbs.sms.modempoll.hibernate;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
+import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.modempoll.model.ModemPollQueueDao;
@@ -13,7 +15,8 @@ class ModemPollQueueDaoHibernate
 
 	@Override
 	public
-	ModemPollQueueRec findNext () {
+	ModemPollQueueRec findNext (
+			Instant now) {
 
 		return findOne (
 			ModemPollQueueRec.class,
@@ -25,7 +28,8 @@ class ModemPollQueueDaoHibernate
 
 			.setTimestamp (
 				"now",
-				new Date ())
+				instantToDate (
+					now))
 
 			.list ());
 

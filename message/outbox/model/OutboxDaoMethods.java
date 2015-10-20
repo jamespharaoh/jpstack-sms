@@ -21,9 +21,11 @@ interface OutboxDaoMethods {
 			int maxResults);
 
 	OutboxRec findNext (
+			Instant now,
 			RouteRec route);
 
 	List<OutboxRec> findNextLimit (
+			Instant now,
 			RouteRec route,
 			int maxResults);
 
@@ -31,6 +33,7 @@ interface OutboxDaoMethods {
 			Instant sendingBefore,
 			int maxResults);
 
-	Map<Integer,Integer> generateRouteSummary ();
+	Map<Integer,Integer> generateRouteSummary (
+			Instant now);
 
 }

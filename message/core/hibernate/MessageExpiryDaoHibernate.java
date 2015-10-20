@@ -1,7 +1,10 @@
 package wbs.sms.message.core.hibernate;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.List;
+
+import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.core.model.MessageExpiryDao;
@@ -15,6 +18,7 @@ class MessageExpiryDaoHibernate
 	@Override
 	public
 	List<MessageExpiryRec> findPendingLimit (
+			Instant now,
 			int maxResults) {
 
 		return findMany (
@@ -27,7 +31,8 @@ class MessageExpiryDaoHibernate
 
 			.setTimestamp (
 				"now",
-				new Date ())
+				instantToDate (
+					now))
 
 			.setMaxResults (
 				maxResults)

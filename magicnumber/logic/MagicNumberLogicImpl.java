@@ -1,9 +1,9 @@
 package wbs.sms.magicnumber.logic;
 
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
-import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -11,6 +11,8 @@ import javax.inject.Provider;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
 import wbs.platform.service.model.ServiceRec;
@@ -37,6 +39,9 @@ class MagicNumberLogicImpl
 
 	@Inject
 	LockLogic coreLogic;
+
+	@Inject
+	Database database;
 
 	@Inject
 	MagicNumberObjectHelper magicNumberHelper;
@@ -72,14 +77,8 @@ class MagicNumberLogicImpl
 			@NonNull CommandRec command,
 			int ref) {
 
-		if (magicNumberSet == null)
-			throw new NullPointerException ("magicNumberSet");
-
-		if (number == null)
-			throw new NullPointerException ("number");
-
-		if (command == null)
-			throw new NullPointerException ("command");
+		Transaction transaction =
+			database.currentTransaction ();
 
 		// create a lock over the magic number set and number
 
@@ -107,7 +106,8 @@ class MagicNumberLogicImpl
 			magicNumberUse
 
 				.setLastUseTimestamp (
-					new Date ());
+					instantToDate (
+						transaction.now ()));
 
 			return magicNumberUse.getMagicNumber ();
 
@@ -139,7 +139,10 @@ class MagicNumberLogicImpl
 					ref)
 
 				.setLastUseTimestamp (
-					new Date ()));
+					instantToDate (
+						transaction.now ()))
+
+			);
 
 			return magicNumber;
 
@@ -172,7 +175,8 @@ class MagicNumberLogicImpl
 				ref)
 
 			.setLastUseTimestamp (
-				new Date ());
+				instantToDate (
+					transaction.now ()));
 
 		return magicNumberUse.getMagicNumber ();
 

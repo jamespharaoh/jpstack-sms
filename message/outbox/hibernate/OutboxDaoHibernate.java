@@ -1,8 +1,8 @@
 package wbs.sms.message.outbox.hibernate;
 
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +78,7 @@ class OutboxDaoHibernate
 	@Override
 	public
 	OutboxRec findNext (
+			Instant now,
 			RouteRec route) {
 
 		return findOne (
@@ -95,7 +96,8 @@ class OutboxDaoHibernate
 
 			.setTimestamp (
 				"now",
-				new Date ())
+				instantToDate (
+					now))
 
 			.setEntity (
 				"route",
@@ -110,6 +112,7 @@ class OutboxDaoHibernate
 	@Override
 	public
 	List<OutboxRec> findNextLimit (
+			Instant now,
 			RouteRec route,
 			int maxResults) {
 
@@ -128,7 +131,8 @@ class OutboxDaoHibernate
 
 			.setTimestamp (
 				"now",
-				new Date ())
+				instantToDate (
+					now))
 
 			.setEntity (
 				"route",
@@ -143,7 +147,8 @@ class OutboxDaoHibernate
 
 	@Override
 	public
-	Map<Integer,Integer> generateRouteSummary () {
+	Map<Integer,Integer> generateRouteSummary (
+			Instant now) {
 
 		@SuppressWarnings ("unchecked")
 		List<Object[]> list =
@@ -164,7 +169,8 @@ class OutboxDaoHibernate
 
 			.setTimestamp (
 				"date",
-				new Date ())
+				instantToDate (
+					now))
 
 			.list ();
 

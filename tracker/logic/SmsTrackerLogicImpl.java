@@ -1,6 +1,7 @@
 package wbs.sms.tracker.logic;
 
 import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.instantToDate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +14,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.number.core.model.NumberRec;
@@ -27,6 +30,9 @@ class SmsTrackerLogicImpl
 	implements SmsTrackerLogic {
 
 	// dependencies
+
+	@Inject
+	Database database;
 
 	@Inject
 	SmsSimpleTrackerObjectHelper smsSimpleTrackerHelper;
@@ -120,6 +126,9 @@ class SmsTrackerLogicImpl
 	boolean simpleTrackerNumberScanAndUpdate (
 			SmsSimpleTrackerNumberRec trackerNumber) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		boolean result =
 			simpleTrackerScan (
 				trackerNumber.getSmsSimpleTracker (),
@@ -128,7 +137,8 @@ class SmsTrackerLogicImpl
 		trackerNumber
 
 			.setLastScan (
-				new Date ())
+				instantToDate (
+					transaction.now ()))
 
 			.setBlocked (
 				! result);

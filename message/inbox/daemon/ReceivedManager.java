@@ -1,5 +1,6 @@
 package wbs.sms.message.inbox.daemon;
 
+import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -205,7 +206,8 @@ class ReceivedManager
 				stringFormat (
 					"Threw %s: %s",
 					exception.getClass ().getSimpleName (),
-					exception.getMessage ()));
+					emptyStringIfNull (
+						exception.getMessage ())));
 
 			transaction.commit ();
 

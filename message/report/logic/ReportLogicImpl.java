@@ -132,7 +132,8 @@ class ReportLogicImpl
 			message
 
 				.setProcessedTime (
-					new Date ());
+					instantToDate (
+						transaction.now ()));
 
 		}
 

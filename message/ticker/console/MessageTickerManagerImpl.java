@@ -1,9 +1,9 @@
 package wbs.sms.message.ticker.console;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
+import static wbs.framework.utils.etc.Misc.lessThan;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,6 +12,9 @@ import javax.inject.Inject;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.media.model.MediaRec;
@@ -37,7 +40,9 @@ class MessageTickerManagerImpl
 	int updateTimeMs = 1000;
 
 	int generation = 0;
-	long lastUpdate = 0;
+
+	Instant lastUpdate =
+		new Instant (0);
 
 	int generations = 1000;
 
@@ -50,11 +55,16 @@ class MessageTickerManagerImpl
 
 		// don't run too often
 
-		long now =
-			new Date ().getTime ();
+		Instant now =
+			Instant.now ();
 
-		if (now < lastUpdate + updateTimeMs)
+		if (
+			lessThan (
+				now.getMillis (),
+				lastUpdate.getMillis () + updateTimeMs)
+		) {
 			return;
+		}
 
 		lastUpdate = now;
 
@@ -71,8 +81,10 @@ class MessageTickerManagerImpl
 		Map<Integer,MessageTickerMessage> newMessageTickerMessages =
 			new TreeMap<Integer,MessageTickerMessage> ();
 
-		for (MessageRec message
-				: newMessages) {
+		for (
+			MessageRec message
+				: newMessages
+		) {
 
 			MessageTickerMessage messageTickerMessage =
 				messageTickerMessages.get (

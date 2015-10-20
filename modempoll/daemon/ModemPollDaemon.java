@@ -470,7 +470,8 @@ class ModemPollDaemon
 							this);
 
 					ModemPollQueueRec modemPollQueue =
-						modemPollQueueHelper.findNext ();
+						modemPollQueueHelper.findNext (
+							transaction.now ());
 
 					if (modemPollQueue == null)
 						return;

@@ -247,6 +247,10 @@ class WapPushLogic
 					instantToDate (
 						transaction.now ()))
 
+				.setRetryTime (
+					instantToDate (
+						transaction.now ()))
+
 				.setRemainingTries (
 					route.getMaxTries ())
 
@@ -383,6 +387,10 @@ class WapPushLogic
 				message.getRoute ())
 
 			.setCreatedTime (
+				instantToDate (
+					transaction.now ()))
+
+			.setRetryTime (
 				instantToDate (
 					transaction.now ()))
 
