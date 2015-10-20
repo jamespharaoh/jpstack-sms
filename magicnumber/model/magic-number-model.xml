@@ -22,4 +22,11 @@
 
 	</fields>
 
+	<collections>
+
+		<children-collection
+			type="magicNumberUse"/>
+
+	</collections>
+
 </model-meta>

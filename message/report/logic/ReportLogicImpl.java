@@ -2,6 +2,7 @@ package wbs.sms.message.report.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Date;
@@ -11,6 +12,8 @@ import javax.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
@@ -31,6 +34,9 @@ import wbs.sms.route.core.model.RouteRec;
 public
 class ReportLogicImpl
 	implements ReportLogic {
+
+	@Inject
+	Database database;
 
 	@Inject
 	MessageDao messageDao;
@@ -61,17 +67,19 @@ class ReportLogicImpl
 			NoSuchMessageException,
 			InvalidMessageStateException {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		// check arguments
 
-		if (message == null)
-			throw new NullPointerException ("message");
-
-		if (! in (newMessageStatus,
+		if (
+			! in (newMessageStatus,
 				MessageStatus.sent,
 				MessageStatus.submitted,
 				MessageStatus.undelivered,
 				MessageStatus.delivered,
-				null)) {
+				null)
+		) {
 
 			throw new IllegalArgumentException (
 				stringFormat (
@@ -99,6 +107,10 @@ class ReportLogicImpl
 
 			.setMessage (
 				message)
+
+			.setReceivedTime (
+				instantToDate (
+					transaction.now ()))
 
 			.setNewMessageStatus (
 				newMessageStatus == null
