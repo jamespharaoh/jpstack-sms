@@ -1,5 +1,7 @@
 package wbs.sms.message.inbox.logic;
 
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -12,6 +14,8 @@ import lombok.extern.log4j.Log4j;
 import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.message.inbox.model.InboxMultipartBufferObjectHelper;
@@ -32,6 +36,9 @@ class InboxMultipartLogicImplementation
 	implements InboxMultipartLogic {
 
 	// dependencies
+
+	@Inject
+	Database database;
 
 	@Inject
 	InboxLogic inboxLogic;
@@ -66,6 +73,9 @@ class InboxMultipartLogicImplementation
 			NetworkRec msgNetwork,
 			String msgOtherId,
 			String msgText) {
+
+		Transaction transaction =
+			database.currentTransaction ();
 
 		log.info ("MULTI: IN " + multipartSeg);
 
@@ -108,6 +118,10 @@ class InboxMultipartLogicImplementation
 
 				.setRoute (
 					route)
+
+				.setTimestamp (
+					instantToDate (
+						transaction.now ()))
 
 				.setMultipartId (
 					multipartId)
@@ -163,6 +177,9 @@ class InboxMultipartLogicImplementation
 	public
 	boolean insertInboxMultipartMessage (
 			InboxMultipartBufferRec inboxMultipartBuffer) {
+
+		Transaction transaction =
+			database.currentTransaction ();
 
 		// define "recent" as 24 hours ago
 
@@ -256,6 +273,10 @@ class InboxMultipartLogicImplementation
 
 			.setRoute (
 				inboxMultipartBuffer.getRoute ())
+
+			.setTimestamp (
+				instantToDate (
+					transaction.now ()))
 
 			.setMsgFrom (
 				inboxMultipartBuffer.getMsgFrom ())

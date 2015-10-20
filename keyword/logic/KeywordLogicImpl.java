@@ -1,11 +1,14 @@
 package wbs.sms.keyword.logic;
 
-import java.util.Date;
+import static wbs.framework.utils.etc.Misc.instantToDate;
+
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.keyword.model.KeywordSetFallbackObjectHelper;
 import wbs.sms.keyword.model.KeywordSetFallbackRec;
@@ -18,6 +21,9 @@ class KeywordLogicImpl
 	implements KeywordLogic {
 
 	// dependencies
+
+	@Inject
+	Database database;
 
 	@Inject
 	KeywordSetFallbackObjectHelper keywordSetFallbackHelper;
@@ -42,6 +48,9 @@ class KeywordLogicImpl
 			NumberRec number,
 			CommandRec command) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		// try and update an existing one
 
 		KeywordSetFallbackRec keywordSetFallback =
@@ -52,8 +61,13 @@ class KeywordLogicImpl
 		if (keywordSetFallback != null) {
 
 			keywordSetFallback
-				.setTimestamp (new Date ())
-				.setCommand (command);
+
+				.setTimestamp (
+					instantToDate (
+						transaction.now ()))
+
+				.setCommand (
+					command);
 
 			return;
 
@@ -63,9 +77,21 @@ class KeywordLogicImpl
 
 		keywordSetFallbackHelper.insert (
 			new KeywordSetFallbackRec ()
-				.setKeywordSet (keywordSet)
-				.setNumber (number)
-				.setCommand (command));
+
+			.setKeywordSet (
+				keywordSet)
+
+			.setNumber (
+				number)
+
+			.setTimestamp (
+				instantToDate (
+					transaction.now ()))
+
+			.setCommand (
+				command)
+
+		);
 
 	}
 

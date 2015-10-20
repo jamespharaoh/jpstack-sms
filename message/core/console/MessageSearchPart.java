@@ -4,7 +4,6 @@ import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.joinWithSeparator;
-import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.toStringNull;
 
 import java.util.Calendar;
@@ -158,9 +157,11 @@ class MessageSearchPart
 
 		networks.put ("", "");
 
-		for (NetworkRec network
+		for (
+			NetworkRec network
 				: new TreeSet<NetworkRec> (
-					networkHelper.findAll ())) {
+					networkHelper.findAll ())
+		) {
 
 			networks.put (
 				network.getId ().toString (),
@@ -316,24 +317,26 @@ class MessageSearchPart
 		(Integer)
 			requestContext.session ("messageSearchRouteId");
 
-		for (Map.Entry<String,RouteRec> entry
-				: routes.entrySet ()) {
+		for (
+			Map.Entry<String,RouteRec> routeEntry
+				: routes.entrySet ()
+		) {
 
 			printFormat (
 				"<option",
 
 				" value=\"%h\"",
-				entry.getValue ().getId (),
+				routeEntry.getValue ().getId (),
 
 				"%s",
 				equal (
-						entry.getValue ().getId (),
+						routeEntry.getValue ().getId (),
 						routeId)
 					? " selected"
 					: "",
 
 				">%h</option>",
-				entry.getKey ());
+				routeEntry.getKey ());
 
 		}
 
@@ -347,11 +350,15 @@ class MessageSearchPart
 			"<select id=\"status\" name=\"status\">\n",
 			"<option>\n");
 
-		Integer statusInt = (Integer)
-			requestContext.session ("messageSearchStatus");
+		Integer statusInt =
+			(Integer)
+			requestContext.session (
+				"messageSearchStatus");
 
-		for (MessageStatus status
-				: MessageStatus.values ()) {
+		for (
+			MessageStatus status
+				: MessageStatus.values ()
+		) {
 
 			printFormat (
 				"<option",
@@ -391,24 +398,28 @@ class MessageSearchPart
 
 			"<option>\n");
 
-		Integer userId = (Integer)
-			requestContext.session ("messageSearchUserId");
+		Integer userId =
+			(Integer)
+			requestContext.session (
+				"messageSearchUserId");
 
-		for (Map.Entry<String,UserRec> entry
-				: users.entrySet ()) {
+		for (
+			Map.Entry<String,UserRec> userEntry
+				: users.entrySet ()
+		) {
 
 			printFormat (
 				"<option value=\"%h\"",
-				entry.getValue ().getId (),
+				userEntry.getValue ().getId (),
 
 				equal (
 						userId,
-						entry.getValue ().getId ())
+						userEntry.getValue ().getId ())
 					? " selected"
 					: "",
 
 				">%h</option>\n",
-				entry.getKey ());
+				userEntry.getKey ());
 
 		}
 
@@ -433,9 +444,10 @@ class MessageSearchPart
 			" name=\"date\"",
 			" size=\"32\"",
 			" value=\"%h\"",
-			ifNull (
-				requestContext.session ("messageSearchDate"),
-				""),
+			emptyStringIfNull (
+				(String)
+				requestContext.session (
+					"messageSearchDate")),
 			">\n",
 
 			"<input\n",
@@ -480,7 +492,10 @@ class MessageSearchPart
 			" name=\"timeTo\"",
 			" size=\"32\"",
 			" value=\"%h\"",
-			ifNull (requestContext.session ("messageSearchTimeBefore")),
+			emptyStringIfNull (
+				(String)
+				requestContext.session (
+					"messageSearchTimeBefore")),
 			"></p>\n");
 
 		printFormat (
@@ -491,11 +506,11 @@ class MessageSearchPart
 			" id=\"message\"",
 			" name=\"message\"",
 			" size=\"32\"",
-			requestContext.session ("messageSearchMessage") != null
-				? stringFormat (
-					" value=\"%h\"",
-					requestContext.session ("messageSearchMessage"))
-				: "",
+			" value=\"%h\"",
+			emptyStringIfNull (
+				(String)
+				requestContext.session (
+					"messageSearchMessage")),
 			"></p>\n");
 
 		printFormat (
@@ -504,9 +519,10 @@ class MessageSearchPart
 			Html.select (
 				"networkId",
 				networks,
-				toStringNull (
-					requestContext.session (
-						"messageSearchNetworkId"))));
+				emptyStringIfNull (
+					toStringNull (
+						requestContext.session (
+							"messageSearchNetworkId")))));
 
 		printFormat (
 			"</td>\n",
@@ -522,10 +538,13 @@ class MessageSearchPart
 
 		Integer serviceId =
 			(Integer)
-			requestContext.session ("messageSearchServiceId");
+			requestContext.session (
+				"messageSearchServiceId");
 
-		for (Map.Entry<String,ServiceRec> serviceEntry
-				: services.entrySet ()) {
+		for (
+			Map.Entry<String,ServiceRec> serviceEntry
+				: services.entrySet ()
+		) {
 
 			printFormat (
 				"<option value=\"%h\"",
@@ -558,10 +577,13 @@ class MessageSearchPart
 
 		Integer affiliateId =
 			(Integer)
-			requestContext.session ("messageSearchAffiliateId");
+			requestContext.session (
+				"messageSearchAffiliateId");
 
-		for (Map.Entry<String,AffiliateRec> affiliateEntry
-				: affiliates.entrySet ()) {
+		for (
+			Map.Entry<String,AffiliateRec> affiliateEntry
+				: affiliates.entrySet ()
+		) {
 
 			printFormat (
 				"<option value=\"%h\"",
@@ -587,21 +609,24 @@ class MessageSearchPart
 			"<p><input",
 			" type=\"submit\"",
 			" value=\"search messages\"",
-			">\n",
+			">\n");
 
+		printFormat (
 			"<input",
 			" type=\"button\"",
 			" value=\"clear form\"",
 			" onclick=\"clearForm ()\"",
-			"></p>\n",
+			"></p>\n");
 
+		printFormat (
 			"<p><input",
 			" type=\"radio\"",
 			" name=\"outputType\"",
 			" value=\"HTML\"",
 			" checked",
-			">HTML</p>\n",
+			">HTML</p>\n");
 
+		printFormat (
 			"<p><input",
 			" type=\"radio\"",
 			" name=\"outputType\"",

@@ -98,10 +98,18 @@ class NumberListNumberUpdateAction
 
 		NumberListUpdateRec numberListUpdate =
 			new NumberListUpdateRec ()
-				.setNumberList (numberList)
-				.setTimestamp (transaction.now ())
-				.setUser (myUser)
-				.setNumberCount (0);
+
+			.setNumberList (
+				numberList)
+
+			.setTimestamp (
+				transaction.now ())
+
+			.setUser (
+				myUser)
+
+			.setNumberCount (
+				0);
 
 		// parse numbers
 
