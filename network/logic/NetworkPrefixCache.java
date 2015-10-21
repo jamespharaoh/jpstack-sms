@@ -1,6 +1,7 @@
 package wbs.sms.network.logic;
 
 import static wbs.framework.utils.etc.Misc.laterThan;
+import static wbs.framework.utils.etc.Misc.millisToInstant;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,21 +28,29 @@ import wbs.sms.network.model.NetworkRec;
 public
 class NetworkPrefixCache {
 
+	// dependencies
+
 	@Inject
 	NetworkObjectHelper networkHelper;
 
 	@Inject
 	NetworkPrefixObjectHelper networkPrefixHelper;
 
+	// properties
+
 	@Getter @Setter
 	int reloadSecs = 60;
+
+	// state
 
 	private
 	Map<String, Integer> entries;
 
 	private
 	Instant lastReload =
-		new Instant (0);
+		millisToInstant (0);
+
+	// implementation
 
 	private synchronized
 	void reloadEntries () {

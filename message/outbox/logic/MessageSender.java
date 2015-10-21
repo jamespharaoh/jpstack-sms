@@ -2,6 +2,7 @@ package wbs.sms.message.outbox.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.instantToDate;
 
 import java.util.Collection;
 import java.util.Set;
@@ -16,6 +17,8 @@ import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.config.WbsConfig;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.GlobalId;
 import wbs.framework.record.Record;
@@ -60,6 +63,9 @@ class MessageSender {
 
 	@Inject
 	BatchObjectHelper batchHelper;
+
+	@Inject
+	Database database;
 
 	@Inject
 	DeliveryTypeObjectHelper deliveryTypeHelper;
@@ -207,6 +213,9 @@ class MessageSender {
 	public
 	MessageRec send () {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		if (affiliate == null) {
 
 			affiliate =
@@ -223,15 +232,19 @@ class MessageSender {
 
 		}
 
-		Instant now =
-			new Instant ();
+		if (sendNow) {
 
-		if (sendNow)
-			sendTime = now;
+			sendTime =
+				transaction.now ();
 
-		if (! route.getCanSend ())
+		}
+
+		if (! route.getCanSend ()) {
+
 			throw new RuntimeException (
 				"Cannot send on route " + route.getId ());
+
+		}
 
 		if (network == null)
 			network = number.getNetwork ();
@@ -346,10 +359,11 @@ class MessageSender {
 				affiliate)
 
 			.setCreatedTime (
-				now.toDate ())
+				instantToDate (
+					transaction.now ()))
 
 			.setDate (
-				now.toDateTime ().toLocalDate ())
+				transaction.now ().toDateTime ().toLocalDate ())
 
 			.setDeliveryType (
 				deliveryType)
@@ -412,10 +426,12 @@ class MessageSender {
 					route)
 
 				.setCreatedTime (
-					now.toDate ())
+					instantToDate (
+						transaction.now ()))
 
 				.setRetryTime (
-					sendTime.toDate ())
+					instantToDate (
+						sendTime))
 
 				.setRemainingTries (
 					route.getMaxTries ()));

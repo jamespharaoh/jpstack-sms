@@ -2,6 +2,7 @@ package wbs.sms.message.ticker.console;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earlierThan;
+import static wbs.framework.utils.etc.Misc.millisToInstant;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +28,8 @@ public
 class MessageTickerManagerImpl
 	implements MessageTickerManager {
 
+	// dependencies
+
 	@Inject
 	ObjectManager objectManager;
 
@@ -36,19 +39,25 @@ class MessageTickerManagerImpl
 	@Inject
 	MessageConsoleStuff messageConsoleStuff;
 
+	// properties
+
 	@Getter @Setter
 	int updateTimeMs = 1000;
+
+	// state
 
 	int generation = 0;
 
 	Instant lastUpdate =
-		new Instant (0);
+		millisToInstant (0);
 
 	int generations = 1000;
 
 	private
 	Map<Integer,MessageTickerMessage> messageTickerMessages =
 		new TreeMap<Integer,MessageTickerMessage> ();
+
+	// implementation
 
 	private synchronized
 	void update () {
