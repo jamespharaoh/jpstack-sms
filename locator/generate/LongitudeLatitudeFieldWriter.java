@@ -1,7 +1,5 @@
 package wbs.sms.locator.generate;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
-
 import java.io.IOException;
 
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -12,7 +10,6 @@ import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.entity.generate.ModelFieldWriterContext;
 import wbs.framework.entity.generate.ModelWriter;
-import wbs.framework.entity.meta.AnnotationWriter;
 import wbs.framework.entity.meta.PropertyWriter;
 import wbs.framework.utils.etc.FormatWriter;
 import wbs.sms.locator.metamodel.LongitudeLatitudeFieldSpec;
@@ -40,43 +37,6 @@ class LongitudeLatitudeFieldWriter {
 	void build (
 			Builder builder)
 		throws IOException {
-
-		// write field annotation
-
-		AnnotationWriter annotationWriter =
-			new AnnotationWriter ()
-
-			.name (
-				"SimpleField");
-
-		if (ifNull (spec.nullable (), false)) {
-
-			annotationWriter.addAttributeFormat (
-				"nullable",
-				"true");
-
-		}
-
-		String columnNamesPattern =
-			ifNull (
-				spec.columnNames (),
-				"%");
-
-		String longitudeColumnName =
-			columnNamesPattern.replace ("%", "longitude");
-
-		String latitudeColumnName =
-			columnNamesPattern.replace ("%", "latitude");
-
-		annotationWriter.addAttributeFormat (
-			"columns",
-			"{ \"%s\", \"%s\" }",
-			longitudeColumnName.replace ("\"", "\\\""),
-			latitudeColumnName.replace ("\"", "\\\""));
-
-		annotationWriter.write (
-			javaWriter,
-			"\t");
 
 		// write field
 
