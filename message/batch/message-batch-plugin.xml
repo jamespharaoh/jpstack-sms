@@ -2,6 +2,10 @@
 	name="message-batch"
 	package="wbs.sms.message.batch">
 
+	<plugin-dependencies>
+		<plugin-dependency name="scaffold"/>
+	</plugin-dependencies>
+
 	<models>
 		<model name="batch"/>
 		<model name="batchSubject"/>

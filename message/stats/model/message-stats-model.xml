@@ -15,7 +15,7 @@
 
 		<component-field
 			name="stats"
-			type="messageStats"/>
+			type="messageStatsData"/>
 
 	</fields>
 

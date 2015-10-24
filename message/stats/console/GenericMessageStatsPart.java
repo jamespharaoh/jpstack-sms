@@ -31,6 +31,9 @@ class GenericMessageStatsPart
 	// dependencies
 
 	@Inject
+	SmsStatsMonthlyTimeScheme smsStatsMonthlyTimeScheme;
+
+	@Inject
 	SmsStatsConsoleLogic statsConsoleLogic;
 
 	@Inject
@@ -494,7 +497,7 @@ class GenericMessageStatsPart
 					dateField.date)
 
 				.timeScheme (
-					SmsStatsMonthlyTimeScheme.instance)
+					smsStatsMonthlyTimeScheme)
 
 				.go ();
 

@@ -19,6 +19,10 @@
 		<bean class="generate.LongitudeLatitudeFieldWriter"/>
 	</layer>
 
+	<layer name="entity">
+		<bean class="build.LongitudeLatitudeModelFieldBuilder"/>
+	</layer>
+
 	<layer name="logic">
 		<bean class="logic.LocatorLogicImpl"/>
 		<bean class="logic.LocatorManager"/>

@@ -6,18 +6,32 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.joda.time.LocalDate;
 
+import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.logic.MessageStatsLogic;
+import wbs.sms.message.stats.model.MessageStatsData;
 
+@SingletonComponent ("smsStatsMonthlyTimeScheme")
 public
 class SmsStatsMonthlyTimeScheme
 	implements SmsStatsTimeScheme {
 
+	// dependencies
+
+	@Inject
+	MessageStatsLogic messageStatsLogic;
+
+	// constants
+
 	private final static
 	SimpleDateFormat monthNameShortFormat =
 		new SimpleDateFormat ("MMM");
+
+	// implementation
 
 	@Override
 	public
@@ -137,15 +151,15 @@ class SmsStatsMonthlyTimeScheme
 
 	@Override
 	public
-	MessageStats[] getData (
+	MessageStatsData[] getData (
 			LocalDate start,
-			Map<LocalDate,MessageStats> groupStats) {
+			Map<LocalDate,MessageStatsData> groupStats) {
 
 		Calendar calendar =
 			Calendar.getInstance ();
 
-		MessageStats[] data =
-			new MessageStats [9];
+		MessageStatsData[] data =
+			new MessageStatsData [9];
 
 		for (
 			int month = 0;
@@ -153,8 +167,8 @@ class SmsStatsMonthlyTimeScheme
 			month ++
 		) {
 
-			MessageStats total =
-				new MessageStats ();
+			MessageStatsData total =
+				new MessageStatsData ();
 
 			calendar.clear ();
 
@@ -167,12 +181,17 @@ class SmsStatsMonthlyTimeScheme
 
 			do {
 
-				MessageStats messageStats =
+				MessageStatsData messageStats =
 					groupStats.get (
 						LocalDate.fromCalendarFields (calendar));
 
-				if (messageStats != null)
-					total.plusEq (messageStats);
+				if (messageStats != null) {
+
+					messageStatsLogic.addTo (
+						total,
+						messageStats);
+
+				}
 
 				calendar.add (Calendar.DATE, 1);
 

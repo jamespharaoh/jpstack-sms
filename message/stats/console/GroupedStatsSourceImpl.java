@@ -16,7 +16,8 @@ import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.record.Record;
 import wbs.framework.web.UrlParams;
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.logic.MessageStatsLogic;
+import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -28,6 +29,9 @@ class GroupedStatsSourceImpl
 	implements GroupedStatsSource {
 
 	// dependencies
+
+	@Inject
+	MessageStatsLogic messageStatsLogic;
 
 	@Inject
 	ConsoleObjectManager objectManager;
@@ -122,19 +126,19 @@ class GroupedStatsSourceImpl
 
 			}
 
-			Map<LocalDate,MessageStats> statsByDate =
+			Map<LocalDate,MessageStatsData> statsByDate =
 				groupStats.getStatsByDate ();
 
 			LocalDate date =
 				messageStats.getMessageStatsId ().getDate ();
 
-			MessageStats stats =
+			MessageStatsData stats =
 				statsByDate.get (date);
 
 			if (stats == null) {
 
 				stats =
-					new MessageStats ();
+					new MessageStatsData ();
 
 				statsByDate.put (
 					date,
@@ -142,7 +146,8 @@ class GroupedStatsSourceImpl
 
 			}
 
-			stats.plusEq (
+			messageStatsLogic.addTo (
+				stats,
 				messageStats.getStats ());
 
 		}

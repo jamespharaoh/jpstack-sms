@@ -6,14 +6,26 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.joda.time.LocalDate;
 
+import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.utils.etc.Html;
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.logic.MessageStatsLogic;
+import wbs.sms.message.stats.model.MessageStatsData;
 
+@SingletonComponent ("smsStatsWeeklyTimeScheme")
 public
 class SmsStatsWeeklyTimeScheme
 	implements SmsStatsTimeScheme {
+
+	// dependencies
+
+	@Inject
+	MessageStatsLogic messageStatsLogic;
+
+	// constants
 
 	final static
 	SimpleDateFormat monthNameLongFormat =
@@ -26,6 +38,8 @@ class SmsStatsWeeklyTimeScheme
 	final static
 	SimpleDateFormat weekDateFormat =
 		new SimpleDateFormat ("EEE d");
+
+	// implementation
 
 	@Override
 	public
@@ -196,20 +210,20 @@ class SmsStatsWeeklyTimeScheme
 
 	@Override
 	public
-	MessageStats[] getData (
+	MessageStatsData[] getData (
 			LocalDate start,
-			Map<LocalDate,MessageStats> groupStats) {
+			Map<LocalDate,MessageStatsData> groupStats) {
 
 		Calendar calendar =
 			Calendar.getInstance ();
 
-		MessageStats[] data =
-			new MessageStats [9];
+		MessageStatsData[] data =
+			new MessageStatsData [9];
 
 		for (int week = 0; week < 9; week++) {
 
-			MessageStats total =
-				new MessageStats ();
+			MessageStatsData total =
+				new MessageStatsData ();
 
 			for (int day = 0; day < 7; day++) {
 
@@ -218,12 +232,17 @@ class SmsStatsWeeklyTimeScheme
 
 				calendar.add (Calendar.DATE, week * 7 + day);
 
-				MessageStats messageStats =
+				MessageStatsData messageStats =
 					groupStats.get (
 						LocalDate.fromCalendarFields (calendar));
 
-				if (messageStats != null)
-					total.plusEq (messageStats);
+				if (messageStats != null) {
+
+					messageStatsLogic.addTo (
+						total,
+						messageStats);
+
+				}
 
 			}
 

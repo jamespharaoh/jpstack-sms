@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.joda.time.LocalDate;
 
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 
 public
@@ -20,7 +20,7 @@ interface GroupedStatsSource {
 	class GroupStats {
 
 		private final
-		Map<LocalDate,MessageStats> statsByDate;
+		Map<LocalDate,MessageStatsData> statsByDate;
 
 		private final
 		RouteRec route;
@@ -37,7 +37,7 @@ interface GroupedStatsSource {
 			url = newUrl;
 
 			statsByDate =
-				new HashMap<LocalDate,MessageStats> ();
+				new HashMap<LocalDate,MessageStatsData> ();
 
 		}
 
@@ -49,13 +49,13 @@ interface GroupedStatsSource {
 			url = null;
 
 			statsByDate =
-				new HashMap<LocalDate,MessageStats> ();
+				new HashMap<LocalDate,MessageStatsData> ();
 
 		}
 
 		public
 		GroupStats (
-				Map<LocalDate,MessageStats> newStatsByDate,
+				Map<LocalDate,MessageStatsData> newStatsByDate,
 				RouteRec newRoute,
 				String newUrl) {
 
@@ -66,7 +66,7 @@ interface GroupedStatsSource {
 		}
 
 		public
-		Map<LocalDate,MessageStats> getStatsByDate () {
+		Map<LocalDate,MessageStatsData> getStatsByDate () {
 
 			return statsByDate;
 

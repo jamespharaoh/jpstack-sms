@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.joda.time.LocalDate;
 
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.model.MessageStatsData;
 
 public
 interface SmsStatsTimeScheme {
@@ -17,9 +17,9 @@ interface SmsStatsTimeScheme {
 			PrintWriter out,
 			LocalDate start);
 
-	MessageStats[] getData (
+	MessageStatsData[] getData (
 			LocalDate start,
-			Map<LocalDate,MessageStats> groupStats);
+			Map<LocalDate,MessageStatsData> groupStats);
 
 	boolean[] getHilites (
 			LocalDate start);

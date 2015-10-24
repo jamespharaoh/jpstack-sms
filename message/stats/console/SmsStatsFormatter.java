@@ -21,7 +21,7 @@ import wbs.framework.utils.etc.BeanLogic;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.sms.message.stats.console.GroupedStatsSource.GroupStats;
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 
 /**
@@ -124,7 +124,7 @@ class SmsStatsFormatter {
 
 		public
 		int getData (
-				MessageStats messageStats) {
+				MessageStatsData messageStats) {
 
 			return (Integer)
 				BeanLogic.getProperty (
@@ -281,7 +281,7 @@ class SmsStatsFormatter {
 	protected
 	void goSectionBody (
 			RouteRec route,
-			MessageStats[] data,
+			MessageStatsData[] data,
 			boolean[] hilites) {
 
 		for (Row row : rows) {
@@ -308,7 +308,7 @@ class SmsStatsFormatter {
 				index ++
 			) {
 
-				MessageStats messageStatus =
+				MessageStatsData messageStatus =
 					data [index];
 
 				String className =
@@ -407,7 +407,7 @@ class SmsStatsFormatter {
 			String group =
 				entry.getKey ();
 
-			MessageStats[] data =
+			MessageStatsData[] data =
 				timeScheme.getData (
 					startDate,
 					groupStats.getStatsByDate ());

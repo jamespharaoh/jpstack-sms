@@ -2,6 +2,7 @@ package wbs.sms.message.delivery.fixture;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.Builder.MissingBuilderBehaviour;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -37,7 +38,8 @@ class DeliveryTypesBuilder {
 		builder.descend (
 			parent,
 			spec.deliveryTypes (),
-			model);
+			model,
+			MissingBuilderBehaviour.error);
 
 	}
 

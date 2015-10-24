@@ -9,7 +9,7 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 
 import wbs.framework.utils.etc.Html;
-import wbs.sms.message.stats.model.MessageStats;
+import wbs.sms.message.stats.model.MessageStatsData;
 
 public
 class SmsStatsDailyTimeScheme
@@ -155,15 +155,15 @@ class SmsStatsDailyTimeScheme
 
 	@Override
 	public
-	MessageStats[] getData (
+	MessageStatsData[] getData (
 			LocalDate start,
-			Map<LocalDate,MessageStats> groupStats) {
+			Map<LocalDate,MessageStatsData> groupStats) {
 
 		Calendar calendar =
 			Calendar.getInstance ();
 
-		MessageStats[] data =
-			new MessageStats [9];
+		MessageStatsData[] data =
+			new MessageStatsData [9];
 
 		for (int day = 0; day < 9; day++) {
 

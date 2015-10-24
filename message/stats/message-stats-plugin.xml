@@ -12,7 +12,13 @@
 
 	<models>
 		<model name="messageStats"/>
+		<component name="messageStatsData"/>
+		<component name="messageStatsId"/>
 	</models>
+
+	<layer name="logic">
+		<bean class="logic.MessageStatsLogicImplementation"/>
+	</layer>
 
 	<layer name="console">
 		<bean class="console.AffiliateStatsSourceBuilder"/>
@@ -25,6 +31,8 @@
 		<bean class="console.SmsStatsConsoleLogicImpl"/>
 		<bean class="console.SmsStatsFormatter"/>
 		<bean class="console.SmsStatsSourceImpl"/>
+		<bean class="console.SmsStatsWeeklyTimeScheme"/>
+		<bean class="console.SmsStatsMonthlyTimeScheme"/>
 	</layer>
 
 	<console-modules>

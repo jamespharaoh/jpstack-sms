@@ -1,6 +1,5 @@
 package wbs.sms.locator.generate;
 
-import static wbs.framework.utils.etc.Misc.capitalise;
 import static wbs.framework.utils.etc.Misc.ifNull;
 
 import java.io.IOException;
@@ -11,9 +10,9 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.entity.generate.ModelFieldWriterContext;
 import wbs.framework.entity.generate.ModelWriter;
 import wbs.framework.entity.meta.AnnotationWriter;
-import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.meta.PropertyWriter;
 import wbs.framework.utils.etc.FormatWriter;
 import wbs.sms.locator.metamodel.LongitudeLatitudeFieldSpec;
@@ -26,7 +25,7 @@ class LongitudeLatitudeFieldWriter {
 	// builder
 
 	@BuilderParent
-	ModelMetaSpec parent;
+	ModelFieldWriterContext context;
 
 	@BuilderSource
 	LongitudeLatitudeFieldSpec spec;
@@ -84,9 +83,8 @@ class LongitudeLatitudeFieldWriter {
 		new PropertyWriter ()
 
 			.thisClassNameFormat (
-				"%sRec",
-				capitalise (
-					parent.name ()))
+				"%s",
+				context.recordClassName ())
 
 			.typeNameFormat (
 				"wbs.sms.locator.model.LongLat")
