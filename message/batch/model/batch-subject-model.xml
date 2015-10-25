@@ -21,7 +21,8 @@
 		<!-- details -->
 
 		<type-field
-			type="batchType"/>
+			type="batchType"
+			column="type_id"/>
 
 	</fields>
 
