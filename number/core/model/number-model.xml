@@ -33,7 +33,8 @@
 
 		<event-type
 			name="Number network from message"
-			text="Network for %0 changed from %1 to %2 due to %3"/>
+			text="Network for %0 changed from %1 to %2 due to %3"
+			admin="no"/>
 
 	</event-types>
 

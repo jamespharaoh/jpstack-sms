@@ -187,7 +187,8 @@
 
 		<event-type
 			name="Message manually undelivered"
-			text="%0 manually undelivered %1"/>
+			text="%0 manually undelivered %1"
+			admin="no"/>
 
 	</event-types>
 

@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import lombok.Cleanup;
+import lombok.extern.log4j.Log4j;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
@@ -24,6 +26,7 @@ import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.sms.route.sender.metamodel.SenderSpec;
 
+@Log4j
 @PrototypeComponent ("senderBuilder")
 @ModelMetaBuilderHandler
 public
@@ -56,6 +59,12 @@ class SenderBuilder {
 			Builder builder) {
 
 		try {
+
+			log.info (
+				stringFormat (
+					"Create sender %s",
+					codify (
+						spec.name ())));
 
 			createSender ();
 
