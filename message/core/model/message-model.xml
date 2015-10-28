@@ -88,7 +88,8 @@
 
 		<reference-field
 			name="subjectText"
-			type="text"/>
+			type="text"
+			nullable="yes"/>
 
 		<integer-field
 			name="ref"

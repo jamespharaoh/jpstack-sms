@@ -1,6 +1,5 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -14,38 +13,14 @@ import wbs.sms.message.core.model.MessageStatus;
 public
 class MessageConsoleStuff {
 
+	// dpendencies
+
 	@Inject
-	MessageConsolePluginManager messageConsolePluginManager;
+	MessageConsoleLogic messageConsoleLogic;
 
-	public
-	String messageSummary (
-			MessageRec message) {
+	// implementation
 
-		// normal sms and mms
-
-		if (in (message.getMessageType ().getCode (),
-				"sms",
-				"mms")) {
-
-			return message.getText ().getText ();
-
-		}
-
-		// other
-
-		MessageConsolePlugin plug =
-			messageConsolePluginManager.getPlugin (
-				message.getMessageType ().getCode ());
-
-		if (plug != null)
-			return plug.messageSummary (message);
-
-		// back to plan a
-
-		return message.getText ().getText ();
-
-	}
-
+	@Deprecated
 	public static
 	String classForMessage (
 			MessageRec message) {
@@ -66,8 +41,9 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
-	String classForMessageDirection(
+	String classForMessageDirection (
 			MessageDirection direction) {
 
 		switch (direction) {
@@ -84,6 +60,7 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
 	String classForMessageStatus (
 			MessageStatus messageStatus) {
@@ -98,6 +75,7 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
 	char charForMessageStatus (
 			MessageStatus messageStatus) {
@@ -154,6 +132,7 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
 	String textForMessageStatus (
 			MessageStatus messageStatus) {
@@ -162,6 +141,7 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
 	String tdForMessageStatus (
 			MessageStatus messageStatus) {
@@ -175,6 +155,7 @@ class MessageConsoleStuff {
 
 	}
 
+	@Deprecated
 	public static
 	String textForMessageDirection (
 			MessageDirection direction) {

@@ -5,7 +5,6 @@ import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.implode;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -13,7 +12,6 @@ import javax.inject.Inject;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
-import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -34,7 +32,7 @@ class MessageSummaryPart
 	MediaConsoleLogic mediaConsoleLogic;
 
 	@Inject
-	MessageConsolePluginManager messageConsolePluginManager;
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
@@ -53,7 +51,7 @@ class MessageSummaryPart
 	MessageRec message;
 	FailedMessageRec failedMessage;
 	MessageConsolePlugin plug;
-	PagePart summaryPart;
+	String summaryHtml;
 
 	// implementation
 
@@ -68,31 +66,6 @@ class MessageSummaryPart
 		failedMessage =
 			failedMessageHelper.find (
 				message.getId ());
-
-		plug =
-			messageConsolePluginManager.getPlugin (
-				message.getMessageType ().getCode ());
-
-		if (plug != null) {
-
-			summaryPart =
-				plug.makeMessageSummaryPart (message);
-
-			summaryPart.setup (
-				Collections.<String,Object>emptyMap ());
-
-			summaryPart.prepare ();
-
-		}
-
-	}
-
-	@Override
-	public
-	void renderHtmlHeadContent () {
-
-		if (summaryPart != null)
-			summaryPart.renderHtmlHeadContent ();
 
 	}
 
@@ -131,22 +104,15 @@ class MessageSummaryPart
 				message.getOtherId ()),
 			"</tr>\n");
 
-		if (summaryPart != null) {
+		printFormat (
+			"<tr>\n",
+			"<th>Message</th>\n",
 
-			summaryPart.renderHtmlBodyContent ();
+			"<td>%s</td>\n",
+			messageConsoleLogic.messageContentHtml (
+				message),
 
-		} else {
-
-			printFormat (
-				"<tr>\n",
-				"<th>Message</th>\n",
-
-				"<td>%h</td>\n",
-				message.getText (),
-
-				"</tr>\n");
-
-		}
+			"</tr>\n");
 
 		if (message.getDirection () == MessageDirection.in) {
 

@@ -3,14 +3,12 @@ package wbs.sms.message.core.console;
 import wbs.sms.message.core.model.MessageRec;
 
 public
-interface MessageConsolePlugin {
+interface MessageConsoleLogic {
 
-	String getCode ();
-
-	String messageSummaryText (
+	String messageContentText (
 			MessageRec message);
 
-	String messageSummaryHtml (
+	String messageContentHtml (
 			MessageRec message);
 
 }

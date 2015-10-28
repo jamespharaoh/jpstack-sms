@@ -1,5 +1,6 @@
 package wbs.sms.message.inbox.logic;
 
+import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -13,6 +14,8 @@ import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -49,8 +52,6 @@ import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.logic.NumberLogic;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 @Log4j
 @SingletonComponent ("inboxLogic")
@@ -278,7 +279,7 @@ class InboxLogicImplementation
 		message.getMedias ().addAll (
 			medias);
 
-		objectManager.insert (
+		messageHelper.insert (
 			message);
 
 		// create the inbox entry
@@ -305,7 +306,8 @@ class InboxLogicImplementation
 				"SMS %s %s %s %s %s %s",
 				message.getId (),
 				route.getCode (),
-				message.getOtherId (),
+				emptyStringIfNull (
+					message.getOtherId ()),
 				message.getNumFrom (),
 				message.getNumTo (),
 				message.getText ().getText ()));

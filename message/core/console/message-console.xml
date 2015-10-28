@@ -43,16 +43,10 @@
 
 			<!-- search -->
 
-			<context-tab-action-page
-				name="search"/>
-
-			<context-tab-responder
-				tab="message.search"
-				name="searchResults"/>
-
-			<context-tab-responder
-				tab="message.search"
-				name="searchResultsCsv"/>
+			<object-search-page
+				search-fields="search"
+				results-fields="results"
+				results-rows-fields="resultsRows"/>
 
 			<!-- extensions -->
 
@@ -92,11 +86,113 @@
 		name="search"
 		class="wbs.sms.message.core.model.MessageSearch">
 
+		<integer-field
+			name="messageId"
+			nullable="yes"/>
+
+		<text-field
+			name="number"
+			nullable="yes"/>
+
+		<object-id-field
+			name="routeId"
+			object-type="route"
+			nullable="yes"/>
+
+		<enum-field
+			name="status"
+			helper="messageStatusConsoleHelper"
+			nullable="yes"/>
+
+		<enum-field
+			name="direction"
+			helper="messageDirectionConsoleHelper"
+			nullable="yes"/>
+
+		<object-id-field
+			name="userId"
+			object-type="user"
+			nullable="yes"/>
+
+		<object-id-field
+			name="serviceId"
+			object-type="service"
+			nullable="yes"/>
+
+		<object-id-field
+			name="affiliateId"
+			object-type="affiliate"
+			nullable="yes"/>
+
+		<timestamp-partial-field
+			name="createdTimePartial"
+			label="Date/time"
+			nullable="yes"/>
+
+		<timestamp-from-field
+			name="createdTimeAfter"
+			label="From date/time"
+			nullable="yes"/>
+
+		<timestamp-to-field
+			name="createdTimeBefore"
+			label="To date/time"
+			nullable="yes"/>
+
+		<text-field
+			name="textContains"
+			label="Message text"
+			nullable="yes"/>
+
+		<object-id-field
+			name="networkId"
+			object-type="network"
+			nullable="yes"/>
+
 	</field-set>
 
 	<field-set
 		name="results"
 		object-name="message">
+
+		<id-field/>
+
+		<text-field
+			name="numFrom"
+			label="From"/>
+
+		<text-field
+			name="numTo"
+			label="To"/>
+
+		<timestamp-field
+			name="createdTime"
+			label="Time"
+			format="time"/>
+
+		<object-field
+			name="route"
+			object-type="route"/>
+
+		<enum-field
+			name="status"
+			helper="messageStatusConsoleHelper"/>
+
+		<object-field
+			name="service"
+			object-type="service"/>
+
+		<object-field
+			name="user"
+			object-type="user"/>
+
+	</field-set>
+
+	<field-set
+		name="resultsRows"
+		object-name="message">
+
+		<message-content-field/>
 
 	</field-set>
 

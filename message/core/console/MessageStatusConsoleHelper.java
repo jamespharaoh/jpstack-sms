@@ -1,5 +1,9 @@
 package wbs.sms.message.core.console;
 
+import lombok.NonNull;
+
+import com.google.common.base.Optional;
+
 import wbs.console.helper.EnumConsoleHelper;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.message.core.model.MessageStatus;
@@ -14,6 +18,30 @@ class MessageStatusConsoleHelper
 		enumClass (MessageStatus.class);
 
 		auto ();
+
+	}
+
+	@Override
+	public
+	Optional<String> htmlClass (
+			@NonNull MessageStatus messageStatus) {
+
+		if (messageStatus.isGoodType ()) {
+
+			return Optional.of (
+				"message-status-succeeded");
+
+		} else if (messageStatus.isBadType ()) {
+
+			return Optional.of (
+				"message-status-failed");
+
+		} else {
+
+			return Optional.of (
+				"message-status-unknown");
+
+		}
 
 	}
 

@@ -19,7 +19,7 @@ import org.joda.time.Instant;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.media.model.MediaRec;
-import wbs.sms.message.core.console.MessageConsoleStuff;
+import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 
@@ -34,10 +34,10 @@ class MessageTickerManagerImpl
 	ObjectManager objectManager;
 
 	@Inject
-	MessageObjectHelper messageHelper;
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
-	MessageConsoleStuff messageConsoleStuff;
+	MessageObjectHelper messageHelper;
 
 	// properties
 
@@ -152,7 +152,8 @@ class MessageTickerManagerImpl
 					message.getNumTo ();
 
 				messageTickerMessage.text =
-					messageConsoleStuff.messageSummary (message);
+					messageConsoleLogic.messageContentText (
+						message);
 
 				messageTickerMessage.direction =
 					message.getDirection ();
@@ -163,8 +164,10 @@ class MessageTickerManagerImpl
 				messageTickerMessage.charge =
 					message.getCharge ();
 
-				for (MediaRec media
-						: message.getMedias ()) {
+				for (
+					MediaRec media
+						: message.getMedias ()
+				) {
 
 					messageTickerMessage.mediaIds.add (
 						media.getId ());

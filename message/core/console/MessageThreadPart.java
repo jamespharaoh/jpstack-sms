@@ -24,8 +24,13 @@ public
 class MessageThreadPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	MediaConsoleLogic mediaConsoleLogic;
+
+	@Inject
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	MessageConsoleStuff messageConsoleStuff;
@@ -36,7 +41,11 @@ class MessageThreadPart
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// state
+
 	Set<MessageRec> messages;
+
+	// implementation
 
 	@Override
 	public
@@ -162,7 +171,7 @@ class MessageThreadPart
 				rowClass);
 
 			printFormat (
-				"%s%h</td>\n",
+				"%s%s</td>\n",
 				Html.magicTd (
 					requestContext.resolveContextUrl (
 						stringFormat (
@@ -172,7 +181,7 @@ class MessageThreadPart
 							"/message_summary")),
 					null,
 					6),
-				messageConsoleStuff.messageSummary (
+				messageConsoleLogic.messageContentHtml (
 					message));
 
 			printFormat (

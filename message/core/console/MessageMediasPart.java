@@ -5,12 +5,17 @@ import static wbs.framework.utils.etc.Misc.prettySize;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableSet;
+
+import wbs.console.html.JqueryScriptRef;
+import wbs.console.html.MagicTableScriptRef;
+import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -34,6 +39,27 @@ class MessageMediasPart
 	MessageRec message;
 	List<MediaRec> medias;
 
+	// details
+
+	@Override
+	public
+	Set<ScriptRef> scriptRefs () {
+
+		return ImmutableSet.<ScriptRef>builder ()
+
+			.addAll (
+				super.scriptRefs ())
+
+			.add (
+				JqueryScriptRef.instance)
+
+			.add (
+				MagicTableScriptRef.instance)
+
+			.build ();
+
+	}
+
 	// implementation
 
 	@Override
@@ -42,7 +68,8 @@ class MessageMediasPart
 
 		message =
 			messageHelper.find (
-				requestContext.stuffInt ("messageId"));
+				requestContext.stuffInt (
+					"messageId"));
 
 		medias =
 			message.getMedias ();
@@ -82,14 +109,17 @@ class MessageMediasPart
 					medias.get (index);
 
 				printFormat (
-					"%s\n",
-					Html.magicTr (
-						requestContext.resolveLocalUrl (
-							stringFormat (
-								"/message.mediaSummary",
-								"?index=%u",
-								index)),
-						false));
+					"<tr",
+					" class=\"magic-table-row\"",
+
+					" data-target-href=\"%h\"",
+					requestContext.resolveLocalUrl (
+						stringFormat (
+							"/message.mediaSummary",
+							"?index=%u",
+							index)),
+
+					">\n");
 
 				printFormat (
 					"<td>%s</td>\n",

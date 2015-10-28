@@ -12,7 +12,6 @@
 
 	<layer name="console">
 		<bean class="console.WapPushConsolePlugin"/>
-		<bean class="console.WapPushMessageSummaryPart"/>
 	</layer>
 
 </plugin>

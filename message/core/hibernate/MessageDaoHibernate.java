@@ -1,6 +1,8 @@
 package wbs.sms.message.core.hibernate;
 
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.parsePartialTimestamp;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.joda.time.Interval;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
@@ -28,6 +31,8 @@ public
 class MessageDaoHibernate
 	extends HibernateDao
 	implements MessageDao {
+
+	// implementation
 
 	@Override
 	public
@@ -169,58 +174,59 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<MessageRec> search (
+	List<Integer> searchIds (
 			MessageSearch search) {
 
 		Criteria criteria =
-			createCriteria (MessageRec.class)
+			createCriteria (
+				MessageRec.class)
 
-				.createAlias (
-					"network",
-					"network",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"network",
+				"network",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"number",
-					"number",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"number",
+				"number",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"route",
-					"route",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"route",
+				"route",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"service",
-					"service",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"service",
+				"service",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"affiliate",
-					"affiliate",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"affiliate",
+				"affiliate",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"batch",
-					"batch",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"batch",
+				"batch",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"text",
-					"text",
-					JoinType.LEFT_OUTER_JOIN)
+			.createAlias (
+				"text",
+				"text",
+				JoinType.LEFT_OUTER_JOIN)
 
-				.createAlias (
-					"user",
-					"user",
-					JoinType.LEFT_OUTER_JOIN);
+			.createAlias (
+				"user",
+				"user",
+				JoinType.LEFT_OUTER_JOIN);
 
-		if (search.id () != null) {
+		if (search.messageId () != null) {
 
 			criteria.add (
 				Restrictions.eq (
 					"id",
-					search.id ()));
+					search.messageId ()));
 
 		}
 
@@ -331,6 +337,29 @@ class MessageDaoHibernate
 				Restrictions.eq (
 					"status",
 					search.status ()));
+
+		}
+
+		if (
+			isNotNull (
+				search.createdTimePartial ())
+		) {
+
+			Interval interval =
+				parsePartialTimestamp (
+					search.createdTimePartial ());
+
+			criteria.add (
+				Restrictions.ge (
+					"createdTime",
+					instantToDate (
+						interval.getStart ())));
+
+			criteria.add (
+				Restrictions.lt (
+					"createdTime",
+					instantToDate (
+						interval.getEnd ())));
 
 		}
 
@@ -459,8 +488,11 @@ class MessageDaoHibernate
 
 		}
 
+		criteria.setProjection (
+			Projections.id ());
+
 		return findMany (
-			MessageRec.class,
+			Integer.class,
 			criteria.list ());
 
 	}

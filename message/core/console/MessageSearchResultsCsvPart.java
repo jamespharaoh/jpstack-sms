@@ -1,16 +1,13 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.spacify;
 import static wbs.framework.utils.etc.Misc.timestampFormatSeconds;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
-import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -21,14 +18,18 @@ public
 class MessageSearchResultsCsvPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
-	ConsoleObjectManager objectManager;
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
 
 	@Inject
-	MessageConsolePluginManager messageConsolePluginManager;
+	ConsoleObjectManager objectManager;
+
+	// implementation
 
 	@Override
 	public
@@ -44,87 +45,66 @@ class MessageSearchResultsCsvPart
 		printFormat (
 			"ID,From,To,Time,Route,Status,Service,Direction,Message");
 
-		for (Object messageIdObject
-				: messageSearchResult) {
+		for (
+			Object messageIdObject
+				: messageSearchResult
+		) {
 
 			MessageRec message =
 				messageHelper.find (
 					(Integer) messageIdObject);
 
-			// FailedMessageRec failedMessage =
-			// smsDao.findFailedMessageById(message.getId());
-
-			MessageConsolePlugin messageConsolePlugin =
-				messageConsolePluginManager.getPlugin (
-					message.getMessageType ().getCode ());
-
-			PagePart summaryPart = null;
-
-			if (messageConsolePlugin != null) {
-
-				summaryPart =
-					messageConsolePlugin.makeMessageSummaryPart (message);
-
-				summaryPart.setWithMarkup (false);
-
-				summaryPart.setup (
-					Collections.<String,Object>emptyMap ());
-
-				summaryPart.prepare ();
-
-			}
+			String summaryText =
+				messageConsoleLogic.messageContentText (
+					message);
 
 			String rowClass =
 				MessageConsoleStuff.classForMessage (message);
 
 			printFormat (
 				"%h,",
-				message.getId (),
+				message.getId ());
 
+			printFormat (
 				"%h,",
 				message.getDirection () == MessageDirection.in
 					? message.getNumber ().getNumber ()
-					: message.getNumFrom (),
+					: message.getNumFrom ());
 
+			printFormat (
 				"%h,",
 				message.getDirection () == MessageDirection.out
 					? message.getNumber ().getNumber ()
-					: message.getNumTo (),
+					: message.getNumTo ());
 
+			printFormat (
 				"%h,",
 				timestampFormatSeconds.format (
-					message.getCreatedTime ()),
+					message.getCreatedTime ()));
 
+			printFormat (
 				"%h,",
-				message.getRoute ().getCode (),
+				message.getRoute ().getCode ());
 
+			printFormat (
 				"%h-%h\n",
 				MessageConsoleStuff.classForMessageStatus (
 					message.getStatus ()),
 				MessageConsoleStuff.textForMessageStatus (
-					message.getStatus ()),
+					message.getStatus ()));
 
+			printFormat (
 				"\"%s\",",
 				objectManager.tdForObjectMiniLink (
-					message.getService ()),
+					message.getService ()));
 
+			printFormat (
 				"\"%h\",",
 				rowClass);
 
-			// TODO This should be able to see the details of the wap push
-
-			if (summaryPart != null) {
-
-				summaryPart.renderHtmlBodyContent ();
-
-			} else {
-
-				printFormat (
-					"\"%h\"",
-					spacify (
-						message.getText ().getText ()));
-
-			}
+			printFormat (
+				"\"%h\",",
+				summaryText);
 
 			printFormat (
 				"\n");

@@ -1,11 +1,10 @@
 package wbs.sms.message.wap.console;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import wbs.console.part.PagePart;
+import javax.inject.Inject;
+
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.framework.utils.etc.StringFormatter;
 import wbs.sms.message.core.console.MessageConsolePlugin;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;
@@ -21,9 +20,6 @@ class WapPushConsolePlugin
 	@Inject
 	WapPushMessageObjectHelper wapPushMessageHelper;
 
-	@Inject
-	Provider<WapPushMessageSummaryPart> wapPushMessageSummaryPart;
-
 	// details
 
 	@Override
@@ -36,7 +32,7 @@ class WapPushConsolePlugin
 
 	@Override
 	public
-	String messageSummary (
+	String messageSummaryText (
 			MessageRec message) {
 
 		WapPushMessageRec wapPushMessage =
@@ -47,7 +43,7 @@ class WapPushConsolePlugin
 			return "";
 		}
 
-		return StringFormatter.standard (
+		return stringFormat (
 			"%s (%s)",
 			wapPushMessage.getTextText ().getText (),
 			wapPushMessage.getUrlText ().getText ());
@@ -56,11 +52,17 @@ class WapPushConsolePlugin
 
 	@Override
 	public
-	PagePart makeMessageSummaryPart (
+	String messageSummaryHtml (
 			MessageRec message) {
 
-		return wapPushMessageSummaryPart.get ()
-			.message (message);
+		WapPushMessageRec wapPushMessage =
+			wapPushMessageHelper.find (
+				message.getId ());
+
+		return stringFormat (
+			"%h (%h)",
+			wapPushMessage.getTextText ().getText (),
+			wapPushMessage.getUrlText ().getText ());
 
 	}
 

@@ -13,7 +13,7 @@ import org.joda.time.Instant;
 public
 class MessageSearch {
 
-	Integer id;
+	Integer messageId;
 
 	String number;
 	Integer numberId;
@@ -34,6 +34,8 @@ class MessageSearch {
 
 	Integer networkId;
 
+	String createdTimePartial;
+
 	Instant createdTimeAfter;
 	Instant createdTimeBefore;
 
@@ -42,6 +44,8 @@ class MessageSearch {
 	MessageStatus status;
 	Collection<MessageStatus> statusIn;
 	Collection<MessageStatus> statusNotIn;
+
+	String textContains;
 
 	String textLike;
 	String textILike;
@@ -62,8 +66,8 @@ class MessageSearch {
 	MessageSearch (
 			MessageSearch original) {
 
-		this.id =
-			original.id;
+		this.messageId =
+			original.messageId;
 
 		this.number =
 			original.number;
@@ -117,6 +121,9 @@ class MessageSearch {
 
 		this.networkId =
 			original.networkId;
+
+		this.createdTimePartial =
+			original.createdTimePartial;
 
 		this.createdTimeAfter =
 			original.createdTimeAfter;

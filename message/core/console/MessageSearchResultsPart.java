@@ -1,23 +1,18 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.nullIf;
-import static wbs.framework.utils.etc.Misc.spacify;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.timestampFormatSeconds;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
-import wbs.console.part.PagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
-import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -34,6 +29,9 @@ class MessageSearchResultsPart
 
 	@Inject
 	MediaLogic mediaLogic;
+
+	@Inject
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	MessageConsolePluginManager messageConsolePluginManager;
@@ -69,36 +67,18 @@ class MessageSearchResultsPart
 			"<th>User</th>\n",
 			"</tr>\n");
 
-		for (Object messageIdObject
-				: messageSearchResult) {
+		for (
+			Object messageIdObject
+				: messageSearchResult
+		) {
 
 			MessageRec message =
 				messageHelper.find (
 					(Integer) messageIdObject);
 
-			List<MediaRec> medias =
-				message.getMedias ();
-
-			MessageConsolePlugin messageConsolePlugin =
-				messageConsolePluginManager.getPlugin (
-					message.getMessageType ().getCode ());
-
-			PagePart summaryPart = null;
-
-			if (messageConsolePlugin != null) {
-
-				summaryPart =
-					messageConsolePlugin.makeMessageSummaryPart (
-						message);
-
-				summaryPart.setWithMarkup (false);
-
-				summaryPart.setup (
-					Collections.<String,Object>emptyMap ());
-
-				summaryPart.prepare ();
-
-			}
+			String summaryHtml =
+				messageConsoleLogic.messageContentHtml (
+					message);
 
 			printFormat (
 				"<tr class=\"sep\">\n");
@@ -170,63 +150,9 @@ class MessageSearchResultsPart
 					null,
 					8));
 
-			if (summaryPart != null) {
-
-				summaryPart.renderHtmlBodyContent ();
-
-			} else if (! medias.isEmpty ()) {
-
-				if (nullIf (message.getSubjectText (), "") != null) {
-
-					printFormat (
-						"%h:\n",
-						message.getSubjectText ());
-
-				}
-
-				int index = 0;
-
-				for (MediaRec media : medias) {
-
-					if (
-						mediaLogic.isText (
-							media.getMediaType ().getMimeType ())
-					) {
-
-						printFormat (
-							"%s\n",
-							mediaConsoleLogic.mediaThumb32OrText (
-								media));
-
-					} else {
-
-						printFormat (
-							"<a href=\"%h\">%s</a>\n",
-
-							requestContext.resolveContextUrl (
-								stringFormat (
-									"/message",
-									"/%u",
-									message.getId (),
-									"/message_mediaSummary",
-									"?index=%u",
-									index ++)),
-
-							mediaConsoleLogic.mediaThumb32OrText (
-								media));
-
-					}
-
-				}
-
-			} else {
-
-				printFormat (
-					"%h",
-					spacify (
-						message.getText ().getText ()));
-
-			}
+			printFormat (
+				"%s\n",
+				summaryHtml);
 
 			printFormat (
 				"</td>\n");

@@ -13,6 +13,34 @@ ON message (route_id, direction, other_id);
 
 -- TODO more indexes surely?
 
+CREATE FUNCTION message_before_insert ()
+RETURNS trigger
+AS $$
+
+BEGIN
+
+	IF NEW.thread_message_id IS NULL THEN
+		NEW.thread_message_id := NEW.id;
+	END IF;
+
+	IF NEW.direction = 0 THEN
+		SELECT INTO NEW.charge in_charge FROM route WHERE id = NEW.route_id;
+	END IF;
+
+	IF NEW.direction = 1 THEN
+		SELECT INTO NEW.charge out_charge FROM route WHERE id = NEW.route_id;
+	END IF;
+
+	RETURN NEW;
+
+END;
+
+$$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER message_before_insert
+BEFORE INSERT ON message
+FOR EACH ROW EXECUTE PROCEDURE message_before_insert ();
+
 ---------------------------------------- TABLE message_tag
 
 CREATE TABLE message_tag (
