@@ -33,9 +33,6 @@ class MessageThreadPart
 	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
-	MessageConsoleStuff messageConsoleStuff;
-
-	@Inject
 	MessageConsoleHelper messageHelper;
 
 	@Inject
@@ -91,7 +88,7 @@ class MessageThreadPart
 			// various fields
 
 			String rowClass =
-				MessageConsoleStuff.classForMessage (
+				messageConsoleLogic.classForMessage (
 					message);
 
 			printFormat (
@@ -117,7 +114,7 @@ class MessageThreadPart
 				message.getRoute ().getCode (),
 
 				"%s\n",
-				MessageConsoleStuff.tdForMessageStatus (
+				messageConsoleLogic.tdForMessageStatus (
 					message.getStatus ()));
 
 			List<MediaRec> medias =

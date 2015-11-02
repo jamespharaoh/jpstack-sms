@@ -36,8 +36,12 @@ class MessageContentFormFieldBuilder {
 	// prototype dependencies
 
 	@Inject
-	Provider<MessageContentFormFieldInterfaceMapping>
-	messageContentFormFieldInterfaceMappingProvider;
+	Provider<MessageContentCsvFormFieldInterfaceMapping>
+	messageContentCsvFormFieldInterfaceMappingProvider;
+
+	@Inject
+	Provider<MessageContentHtmlFormFieldInterfaceMapping>
+	messageContentHtmlFormFieldInterfaceMappingProvider;
 
 	@Inject
 	Provider<HtmlFormFieldRenderer>
@@ -92,7 +96,12 @@ class MessageContentFormFieldBuilder {
 		// interface mapping
 
 		FormFieldInterfaceMapping interfaceMapping =
-			messageContentFormFieldInterfaceMappingProvider.get ();
+			messageContentHtmlFormFieldInterfaceMappingProvider.get ();
+
+		// csv mapping
+
+		FormFieldInterfaceMapping csvMapping =
+			messageContentCsvFormFieldInterfaceMappingProvider.get ();
 
 		// renderer
 
@@ -124,6 +133,9 @@ class MessageContentFormFieldBuilder {
 
 			.interfaceMapping (
 				interfaceMapping)
+
+			.csvMapping (
+				csvMapping)
 
 			.renderer (
 				renderer)

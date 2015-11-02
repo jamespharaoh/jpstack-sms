@@ -25,7 +25,8 @@ class ObjectSmsMessageSetPageSpec {
 	@DataAttribute
 	String name;
 
-	@DataAttribute ("message-set")
+	@DataAttribute (
+		name = "message-set")
 	String messageSetCode;
 
 }

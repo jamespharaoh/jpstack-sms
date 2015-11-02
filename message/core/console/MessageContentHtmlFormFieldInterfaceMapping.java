@@ -12,9 +12,9 @@ import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.core.model.MessageRec;
 
-@PrototypeComponent ("messageContentFormFieldInterfaceMapping")
+@PrototypeComponent ("messageContentHtmlFormFieldInterfaceMapping")
 public
-class MessageContentFormFieldInterfaceMapping
+class MessageContentHtmlFormFieldInterfaceMapping
 	implements FormFieldInterfaceMapping<MessageRec,MessageRec,String> {
 
 	// dependencies

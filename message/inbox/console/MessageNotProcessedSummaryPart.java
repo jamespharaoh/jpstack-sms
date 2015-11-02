@@ -8,7 +8,7 @@ import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.sms.message.core.console.MessageConsoleStuff;
+import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -21,10 +21,13 @@ class MessageNotProcessedSummaryPart
 	// dependencies
 
 	@Inject
-	ConsoleObjectManager objectManager;
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
+
+	@Inject
+	ConsoleObjectManager objectManager;
 
 	@Inject
 	TimeFormatter timeFormatter;
@@ -112,7 +115,7 @@ class MessageNotProcessedSummaryPart
 			"<th>Status</th>\n",
 
 			"%s\n",
-			MessageConsoleStuff.tdForMessageStatus (
+			messageConsoleLogic.tdForMessageStatus (
 				message.getStatus ()),
 
 			"</tr>\n");

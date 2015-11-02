@@ -1,15 +1,18 @@
 package wbs.sms.message.core.hibernate;
 
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.parsePartialTimestamp;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import lombok.NonNull;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -474,17 +477,49 @@ class MessageDaoHibernate
 
 		if (search.filter ()) {
 
+			List<Criterion> filterCriteria =
+				new ArrayList<Criterion> ();
+
+			if (
+				isNotEmpty (
+					search.filterServiceIds ())
+			) {
+
+				filterCriteria.add (
+					Restrictions.in (
+						"service.id",
+						search.filterServiceIds ()));
+
+			}
+
+			if (
+				isNotEmpty (
+					search.filterAffiliateIds ())
+			) {
+
+				filterCriteria.add (
+					Restrictions.in (
+						"affiliate.id",
+						search.filterAffiliateIds ()));
+
+			}
+
+			if (
+				isNotEmpty (
+					search.filterRouteIds ())
+			) {
+
+				filterCriteria.add (
+					Restrictions.in (
+						"route.id",
+						search.filterRouteIds ()));
+
+			}
+
 			criteria.add (
 				Restrictions.or (
-
-					Restrictions.in ("service.id",
-						search.filterServiceIds ()),
-
-					Restrictions.in ("affiliate.id",
-						search.filterAffiliateIds ()),
-
-					Restrictions.in ("route.id",
-						search.filterRouteIds ())));
+					filterCriteria.toArray (
+						new Criterion [] {})));
 
 		}
 

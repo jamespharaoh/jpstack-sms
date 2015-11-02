@@ -18,13 +18,15 @@ import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
-import wbs.sms.message.core.console.MessageConsoleStuff;
+import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 
 @PrototypeComponent ("messageTickerUpdateResponder")
 public
 class MessageTickerUpdateResponder
 	extends ConsoleResponder {
+
+	// dependencies
 
 	@Inject
 	ConsoleRequestContext requestContext;
@@ -36,6 +38,9 @@ class MessageTickerUpdateResponder
 	MediaConsoleHelper mediaHelper;
 
 	@Inject
+	MessageConsoleLogic messageConsoleLogic;
+
+	@Inject
 	MessageTickerManager messageTickerManager;
 
 	@Inject
@@ -44,10 +49,14 @@ class MessageTickerUpdateResponder
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// state
+
 	List<String> commands =
 		new ArrayList<String> ();
 
 	int newGeneration = 0;
+
+	// implementation
 
 	@Override
 	public
@@ -264,17 +273,20 @@ class MessageTickerUpdateResponder
 
 		stringBuilder.append (
 			stringFormat (
-
 				" ], %s",
-				messageTickerMessage.messageId (),
+				messageTickerMessage.messageId ()));
 
+		stringBuilder.append (
+			stringFormat (
 				", '%j'",
-				MessageConsoleStuff.classForMessageStatus (
-					messageTickerMessage.status ()),
+				messageConsoleLogic.classForMessageStatus (
+					messageTickerMessage.status ())));
 
+		stringBuilder.append (
+			stringFormat (
 				", '%j');",
 				Character.toString (
-					MessageConsoleStuff.charForMessageStatus (
+					messageConsoleLogic.charForMessageStatus (
 						messageTickerMessage.status ()))));
 
 		return stringBuilder.toString ();
@@ -290,11 +302,11 @@ class MessageTickerUpdateResponder
 
 			messageTickerMessage.messageId (),
 
-			MessageConsoleStuff.classForMessageStatus (
+			messageConsoleLogic.classForMessageStatus (
 				messageTickerMessage.status ()),
 
 			Character.toString (
-				MessageConsoleStuff.charForMessageStatus (
+				messageConsoleLogic.charForMessageStatus (
 					messageTickerMessage.status ())));
 
 	}

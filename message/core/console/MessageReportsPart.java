@@ -20,14 +20,23 @@ public
 class MessageReportsPart
 	extends AbstractPagePart {
 
+	// dependencies
+
+	@Inject
+	MessageConsoleLogic messageConsoleLogic;
+
 	@Inject
 	MessageObjectHelper messageHelper;
 
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// state
+
 	MessageRec message;
 	Set<MessageReportRec> messageReports;
+
+	// implementation
 
 	@Override
 	public
@@ -69,27 +78,33 @@ class MessageReportsPart
 
 		} else {
 
-			for (MessageReportRec messageReport
-					: messageReports) {
+			for (
+				MessageReportRec messageReport
+					: messageReports
+			) {
 
 				long interval =
 					+ messageReport.getReceivedTime ().getTime ()
 					- message.getProcessedTime ().getTime ();
 
 				printFormat (
-					"<tr>\n",
+					"<tr>\n");
 
+				printFormat (
 					"<td>%h</td>\n",
 					timeFormatter.instantToTimestampString (
 						timeFormatter.defaultTimezone (),
 						dateToInstant (
-							messageReport.getReceivedTime ())),
+							messageReport.getReceivedTime ())));
 
+				printFormat (
 					"<td>%h</td>\n",
-					requestContext.prettyMsInterval (interval),
+					requestContext.prettyMsInterval (
+						interval));
 
+				printFormat (
 					"%s\n",
-					MessageConsoleStuff.tdForMessageStatus (
+					messageConsoleLogic.tdForMessageStatus (
 						messageReport.getNewMessageStatus ()));
 
 				if (messageReport.getCode () != null) {

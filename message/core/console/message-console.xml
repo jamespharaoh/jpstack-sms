@@ -167,8 +167,7 @@
 
 		<timestamp-field
 			name="createdTime"
-			label="Time"
-			format="time"/>
+			label="Time"/>
 
 		<object-field
 			name="route"

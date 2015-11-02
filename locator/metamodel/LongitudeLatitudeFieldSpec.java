@@ -22,7 +22,7 @@ class LongitudeLatitudeFieldSpec
 	String name;
 
 	@DataAttribute (
-		value = "columns")
+		name = "columns")
 	String columnNames;
 
 	@DataAttribute

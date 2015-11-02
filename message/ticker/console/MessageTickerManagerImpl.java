@@ -3,6 +3,8 @@ package wbs.sms.message.ticker.console;
 import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earlierThan;
 import static wbs.framework.utils.etc.Misc.millisToInstant;
+import static wbs.framework.utils.etc.Misc.spacify;
+import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
 import java.util.List;
@@ -151,9 +153,14 @@ class MessageTickerManagerImpl
 				messageTickerMessage.numTo =
 					message.getNumTo ();
 
+				// TODO this encoding looks like it's in the wrong layer
+
 				messageTickerMessage.text =
-					messageConsoleLogic.messageContentText (
-						message);
+					stringFormat (
+						"\"%h\"",
+						spacify (
+							messageConsoleLogic.messageContentText (
+								message)));
 
 				messageTickerMessage.direction =
 					message.getDirection ();

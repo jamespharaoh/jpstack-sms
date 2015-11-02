@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.html.ObsoleteDateLinks;
@@ -25,7 +26,7 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
-import wbs.sms.message.core.console.MessageConsoleStuff;
+import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
 
@@ -42,6 +43,9 @@ class ObjectSmsMessagesPart
 
 	@Inject
 	MediaConsoleLogic mediaConsoleLogic;
+
+	@Inject
+	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
 	TimeFormatter timeFormatter;
@@ -210,35 +214,42 @@ class ObjectSmsMessagesPart
 			}
 
 			String rowClass =
-				MessageConsoleStuff.classForMessage (message);
+				messageConsoleLogic.classForMessage (
+					message);
 
 			printFormat (
 				"<tr class=\"sep\">\n");
 
 			printFormat (
 				"<tr class=\"%h\">\n",
-				rowClass,
+				rowClass);
 
+			printFormat (
 				"<td>%h</td>\n",
 				timeFormatter.instantToTimeString (
 					timeFormatter.defaultTimezone (),
 					dateToInstant (
-						message.getCreatedTime ())),
+						message.getCreatedTime ())));
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getNumFrom (),
+				message.getNumFrom ());
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getNumTo (),
+				message.getNumTo ());
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getRoute ().getCode (),
+				message.getRoute ().getCode ());
 
+			printFormat (
 				"<td>%h</td>\n",
-				message.getId (),
+				message.getId ());
 
+			printFormat (
 				"%s\n",
-				MessageConsoleStuff.tdForMessageStatus (
+				messageConsoleLogic.tdForMessageStatus (
 					message.getStatus ()));
 
 			List<MediaRec> medias =
