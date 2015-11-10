@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.request.ConsoleRequestContext;
@@ -170,6 +171,7 @@ class BlacklistSearchAction
 						objectManager.findObject (
 							new GlobalId (
 								eventLink.getTypeId (),
+								(int) (long)
 								eventLink.getRefId ()));
 
 					text =
