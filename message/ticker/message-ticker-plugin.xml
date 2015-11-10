@@ -3,7 +3,7 @@
 	package="wbs.sms.message.ticker">
 
 	<layer name="console">
-		<bean class="console.MessageTickerManagerImpl"/>
+		<bean class="console.MessageTickerManagerImplementation"/>
 		<bean class="console.MessageTickerResponder"/>
 		<bean class="console.MessageTickerUpdateResponder"/>
 	</layer>
