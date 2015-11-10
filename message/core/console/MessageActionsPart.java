@@ -1,5 +1,6 @@
 package wbs.sms.message.core.console;
 
+import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
 
 import javax.inject.Inject;
@@ -41,6 +42,14 @@ class MessageActionsPart
 	public
 	void renderHtmlBodyContent () {
 
+		printFormat (
+			"<form",
+			" method=\"post\"",
+			" action=\"%h\"",
+			requestContext.resolveLocalUrl (
+				"/message.actions"),
+			">\n");
+
 		if (
 			message.getDirection () == MessageDirection.out
 			&& in (message.getStatus (),
@@ -48,14 +57,6 @@ class MessageActionsPart
 				MessageStatus.submitted,
 				MessageStatus.delivered)
 		) {
-
-			printFormat (
-				"<form",
-				" method=\"post\"",
-				" action=\"%h\"",
-				requestContext.resolveLocalUrl (
-					"/message.actions"),
-				">\n");
 
 			printFormat (
 				"<p>This outbound message is in the \"%h\" ",
@@ -69,9 +70,23 @@ class MessageActionsPart
 				" value=\"manually undeliver\"",
 				"></p>\n");
 
-			printFormat (
-				"</form>\n");
+		} else if (
+			equal (
+				message.getStatus (),
+				MessageStatus.held)
+		) {
 
+			printFormat (
+				"<p>This outbound message is in the \"%h\" ",
+				message.getStatus ().getDescription (),
+				"state, and can be manually unheld.</p>\n");
+
+			printFormat (
+				"<p><input",
+				" type=\"submit\"",
+				" name=\"manuallyUnhold\"",
+				" value=\"manually unhold\"",
+				"></p>\n");
 		} else {
 
 			printFormat (
@@ -79,6 +94,9 @@ class MessageActionsPart
 				"time.</p>\n");
 
 		}
+
+		printFormat (
+			"</form>\n");
 
 	}
 

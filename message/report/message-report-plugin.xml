@@ -9,7 +9,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.ReportLogicImpl"/>
+		<bean class="logic.ReportLogicImplementation"/>
 	</layer>
 
 </plugin>

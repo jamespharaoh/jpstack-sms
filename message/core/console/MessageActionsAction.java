@@ -1,11 +1,14 @@
 package wbs.sms.message.core.console;
 
+import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -19,6 +22,7 @@ import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+import wbs.sms.message.outbox.logic.OutboxLogic;
 
 @PrototypeComponent ("messageActionsAction")
 public
@@ -38,6 +42,9 @@ class MessageActionsAction
 
 	@Inject
 	MessageLogic messageLogic;
+
+	@Inject
+	OutboxLogic outboxLogic;
 
 	@Inject
 	ConsoleRequestContext requestContext;
@@ -111,6 +118,35 @@ class MessageActionsAction
 
 			requestContext.addNotice (
 				"Message manually undelivered");
+
+			return null;
+
+		} else if (
+			isNotNull (
+				requestContext.parameter (
+					"manuallyUnhold"))
+		) {
+
+			if (
+				notEqual (
+					message.getStatus (),
+					MessageStatus.held)
+			) {
+
+				requestContext.addError (
+					"Message in invalid state for this operation");
+
+				return null;
+
+			}
+
+			outboxLogic.unholdMessage (
+				message);
+
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Message manually unheld");
 
 			return null;
 

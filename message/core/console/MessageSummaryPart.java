@@ -352,6 +352,14 @@ class MessageSummaryPart
 			"</tr>\n");
 
 		printFormat (
+			"<tr>\n",
+			"<th>Delivery type</th>",
+			"%s\n",
+			objectManager.tdForObjectMiniLink (
+				message.getDeliveryType ()),
+			"</tr>\n");
+
+		printFormat (
 			"</table>\n");
 
 	}

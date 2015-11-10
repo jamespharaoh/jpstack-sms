@@ -14,6 +14,7 @@ import javax.inject.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
@@ -31,7 +32,13 @@ class GenericMessageStatsPart
 	// dependencies
 
 	@Inject
+	SmsStatsDailyTimeScheme smsStatsDailyTimeScheme;
+
+	@Inject
 	SmsStatsMonthlyTimeScheme smsStatsMonthlyTimeScheme;
+
+	@Inject
+	SmsStatsWeeklyTimeScheme smsStatsWeeklyTimeScheme;
 
 	@Inject
 	SmsStatsConsoleLogic statsConsoleLogic;
@@ -463,7 +470,7 @@ class GenericMessageStatsPart
 					dateField.date)
 
 				.timeScheme (
-					SmsStatsDailyTimeScheme.instance)
+					smsStatsDailyTimeScheme)
 
 				.go ();
 
@@ -480,7 +487,7 @@ class GenericMessageStatsPart
 					dateField.date)
 
 				.timeScheme (
-					SmsStatsWeeklyTimeScheme.instance)
+					smsStatsWeeklyTimeScheme)
 
 				.go ();
 

@@ -185,7 +185,7 @@ class OutboxLogicImpl
 	@Override
 	public
 	void unholdMessage (
-			MessageRec message) {
+			@NonNull MessageRec message) {
 
 		Transaction transaction =
 			database.currentTransaction ();

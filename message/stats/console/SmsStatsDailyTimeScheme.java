@@ -8,9 +8,11 @@ import java.util.Map;
 
 import org.joda.time.LocalDate;
 
+import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.sms.message.stats.model.MessageStatsData;
 
+@SingletonComponent ("smsStatsDailyTimeScheme")
 public
 class SmsStatsDailyTimeScheme
 		implements SmsStatsTimeScheme {
@@ -26,10 +28,6 @@ class SmsStatsDailyTimeScheme
 	private final static
 	SimpleDateFormat weekDateFormat =
 		new SimpleDateFormat ("EEE d");
-
-	private
-	SmsStatsDailyTimeScheme () {
-	}
 
 	@Override
 	public
@@ -204,9 +202,5 @@ class SmsStatsDailyTimeScheme
 		return hilites;
 
 	}
-
-	public final static
-	SmsStatsTimeScheme instance =
-		new SmsStatsDailyTimeScheme ();
 
 }

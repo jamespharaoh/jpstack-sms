@@ -3,6 +3,7 @@ package wbs.sms.message.report.logic;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Date;
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -32,7 +34,7 @@ import wbs.sms.route.core.model.RouteRec;
 @Log4j
 @SingletonComponent ("reportLogic")
 public
-class ReportLogicImpl
+class ReportLogicImplementation
 	implements ReportLogic {
 
 	@Inject
@@ -73,7 +75,8 @@ class ReportLogicImpl
 		// check arguments
 
 		if (
-			! in (newMessageStatus,
+			notIn (
+				newMessageStatus,
 				MessageStatus.sent,
 				MessageStatus.submitted,
 				MessageStatus.undelivered,
@@ -140,6 +143,7 @@ class ReportLogicImpl
 		// depending on the new and old status, update it
 
 		if (newMessageStatus != null) {
+
 			switch (message.getStatus ()) {
 
 			case sent:
@@ -209,6 +213,7 @@ class ReportLogicImpl
 				break;
 
 			case delivered:
+			case manuallyUndelivered:
 
 				break;
 

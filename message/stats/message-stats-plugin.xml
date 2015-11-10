@@ -31,6 +31,7 @@
 		<bean class="console.SmsStatsConsoleLogicImpl"/>
 		<bean class="console.SmsStatsFormatter"/>
 		<bean class="console.SmsStatsSourceImpl"/>
+		<bean class="console.SmsStatsDailyTimeScheme"/>
 		<bean class="console.SmsStatsWeeklyTimeScheme"/>
 		<bean class="console.SmsStatsMonthlyTimeScheme"/>
 	</layer>

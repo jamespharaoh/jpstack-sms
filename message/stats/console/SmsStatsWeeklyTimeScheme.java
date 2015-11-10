@@ -234,7 +234,8 @@ class SmsStatsWeeklyTimeScheme
 
 				MessageStatsData messageStats =
 					groupStats.get (
-						LocalDate.fromCalendarFields (calendar));
+						LocalDate.fromCalendarFields (
+							calendar));
 
 				if (messageStats != null) {
 
@@ -278,9 +279,5 @@ class SmsStatsWeeklyTimeScheme
 		return hilites;
 
 	}
-
-	public final static
-	SmsStatsTimeScheme instance =
-		new SmsStatsWeeklyTimeScheme ();
 
 }
