@@ -29,6 +29,7 @@ class MessageStatusType
 		add (12, MessageStatus.held);
 		add (13, MessageStatus.blacklisted);
 		add (14, MessageStatus.manuallyUndelivered);
+		add (15, MessageStatus.manuallyDelivered);
 
 	}
 

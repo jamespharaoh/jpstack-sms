@@ -23,7 +23,8 @@ enum MessageStatus {
 	reportTimedOut (11, "report timed out", -1),
 	held (12, "held", 0),
 	blacklisted (13, "blacklisted", -1),
-	manuallyUndelivered (14, "manually undelivered", -1);
+	manuallyUndelivered (14, "manually undelivered", -1),
+	manuallyDelivered (15, "manually delivered", 1);
 
 	@Getter
 	int ordinal;

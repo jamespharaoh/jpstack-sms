@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
@@ -52,6 +53,11 @@ class MessageActionsAction
 	@Inject
 	UserConsoleHelper userHelper;
 
+	// state
+
+	MessageRec message;
+	UserRec myUser;
+
 	// details
 
 	@Override
@@ -70,56 +76,43 @@ class MessageActionsAction
 	Responder goReal ()
 		throws ServletException {
 
+		// begin transaction
+
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
 				this);
 
-		UserRec myUser =
+		// load data
+
+		myUser =
 			userHelper.find (
 				requestContext.userId ());
 
-		MessageRec message =
+		message =
 			messageHelper.find (
 				requestContext.stuffInt (
 					"messageId"));
 
-		if (requestContext.parameter ("manuallyUndeliver") != null) {
+		// hand off to appropriate method
 
-			if (message.getDirection () != MessageDirection.out) {
-				throw new RuntimeException ();
-			}
+		if (
+			isNotNull (
+				requestContext.parameter (
+					"manuallyUndeliver"))
+		) {
 
-			if (
-				notIn (
-					message.getStatus (),
-					MessageStatus.sent,
-					MessageStatus.submitted,
-					MessageStatus.delivered)
-			) {
+			return manuallyUndeliver (
+				transaction);
 
-				requestContext.addError (
-					"Message in invalid state for this operation");
+		} else if (
+			isNotNull (
+				requestContext.parameter (
+					"manuallyDeliver"))
+		) {
 
-				return null;
-
-			}
-
-			messageLogic.messageStatus (
-				message,
-				MessageStatus.manuallyUndelivered);
-
-			eventLogic.createEvent (
-				"message_manually_undelivered",
-				myUser,
-				message);
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message manually undelivered");
-
-			return null;
+			return manuallyDeliver (
+				transaction);
 
 		} else if (
 			isNotNull (
@@ -127,34 +120,138 @@ class MessageActionsAction
 					"manuallyUnhold"))
 		) {
 
-			if (
-				notEqual (
-					message.getStatus (),
-					MessageStatus.held)
-			) {
-
-				requestContext.addError (
-					"Message in invalid state for this operation");
-
-				return null;
-
-			}
-
-			outboxLogic.unholdMessage (
-				message);
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message manually unheld");
-
-			return null;
+			return manuallyUnhold (
+				transaction);
 
 		} else {
 
 			throw new RuntimeException ();
 
 		}
+
+	}
+
+	private
+	Responder manuallyUndeliver (
+			@NonNull Transaction transaction) {
+
+		if (
+			notEqual (
+				message.getDirection (),
+				MessageDirection.out)
+		) {
+			throw new RuntimeException ();
+		}
+
+		if (
+			notIn (
+				message.getStatus (),
+				MessageStatus.sent,
+				MessageStatus.submitted,
+				MessageStatus.delivered)
+		) {
+
+			requestContext.addError (
+				"Message in invalid state for this operation");
+
+			return null;
+
+		}
+
+		messageLogic.messageStatus (
+			message,
+			MessageStatus.manuallyUndelivered);
+
+		eventLogic.createEvent (
+			"message_manually_undelivered",
+			myUser,
+			message);
+
+		transaction.commit ();
+
+		requestContext.addNotice (
+			"Message manually undelivered");
+
+		return null;
+
+	}
+
+	private
+	Responder manuallyDeliver (
+			@NonNull Transaction transaction) {
+
+		if (
+			notEqual (
+				message.getDirection (),
+				MessageDirection.out)
+		) {
+			throw new RuntimeException ();
+		}
+
+		if (
+			notIn (
+				message.getStatus (),
+				MessageStatus.undelivered,
+				MessageStatus.reportTimedOut,
+				MessageStatus.manuallyUndelivered)
+		) {
+
+			requestContext.addError (
+				"Message in invalid state for this operation");
+
+			return null;
+
+		}
+
+		messageLogic.messageStatus (
+			message,
+			MessageStatus.manuallyDelivered);
+
+		eventLogic.createEvent (
+			"message_manually_delivered",
+			myUser,
+			message);
+
+		transaction.commit ();
+
+		requestContext.addNotice (
+			"Message manually undelivered");
+
+		return null;
+
+	}
+
+	private
+	Responder manuallyUnhold (
+			@NonNull Transaction transaction) {
+
+		if (
+			notEqual (
+				message.getStatus (),
+				MessageStatus.held)
+		) {
+
+			requestContext.addError (
+				"Message in invalid state for this operation");
+
+			return null;
+
+		}
+
+		outboxLogic.unholdMessage (
+			message);
+
+		eventLogic.createEvent (
+			"message_manually_unheld",
+			myUser,
+			message);
+
+		transaction.commit ();
+
+		requestContext.addNotice (
+			"Message manually unheld");
+
+		return null;
 
 	}
 

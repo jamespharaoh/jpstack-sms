@@ -4,6 +4,7 @@ import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.parsePartialTimestamp;
+import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -366,7 +367,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.createdTimeAfter () != null) {
+		if (
+			isNotNull (
+				search.createdTimeAfter ())
+		) {
 
 			criteria.add (
 				Restrictions.ge (
@@ -376,7 +380,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.createdTimeBefore () != null) {
+		if (
+			isNotNull (
+				search.createdTimeBefore ())
+		) {
 
 			criteria.add (
 				Restrictions.lt (
@@ -386,7 +393,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.direction () != null) {
+		if (
+			isNotNull (
+				search.direction ())
+		) {
 
 			criteria.add (
 				Restrictions.eq (
@@ -395,7 +405,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.statusIn () != null) {
+		if (
+			isNotNull (
+				search.statusIn ())
+		) {
 
 			criteria.add (
 				Restrictions.in (
@@ -404,7 +417,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.statusNotIn () != null) {
+		if (
+			isNotNull (
+				search.statusNotIn ())
+		) {
 
 			criteria.add (
 				Restrictions.not (
@@ -414,7 +430,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.textLike () != null) {
+		if (
+			isNotNull (
+				search.textLike ())
+		) {
 
 			criteria.add (
 				Restrictions.like (
@@ -423,7 +442,10 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.textILike () != null) {
+		if (
+			isNotNull (
+				search.textILike ())
+		) {
 
 			criteria.add (
 				Restrictions.ilike (
@@ -432,7 +454,24 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.userId () != null) {
+		if (
+			isNotNull (
+				search.textContains ())
+		) {
+
+			criteria.add (
+				Restrictions.ilike (
+					"text.text",
+					stringFormat (
+						"%%%s%%",
+						search.textContains ())));
+
+		}
+
+		if (
+			isNotNull (
+				search.userId ())
+		) {
 
 			criteria.add (
 				Restrictions.eq (
@@ -441,14 +480,20 @@ class MessageDaoHibernate
 
 		}
 
-		if (search.maxResults () != null) {
+		if (
+			isNotNull (
+				search.maxResults ())
+		) {
 
 			criteria.setMaxResults (
 				search.maxResults ());
 
 		}
 
-		if (search.orderBy () != null) {
+		if (
+			isNotNull (
+				search.orderBy ())
+		) {
 
 			switch (search.orderBy ()) {
 

@@ -1,8 +1,11 @@
 package wbs.sms.number.list.console;
 
+import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
+
 import javax.inject.Inject;
 
 import lombok.experimental.Accessors;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.PrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -34,7 +37,8 @@ class NumberListNumberUpdatePart
 
 		numberList =
 			numberListHelper.find (
-				requestContext.stuffInt ("numberListId"));
+				requestContext.stuffInt (
+					"numberListId"));
 
 	}
 
@@ -78,14 +82,18 @@ class NumberListNumberUpdatePart
 			" rows=\"8\"",
 			" cols=\"60\"",
 			">%h</textarea></p>\n",
-			requestContext.parameter ("numbers"));
+			emptyStringIfNull (
+				requestContext.parameter (
+					"numbers")));
 
 		printFormat (
 			"<p>\n");
 
-		if (privChecker.can (
+		if (
+			privChecker.can (
 				numberList,
-				"number_list_add")) {
+				"number_list_add")
+		) {
 
 			printFormat (
 				"<input",
@@ -96,9 +104,11 @@ class NumberListNumberUpdatePart
 
 		}
 
-		if (privChecker.can (
+		if (
+			privChecker.can (
 				numberList,
-				"number_list_remove")) {
+				"number_list_remove")
+		) {
 
 			printFormat (
 				"<input",

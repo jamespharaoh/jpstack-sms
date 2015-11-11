@@ -10,10 +10,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.config.WbsConfig;
@@ -127,7 +130,8 @@ class MessageSender {
 	AffiliateRec affiliate;
 
 	@Getter @Setter
-	DeliveryTypeRec deliveryType;
+	Optional<DeliveryTypeRec> deliveryType =
+		Optional.<DeliveryTypeRec>absent ();
 
 	@Getter @Setter
 	Integer ref;
@@ -156,8 +160,18 @@ class MessageSender {
 	// custom setters
 
 	public
+	MessageSender deliveryTypeCode (
+			@NonNull String deliveryTypeCode) {
+
+		return deliveryTypeCode (
+			Optional.of (
+				deliveryTypeCode));
+
+	}
+
+	public
 	MessageSender messageString (
-			String messageString) {
+			@NonNull String messageString) {
 
 		return messageText (
 			textHelper.findOrCreate (
@@ -167,7 +181,7 @@ class MessageSender {
 
 	public
 	MessageSender subjectString (
-			String subjectString) {
+			@NonNull String subjectString) {
 
 		return subjectText (
 			textHelper.findOrCreate (
@@ -177,19 +191,22 @@ class MessageSender {
 
 	public
 	MessageSender deliveryTypeCode (
-			String deliveryTypeCode) {
+			@NonNull Optional<String> deliveryTypeCode) {
 
 		return deliveryType (
-			deliveryTypeHelper.findByCode (
-				GlobalId.root,
-				deliveryTypeCode));
+			deliveryTypeCode.isPresent ()
+				? Optional.of (
+					deliveryTypeHelper.findByCode (
+						GlobalId.root,
+						deliveryTypeCode.get ()))
+				: Optional.<DeliveryTypeRec>absent ());
 
 	}
 
 	public
 	MessageSender serviceLookup (
-			Record<?> parent,
-			String code) {
+			@NonNull Record<?> parent,
+			@NonNull String code) {
 
 		return service (
 			serviceHelper.findByCode (
@@ -200,7 +217,7 @@ class MessageSender {
 
 	public
 	MessageSender routerResolve (
-			RouterRec router) {
+			@NonNull RouterRec router) {
 
 		return route (
 			routerLogic.resolveRouter (
@@ -366,7 +383,7 @@ class MessageSender {
 				transaction.now ().toDateTime ().toLocalDate ())
 
 			.setDeliveryType (
-				deliveryType)
+				deliveryType.orNull ())
 
 			.setRef (
 				ref)
@@ -401,8 +418,10 @@ class MessageSender {
 
 		if (tags != null) {
 
-			for (String tag
-					: tags) {
+			for (
+				String tag
+					: tags
+			) {
 
 				message.getTags ().add (
 					tag);

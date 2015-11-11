@@ -51,11 +51,18 @@ class MessageActionsPart
 			">\n");
 
 		if (
-			message.getDirection () == MessageDirection.out
-			&& in (message.getStatus (),
+
+			equal (
+				message.getDirection (),
+				MessageDirection.out)
+
+			&& in (
+				message.getStatus (),
 				MessageStatus.sent,
 				MessageStatus.submitted,
-				MessageStatus.delivered)
+				MessageStatus.delivered,
+				MessageStatus.manuallyDelivered)
+
 		) {
 
 			printFormat (
@@ -71,9 +78,37 @@ class MessageActionsPart
 				"></p>\n");
 
 		} else if (
+
+			equal (
+				message.getDirection (),
+				MessageDirection.out)
+
+			&& in (
+				message.getStatus (),
+				MessageStatus.undelivered,
+				MessageStatus.manuallyUndelivered,
+				MessageStatus.reportTimedOut)
+
+		) {
+
+			printFormat (
+				"<p>This outbound message is in the \"%h\" ",
+				message.getStatus ().getDescription (),
+				"state, and can be manually delivered.</p>\n");
+
+			printFormat (
+				"<p><input",
+				" type=\"submit\"",
+				" name=\"manuallyDeliver\"",
+				" value=\"manually deliver\"",
+				"></p>\n");
+
+		} else if (
+
 			equal (
 				message.getStatus (),
 				MessageStatus.held)
+
 		) {
 
 			printFormat (

@@ -262,7 +262,6 @@ class MessageConsoleLogicImplementation
 			return 'd';
 
 		case undelivered:
-		case manuallyUndelivered:
 			return 'u';
 
 		case notProcessed:
@@ -271,7 +270,9 @@ class MessageConsoleLogicImplementation
 		case ignored:
 			return 'i';
 
+		case manuallyDelivered:
 		case manuallyProcessed:
+		case manuallyUndelivered:
 			return 'm';
 
 		case submitted:

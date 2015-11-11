@@ -191,6 +191,16 @@
 			text="%0 manually undelivered %1"
 			admin="no"/>
 
+		<event-type
+			name="Message manually delivered"
+			text="%0 manually delivered %1"
+			admin="no"/>
+
+		<event-type
+			name="Message manually unheld"
+			text="%0 manually unheld %1"
+			admin="no"/>
+
 	</event-types>
 
 </model-meta>
