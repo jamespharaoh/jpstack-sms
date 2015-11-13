@@ -49,7 +49,7 @@ class SmsCustomerObjectHelperImplementation
 
 		customer =
 			smsCustomerHelper.insert (
-				new SmsCustomerRec ()
+				smsCustomerHelper.createInstance ()
 
 			.setSmsCustomerManager (
 				manager)

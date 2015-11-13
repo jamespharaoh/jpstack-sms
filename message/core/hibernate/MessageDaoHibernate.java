@@ -1,5 +1,6 @@
 package wbs.sms.message.core.hibernate;
 
+import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
@@ -27,6 +28,7 @@ import wbs.sms.message.core.model.MessageDao;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;
+import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -490,33 +492,30 @@ class MessageDaoHibernate
 
 		}
 
-		if (
-			isNotNull (
-				search.orderBy ())
+		switch (
+			ifNull (
+				search.orderBy (),
+				MessageSearchOrder.createdTimeDesc)
 		) {
 
-			switch (search.orderBy ()) {
+		case createdTime:
 
-			case createdTime:
+			criteria.addOrder (
+				Order.asc ("createdTime"));
 
-				criteria.addOrder (
-					Order.asc ("createdTime"));
+			break;
 
-				break;
+		case createdTimeDesc:
 
-			case createdTimeDesc:
+			criteria.addOrder (
+				Order.desc ("createdTime"));
 
-				criteria.addOrder (
-					Order.desc ("createdTime"));
+			break;
 
-				break;
+		default:
 
-			default:
-
-				throw new IllegalArgumentException (
-					search.orderBy ().toString ());
-
-			}
+			throw new IllegalArgumentException (
+				search.orderBy ().toString ());
 
 		}
 

@@ -110,9 +110,15 @@ class MagicNumberUpdateAction
 
 				MagicNumberRec magicNumber =
 					magicNumberHelper.insert (
-						new MagicNumberRec ()
-							.setMagicNumberSet (magicNumberSet)
-							.setNumber (number));
+						magicNumberHelper.createInstance ()
+
+					.setMagicNumberSet (
+						magicNumberSet)
+
+					.setNumber (
+						number)
+
+				);
 
 				numAdded ++;
 

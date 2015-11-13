@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 
 import lombok.Cleanup;
 import lombok.experimental.Accessors;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -94,10 +95,11 @@ class NumberListNumberUpdateAction
 
 		NumberListRec numberList =
 			numberListHelper.find (
-				requestContext.stuffInt ("numberListId"));
+				requestContext.stuffInt (
+					"numberListId"));
 
 		NumberListUpdateRec numberListUpdate =
-			new NumberListUpdateRec ()
+			numberListUpdateHelper.createInstance ()
 
 			.setNumberList (
 				numberList)

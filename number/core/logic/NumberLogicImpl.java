@@ -86,12 +86,16 @@ class NumberLogicImpl
 
 			chatUserNumberReportRec =
 				chatUserNumberReportHelper.insert (
-					new ChatUserNumberReportRec ()
-						.setNumber (number));
+					chatUserNumberReportHelper.createInstance ()
+
+				.setNumber (
+					number)
+
+			);
 
 		}
 
-		if (status.isGoodType()) {
+		if (status.isGoodType ()) {
 
 			chatUserNumberReportRec
 
@@ -154,7 +158,7 @@ class NumberLogicImpl
 
 		NumberRec newNumber =
 			numberHelper.insert (
-				new NumberRec ()
+				numberHelper.createInstance ()
 
 			.setNumber (
 				currentNumber)

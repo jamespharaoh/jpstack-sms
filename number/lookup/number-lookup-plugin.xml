@@ -22,4 +22,8 @@
 		<bean class="logic.NumberLookupManagerImpl"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="number-lookup"/>
+	</console-modules>
+
 </plugin>

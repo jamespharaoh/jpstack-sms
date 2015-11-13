@@ -76,7 +76,7 @@ class KeywordLogicImpl
 		// create a new one
 
 		keywordSetFallbackHelper.insert (
-			new KeywordSetFallbackRec ()
+			keywordSetFallbackHelper.createInstance ()
 
 			.setKeywordSet (
 				keywordSet)

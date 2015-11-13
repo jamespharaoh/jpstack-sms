@@ -22,7 +22,6 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.config.WbsConfig;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.object.ObjectManager;
 import wbs.framework.record.GlobalId;
 import wbs.framework.record.Record;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -40,13 +39,13 @@ import wbs.platform.user.model.UserRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.core.model.MessageDirection;
+import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.core.model.MessageTypeObjectHelper;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 import wbs.sms.message.delivery.model.DeliveryTypeRec;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
-import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
@@ -74,10 +73,10 @@ class MessageSender {
 	DeliveryTypeObjectHelper deliveryTypeHelper;
 
 	@Inject
-	MessageTypeObjectHelper messageTypeHelper;
+	MessageObjectHelper messageHelper;
 
 	@Inject
-	ObjectManager objectManager;
+	MessageTypeObjectHelper messageTypeHelper;
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
@@ -332,7 +331,7 @@ class MessageSender {
 		}
 
 		MessageRec message =
-			new MessageRec ()
+			messageHelper.createInstance ()
 
 			.setThreadId (
 				threadId)
@@ -430,13 +429,13 @@ class MessageSender {
 
 		}
 
-		objectManager.insert (
+		messageHelper.insert (
 			message);
 
 		if (sendNow) {
 
 			outboxHelper.insert (
-				new OutboxRec ()
+				outboxHelper.createInstance ()
 
 				.setMessage (
 					message)

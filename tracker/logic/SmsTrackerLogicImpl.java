@@ -59,7 +59,7 @@ class SmsTrackerLogicImpl
 		if (smsSimpleTrackerNumber == null) {
 
 			smsSimpleTrackerNumber =
-				new SmsSimpleTrackerNumberRec ()
+				smsSimpleTrackerNumberHelper.createInstance ()
 
 				.setSmsSimpleTracker (
 					smsSimpleTracker)

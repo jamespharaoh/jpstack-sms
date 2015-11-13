@@ -27,7 +27,6 @@ import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.report.model.MessageReportCodeRec;
 import wbs.sms.message.report.model.MessageReportObjectHelper;
-import wbs.sms.message.report.model.MessageReportRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -106,7 +105,7 @@ class ReportLogicImplementation
 		// create message report thingy
 
 		messageReportHelper.insert (
-			new MessageReportRec ()
+			messageReportHelper.createInstance ()
 
 			.setMessage (
 				message)

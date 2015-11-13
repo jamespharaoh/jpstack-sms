@@ -1,6 +1,7 @@
 package wbs.sms.message.inbox.console;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
+import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 
 import javax.inject.Inject;
 
@@ -160,7 +161,8 @@ class MessageNotProcessedSummaryPart
 			"<th>AVSTATUS</th>\n",
 
 			"<td>%h</td>\n",
-			message.getAdultVerified (),
+			emptyStringIfNull (
+				message.getAdultVerified ()),
 
 			"</tr>\n");
 
@@ -169,7 +171,8 @@ class MessageNotProcessedSummaryPart
 			"<th>Notes</th>\n",
 
 			"<td>%h</td>\n",
-			message.getNotes (),
+			emptyStringIfNull (
+				message.getNotes ()),
 
 			"</tr>");
 

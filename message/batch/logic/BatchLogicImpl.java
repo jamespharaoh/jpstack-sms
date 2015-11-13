@@ -9,6 +9,7 @@ import wbs.framework.object.ObjectManager;
 import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.message.batch.model.BatchSubjectObjectHelper;
 import wbs.sms.message.batch.model.BatchSubjectRec;
 import wbs.sms.message.batch.model.BatchTypeObjectHelper;
 import wbs.sms.message.batch.model.BatchTypeRec;
@@ -18,6 +19,11 @@ public
 class BatchLogicImpl
 	implements BatchLogic {
 
+	// dependencies
+
+	@Inject
+	BatchSubjectObjectHelper batchSubjectHelper;
+
 	@Inject
 	BatchTypeObjectHelper batchTypeHelper;
 
@@ -26,6 +32,8 @@ class BatchLogicImpl
 
 	@Inject
 	ObjectTypeObjectHelper objectTypeHelper;
+
+	// implementation
 
 	@Override
 	public
@@ -79,8 +87,8 @@ class BatchLogicImpl
 
 		}
 
-		return objectManager.insert (
-			new BatchSubjectRec ()
+		return batchSubjectHelper.insert (
+			batchSubjectHelper.createInstance ()
 
 			.setCode (
 				code)

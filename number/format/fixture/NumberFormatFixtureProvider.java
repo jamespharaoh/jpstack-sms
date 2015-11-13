@@ -7,11 +7,8 @@ import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
-import wbs.platform.menu.model.MenuItemRec;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatPatternObjectHelper;
-import wbs.sms.number.format.model.NumberFormatPatternRec;
-import wbs.sms.number.format.model.NumberFormatRec;
 
 @PrototypeComponent ("numberFormatFixtureProvider")
 public
@@ -39,7 +36,7 @@ class NumberFormatFixtureProvider
 	void createFixtures () {
 
 		numberFormatHelper.insert (
-			new NumberFormatRec ()
+			numberFormatHelper.createInstance ()
 
 			.setCode (
 				"uk")
@@ -53,7 +50,7 @@ class NumberFormatFixtureProvider
 		);
 
 		numberFormatPatternHelper.insert (
-			new NumberFormatPatternRec ()
+			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
 				numberFormatHelper.findByCode (
@@ -75,7 +72,7 @@ class NumberFormatFixtureProvider
 		);
 
 		numberFormatPatternHelper.insert (
-			new NumberFormatPatternRec ()
+			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
 				numberFormatHelper.findByCode (
@@ -97,7 +94,7 @@ class NumberFormatFixtureProvider
 		);
 
 		numberFormatPatternHelper.insert (
-			new NumberFormatPatternRec ()
+			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
 				numberFormatHelper.findByCode (
@@ -119,7 +116,7 @@ class NumberFormatFixtureProvider
 		);
 
 		menuItemHelper.insert (
-			new MenuItemRec ()
+			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (

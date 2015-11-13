@@ -8,7 +8,6 @@ import wbs.framework.record.GlobalId;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
-import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.batch.model.BatchSubjectObjectHelper;
 import wbs.sms.message.batch.model.BatchSubjectRec;
 import wbs.sms.message.batch.model.BatchTypeObjectHelper;
@@ -46,7 +45,7 @@ class BatchFixtureProvider
 
 		BatchTypeRec systemBatchType =
 			batchTypeHelper.insertSpecial (
-				new BatchTypeRec ()
+				batchTypeHelper.createInstance ()
 
 			.setId (
 				0)
@@ -70,7 +69,7 @@ class BatchFixtureProvider
 
 		BatchSubjectRec systemBatchSubject =
 			batchSubjectHelper.insertSpecial (
-				new BatchSubjectRec ()
+				batchSubjectHelper.createInstance ()
 
 			.setId (
 				0)
@@ -90,7 +89,7 @@ class BatchFixtureProvider
 		);
 
 		batchHelper.insertSpecial (
-			new BatchRec ()
+			batchHelper.createInstance ()
 
 			.setId (
 				0)

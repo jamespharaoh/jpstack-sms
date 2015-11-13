@@ -87,11 +87,13 @@ class CommandHooks
 			commandTypeDao.findByParentObjectType (
 				parentType);
 
-		for (CommandTypeRec commandType
-				: commandTypes) {
+		for (
+			CommandTypeRec commandType
+				: commandTypes
+		) {
 
 			commandHelper.insert (
-				new CommandRec ()
+				commandHelper.createInstance ()
 
 				.setCommandType (
 					commandType)

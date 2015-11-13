@@ -3,6 +3,7 @@ package wbs.sms.message.inbox.console;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -16,7 +17,6 @@ import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.inbox.model.InboxRec;
 
 @PrototypeComponent ("messageNotProcessedFormAction")
 public
@@ -107,7 +107,7 @@ class MessageNotProcessedFormAction
 					null);
 
 			inboxHelper.insert (
-				new InboxRec ()
+				inboxHelper.createInstance ()
 
 				.setMessage (
 					message)

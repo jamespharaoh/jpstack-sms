@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -18,6 +19,7 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.MessageSender;
 import wbs.sms.number.core.model.NumberObjectHelper;
+import wbs.sms.route.tester.model.RouteTestObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
 import wbs.sms.route.tester.model.RouteTesterObjectHelper;
 import wbs.sms.route.tester.model.RouteTesterRec;
@@ -37,6 +39,9 @@ final class RouteTesterDaemon
 
 	@Inject
 	ObjectManager objectManager;
+
+	@Inject
+	RouteTestObjectHelper routeTestHelper;
 
 	@Inject
 	RouteTesterObjectHelper routeTesterHelper;
@@ -129,8 +134,8 @@ final class RouteTesterDaemon
 		// create the RouteTest
 
 		RouteTestRec routeTest =
-			routeTesterHelper.insert (
-				new RouteTestRec ()
+			routeTestHelper.insert (
+				routeTestHelper.createInstance ()
 
 			.setRoute (
 				routeTester.getRoute ())

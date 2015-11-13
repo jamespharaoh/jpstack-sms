@@ -380,7 +380,7 @@ class AbstractSmsSender2
 
 				SmsOutboxAttemptRec smsOutboxAttempt =
 					smsOutboxAttemptHelper.insert (
-						new SmsOutboxAttemptRec ()
+						smsOutboxAttemptHelper.createInstance ()
 
 					.setMessage (
 						message)

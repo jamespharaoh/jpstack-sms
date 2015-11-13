@@ -52,7 +52,7 @@ class MessageReportCodeObjectHelperImplementation
 		}
 
 		return messageReportCodeHelper.insert (
-			new MessageReportCodeRec ()
+			messageReportCodeHelper.createInstance ()
 
 			.setPermanent (
 				permanent)

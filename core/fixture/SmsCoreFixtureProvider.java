@@ -6,7 +6,6 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
-import wbs.platform.menu.model.MenuGroupRec;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 
 @PrototypeComponent ("smsCoreFixtureProvider")
@@ -29,7 +28,7 @@ class SmsCoreFixtureProvider
 	void createFixtures () {
 
 		menuGroupHelper.insert (
-			new MenuGroupRec ()
+			menuGroupHelper.createInstance ()
 
 			.setSlice (
 				sliceHelper.findByCode (

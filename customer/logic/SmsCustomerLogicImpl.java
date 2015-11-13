@@ -74,7 +74,7 @@ class SmsCustomerLogicImpl
 
 		SmsCustomerSessionRec newSession =
 			smsCustomerSessionHelper.insert (
-				new SmsCustomerSessionRec ()
+				smsCustomerSessionHelper.createInstance ()
 
 			.setCustomer (
 				customer)

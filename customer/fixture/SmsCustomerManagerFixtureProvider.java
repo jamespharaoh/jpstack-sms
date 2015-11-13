@@ -7,13 +7,11 @@ import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
-import wbs.platform.menu.model.MenuItemRec;
 import wbs.platform.priv.model.PrivObjectHelper;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.platform.user.model.UserObjectHelper;
 import wbs.platform.user.model.UserPrivObjectHelper;
 import wbs.sms.customer.model.SmsCustomerManagerObjectHelper;
-import wbs.sms.customer.model.SmsCustomerManagerRec;
 
 @PrototypeComponent ("smsCustomerManagerFixtureProvider")
 public
@@ -50,7 +48,7 @@ class SmsCustomerManagerFixtureProvider
 	void createFixtures () {
 
 		smsCustomerManagerHelper.insert (
-			new SmsCustomerManagerRec ()
+			smsCustomerManagerHelper.createInstance ()
 
 			.setSlice (
 				sliceHelper.findByCode (
@@ -69,7 +67,7 @@ class SmsCustomerManagerFixtureProvider
 		);
 
 		menuItemHelper.insert (
-			new MenuItemRec ()
+			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (

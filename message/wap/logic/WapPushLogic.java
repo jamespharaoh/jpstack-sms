@@ -9,10 +9,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableMap;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.object.ObjectManager;
 import wbs.framework.record.GlobalId;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -25,13 +26,13 @@ import wbs.sms.core.daemon.MessageRetrierFactory;
 import wbs.sms.message.batch.model.BatchObjectHelper;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.core.model.MessageDirection;
+import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.core.model.MessageTypeObjectHelper;
 import wbs.sms.message.core.model.MessageTypeRec;
 import wbs.sms.message.delivery.model.DeliveryTypeRec;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
-import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;
 import wbs.sms.message.wap.model.WapPushMessageRec;
 import wbs.sms.network.model.NetworkRec;
@@ -39,8 +40,6 @@ import wbs.sms.number.core.logic.NumberLogic;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.logic.RouterLogic;
 import wbs.sms.route.router.model.RouterRec;
-
-import com.google.common.collect.ImmutableMap;
 
 @SingletonComponent ("wapPushLogic")
 public
@@ -59,13 +58,13 @@ class WapPushLogic
 	Database database;
 
 	@Inject
+	MessageObjectHelper messageHelper;
+
+	@Inject
 	MessageTypeObjectHelper messageTypeHelper;
 
 	@Inject
 	NumberLogic numberLogic;
-
-	@Inject
-	ObjectManager objectManager;
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
@@ -147,7 +146,7 @@ class WapPushLogic
 		}
 
 		MessageRec message =
-			new MessageRec ()
+			messageHelper.createInstance ()
 
 			.setThreadId (
 				threadId)
@@ -215,11 +214,11 @@ class WapPushLogic
 
 		}
 
-		objectManager.insert (
+		messageHelper.insert (
 			message);
 
 		wapPushMessageHelper.insert (
-			new WapPushMessageRec ()
+			wapPushMessageHelper.createInstance ()
 
 			.setMessage (
 				message)
@@ -235,7 +234,7 @@ class WapPushLogic
 		if (sendNow) {
 
 			outboxHelper.insert (
-				new OutboxRec ()
+				outboxHelper.createInstance ()
 
 				.setMessage (
 					message)
@@ -294,7 +293,7 @@ class WapPushLogic
 		}
 
 		MessageRec message =
-			new MessageRec ()
+			messageHelper.createInstance ()
 
 			.setThreadId (
 				oldMessage.getThreadId ())
@@ -360,11 +359,11 @@ class WapPushLogic
 
 		}
 
-		objectManager.insert (
+		messageHelper.insert (
 			message);
 
 		wapPushMessageHelper.insert (
-			new WapPushMessageRec ()
+			wapPushMessageHelper.createInstance ()
 
 			.setMessage (
 				message)
@@ -378,7 +377,7 @@ class WapPushLogic
 		);
 
 		outboxHelper.insert (
-			new OutboxRec ()
+			outboxHelper.createInstance ()
 
 			.setMessage (
 				message)

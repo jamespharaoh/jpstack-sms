@@ -112,14 +112,24 @@ class BlacklistAddAction
 			requestContext.parameter ("reason");
 
 		if (reason.length() < 5) {
-			requestContext.addError("You must provide a substantial reason");
+
+			requestContext.addError (
+				"You must provide a substantial reason");
+
 			return null;
+
 		}
 
 		blacklistHelper.insert (
-			new BlacklistRec ()
-				.setNumber (number)
-				.setReason (reason));
+			blacklistHelper.createInstance ()
+
+			.setNumber (
+				number)
+
+			.setReason (
+				reason)
+
+		);
 
 		// create an event
 

@@ -45,7 +45,8 @@
 
 		<associative-collection
 			type="number"
-			table="number_list_update_number"/>
+			table="number_list_update_number"
+			owned="yes"/>
 
 	</collections>
 

@@ -16,34 +16,34 @@ import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Instant;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.object.ObjectManager;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageExpiryObjectHelper;
-import wbs.sms.message.core.model.MessageExpiryRec;
+import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.core.model.MessageTypeRec;
 import wbs.sms.message.outbox.model.FailedMessageObjectHelper;
-import wbs.sms.message.outbox.model.FailedMessageRec;
 import wbs.sms.message.outbox.model.OutboxDao;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 @Log4j
 @SingletonComponent ("outboxLogic")
 public
 class OutboxLogicImpl
 	implements OutboxLogic {
+
+	// dependencies
 
 	@Inject
 	Database database;
@@ -55,10 +55,10 @@ class OutboxLogicImpl
 	MessageExpiryObjectHelper messageExpiryHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	MessageObjectHelper messageHelper;
 
 	@Inject
-	ObjectManager objectManager;
+	MessageLogic messageLogic;
 
 	@Inject
 	OutboxDao outboxDao;
@@ -68,6 +68,8 @@ class OutboxLogicImpl
 
 	@Inject
 	TextObjectHelper textHelper;
+
+	// implementation
 
 	@Override
 	public
@@ -87,8 +89,8 @@ class OutboxLogicImpl
 			messageTypeRec = old.getMessageType ();
 
 		MessageRec message =
-			objectManager.insert (
-				new MessageRec ()
+			messageHelper.insert (
+				messageHelper.createInstance ()
 
 			.setThreadId (
 				old.getThreadId ())
@@ -159,7 +161,7 @@ class OutboxLogicImpl
 		);
 
 		outboxHelper.insert (
-			new OutboxRec ()
+			outboxHelper.createInstance ()
 
 			.setMessage (
 				message)
@@ -204,7 +206,7 @@ class OutboxLogicImpl
 			MessageStatus.pending);
 
 		outboxHelper.insert (
-			new OutboxRec ()
+			outboxHelper.createInstance ()
 
 			.setMessage (
 				message)
@@ -416,7 +418,7 @@ class OutboxLogicImpl
 		) {
 
 			messageExpiryHelper.insert (
-				new MessageExpiryRec ()
+				messageExpiryHelper.createInstance ()
 
 				.setMessage (
 					message)
@@ -442,8 +444,8 @@ class OutboxLogicImpl
 				index ++
 			) {
 
-				objectManager.insert (
-					new MessageRec ()
+				messageHelper.insert (
+					messageHelper.createInstance ()
 
 					.setThreadId (
 						message.getThreadId ())
@@ -567,7 +569,7 @@ class OutboxLogicImpl
 						transaction.now ()));
 
 			failedMessageHelper.insert (
-				new FailedMessageRec ()
+				failedMessageHelper.createInstance ()
 
 				.setMessage (
 					message)

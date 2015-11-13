@@ -7,9 +7,7 @@ import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
-import wbs.platform.menu.model.MenuItemRec;
 import wbs.sms.network.model.NetworkObjectHelper;
-import wbs.sms.network.model.NetworkRec;
 
 @PrototypeComponent ("networkFixtureProvider")
 public
@@ -34,7 +32,7 @@ class NetworkFixtureProvider
 	void createFixtures () {
 
 		networkHelper.insert (
-			new NetworkRec ()
+			networkHelper.createInstance ()
 
 			.setId (
 				0)
@@ -51,7 +49,7 @@ class NetworkFixtureProvider
 		);
 
 		networkHelper.insert (
-			new NetworkRec ()
+			networkHelper.createInstance ()
 
 			.setId (
 				1)
@@ -68,7 +66,7 @@ class NetworkFixtureProvider
 		);
 
 		networkHelper.insert (
-			new NetworkRec ()
+			networkHelper.createInstance ()
 
 			.setId (
 				2)
@@ -85,7 +83,7 @@ class NetworkFixtureProvider
 		);
 
 		menuItemHelper.insert (
-			new MenuItemRec ()
+			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (

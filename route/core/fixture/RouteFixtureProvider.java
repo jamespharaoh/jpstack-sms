@@ -8,12 +8,10 @@ import wbs.framework.record.GlobalId;
 import wbs.platform.currency.model.CurrencyObjectHelper;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
-import wbs.platform.menu.model.MenuItemRec;
 import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.keyword.model.KeywordSetObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
-import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeFixtureProvider")
 public
@@ -50,7 +48,7 @@ class RouteFixtureProvider
 	void createFixtures () {
 
 		routeHelper.insert (
-			new RouteRec ()
+			routeHelper.createInstance ()
 
 			.setSlice (
 				sliceHelper.findByCode (
@@ -84,7 +82,7 @@ class RouteFixtureProvider
 		);
 
 		routeHelper.insert (
-			new RouteRec ()
+			routeHelper.createInstance ()
 
 			.setSlice (
 				sliceHelper.findByCode (
@@ -109,7 +107,7 @@ class RouteFixtureProvider
 		);
 
 		routeHelper.insert (
-			new RouteRec ()
+			routeHelper.createInstance ()
 
 			.setSlice (
 				sliceHelper.findByCode (
@@ -142,7 +140,7 @@ class RouteFixtureProvider
 		);
 
 		menuItemHelper.insert (
-			new MenuItemRec ()
+			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
 				menuGroupHelper.findByCode (

@@ -7,6 +7,7 @@ import wbs.framework.object.ObjectManager;
 import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.command.model.CommandTypeObjectHelper;
 import wbs.sms.command.model.CommandTypeRec;
@@ -17,6 +18,9 @@ class CommandLogicImpl
 	implements CommandLogic {
 
 	// dependencies
+
+	@Inject
+	CommandObjectHelper commandHelper;
 
 	@Inject
 	CommandTypeObjectHelper commandTypeHelper;
@@ -58,8 +62,8 @@ class CommandLogicImpl
 				parentType,
 				typeCode);
 
-		return objectManager.insert (
-			new CommandRec ()
+		return commandHelper.insert (
+			commandHelper.createInstance ()
 
 			.setCode (
 				code)

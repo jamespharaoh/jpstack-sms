@@ -26,6 +26,8 @@ import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -39,8 +41,6 @@ import wbs.sms.modempoll.model.ModemPollQueueRec;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 @Log4j
 public
@@ -420,8 +420,12 @@ class ModemPollDaemon
 					this);
 
 			modemPollQueueHelper.insert (
-				new ModemPollQueueRec ()
-					.setPdu (pdu));
+				modemPollQueueHelper.createInstance ()
+
+				.setPdu (
+					pdu)
+
+			);
 
 		}
 

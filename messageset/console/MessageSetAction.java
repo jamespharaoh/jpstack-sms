@@ -230,7 +230,7 @@ class MessageSetAction
 					// create new message
 
 					messageSetMessage =
-						new MessageSetMessageRec ()
+						messageSetMessageHelper.createInstance ()
 
 						.setMessageSet (
 							messageSet)

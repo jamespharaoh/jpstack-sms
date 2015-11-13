@@ -124,7 +124,7 @@ class MagicNumberLogicImpl
 
 			magicNumberUse =
 				magicNumberUseHelper.insert (
-					new MagicNumberUseRec ()
+					magicNumberUseHelper.createInstance ()
 
 				.setNumber (
 					number)

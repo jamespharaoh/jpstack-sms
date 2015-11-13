@@ -15,7 +15,6 @@ import wbs.sms.number.list.model.NumberListNumberRec;
 import wbs.sms.number.list.model.NumberListObjectHelper;
 import wbs.sms.number.list.model.NumberListRec;
 import wbs.sms.number.list.model.NumberListUpdateObjectHelper;
-import wbs.sms.number.list.model.NumberListUpdateRec;
 
 @SingletonComponent ("numberListLogic")
 public
@@ -74,7 +73,7 @@ class NumberListLogicImpl
 		// create number list update
 
 		numberListUpdateHelper.insert (
-			new NumberListUpdateRec ()
+			numberListUpdateHelper.createInstance ()
 
 			.setNumberList (
 				numberList)
@@ -163,7 +162,7 @@ class NumberListLogicImpl
 		// create number list update
 
 		numberListUpdateHelper.insert (
-			new NumberListUpdateRec ()
+			numberListUpdateHelper.createInstance ()
 
 			.setNumberList (
 				numberList)

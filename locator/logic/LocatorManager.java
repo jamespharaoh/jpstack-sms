@@ -244,7 +244,7 @@ class LocatorManager {
 
 		LocatorLogRec locatorLog =
 			locatorLogHelper.insert (
-				new LocatorLogRec ()
+				locatorLogHelper.createInstance ()
 
 			.setLocator (
 				locatorRec)

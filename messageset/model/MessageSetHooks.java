@@ -65,7 +65,7 @@ class MessageSetHooks
 	@Override
 	public
 	void createSingletons (
-			ObjectHelper<MessageSetRec> objectHelper,
+			ObjectHelper<MessageSetRec> messageSetHelper,
 			ObjectHelper<?> parentHelper,
 			Record<?> parent) {
 
@@ -90,8 +90,8 @@ class MessageSetHooks
 				: messageSetTypes
 		) {
 
-			objectHelper.insert (
-				new MessageSetRec ()
+			messageSetHelper.insert (
+				messageSetHelper.createInstance ()
 
 				.setMessageSetType (
 					messageSetType)

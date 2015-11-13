@@ -208,7 +208,7 @@ class InboxLogicImplementation
 				"system");
 
 		MessageRec message =
-			new MessageRec ()
+			messageHelper.createInstance ()
 
 			.setCreatedTime (
 				instantToDate (
@@ -285,7 +285,7 @@ class InboxLogicImplementation
 		// create the inbox entry
 
 		inboxHelper.insert (
-			new InboxRec ()
+			inboxHelper.createInstance ()
 
 			.setMessage (
 				message)
@@ -346,7 +346,7 @@ class InboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
-				new InboxAttemptRec ()
+				inboxAttemptHelper.createInstance ()
 
 			.setInbox (
 				inbox)
@@ -433,7 +433,7 @@ class InboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
-				new InboxAttemptRec ()
+				inboxAttemptHelper.createInstance ()
 
 			.setInbox (
 				inbox)
@@ -630,7 +630,7 @@ class InboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
-				new InboxAttemptRec ()
+				inboxAttemptHelper.createInstance ()
 
 			.setInbox (
 				inbox)

@@ -48,7 +48,7 @@ class NumberObjectHelperImplementation
 			networkHelper.find (0);
 
 		return numberHelper.insert (
-			new NumberRec ()
+			numberHelper.createInstance ()
 
 			.setNumber (
 				numberString)

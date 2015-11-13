@@ -94,7 +94,7 @@ class NumberLookupHooks
 		) {
 
 			numberLookupHelper.insert (
-				new NumberLookupRec ()
+				numberLookupHelper.createInstance ()
 
 				.setParentType (
 					parentType)

@@ -8,7 +8,6 @@ import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuGroupRec;
 import wbs.platform.menu.model.MenuItemObjectHelper;
-import wbs.platform.menu.model.MenuItemRec;
 
 @PrototypeComponent ("gazetteerFixtureProvider")
 public
@@ -36,7 +35,7 @@ class GazetteerFixtureProvider
 				"sms");
 
 		menuItemHelper.insert (
-			new MenuItemRec ()
+			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
 				smsMenuGroup)

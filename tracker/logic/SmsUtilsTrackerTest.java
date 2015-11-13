@@ -3,7 +3,11 @@ package wbs.sms.tracker.logic;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import javax.inject.Inject;
+
 import junit.framework.TestCase;
+
+import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
@@ -11,7 +15,13 @@ public
 class SmsUtilsTrackerTest
 	extends TestCase {
 
-	static
+	// dependencies
+
+	@Inject
+	MessageObjectHelper messageHelper;
+
+	// implementation
+
 	MessageRec createMessage (
 			int days,
 			MessageStatus status) {
@@ -20,7 +30,7 @@ class SmsUtilsTrackerTest
 			new GregorianCalendar ();
 
 		MessageRec message =
-			new MessageRec ();
+			messageHelper.createInstance ();
 
 		calendar.add (
 			Calendar.DATE,

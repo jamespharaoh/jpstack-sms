@@ -100,7 +100,7 @@ class RouterHooks
 		) {
 
 			routerHelper.insert (
-				new RouterRec ()
+				routerHelper.createInstance ()
 
 				.setRouterType (
 					routerType)

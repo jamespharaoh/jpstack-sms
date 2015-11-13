@@ -114,7 +114,7 @@ class InboxMultipartLogicImplementation
 
 			InboxMultipartBufferRec inboxMultipartBuffer =
 				inboxMultipartBufferHelper.insert (
-					new InboxMultipartBufferRec ()
+					inboxMultipartBufferHelper.createInstance ()
 
 				.setRoute (
 					route)
@@ -269,7 +269,7 @@ class InboxMultipartLogicImplementation
 		// and create log entry
 
 		inboxMultipartLogHelper.insert (
-			new InboxMultipartLogRec ()
+			inboxMultipartLogHelper.createInstance ()
 
 			.setRoute (
 				inboxMultipartBuffer.getRoute ())
