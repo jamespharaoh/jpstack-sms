@@ -15,6 +15,9 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -31,13 +34,13 @@ import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.OutboxLogic;
 import wbs.sms.route.core.model.RouteObjectHelper;
 
-import com.google.common.base.Optional;
-
 @Log4j
 @SingletonComponent ("messageDaemon")
 public
 class MessageDaemon
 	extends AbstractDaemonService {
+
+	// dependencies
 
 	@Inject
 	Database database;
@@ -60,9 +63,13 @@ class MessageDaemon
 	@Inject
 	TextObjectHelper textHelper;
 
+	// properties
+
 	@Getter
 	Map<String,MessageRetrierFactory> messageRetrierFactories =
 		Collections.emptyMap ();
+
+	// implementation
 
 	@Inject
 	public
@@ -106,7 +113,7 @@ class MessageDaemon
 				Thread.sleep (
 					sleepSecs * 1000);
 
-			} catch (InterruptedException e) {
+			} catch (InterruptedException exception) {
 
 				return;
 
@@ -165,7 +172,8 @@ class MessageDaemon
 				in (oldMessageStatus,
 					MessageStatus.delivered,
 					MessageStatus.undelivered,
-					MessageStatus.manuallyUndelivered)
+					MessageStatus.manuallyUndelivered,
+					MessageStatus.manuallyDelivered)
 			) {
 
 				// ignore expiry

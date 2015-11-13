@@ -1,5 +1,6 @@
 package wbs.sms.number.list.console;
 
+import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -138,11 +139,21 @@ class NumberListNumberUpdateAction
 		int numAdded = 0;
 		int numAlreadyAdded = 0;
 
-		if (requestContext.parameter ("add") != null) {
+		if (
+			isNotNull (
+				requestContext.parameter (
+					"add"))
+		) {
 
-			numberListUpdate.setPresent (true);
+			numberListUpdate
 
-			for (String numberString : numbers) {
+				.setPresent (
+					true);
+
+			for (
+				String numberString
+					: numbers
+			) {
 
 				if (++ loop % 1000 == 0)
 					transaction.flush ();
@@ -164,17 +175,23 @@ class NumberListNumberUpdateAction
 
 				}
 
-				numberListNumber.setPresent (
-					true);
+				numberListNumber
 
-				numberListUpdate.setNumberCount (
-					numberListUpdate.getNumberCount () + 1);
+					.setPresent (
+						true);
+
+				numberListUpdate
+
+					.setNumberCount (
+						numberListUpdate.getNumberCount () + 1);
 
 				numberListUpdate.getNumbers ().add (
 					number);
 
-				numberList.setNumberCount (
-					numberList.getNumberCount () + 1);
+				numberList
+
+					.setNumberCount (
+						numberList.getNumberCount () + 1);
 
 				numAdded ++;
 
@@ -191,7 +208,10 @@ class NumberListNumberUpdateAction
 
 			numberListUpdate.setPresent (false);
 
-			for (String numberString : numbers) {
+			for (
+				String numberString
+					: numbers
+			) {
 
 				if (++ loop % 1000 == 0)
 					transaction.flush ();
@@ -265,7 +285,11 @@ class NumberListNumberUpdateAction
 
 		// commit transaction
 
-		transaction.commit ();
+		if (numberListUpdate.getNumberCount () > 0) {
+
+			transaction.commit ();
+
+		}
 
 		// messages
 
