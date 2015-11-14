@@ -11,16 +11,18 @@ import javax.inject.Inject;
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.exception.ExceptionLogger;
-import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.daemon.ThreadManager;
+import wbs.platform.exception.logic.ExceptionLogger;
+import wbs.platform.exception.model.ExceptionResolution;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -32,8 +34,6 @@ import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 @Log4j
 @SingletonComponent ("receivedManager")
@@ -201,7 +201,7 @@ class ReceivedManager
 					route.getCode ()),
 				exception,
 				Optional.<Integer>absent (),
-				Resolution.tryAgainLater);
+				ExceptionResolution.tryAgainLater);
 
 			inboxLogic.inboxProcessingFailed (
 				inbox,

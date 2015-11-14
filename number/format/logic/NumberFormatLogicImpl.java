@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import lombok.NonNull;
 import lombok.experimental.Accessors;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.number.format.model.NumberFormatPatternRec;
 import wbs.sms.number.format.model.NumberFormatRec;

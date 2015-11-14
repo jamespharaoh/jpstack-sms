@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;

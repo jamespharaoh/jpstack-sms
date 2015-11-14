@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import junit.framework.TestCase;
+
 import wbs.sms.locator.logic.LocatorLogic;
 import wbs.sms.locator.model.EastNorth;
 import wbs.sms.locator.model.LongLat;

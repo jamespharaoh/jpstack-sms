@@ -1,6 +1,7 @@
 package wbs.sms.message.stats.logic;
 
 import lombok.NonNull;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.message.stats.model.MessageStatsData;
 

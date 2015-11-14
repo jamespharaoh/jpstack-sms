@@ -9,9 +9,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.extern.log4j.Log4j;
-import wbs.framework.application.annotations.SingletonComponent;
 
 import com.google.common.collect.ImmutableMap;
+
+import wbs.framework.application.annotations.SingletonComponent;
 
 @Log4j
 @SingletonComponent ("routerHelperManager")

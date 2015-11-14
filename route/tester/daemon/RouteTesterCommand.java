@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -24,8 +27,6 @@ import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.tester.model.RouteTestObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
-
-import com.google.common.base.Optional;
 
 @Accessors (fluent = true)
 @SingletonComponent ("routeTesterCommand")

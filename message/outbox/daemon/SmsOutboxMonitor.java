@@ -11,15 +11,15 @@ import javax.inject.Inject;
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.exception.ExceptionLogger;
-import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.platform.daemon.AbstractDaemonService;
+import wbs.platform.exception.logic.ExceptionLogger;
+import wbs.platform.exception.model.ExceptionResolution;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
-
-import com.google.common.base.Optional;
 
 /**
  * Daemon to periodicaly scan the entire outbox and gather statistics on the
@@ -154,7 +154,7 @@ class SmsOutboxMonitor
 						"Outbox monitor",
 						exception,
 						Optional.<Integer>absent (),
-						Resolution.tryAgainLater);
+						ExceptionResolution.tryAgainLater);
 
 					// sleep 1 minute
 

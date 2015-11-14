@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;

@@ -14,6 +14,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -35,8 +37,6 @@ import wbs.sms.message.inbox.daemon.CommandManager;
 import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
-
-import com.google.common.base.Optional;
 
 @Accessors (fluent = true)
 @Log4j

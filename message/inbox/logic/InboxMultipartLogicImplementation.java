@@ -13,6 +13,8 @@ import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -26,8 +28,6 @@ import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 @Log4j
 @SingletonComponent ("inboxMultipartLogic")

@@ -1,6 +1,7 @@
 package wbs.sms.magicnumber.hibernate;
 
 import lombok.NonNull;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberRec;

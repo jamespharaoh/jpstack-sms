@@ -8,6 +8,8 @@ import lombok.Cleanup;
 
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -21,8 +23,6 @@ import wbs.sms.message.inbox.logic.InboxLogic;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 @PrototypeComponent ("routeTestInAction")
 public

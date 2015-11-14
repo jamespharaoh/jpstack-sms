@@ -7,13 +7,13 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import com.google.common.collect.ImmutableMap;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.Record;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
-
-import com.google.common.collect.ImmutableMap;
 
 @SingletonComponent ("batchStatsSourceBuilder")
 public

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.service.model.ServiceRec;
@@ -14,8 +16,6 @@ import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.base.Optional;
 
 public
 interface InboxLogic {

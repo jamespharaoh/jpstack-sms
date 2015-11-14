@@ -10,6 +10,8 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.Interval;
 
+import com.google.common.collect.ImmutableSet;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -17,8 +19,6 @@ import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
 import wbs.sms.message.core.model.MessageStatus;
-
-import com.google.common.collect.ImmutableSet;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSourceImpl")

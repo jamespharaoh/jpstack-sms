@@ -2,12 +2,12 @@ package wbs.sms.message.ticker.console;
 
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
+
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.responder.HtmlResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
-
-import com.google.common.collect.ImmutableSet;
 
 @PrototypeComponent ("messageTickerResponder")
 public

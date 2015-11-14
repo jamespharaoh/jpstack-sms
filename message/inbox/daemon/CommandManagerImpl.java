@@ -11,6 +11,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.NonNull;
+
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.application.context.ApplicationContext;
 import wbs.framework.database.Database;
@@ -20,8 +23,6 @@ import wbs.sms.command.model.CommandRec;
 import wbs.sms.command.model.CommandTypeRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
-
-import com.google.common.base.Optional;
 
 @SingletonComponent ("commandManagerImpl")
 public

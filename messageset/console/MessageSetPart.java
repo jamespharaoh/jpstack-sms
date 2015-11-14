@@ -15,6 +15,9 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import com.google.common.collect.ImmutableSet;
+
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
@@ -23,8 +26,6 @@ import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
-
-import com.google.common.collect.ImmutableSet;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSetPart")

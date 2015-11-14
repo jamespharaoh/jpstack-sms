@@ -8,6 +8,9 @@ import javax.inject.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -31,8 +34,6 @@ import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.outbox.logic.MessageSender;
 import wbs.sms.number.list.logic.NumberListLogic;
-
-import com.google.common.base.Optional;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("smsCustomerStopCommand")
