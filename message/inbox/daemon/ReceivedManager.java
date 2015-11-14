@@ -10,10 +10,12 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -199,7 +201,7 @@ class ReceivedManager
 					route.getCode ()),
 				exception,
 				Optional.<Integer>absent (),
-				false);
+				Resolution.tryAgainLater);
 
 			inboxLogic.inboxProcessingFailed (
 				inbox,

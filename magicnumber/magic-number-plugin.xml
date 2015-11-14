@@ -17,7 +17,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MagicNumberLogicImpl"/>
+		<bean class="logic.MagicNumberLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

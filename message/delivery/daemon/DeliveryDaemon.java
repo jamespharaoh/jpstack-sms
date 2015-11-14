@@ -14,10 +14,12 @@ import javax.inject.Provider;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
@@ -249,6 +251,7 @@ class DeliveryDaemon
 			while (true) {
 
 				DeliveryRec delivery;
+
 				try {
 					delivery = buffer.next ();
 				} catch (InterruptedException e) {
@@ -284,7 +287,7 @@ class DeliveryDaemon
 						"Delivery notice daemon",
 						exception,
 						Optional.<Integer>absent (),
-						false);
+						Resolution.tryAgainLater);
 
 				}
 

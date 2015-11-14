@@ -10,10 +10,12 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 
@@ -123,7 +125,9 @@ class SmsOutboxMonitor
 		@Override
 		public
 		void run () {
+
 			for (;;) {
+
 				try {
 
 					runOnce ();
@@ -131,9 +135,14 @@ class SmsOutboxMonitor
 					// sleep 1 interval
 
 					try {
-						Thread.sleep (sleepInterval);
+
+						Thread.sleep (
+							sleepInterval);
+
 					} catch (InterruptedException exception) {
+
 						return;
+
 					}
 
 				} catch (Exception exception) {
@@ -145,14 +154,19 @@ class SmsOutboxMonitor
 						"Outbox monitor",
 						exception,
 						Optional.<Integer>absent (),
-						false);
+						Resolution.tryAgainLater);
 
 					// sleep 1 minute
 
 					try {
-						Thread.sleep (60 * 1000);
+
+						Thread.sleep (
+							60 * 1000);
+
 					} catch (InterruptedException exception2) {
+
 						return;
+
 					}
 
 				}
@@ -164,7 +178,8 @@ class SmsOutboxMonitor
 		public
 		void runOnce () {
 
-			log.debug ("Polling database");
+			log.debug (
+				"Polling database");
 
 			// query database
 

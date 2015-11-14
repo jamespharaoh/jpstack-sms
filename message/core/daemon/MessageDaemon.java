@@ -22,6 +22,7 @@ import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.ExceptionLogger.Resolution;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.core.daemon.MessageRetrier;
@@ -104,7 +105,7 @@ class MessageDaemon
 					"MessageDaemon",
 					exception,
 					Optional.<Integer>absent (),
-					false);
+					Resolution.tryAgainLater);
 
 			}
 

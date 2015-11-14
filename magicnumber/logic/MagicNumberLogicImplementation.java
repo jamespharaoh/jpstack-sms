@@ -1,6 +1,7 @@
 package wbs.sms.magicnumber.logic;
 
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
@@ -10,6 +11,9 @@ import javax.inject.Provider;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -17,6 +21,7 @@ import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextRec;
+import wbs.platform.user.model.UserRec;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -32,7 +37,7 @@ import wbs.sms.route.router.model.RouterRec;
 @Log4j
 @SingletonComponent ("magicNumberLogic")
 public
-class MagicNumberLogicImpl
+class MagicNumberLogicImplementation
 	implements MagicNumberLogic {
 
 	// dependencies
@@ -48,6 +53,8 @@ class MagicNumberLogicImpl
 
 	@Inject
 	MagicNumberUseObjectHelper magicNumberUseHelper;
+
+	// prototype dependencies
 
 	@Inject
 	Provider<MessageSender> messageSender;
@@ -185,16 +192,17 @@ class MagicNumberLogicImpl
 	@Override
 	public
 	Integer sendMessage (
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number,
-			CommandRec magicCommand,
-			Integer magicRef,
-			Integer threadId,
-			Collection<TextRec> parts,
-			RouterRec router,
-			ServiceRec service,
-			BatchRec batch,
-			AffiliateRec affiliate) {
+			@NonNull MagicNumberSetRec magicNumberSet,
+			@NonNull NumberRec number,
+			@NonNull CommandRec magicCommand,
+			@NonNull Integer magicRef,
+			@NonNull Optional<Integer> threadId,
+			@NonNull Collection<TextRec> parts,
+			@NonNull RouterRec router,
+			@NonNull ServiceRec service,
+			@NonNull Optional<BatchRec> batch,
+			@NonNull AffiliateRec affiliate,
+			@NonNull Optional<UserRec> user) {
 
 		// allocate a magic number
 
@@ -207,13 +215,16 @@ class MagicNumberLogicImpl
 
 		// and send parts
 
-		for (TextRec part : parts) {
+		for (
+			TextRec part
+				: parts
+		) {
 
 			MessageRec message =
 				messageSender.get ()
 
 				.threadId (
-					threadId)
+					threadId.orNull ())
 
 				.number (
 					number)
@@ -231,35 +242,47 @@ class MagicNumberLogicImpl
 					service)
 
 				.batch (
-					batch)
+					batch.orNull ())
 
 				.affiliate (
 					affiliate)
 
+				.user (
+					user.orNull ())
+
 				.send ();
 
-			if (threadId == null)
-				threadId = message.getThreadId ();
+			if (
+				isNotPresent (
+					threadId)
+			) {
+
+				threadId =
+					Optional.of (
+						message.getThreadId ());
+
+			}
 
 		}
 
-		return threadId;
+		return threadId.get ();
 
 	}
 
 	@Override
 	public
 	MessageRec sendMessage (
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number,
-			CommandRec magicCommand,
+			@NonNull MagicNumberSetRec magicNumberSet,
+			@NonNull NumberRec number,
+			@NonNull CommandRec magicCommand,
 			int magicRef,
-			Integer threadId,
-			TextRec messageText,
-			RouterRec router,
-			ServiceRec service,
-			BatchRec batch,
-			AffiliateRec affiliate) {
+			@NonNull Optional<Integer> threadId,
+			@NonNull TextRec messageText,
+			@NonNull RouterRec router,
+			@NonNull ServiceRec service,
+			@NonNull Optional<BatchRec> batch,
+			@NonNull AffiliateRec affiliate,
+			@NonNull Optional<UserRec> user) {
 
 		// allocate a magic number
 
@@ -275,7 +298,7 @@ class MagicNumberLogicImpl
 		return messageSender.get ()
 
 			.threadId (
-				threadId)
+				threadId.orNull ())
 
 			.number (
 				number)
@@ -293,7 +316,7 @@ class MagicNumberLogicImpl
 				service)
 
 			.batch (
-				batch)
+				batch.orNull ())
 
 			.affiliate (
 				affiliate)

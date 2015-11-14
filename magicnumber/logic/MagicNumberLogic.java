@@ -2,9 +2,12 @@ package wbs.sms.magicnumber.logic;
 
 import java.util.Collection;
 
+import com.google.common.base.Optional;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextRec;
+import wbs.platform.user.model.UserRec;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
@@ -27,23 +30,25 @@ interface MagicNumberLogic {
 			NumberRec number,
 			CommandRec magicCommand,
 			int magicRef,
-			Integer threadId,
+			Optional<Integer> threadId,
 			TextRec messageText,
 			RouterRec router,
 			ServiceRec service,
-			BatchRec batch,
-			AffiliateRec affiliate);
+			Optional<BatchRec> batch,
+			AffiliateRec affiliate,
+			Optional<UserRec> user);
 
 	Integer sendMessage (
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,
 			Integer magicRef,
-			Integer threadId,
+			Optional<Integer> threadId,
 			Collection<TextRec> parts,
 			RouterRec router,
 			ServiceRec service,
-			BatchRec batch,
-			AffiliateRec affiliate);
+			Optional<BatchRec> batch,
+			AffiliateRec affiliate,
+			Optional<UserRec> user);
 
 }
