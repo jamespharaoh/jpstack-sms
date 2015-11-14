@@ -5,15 +5,12 @@ import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
@@ -21,11 +18,17 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.ModelMetaBuilderHandler;
 import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
+import wbs.framework.record.GlobalId;
+import wbs.platform.object.core.model.ObjectTypeObjectHelper;
+import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.messageset.metamodel.MessageSetTypeSpec;
+import wbs.sms.messageset.model.MessageSetTypeObjectHelper;
 
 @PrototypeComponent ("messageSetTypeBuilder")
 @ModelMetaBuilderHandler
@@ -35,10 +38,16 @@ class MessageSetTypeBuilder {
 	// dependencies
 
 	@Inject
-	DataSource dataSource;
+	Database database;
 
 	@Inject
 	EntityHelper entityHelper;
+
+	@Inject
+	MessageSetTypeObjectHelper messageSetTypeHelper;
+
+	@Inject
+	ObjectTypeObjectHelper objectTypeHelper;
 
 	// builder
 
@@ -56,7 +65,7 @@ class MessageSetTypeBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		try {
 
@@ -83,103 +92,46 @@ class MessageSetTypeBuilder {
 	void createMessageSetType ()
 		throws SQLException {
 
-		@Cleanup
-		Connection connection =
-			dataSource.getConnection ();
-
-		connection.setAutoCommit (
-			false);
+		// begin transaction
 
 		@Cleanup
-		PreparedStatement nextMessageSetTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT ",
-						"nextval ('message_set_type_id_seq')"));
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
-		ResultSet messageSetTypeIdResultSet =
-			nextMessageSetTypeIdStatement.executeQuery ();
+		// lookup parent type
 
-		messageSetTypeIdResultSet.next ();
+		String parentTypeCode =
+			camelToUnderscore (
+				ifNull (
+					spec.subject (),
+					parent.name ()));
 
-		int messageSetTypeId =
-			messageSetTypeIdResultSet.getInt (
-				1);
+		ObjectTypeRec parentType =
+			objectTypeHelper.findByCode (
+				GlobalId.root,
+				parentTypeCode);
 
-		String objectTypeCode =
-			ifNull (
-				spec.subject (),
-				parent.name ());
+		// create message set type
 
-		Model model =
-			entityHelper.modelsByName ().get (
-				objectTypeCode);
+		messageSetTypeHelper.insert (
+			messageSetTypeHelper.createInstance ()
 
-		if (model == null) {
+			.setParentType (
+				parentType)
 
-			throw new RuntimeException (
-				stringFormat (
-					"No model for %s",
-					objectTypeCode));
+			.setCode (
+				codify (
+					spec.name ()))
 
-		}
+			.setDescription (
+				spec.description ())
 
-		@Cleanup
-		PreparedStatement getObjectTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT id ",
-					"FROM object_type ",
-					"WHERE code = ?"));
+		);
 
-		getObjectTypeIdStatement.setString (
-			1,
-			model.objectTypeCode ());
+		// commit transaction
 
-		ResultSet getObjectTypeIdResult =
-			getObjectTypeIdStatement.executeQuery ();
-
-		getObjectTypeIdResult.next ();
-
-		int objectTypeId =
-			getObjectTypeIdResult.getInt (
-				1);
-
-		@Cleanup
-		PreparedStatement insertMessageSetTypeStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"INSERT INTO message_set_type (",
-						"id, ",
-						"parent_object_type_id, ",
-						"code, ",
-						"description) ",
-					"VALUES (",
-						"?, ",
-						"?, ",
-						"?, ",
-						"?)"));
-
-		insertMessageSetTypeStatement.setInt (
-			1,
-			messageSetTypeId);
-
-		insertMessageSetTypeStatement.setInt (
-			2,
-			objectTypeId);
-
-		insertMessageSetTypeStatement.setString (
-			3,
-			codify (
-				spec.name ()));
-
-		insertMessageSetTypeStatement.setString (
-			4,
-			spec.description ());
-
-		insertMessageSetTypeStatement.executeUpdate ();
-
-		connection.commit ();
+		transaction.commit ();
 
 	}
 

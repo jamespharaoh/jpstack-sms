@@ -5,15 +5,12 @@ import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -22,11 +19,17 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.ModelMetaBuilderHandler;
 import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
+import wbs.framework.record.GlobalId;
+import wbs.platform.object.core.model.ObjectTypeObjectHelper;
+import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.command.metamodel.CommandTypeSpec;
+import wbs.sms.command.model.CommandTypeObjectHelper;
 
 @Log4j
 @PrototypeComponent ("commandTypeBuilder")
@@ -37,10 +40,16 @@ class CommandTypeBuilder {
 	// dependencies
 
 	@Inject
-	DataSource dataSource;
+	CommandTypeObjectHelper commandTypeHelper;
+
+	@Inject
+	Database database;
 
 	@Inject
 	EntityHelper entityHelper;
+
+	@Inject
+	ObjectTypeObjectHelper objectTypeHelper;
 
 	// builder
 
@@ -58,7 +67,7 @@ class CommandTypeBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		try {
 
@@ -95,105 +104,49 @@ class CommandTypeBuilder {
 	void createCommandType ()
 		throws SQLException {
 
-		@Cleanup
-		Connection connection =
-			dataSource.getConnection ();
-
-		connection.setAutoCommit (
-			false);
+		// begin transaction
 
 		@Cleanup
-		PreparedStatement nextCommandTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT ",
-						"nextval ('command_type_id_seq')"));
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
-		ResultSet commandTypeIdResultSet =
-			nextCommandTypeIdStatement.executeQuery ();
+		// lookup parent type
 
-		commandTypeIdResultSet.next ();
+		String parentTypeCode =
+			camelToUnderscore (
+				ifNull (
+					spec.subject (),
+					parent.name ()));
 
-		int commandTypeId =
-			commandTypeIdResultSet.getInt (
-				1);
+		ObjectTypeRec parentType =
+			objectTypeHelper.findByCode (
+				GlobalId.root,
+				parentTypeCode);
 
-		String objectTypeCode =
-			ifNull (
-				spec.subject (),
-				parent.name ());
+		// create command type
 
-		Model model =
-			entityHelper.modelsByName ().get (
-				objectTypeCode);
+		commandTypeHelper.insert (
+			commandTypeHelper.createInstance ()
 
-		if (model == null) {
+			.setParentType (
+				parentType)
 
-			throw new RuntimeException (
-				stringFormat (
-					"No model for %s",
-					objectTypeCode));
+			.setCode (
+				codify (
+					spec.name ()))
 
-		}
+			.setDescription (
+				spec.description ())
 
-		@Cleanup
-		PreparedStatement getObjectTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT id ",
-					"FROM object_type ",
-					"WHERE code = ?"));
+			.setDeleted (
+				false)
 
-		getObjectTypeIdStatement.setString (
-			1,
-			model.objectTypeCode ());
+		);
 
-		ResultSet getObjectTypeIdResult =
-			getObjectTypeIdStatement.executeQuery ();
+		// commit transaction
 
-		getObjectTypeIdResult.next ();
-
-		int objectTypeId =
-			getObjectTypeIdResult.getInt (
-				1);
-
-		@Cleanup
-		PreparedStatement insertCommandTypeStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"INSERT INTO command_type (",
-						"id, ",
-						"parent_object_type_id, ",
-						"code, ",
-						"description, ",
-						"deleted) ",
-					"VALUES (",
-						"?, ",
-						"?, ",
-						"?, ",
-						"?, ",
-						"false)"));
-
-		insertCommandTypeStatement.setInt (
-			1,
-			commandTypeId);
-
-		insertCommandTypeStatement.setInt (
-			2,
-			objectTypeId);
-
-		insertCommandTypeStatement.setString (
-			3,
-			codify (
-				spec.name ()));
-
-		insertCommandTypeStatement.setString (
-			4,
-			spec.description ());
-
-		insertCommandTypeStatement.executeUpdate ();
-
-		connection.commit ();
+		transaction.commit ();
 
 	}
 

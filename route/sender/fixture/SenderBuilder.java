@@ -3,15 +3,12 @@ package wbs.sms.route.sender.fixture;
 import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -20,11 +17,14 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.ModelMetaBuilderHandler;
 import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.sms.route.sender.metamodel.SenderSpec;
+import wbs.sms.route.sender.model.SenderObjectHelper;
 
 @Log4j
 @PrototypeComponent ("senderBuilder")
@@ -35,10 +35,13 @@ class SenderBuilder {
 	// dependencies
 
 	@Inject
-	DataSource dataSource;
+	Database database;
 
 	@Inject
 	EntityHelper entityHelper;
+
+	@Inject
+	SenderObjectHelper senderHelper;
 
 	// builder
 
@@ -56,7 +59,7 @@ class SenderBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		try {
 
@@ -85,64 +88,30 @@ class SenderBuilder {
 	void createSender ()
 		throws SQLException {
 
-		@Cleanup
-		Connection connection =
-			dataSource.getConnection ();
-
-		connection.setAutoCommit (
-			false);
-
-		// allocate sender id
+		// begin transaction
 
 		@Cleanup
-		PreparedStatement nextSenderIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT ",
-						"nextval ('sender_id_seq')"));
-
-		ResultSet senderIdResultSet =
-			nextSenderIdStatement.executeQuery ();
-
-		senderIdResultSet.next ();
-
-		int senderId =
-			senderIdResultSet.getInt (
-				1);
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
 		// create sender
 
-		@Cleanup
-		PreparedStatement insertSenderStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"INSERT INTO sender (",
-						"id, ",
-						"code, ",
-						"description) ",
-					"VALUES (",
-						"?, ",
-						"?, ",
-						"?)"));
+		senderHelper.insert (
+			senderHelper.createInstance ()
 
-		insertSenderStatement.setInt (
-			1,
-			senderId);
+			.setCode (
+				codify (
+					spec.name ()))
 
-		insertSenderStatement.setString (
-			2,
-			codify (
-				spec.name ()));
+			.setDescription (
+				spec.description ())
 
-		insertSenderStatement.setString (
-			3,
-			spec.description ());
-
-		insertSenderStatement.executeUpdate ();
+		);
 
 		// commit transaction
 
-		connection.commit ();
+		transaction.commit ();
 
 	}
 

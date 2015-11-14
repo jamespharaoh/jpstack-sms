@@ -5,13 +5,9 @@ import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
@@ -22,11 +18,17 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.ModelMetaBuilderHandler;
 import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
+import wbs.framework.record.GlobalId;
+import wbs.platform.object.core.model.ObjectTypeObjectHelper;
+import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.message.batch.metamodel.BatchTypeSpec;
+import wbs.sms.message.batch.model.BatchTypeObjectHelper;
 
 @Log4j
 @PrototypeComponent ("batchTypeBuilder")
@@ -37,10 +39,16 @@ class BatchTypeBuilder {
 	// dependencies
 
 	@Inject
-	DataSource dataSource;
+	BatchTypeObjectHelper batchTypeHelper;
+
+	@Inject
+	Database database;
 
 	@Inject
 	EntityHelper entityHelper;
+
+	@Inject
+	ObjectTypeObjectHelper objectTypeHelper;
 
 	// builder
 
@@ -95,149 +103,61 @@ class BatchTypeBuilder {
 	void createBatchType ()
 		throws SQLException {
 
-		@Cleanup
-		Connection connection =
-			dataSource.getConnection ();
-
-		connection.setAutoCommit (
-			false);
-
-		// allocate id
+		// begin transaction
 
 		@Cleanup
-		PreparedStatement nextBatchTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT ",
-						"nextval ('batch_type_id_seq')"));
-
-		ResultSet batchTypeIdResultSet =
-			nextBatchTypeIdStatement.executeQuery ();
-
-		batchTypeIdResultSet.next ();
-
-		int batchTypeId =
-			batchTypeIdResultSet.getInt (
-				1);
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
 		// lookup subject
 
 		String subjectTypeCode =
-			ifNull (
-				spec.subject (),
-				parent.name ());
+			camelToUnderscore (
+				ifNull (
+					spec.subject (),
+					parent.name ()));
 
-		Model subjectModel =
-			entityHelper.modelsByName ().get (
+		ObjectTypeRec subjectType =
+			objectTypeHelper.findByCode (
+				GlobalId.root,
 				subjectTypeCode);
-
-		if (subjectModel == null) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"No model for %s",
-					subjectTypeCode));
-
-		}
-
-		@Cleanup
-		PreparedStatement getObjectTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT id ",
-					"FROM object_type ",
-					"WHERE code = ?"));
-
-		getObjectTypeIdStatement.setString (
-			1,
-			subjectModel.objectTypeCode ());
-
-		ResultSet getObjectTypeIdResult =
-			getObjectTypeIdStatement.executeQuery ();
-
-		getObjectTypeIdResult.next ();
-
-		int subjectObjectTypeId =
-			getObjectTypeIdResult.getInt (
-				1);
 
 		// lookup batch
 
-		Model batchModel =
-			entityHelper.modelsByName ().get (
+		String batchTypeCode =
+			camelToUnderscore (
 				spec.batch ());
 
-		if (batchModel == null) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"No model for %s",
-					spec.batch ()));
-
-		}
-
-		getObjectTypeIdStatement.setString (
-			1,
-			batchModel.objectTypeCode ());
-
-		getObjectTypeIdResult =
-			getObjectTypeIdStatement.executeQuery ();
-
-		getObjectTypeIdResult.next ();
-
-		int batchObjectTypeId =
-			getObjectTypeIdResult.getInt (
-				1);
+		ObjectTypeRec batchType =
+			objectTypeHelper.findByCode (
+				GlobalId.root,
+				batchTypeCode);
 
 		// create batch type
 
-		@Cleanup
-		PreparedStatement insertBatchTypeStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"INSERT INTO batch_type (",
-						"id, ",
-						"subject_object_type_id, ",
-						"code, ",
-						"name, ",
-						"batch_object_type_id, ",
-						"description) ",
-					"VALUES (",
-						"?, ",
-						"?, ",
-						"?, ",
-						"?, ",
-						"?, ",
-						"?)"));
+		batchTypeHelper.insert (
+			batchTypeHelper.createInstance ()
 
-		insertBatchTypeStatement.setInt (
-			1,
-			batchTypeId);
+			.setSubjectType (
+				subjectType)
 
-		insertBatchTypeStatement.setInt (
-			2,
-			subjectObjectTypeId);
+			.setCode (
+				codify (
+					spec.name ()))
 
-		insertBatchTypeStatement.setString (
-			3,
-			codify (
-				spec.name ()));
+			.setName (
+				spec.name ())
 
-		insertBatchTypeStatement.setString (
-			4,
-			spec.name ());
+			.setDescription (
+				spec.description ())
 
-		insertBatchTypeStatement.setInt (
-			5,
-			batchObjectTypeId);
+			.setBatchType (
+				batchType)
 
-		insertBatchTypeStatement.setString (
-			6,
-			spec.description ());
+		);
 
-		insertBatchTypeStatement.executeUpdate ();
-
-		connection.commit ();
+		transaction.commit ();
 
 	}
 

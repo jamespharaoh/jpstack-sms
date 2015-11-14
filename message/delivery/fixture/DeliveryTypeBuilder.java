@@ -3,15 +3,12 @@ package wbs.sms.message.delivery.fixture;
 import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -20,11 +17,14 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.database.Database;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.ModelMetaBuilderHandler;
 import wbs.framework.entity.meta.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.sms.message.delivery.metamodel.DeliveryTypeSpec;
+import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 
 @Log4j
 @PrototypeComponent ("deliveryTypeBuilder")
@@ -35,7 +35,10 @@ class DeliveryTypeBuilder {
 	// dependencies
 
 	@Inject
-	DataSource dataSource;
+	Database database;
+
+	@Inject
+	DeliveryTypeObjectHelper deliveryTypeHelper;
 
 	@Inject
 	EntityHelper entityHelper;
@@ -56,7 +59,7 @@ class DeliveryTypeBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		try {
 
@@ -85,58 +88,30 @@ class DeliveryTypeBuilder {
 	void createDeliveryType ()
 		throws SQLException {
 
-		@Cleanup
-		Connection connection =
-			dataSource.getConnection ();
-
-		connection.setAutoCommit (
-			false);
+		// begin transaction
 
 		@Cleanup
-		PreparedStatement nextDeliveryTypeIdStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"SELECT ",
-						"nextval ('delivery_type_id_seq')"));
+		Transaction transaction =
+			database.beginReadWrite (
+				this);
 
-		ResultSet deliveryTypeIdResultSet =
-			nextDeliveryTypeIdStatement.executeQuery ();
+		// create delivery type
 
-		deliveryTypeIdResultSet.next ();
+		deliveryTypeHelper.insert (
+			deliveryTypeHelper.createInstance ()
 
-		int deliveryTypeId =
-			deliveryTypeIdResultSet.getInt (
-				1);
+			.setCode (
+				codify (
+					spec.name ()))
 
-		@Cleanup
-		PreparedStatement insertDeliveryTypeStatement =
-			connection.prepareStatement (
-				stringFormat (
-					"INSERT INTO delivery_type (",
-						"id, ",
-						"code, ",
-						"description) ",
-					"VALUES (",
-						"?, ",
-						"?, ",
-						"?)"));
+			.setDescription (
+				spec.description ())
 
-		insertDeliveryTypeStatement.setInt (
-			1,
-			deliveryTypeId);
+		);
 
-		insertDeliveryTypeStatement.setString (
-			2,
-			codify (
-				spec.name ()));
+		// commit transaction
 
-		insertDeliveryTypeStatement.setString (
-			3,
-			spec.description ());
-
-		insertDeliveryTypeStatement.executeUpdate ();
-
-		connection.commit ();
+		transaction.commit ();
 
 	}
 
