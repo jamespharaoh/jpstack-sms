@@ -3,6 +3,7 @@ package wbs.sms.magicnumber.daemon;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,8 +51,10 @@ class MagicNumberCommandTypeHandler
 	@Inject
 	MessageObjectHelper messageHelper;
 
+	// indirect dependencies
+
 	@Inject
-	CommandManager commandManager;
+	Provider<CommandManager> commandManagerProvider;
 
 	// properties
 
@@ -127,7 +130,7 @@ class MagicNumberCommandTypeHandler
 
 		// and delegate
 
-		return commandManager.handle (
+		return commandManagerProvider.get ().handle (
 			inbox,
 			magicNumberUse.getCommand (),
 			Optional.of (magicNumberUse.getRefId ()),

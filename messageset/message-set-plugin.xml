@@ -19,7 +19,7 @@
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.MessageSetLogicImpl"/>
+		<bean class="logic.MessageSetLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

@@ -28,7 +28,7 @@ import wbs.sms.message.outbox.logic.MessageSender;
 @Log4j
 @SingletonComponent ("smsCustomerLogic")
 public
-class SmsCustomerLogicImpl
+class SmsCustomerLogicImplementation
 	implements SmsCustomerLogic {
 
 	// dependencies

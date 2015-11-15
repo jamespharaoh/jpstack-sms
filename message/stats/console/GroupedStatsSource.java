@@ -2,9 +2,11 @@ package wbs.sms.message.stats.console;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalDate;
 
+import wbs.framework.web.UrlParams;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -83,5 +85,23 @@ interface GroupedStatsSource {
 		}
 
 	}
+
+	GroupedStatsSource groupCriteria (
+			SmsStatsCriteria groupCriteria);
+
+	GroupedStatsSource statsSource (
+			SmsStatsSource statsSource);
+
+	GroupedStatsSource critMap (
+			Map<SmsStatsCriteria,Set<Integer>> critMap);
+
+	GroupedStatsSource filterMap (
+			Map<SmsStatsCriteria,Set<Integer>> filterMap);
+
+	GroupedStatsSource url (
+			String url);
+
+	GroupedStatsSource urlParams (
+			UrlParams urlParams);
 
 }

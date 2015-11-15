@@ -22,7 +22,7 @@
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.NumberListLogicImpl"/>
+		<bean class="logic.NumberListLogicImplementation"/>
 		<bean class="logic.NumberListNumberLookupHelper"/>
 	</layer>
 

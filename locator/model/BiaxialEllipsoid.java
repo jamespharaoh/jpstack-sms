@@ -8,20 +8,20 @@ interface BiaxialEllipsoid {
 	Double getSemiMajorAxisB ();
 
 	public final static
-	BiaxialEllipsoidImpl airy1830 =
-		new BiaxialEllipsoidImpl (
+	BiaxialEllipsoidImplementation airy1830 =
+		new BiaxialEllipsoidImplementation (
 			6377563.396D,
 			6356256.91D);
 
 	public final static
-	BiaxialEllipsoidImpl airy1830modified =
-		new BiaxialEllipsoidImpl (
+	BiaxialEllipsoidImplementation airy1830modified =
+		new BiaxialEllipsoidImplementation (
 			6377340.189D,
 			6356034.447D);
 
 	public final static
-	BiaxialEllipsoidImpl grs80 =
-		new BiaxialEllipsoidImpl (
+	BiaxialEllipsoidImplementation grs80 =
+		new BiaxialEllipsoidImplementation (
 			6378137.0D,
 			6356752.3141D);
 

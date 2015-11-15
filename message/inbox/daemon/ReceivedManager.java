@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
@@ -47,9 +48,6 @@ class ReceivedManager
 	AffiliateObjectHelper affiliateHelper;
 
 	@Inject
-	CommandManager commandManager;
-
-	@Inject
 	Database database;
 
 	@Inject
@@ -72,6 +70,11 @@ class ReceivedManager
 
 	@Inject
 	ThreadManager threadManager;
+
+	// indirect dependencies
+
+	@Inject
+	Provider<CommandManager> commandManagerProvider;
 
 	// configuration
 
@@ -144,7 +147,7 @@ class ReceivedManager
 			if (route.getCommand () != null) {
 
 				InboxAttemptRec inboxAttempt =
-					commandManager.handle (
+					commandManagerProvider.get ().handle (
 						inbox,
 						route.getCommand (),
 						Optional.fromNullable (
@@ -315,13 +318,20 @@ class ReceivedManager
 				try {
 
 					if (moreMessages) {
+
 						buffer.waitNotFull ();
+
 					} else {
-						Thread.sleep (sleepInterval);
+
+						Thread.sleep (
+							sleepInterval);
+
 					}
 
 				} catch (InterruptedException exception) {
+
 					return;
+
 				}
 
 			}
@@ -333,7 +343,9 @@ class ReceivedManager
 	@Override
 	protected
 	String getThreadName () {
+
 		throw new UnsupportedOperationException ();
+
 	}
 
 	/**
@@ -349,7 +361,8 @@ class ReceivedManager
 			threadManager.makeThread (
 				new QueryThread ());
 
-		thread.setName ("RecManA");
+		thread.setName (
+			"RecManA");
 
 		thread.start ();
 
@@ -364,7 +377,8 @@ class ReceivedManager
 				threadManager.makeThread (
 					new ReceivedThread ("" + i));
 
-			thread.setName ("RecMan" + i);
+			thread.setName (
+				"RecMan" + i);
 
 			thread.start ();
 

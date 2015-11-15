@@ -18,7 +18,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.KeywordLogicImpl"/>
+		<bean class="logic.KeywordLogicImplementation"/>
 	</layer>
 
 	<layer name="daemon">

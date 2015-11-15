@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import lombok.NonNull;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -26,7 +28,7 @@ import wbs.sms.tracker.model.SmsSimpleTrackerRec;
 
 @SingletonComponent ("smsTrackerLogic")
 public
-class SmsTrackerLogicImpl
+class SmsTrackerLogicImplementation
 	implements SmsTrackerLogic {
 
 	// dependencies
@@ -45,9 +47,9 @@ class SmsTrackerLogicImpl
 	@Override
 	public
 	boolean simpleTrackerConsult (
-			SmsSimpleTrackerRec smsSimpleTracker,
-			NumberRec number,
-			Date date) {
+			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
+			@NonNull NumberRec number,
+			@NonNull Date date) {
 
 		SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
 			smsSimpleTrackerNumberHelper.find (

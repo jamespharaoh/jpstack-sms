@@ -12,8 +12,10 @@ import wbs.sms.number.core.logic.NumberLogic;
 
 @SingletonComponent ("messageLogic")
 public
-class MessageLogicImpl
+class MessageLogicImplementation
 	implements MessageLogic {
+
+	// dependencies
 
 	@Inject
 	MessageDao messageDao;
@@ -23,6 +25,8 @@ class MessageLogicImpl
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
+
+	// implementation
 
 	@Override
 	public

@@ -27,8 +27,10 @@ class ServiceStatsSourceBuilder
 	@Inject
 	ConsoleObjectManager objectManager;
 
+	// prototype dependencies
+
 	@Inject
-	Provider<SmsStatsSourceImpl> statsSourceImpl;
+	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// implementation
 
@@ -106,7 +108,7 @@ class ServiceStatsSourceBuilder
 
 		}
 
-		return statsSourceImpl.get ()
+		return smsStatsSourceProvider.get ()
 
 			.fixedCriteriaMap (
 				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (

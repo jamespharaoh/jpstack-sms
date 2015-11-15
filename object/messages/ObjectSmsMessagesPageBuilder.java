@@ -19,7 +19,7 @@ import wbs.console.context.ResolvedConsoleContextExtensionPoint;
 import wbs.console.helper.ConsoleHelper;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.module.ConsoleMetaManager;
-import wbs.console.module.ConsoleModuleImpl;
+import wbs.console.module.ConsoleModuleImplementation;
 import wbs.console.part.PagePart;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleFile;
@@ -38,7 +38,7 @@ import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.core.console.MessageSource;
-import wbs.sms.message.core.console.MessageSourceImpl;
+import wbs.sms.message.core.console.MessageSourceImplementation;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -73,7 +73,7 @@ class ObjectSmsMessagesPageBuilder {
 	Provider<ObjectSmsMessagesPart> messageBrowserPartProvider;
 
 	@Inject
-	Provider<MessageSourceImpl> messageSourceProvider;
+	Provider<MessageSourceImplementation> messageSourceProvider;
 
 	@Inject
 	Provider<TabContextResponder> tabContextResponder;
@@ -87,7 +87,7 @@ class ObjectSmsMessagesPageBuilder {
 	ObjectSmsMessagesPageSpec objectSmsMessagesPageSpec;
 
 	@BuilderTarget
-	ConsoleModuleImpl consoleModule;
+	ConsoleModuleImplementation consoleModule;
 
 	// state
 

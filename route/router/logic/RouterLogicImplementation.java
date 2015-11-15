@@ -11,7 +11,7 @@ import wbs.sms.route.router.model.RouterTypeRec;
 
 @SingletonComponent ("routerLogic")
 public
-class RouterLogicImpl
+class RouterLogicImplementation
 	implements RouterLogic {
 
 	// dependencies

@@ -19,7 +19,7 @@ import wbs.sms.number.format.model.NumberFormatRec;
 @Accessors (fluent = true)
 @SingletonComponent ("numberFormatLogicImpl")
 public
-class NumberFormatLogicImpl
+class NumberFormatLogicImplementation
 	implements NumberFormatLogic {
 
 	@Override
@@ -38,11 +38,14 @@ class NumberFormatLogicImpl
 
 		// try each pattern
 
-		for (NumberFormatPatternRec numberFormatPattern
-				: numberFormat.getNumberFormatPatterns ()) {
+		for (
+			NumberFormatPatternRec numberFormatPattern
+				: numberFormat.getNumberFormatPatterns ()
+		) {
 
-			if (numberFormatPattern.getDeleted ())
+			if (numberFormatPattern.getDeleted ()) {
 				continue;
+			}
 
 			if (
 				lessThan (

@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.locator.model.BiaxialEllipsoid;
-import wbs.sms.locator.model.MercatorProjectionImpl;
+import wbs.sms.locator.model.MercatorProjectionImplementation;
 
 // TODO should this be somewhere else?
 @SingletonComponent ("mercatorProjectionConfig")
@@ -16,9 +16,9 @@ class MercatorProjectionConfig {
 
 	@SingletonComponent ("ukNationalGrid")
 	public
-	MercatorProjectionImpl ukNationalGrid () {
+	MercatorProjectionImplementation ukNationalGrid () {
 
-		return new MercatorProjectionImpl (
+		return new MercatorProjectionImplementation (
 			BiaxialEllipsoid.airy1830,
 			0.9996012717D,
 			- 2.0D,
@@ -30,9 +30,9 @@ class MercatorProjectionConfig {
 
 	@SingletonComponent ("irishNationalGrid")
 	public
-	MercatorProjectionImpl irishNationalGrid () {
+	MercatorProjectionImplementation irishNationalGrid () {
 
-		return new MercatorProjectionImpl (
+		return new MercatorProjectionImplementation (
 			BiaxialEllipsoid.airy1830modified,
 			1.000035D,
 			- 8.0D,

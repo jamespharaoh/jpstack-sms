@@ -19,7 +19,7 @@ import wbs.sms.locator.model.MercatorProjection;
 
 @SingletonComponent ("locatorLogic")
 public
-class LocatorLogicImpl
+class LocatorLogicImplementation
 	implements LocatorLogic {
 
 	/**

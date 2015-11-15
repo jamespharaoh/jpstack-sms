@@ -17,7 +17,7 @@
 
 	<layer name="logic">
 		<bean class="logic.SmsSimpleTrackerHandler"/>
-		<bean class="logic.SmsTrackerLogicImpl"/>
+		<bean class="logic.SmsTrackerLogicImplementation"/>
 		<bean class="logic.SmsTrackerManager"/>
 	</layer>
 

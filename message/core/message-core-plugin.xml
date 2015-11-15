@@ -21,7 +21,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MessageLogicImpl"/>
+		<bean class="logic.MessageLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
@@ -40,7 +40,7 @@
 		<bean class="console.MessageMediaSummaryPart"/>
 		<bean class="console.MessageReportsPart"/>
 		<bean class="console.MessageStatusConsoleHelper"/>
-		<bean class="console.MessageSourceImpl"/>
+		<bean class="console.MessageSourceImplementation"/>
 		<bean class="console.MessageSummaryPart"/>
 		<bean class="console.MessageThreadPart"/>
 	</layer>

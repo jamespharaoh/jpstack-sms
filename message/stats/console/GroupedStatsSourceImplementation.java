@@ -25,7 +25,7 @@ import wbs.sms.route.core.model.RouteRec;
 @Accessors (fluent = true)
 @PrototypeComponent ("groupedStatsSource")
 public
-class GroupedStatsSourceImpl
+class GroupedStatsSourceImplementation
 	implements GroupedStatsSource {
 
 	// dependencies

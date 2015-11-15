@@ -40,7 +40,7 @@ import wbs.sms.route.core.model.RouteRec;
 @Log4j
 @SingletonComponent ("outboxLogic")
 public
-class OutboxLogicImpl
+class OutboxLogicImplementation
 	implements OutboxLogic {
 
 	// dependencies

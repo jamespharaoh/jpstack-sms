@@ -23,14 +23,18 @@ import wbs.sms.message.core.model.MessageStatus;
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSourceImpl")
 public
-class MessageSourceImpl
+class MessageSourceImplementation
 	implements MessageSource {
+
+	// dependencies
 
 	@Inject
 	MessageObjectHelper messageHelper;
 
 	@Getter @Setter
 	MessageSearch searchTemplate;
+
+	// implementation
 
 	@Override
 	public

@@ -24,7 +24,7 @@
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.LocatorLogicImpl"/>
+		<bean class="logic.LocatorLogicImplementation"/>
 		<bean class="logic.LocatorManager"/>
 		<bean class="logic.MercatorProjectionConfig"/>
 	</layer>

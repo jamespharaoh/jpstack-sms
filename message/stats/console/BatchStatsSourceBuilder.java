@@ -20,11 +20,17 @@ public
 class BatchStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
+	// prototype dependencies
+
 	@Inject
-	Provider<SmsStatsSourceImpl> smsStatsSourceImpl;
+	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
+
+	// implementation
 
 	@Override
 	public
@@ -42,15 +48,18 @@ class BatchStatsSourceBuilder
 		Set<Integer> batchIds =
 			new HashSet<Integer> ();
 
-		for (BatchRec batch
-				: batches) {
+		for (
+			BatchRec batch
+				: batches
+		) {
 
 			batchIds.add (
 				batch.getId ());
 
 		}
 
-		return smsStatsSourceImpl.get ()
+		return smsStatsSourceProvider.get ()
+
 			.fixedCriteriaMap (
 				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
 					SmsStatsCriteria.batch,

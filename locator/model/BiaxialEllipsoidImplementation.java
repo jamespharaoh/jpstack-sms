@@ -1,7 +1,7 @@
 package wbs.sms.locator.model;
 
 public final
-class BiaxialEllipsoidImpl
+class BiaxialEllipsoidImplementation
 	implements BiaxialEllipsoid {
 
 	private final
@@ -11,7 +11,7 @@ class BiaxialEllipsoidImpl
 	double semiMajorAxisB;
 
 	public
-	BiaxialEllipsoidImpl (
+	BiaxialEllipsoidImplementation (
 			double newSemiMajorAxisA,
 			double newSemiMajorAxisB) {
 

@@ -23,7 +23,7 @@
 	</fixtures>
 
 	<layer name="logic">
-		<bean class="logic.SmsCustomerLogicImpl"/>
+		<bean class="logic.SmsCustomerLogicImplementation"/>
 	</layer>
 
 	<layer name="daemon">

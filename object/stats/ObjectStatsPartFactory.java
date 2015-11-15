@@ -25,7 +25,7 @@ import wbs.framework.record.Record;
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
 import wbs.sms.message.stats.console.SmsStatsSource;
-import wbs.sms.message.stats.console.SmsStatsSourceImpl;
+import wbs.sms.message.stats.console.SmsStatsSourceImplementation;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("objectStatsPartFactory")
@@ -56,7 +56,7 @@ class ObjectStatsPartFactory
 	Provider<GenericMessageStatsPart> smsStatsPartProvider;
 
 	@Inject
-	Provider<SmsStatsSourceImpl> smsStatsSourceProvider;
+	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// properties
 

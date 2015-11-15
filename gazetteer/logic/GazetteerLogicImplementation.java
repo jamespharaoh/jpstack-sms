@@ -12,7 +12,7 @@ import wbs.sms.locator.model.LongLat;
 
 @SingletonComponent ("gazetteerLogic")
 public
-class GazetteerLogicImpl
+class GazetteerLogicImplementation
 	implements GazetteerLogic {
 
 	// dependencies

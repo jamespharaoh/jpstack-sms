@@ -33,7 +33,7 @@ import wbs.sms.route.core.model.RouteRec;
 @SingletonComponent ("smsStatsConsoleLogic")
 @Log4j
 public
-class SmsStatsConsoleLogicImpl
+class SmsStatsConsoleLogicImplementation
 	implements SmsStatsConsoleLogic {
 
 	@Inject

@@ -49,7 +49,7 @@ class GenericMessageStatsPart
 	// prototype dependencies
 
 	@Inject
-	Provider<GroupedStatsSourceImpl> groupedStatsSourceImplProvider;
+	Provider<GroupedStatsSource> groupedStatsSourceProvider;
 
 	@Inject
 	Provider<SmsStatsFormatter> statsFormatterProvider;
@@ -449,13 +449,25 @@ class GenericMessageStatsPart
 		groupedUrlParams.remove ("split");
 
 		GroupedStatsSource groupedStatsSource =
-			groupedStatsSourceImplProvider.get ()
-				.groupCriteria (splitCriteria)
-				.statsSource (statsSource)
-				.critMap (criteriaMap)
-				.filterMap (statsConsoleLogic.makeFilterMap ())
-				.url (url)
-				.urlParams (groupedUrlParams);
+			groupedStatsSourceProvider.get ()
+
+			.groupCriteria (
+				splitCriteria)
+
+			.statsSource (
+				statsSource)
+
+			.critMap (
+				criteriaMap)
+
+			.filterMap (
+				statsConsoleLogic.makeFilterMap ())
+
+			.url (
+				url)
+
+			.urlParams (
+				groupedUrlParams);
 
 		switch (viewMode) {
 

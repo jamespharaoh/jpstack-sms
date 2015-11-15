@@ -24,7 +24,7 @@
 
 	<layer name="logic">
 		<bean class="logic.RouterHelperManager"/>
-		<bean class="logic.RouterLogicImpl"/>
+		<bean class="logic.RouterLogicImplementation"/>
 		<bean class="logic.SimpleRouterHelper"/>
 		<bean class="logic.StaticRouterHelper"/>
 	</layer>

@@ -18,7 +18,7 @@
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.CommandLogicImpl"/>
+		<bean class="logic.CommandLogicImplementation"/>
 	</layer>
 
 	<console-modules>

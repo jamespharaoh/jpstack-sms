@@ -16,7 +16,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.NumberLogicImpl"/>
+		<bean class="logic.NumberLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

@@ -14,7 +14,7 @@ import wbs.sms.command.model.CommandTypeRec;
 
 @SingletonComponent ("commandLogic")
 public
-class CommandLogicImpl
+class CommandLogicImplementation
 	implements CommandLogic {
 
 	// dependencies

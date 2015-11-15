@@ -24,13 +24,13 @@
 		<bean class="console.AffiliateStatsSourceBuilder"/>
 		<bean class="console.BatchStatsSourceBuilder"/>
 		<bean class="console.GenericMessageStatsPart"/>
-		<bean class="console.GroupedStatsSourceImpl"/>
+		<bean class="console.GroupedStatsSourceImplementation"/>
 		<bean class="console.MessageStatsPartConfig"/>
 		<bean class="console.RouteStatsSource"/>
 		<bean class="console.ServiceStatsSourceBuilder"/>
-		<bean class="console.SmsStatsConsoleLogicImpl"/>
+		<bean class="console.SmsStatsConsoleLogicImplementation"/>
 		<bean class="console.SmsStatsFormatter"/>
-		<bean class="console.SmsStatsSourceImpl"/>
+		<bean class="console.SmsStatsSourceImplementation"/>
 		<bean class="console.SmsStatsDailyTimeScheme"/>
 		<bean class="console.SmsStatsWeeklyTimeScheme"/>
 		<bean class="console.SmsStatsMonthlyTimeScheme"/>

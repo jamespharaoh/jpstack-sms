@@ -18,7 +18,7 @@ import wbs.sms.number.list.model.NumberListUpdateObjectHelper;
 
 @SingletonComponent ("numberListLogic")
 public
-class NumberListLogicImpl
+class NumberListLogicImplementation
 	implements NumberListLogic {
 
 	// dependencies

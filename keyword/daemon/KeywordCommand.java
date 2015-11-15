@@ -4,6 +4,7 @@ import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -71,8 +72,10 @@ class KeywordCommand
 	@Inject
 	MessageObjectHelper messageHelper;
 
+	// indirect dependencies
+
 	@Inject
-	CommandManager commandManager;
+	Provider<CommandManager> commandManagerProvider;
 
 	// properties
 
@@ -190,7 +193,7 @@ class KeywordCommand
 
 			// hand off
 
-			return commandManager.handle (
+			return commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
 				Optional.<Integer>absent (),
@@ -222,7 +225,7 @@ class KeywordCommand
 			CommandRec nextCommand =
 				keywordSet.getFallbackCommand ();
 
-			return commandManager.handle (
+			return commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
 				Optional.<Integer>absent (),
@@ -369,7 +372,7 @@ class KeywordCommand
 			keywordSetFallback.getCommand ();
 
 		return Optional.of (
-			commandManager.handle (
+			commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
 				Optional.<Integer>absent (),

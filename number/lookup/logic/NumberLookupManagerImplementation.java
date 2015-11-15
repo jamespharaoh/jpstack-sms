@@ -8,7 +8,7 @@ import wbs.sms.number.lookup.model.NumberLookupRec;
 
 @SingletonComponent ("numberLookupManager")
 public
-class NumberLookupManagerImpl
+class NumberLookupManagerImplementation
 	implements NumberLookupManager {
 
 	// dependencies

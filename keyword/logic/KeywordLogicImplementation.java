@@ -17,7 +17,7 @@ import wbs.sms.number.core.model.NumberRec;
 
 @SingletonComponent ("keywordLogic")
 public
-class KeywordLogicImpl
+class KeywordLogicImplementation
 	implements KeywordLogic {
 
 	// dependencies

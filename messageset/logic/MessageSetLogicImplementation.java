@@ -18,7 +18,7 @@ import wbs.sms.number.core.model.NumberRec;
 
 @SingletonComponent ("messageSetLogic")
 public
-class MessageSetLogicImpl
+class MessageSetLogicImplementation
 	implements MessageSetLogic {
 
 	@Inject

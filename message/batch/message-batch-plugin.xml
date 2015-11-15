@@ -23,7 +23,7 @@
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.BatchLogicImpl"/>
+		<bean class="logic.BatchLogicImplementation"/>
 	</layer>
 
 	<console-modules>

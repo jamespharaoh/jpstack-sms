@@ -30,8 +30,7 @@
 
 	<layer name="daemon">
 		<bean class="daemon.ReceivedManager"/>
-		<bean class="daemon.CommandManagerImpl"/>
-		<bean class="daemon.CommandManagerProxy"/>
+		<bean class="daemon.CommandManagerImplementation"/>
 		<bean class="daemon.NullCommandTypeHandler"/>
 	</layer>
 

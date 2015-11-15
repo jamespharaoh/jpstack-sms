@@ -16,7 +16,7 @@
 
 	<layer name="logic">
 		<bean class="logic.MessageSender"/>
-		<bean class="logic.OutboxLogicImpl"/>
+		<bean class="logic.OutboxLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

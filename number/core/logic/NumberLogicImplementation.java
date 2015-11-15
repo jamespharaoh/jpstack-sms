@@ -19,9 +19,9 @@ import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 
 @Log4j
-@SingletonComponent ("numberLogicImpl")
+@SingletonComponent ("numberLogic")
 public
-class NumberLogicImpl
+class NumberLogicImplementation
 	implements NumberLogic {
 
 	// dependencies

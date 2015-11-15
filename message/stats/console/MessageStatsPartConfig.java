@@ -17,7 +17,7 @@ class MessageStatsPartConfig {
 	Provider<GenericMessageStatsPart> genericMessageStatsPartProvider;
 
 	@Inject
-	Provider<SmsStatsSourceImpl> smsStatsSourceImplProvider;
+	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// init
 
@@ -31,7 +31,7 @@ class MessageStatsPartConfig {
 				"/messages/message.stats")
 
 			.statsSource (
-				smsStatsSourceImplProvider.get ());
+				smsStatsSourceProvider.get ());
 
 	}
 

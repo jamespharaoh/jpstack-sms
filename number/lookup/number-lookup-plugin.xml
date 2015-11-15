@@ -19,7 +19,7 @@
 
 	<layer name="logic">
 		<bean class="logic.NumberLookupHelperManager"/>
-		<bean class="logic.NumberLookupManagerImpl"/>
+		<bean class="logic.NumberLookupManagerImplementation"/>
 	</layer>
 
 	<console-modules>

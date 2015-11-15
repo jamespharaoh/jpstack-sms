@@ -1,12 +1,13 @@
 package wbs.sms.locator.model;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 public
-class MercatorProjectionImpl
+class MercatorProjectionImplementation
 	implements MercatorProjection {
 
-	BiaxialEllipsoidImpl biaxialEllipsoid;
+	BiaxialEllipsoidImplementation biaxialEllipsoid;
 
 	@Getter
 	Double scaleFactor;
@@ -24,16 +25,13 @@ class MercatorProjectionImpl
 	Double originNorthing;
 
 	public
-	MercatorProjectionImpl (
-			BiaxialEllipsoidImpl newBiaxialEllipsoid,
-			Double newScaleFactor,
-			Double newOriginLongitude,
-			Double newOriginLatitude,
-			Double newOriginEasting,
-			Double newOriginNorthing) {
-
-		if (newBiaxialEllipsoid == null)
-			throw new NullPointerException ();
+	MercatorProjectionImplementation (
+			@NonNull BiaxialEllipsoidImplementation newBiaxialEllipsoid,
+			@NonNull Double newScaleFactor,
+			@NonNull Double newOriginLongitude,
+			@NonNull Double newOriginLatitude,
+			@NonNull Double newOriginEasting,
+			@NonNull Double newOriginNorthing) {
 
 		if (newOriginLongitude < -180
 				|| newOriginLongitude > 180
@@ -63,7 +61,7 @@ class MercatorProjectionImpl
 
 	@Override
 	public
-	BiaxialEllipsoidImpl getBiaxialEllipsoid () {
+	BiaxialEllipsoidImplementation getBiaxialEllipsoid () {
 		return biaxialEllipsoid;
 	}
 

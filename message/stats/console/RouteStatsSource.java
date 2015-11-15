@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import lombok.NonNull;
+
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
@@ -19,21 +21,28 @@ public
 class RouteStatsSource
 	implements ObjectStatsSourceBuilder {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
+	// prototype dependencies
+
 	@Inject
-	Provider<SmsStatsSourceImpl> statsSourceImpl;
+	Provider<SmsStatsSourceImplementation> smsStatsSource;
+
+	// implementation
 
 	@Override
 	public
 	SmsStatsSource buildStatsSource (
-			Record<?> parent) {
+			@NonNull Record<?> parent) {
 
 		if (! ((Object) parent instanceof RouteRec))
 			return null;
 
-		return statsSourceImpl.get ()
+		return smsStatsSource.get ()
+
 			.fixedCriteriaMap (
 				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
 					SmsStatsCriteria.route,

@@ -59,9 +59,9 @@ class SmsUtilsTrackerTest
 	void testSimpleTrackerScanCore () {
 
 		SmsLogic smsUtils =
-			new SmsLogicImpl ();
+			new SmsLogicImplementation ();
 
-		SmsLogicImpl.SimpleTrackerResult result;
+		SmsLogicImplementation.SimpleTrackerResult result;
 
 		// notOk
 

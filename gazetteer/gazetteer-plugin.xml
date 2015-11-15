@@ -7,7 +7,7 @@
 	</plugin-dependencies>
 
 	<layer name="logic">
-		<bean class="logic.GazetteerLogicImpl"/>
+		<bean class="logic.GazetteerLogicImplementation"/>
 	</layer>
 
 	<models>

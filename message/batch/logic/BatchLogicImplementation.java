@@ -16,7 +16,7 @@ import wbs.sms.message.batch.model.BatchTypeRec;
 
 @SingletonComponent ("batchLogic")
 public
-class BatchLogicImpl
+class BatchLogicImplementation
 	implements BatchLogic {
 
 	// dependencies

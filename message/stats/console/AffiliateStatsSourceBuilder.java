@@ -21,11 +21,17 @@ public
 class AffiliateStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
+	// prototype dependencies
+
 	@Inject
-	Provider<SmsStatsSourceImpl> smsStatsSourceImpl;
+	Provider<SmsStatsSourceImplementation> smsStatsSource;
+
+	// implementation
 
 	@Override
 	public
@@ -65,7 +71,7 @@ class AffiliateStatsSourceBuilder
 
 		}
 
-		return smsStatsSourceImpl.get ()
+		return smsStatsSource.get ()
 			.fixedCriteriaMap (
 				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
 					SmsStatsCriteria.affiliate,

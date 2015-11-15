@@ -24,10 +24,10 @@ import wbs.sms.command.model.CommandTypeRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 
-@SingletonComponent ("commandManagerImpl")
+@SingletonComponent ("commandManager")
 public
-class CommandManagerImpl
-	implements CommandManagerMethods {
+class CommandManagerImplementation
+	implements CommandManager {
 
 	// dependencies
 
@@ -42,9 +42,6 @@ class CommandManagerImpl
 
 	@Inject
 	ExceptionLogLogic exceptionLogic;
-
-	@Inject
-	CommandManagerProxy proxy;
 
 	// collection dependencies
 
@@ -62,8 +59,6 @@ class CommandManagerImpl
 	public
 	void init ()
 		throws Exception {
-
-		proxy.setDelegate (this);
 
 		commandTypeHandlerBeanNamesByCommandType =
 			new HashMap<String,String> ();

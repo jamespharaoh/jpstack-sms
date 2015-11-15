@@ -22,9 +22,9 @@ import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @Accessors (fluent = true)
-@PrototypeComponent ("smsStatsSourceImpl")
+@PrototypeComponent ("smsStatsSource")
 public
-class SmsStatsSourceImpl
+class SmsStatsSourceImplementation
 	implements SmsStatsSource {
 
 	// dependencies
