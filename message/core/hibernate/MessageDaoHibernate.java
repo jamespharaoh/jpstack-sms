@@ -19,6 +19,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 
 import wbs.framework.application.annotations.SingletonComponent;
@@ -351,8 +352,12 @@ class MessageDaoHibernate
 				search.createdTimePartial ())
 		) {
 
+			// TODO timezone should not be hardcoded
+
 			Interval interval =
 				parsePartialTimestamp (
+					DateTimeZone.forID (
+						"Europe/London"),
 					search.createdTimePartial ());
 
 			criteria.add (
