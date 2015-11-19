@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableSet;
 
-import wbs.console.html.JqueryScriptRef;
 import wbs.console.html.ScriptRef;
+import wbs.console.misc.JqueryScriptRef;
 import wbs.console.responder.HtmlResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.core.console.MessageConsoleHelper;
