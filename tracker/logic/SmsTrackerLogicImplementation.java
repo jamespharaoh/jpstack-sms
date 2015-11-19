@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import lombok.NonNull;
+
+import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -49,7 +52,7 @@ class SmsTrackerLogicImplementation
 	boolean simpleTrackerConsult (
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number,
-			@NonNull Date date) {
+			@NonNull Optional<Instant> date) {
 
 		SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
 			smsSimpleTrackerNumberHelper.find (
@@ -126,7 +129,7 @@ class SmsTrackerLogicImplementation
 	 */
 	private
 	boolean simpleTrackerNumberScanAndUpdate (
-			SmsSimpleTrackerNumberRec trackerNumber) {
+			@NonNull SmsSimpleTrackerNumberRec trackerNumber) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -152,8 +155,8 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	boolean simpleTrackerScan (
-			SmsSimpleTrackerRec smsSimpleTracker,
-			NumberRec number) {
+			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
+			@NonNull NumberRec number) {
 
 		// get the messages
 
@@ -180,7 +183,7 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	SimpleTrackerResult simpleTrackerScanCore (
-			Collection<? extends MessageRec> messagesSource,
+			@NonNull Collection<? extends MessageRec> messagesSource,
 			int failureCountMin,
 			long failureSingleMsMin,
 			long failureTotalMsMin) {
@@ -288,7 +291,7 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	boolean simpleTrackerStatusIsPositive (
-			MessageStatus status) {
+			@NonNull MessageStatus status) {
 
 		return in (
 			status,
@@ -299,7 +302,7 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	boolean simpleTrackerStatusIsNegative (
-			MessageStatus status) {
+			@NonNull MessageStatus status) {
 
 		return in (
 			status,

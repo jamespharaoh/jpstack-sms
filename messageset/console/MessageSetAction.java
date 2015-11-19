@@ -1,6 +1,9 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.isEmpty;
+import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.regex.Pattern;
@@ -92,10 +95,13 @@ class MessageSetAction
 
 		// check privs
 
-		if (! privLookup.lookup (
-				requestContext.contextStuff ())) {
+		if (
+			! privLookup.lookup (
+				requestContext.contextStuff ())
+		) {
 
-			requestContext.addError ("Access denied");
+			requestContext.addError (
+				"Access denied");
 
 			return null;
 
@@ -118,16 +124,29 @@ class MessageSetAction
 
 		int numMessages =
 			Integer.parseInt (
-				requestContext.parameter ("num_messages"));
+				requestContext.parameter (
+					"num_messages"));
 
-		for (int index = 0; index < numMessages; index++) {
+		for (
+			int index = 0;
+			index < numMessages;
+			index ++
+		) {
 
-			if (requestContext.parameter ("enabled_" + index) == null)
+			if (
+				isNull (
+					requestContext.parameter (
+						"enabled_" + index))
+			) {
 				continue;
+			}
 
-			if (! Pattern.matches (
+			if (
+				! Pattern.matches (
 					"\\d+",
-					requestContext.parameter ("route_" + index))) {
+					requestContext.parameter (
+						"route_" + index))
+			) {
 
 				requestContext.addError (
 					stringFormat (
@@ -138,8 +157,11 @@ class MessageSetAction
 
 			}
 
-			if (equal (requestContext.parameter ("number_" + index),
-					"")) {
+			if (
+				isEmpty (
+					requestContext.parameter (
+						"number_" + index))
+			) {
 
 				requestContext.addError (
 					"Message " + (index + 1) + " has no number");
@@ -149,26 +171,38 @@ class MessageSetAction
 			}
 
 			String message =
-				requestContext.parameter ("message_" + index);
+				requestContext.parameter (
+					"message_" + index);
 
-			if (message == null)
-				throw new NullPointerException();
-			if (!Gsm.isGsm(message)) {
-				requestContext.addError("Message " + (index + 1)
-						+ " has invalid characters");
-				return null;
+			if (message == null) {
+				throw new NullPointerException ();
 			}
-			if (Gsm.length(message) > 160) {
-				requestContext.addError("Message " + (index + 1) + " is too long");
+
+			if (! Gsm.isGsm (message)) {
+
+				requestContext.addError (
+					"Message " + (index + 1) + " has invalid characters");
+
 				return null;
+
 			}
+
+			if (Gsm.length (message) > 160) {
+
+				requestContext.addError (
+					"Message " + (index + 1) + " is too long");
+
+				return null;
+
+			}
+
 		}
 
 		// lookup the current user
 
 		UserRec myUser =
 			userHelper.find (
-				requestContext.userId());
+				requestContext.userId ());
 
 		// iterate over the input and do it
 
@@ -181,19 +215,27 @@ class MessageSetAction
 			log.debug (index);
 
 			boolean enabled =
-				requestContext.parameter ("enabled_" + index) != null;
+				isNotNull (
+					requestContext.parameter (
+						"enabled_" + index));
 
 			MessageSetMessageRec messageSetMessage =
-				(MessageSetMessageRec)
-				messageSet.getMessages ().get (
-					new Integer (index));
+				index < messageSet.getMessages ().size ()
+					? messageSet.getMessages ().get (
+						index)
+					: null;
 
-			log.debug ("enabled " + enabled);
-			log.debug ("msg " + (messageSetMessage != null));
+			log.debug (
+				"enabled " + enabled);
+
+			log.debug (
+				"msg " + (messageSetMessage != null));
+
 
 			if (messageSetMessage != null && ! enabled) {
 
-				log.debug("deleting");
+				log.debug (
+					"deleting");
 
 				// delete existing message
 
@@ -216,17 +258,24 @@ class MessageSetAction
 				RouteRec newRoute =
 					routeHelper.find (
 						Integer.parseInt (
-							requestContext.parameter ("route_" + index)));
+							requestContext.parameter (
+								"route_" + index)));
 
 				String newNumber =
-					requestContext.parameter ("number_" + index);
+					requestContext.parameter (
+						"number_" + index);
 
 				String newMessage =
-					requestContext.parameter ("message_" + index);
+					requestContext.parameter (
+						"message_" + index);
 
-				if (messageSetMessage == null) {
+				if (
+					isNull (
+						messageSetMessage)
+				) {
 
-					log.debug("creating");
+					log.debug (
+						"creating");
 
 					// create new message
 
@@ -268,35 +317,84 @@ class MessageSetAction
 
 				} else {
 
-					log.debug("updating");
+					log.debug (
+						"updating");
 
 					// update existing message
-					if (messageSetMessage.getRoute() != newRoute) {
-						messageSetMessage.setRoute(newRoute);
-						eventLogic.createEvent("messageset_message_route",
-								myUser, index, messageSet, newRoute);
+
+					if (
+						notEqual (
+							messageSetMessage.getRoute (),
+							newRoute)
+					) {
+
+						messageSetMessage
+
+							.setRoute (
+								newRoute);
+
+						eventLogic.createEvent (
+							"messageset_message_route",
+							myUser,
+							index,
+							messageSet,
+							newRoute);
+
 					}
 
-					if (!messageSetMessage.getNumber().equals(newNumber)) {
-						messageSetMessage.setNumber(newNumber);
-						eventLogic.createEvent("messageset_message_number",
-								myUser, index, messageSet, newNumber);
+					if (
+						notEqual (
+							messageSetMessage.getNumber (),
+							newNumber)
+					) {
+
+						messageSetMessage
+
+							.setNumber (
+								newNumber);
+
+						eventLogic.createEvent (
+							"messageset_message_number",
+							myUser,
+							index,
+							messageSet,
+							newNumber);
+
 					}
 
-					if (!messageSetMessage.getMessage().equals(newMessage)) {
-						messageSetMessage.setMessage(newMessage);
-						eventLogic.createEvent(
-								"messageset_message_message", myUser, index,
-								messageSet, newMessage);
+					if (
+						notEqual (
+							messageSetMessage.getMessage (),
+							newMessage)
+					) {
+
+						messageSetMessage
+
+							.setMessage (
+								newMessage);
+
+						eventLogic.createEvent (
+							"messageset_message_message",
+							myUser,
+							index,
+							messageSet,
+							newMessage);
+
 					}
+
 				}
+
 			}
+
 		}
 
-		transaction.commit();
+		transaction.commit ();
 
-		requestContext.addNotice("Messages updated");
-		requestContext.setEmptyFormData();
+		requestContext.addNotice (
+			"Messages updated");
+
+		requestContext.setEmptyFormData ();
+
 		return null;
 
 	}

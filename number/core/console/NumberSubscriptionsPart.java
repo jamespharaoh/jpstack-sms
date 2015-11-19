@@ -21,6 +21,8 @@ public
 class NumberSubscriptionsPart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	NumberObjectHelper numberHelper;
 
@@ -33,10 +35,16 @@ class NumberSubscriptionsPart
 	@Inject
 	TimeFormatter timeFormatter;
 
+	// properties
+
 	@Getter @Setter
 	boolean activeOnly;
 
+	// state
+
 	Collection<NumberPlugin.Link> links;
+
+	// implementation
 
 	@Override
 	public

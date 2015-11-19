@@ -18,15 +18,19 @@ class NumberConsoleConfig {
 	@SingletonComponent ("numberCryptor")
 	public
 	Cryptor numberCryptor () {
+
 		return new Cryptor ();
+
 	}
 
-	@PrototypeComponent ("numberSubscriptionActivePart")
+	@PrototypeComponent ("numberSubscriptionsActivePart")
 	public
 	PagePart numberSubscriptionsActivePart () {
 
 		return numberSubscriptionsPart.get ()
-			.activeOnly (true);
+
+			.activeOnly (
+				true);
 
 	}
 

@@ -1,14 +1,18 @@
 package wbs.sms.tracker.logic;
 
 import java.util.Collection;
-import java.util.Date;
+
+import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerRec;
 
-public interface SmsTrackerLogic {
+public
+interface SmsTrackerLogic {
 
 	/**
 	 * The normal way to use a simple tracker, returns any cached value or does
@@ -26,7 +30,7 @@ public interface SmsTrackerLogic {
 	boolean simpleTrackerConsult (
 			SmsSimpleTrackerRec tracker,
 			NumberRec number,
-			Date date);
+			Optional<Instant> date);
 
 	/**
 	 * This entirely passive function does a scan for a given tracker and number

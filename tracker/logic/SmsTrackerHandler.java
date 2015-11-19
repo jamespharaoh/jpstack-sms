@@ -1,16 +1,20 @@
 package wbs.sms.tracker.logic;
 
-import java.util.Date;
+import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsTrackerRec;
 
-public interface SmsTrackerHandler {
+public
+interface SmsTrackerHandler {
 
 	String getTypeCode ();
 
 	boolean canSend (
-		SmsTrackerRec tracker,
-		NumberRec number,
-		Date timestamp);
+			SmsTrackerRec tracker,
+			NumberRec number,
+			Optional<Instant> timestamp);
+
 }

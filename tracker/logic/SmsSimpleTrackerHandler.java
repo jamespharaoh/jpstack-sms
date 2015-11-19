@@ -1,8 +1,12 @@
 package wbs.sms.tracker.logic;
 
-import java.util.Date;
-
 import javax.inject.Inject;
+
+import lombok.NonNull;
+
+import org.joda.time.Instant;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.number.core.model.NumberRec;
@@ -36,9 +40,9 @@ class SmsSimpleTrackerHandler
 	@Override
 	public
 	boolean canSend (
-			SmsTrackerRec tracker,
-			NumberRec number,
-			Date timestamp) {
+			@NonNull SmsTrackerRec tracker,
+			@NonNull NumberRec number,
+			@NonNull Optional<Instant> timestamp) {
 
 		SmsSimpleTrackerRec simpleTracker =
 			smsSimpleTrackerHelper.find (

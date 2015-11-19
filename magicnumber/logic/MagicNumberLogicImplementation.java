@@ -259,7 +259,7 @@ class MagicNumberLogicImplementation
 
 				threadId =
 					Optional.of (
-						message.getThreadId ());
+						message.getId ());
 
 			}
 

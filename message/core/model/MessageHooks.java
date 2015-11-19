@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import lombok.NonNull;
+
 import org.joda.time.DateTime;
 
 import wbs.framework.object.AbstractObjectHooks;
@@ -22,7 +24,7 @@ class MessageHooks
 	@Override
 	public
 	List<Integer> searchIds (
-			Object search) {
+			@NonNull Object search) {
 
 		MessageSearch messageSearch =
 			(MessageSearch) search;
@@ -35,7 +37,9 @@ class MessageHooks
 	@Override
 	public
 	void beforeInsert (
-			MessageRec message) {
+			@NonNull MessageRec message) {
+
+		// set date
 
 		if (message.getDate () == null) {
 
