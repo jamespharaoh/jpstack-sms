@@ -1,7 +1,10 @@
 package wbs.sms.core.model;
 
-public enum SmsOrigType {
+public
+enum SmsOrigType {
+
 	longNumber,
 	shortCode,
-	textual
+	textual;
+
 }

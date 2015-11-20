@@ -1,7 +1,10 @@
 package wbs.sms.message.report.model;
 
-// TODO this should be a table
-public enum MessageReportCodeType {
+public
+enum MessageReportCodeType {
+
+	// TODO should not be an enum
+
 	mig,
 	dialogue,
 	hybyte,
@@ -10,4 +13,5 @@ public enum MessageReportCodeType {
 	comshen,
 	broadcastSystems,
 	oxygen8,
+
 }

@@ -22,32 +22,49 @@ class ConcatenatedInformationElement
 	}
 
 	@Override
-	public int getId() {
+	public
+	int getId () {
 		return 0;
 	}
 
-	public int getRef() {
+	public
+	int getRef () {
 		return ref;
 	}
 
-	public int getSeqMax() {
+	public
+	int getSeqMax () {
 		return seqMax;
 	}
 
-	public int getSeqNum() {
+	public
+	int getSeqNum () {
 		return seqNum;
 	}
 
 	@Override
-	public int length() {
+	public
+	int length () {
 		return 3;
 	}
 
-	public static ConcatenatedInformationElement decode(byte[] data) throws PduDecodeException {
+	public static
+	ConcatenatedInformationElement decode (
+			byte[] data)
+		throws PduDecodeException {
 
-		if (data.length != 3)
-			throw new PduDecodeException("SMS concat IE must be 3 bytes long");
+		if (data.length != 3) {
 
-		return new ConcatenatedInformationElement(data[0] & 0xff, data[1] & 0xff, data[2] & 0xff);
+			throw new PduDecodeException (
+				"SMS concat IE must be 3 bytes long");
+
+		}
+
+		return new ConcatenatedInformationElement (
+			data [0] & 0xff,
+			data [1] & 0xff,
+			data [2] & 0xff);
+
 	}
+
 }

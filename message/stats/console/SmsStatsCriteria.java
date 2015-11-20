@@ -1,7 +1,12 @@
 package wbs.sms.message.stats.console;
 
-public enum SmsStatsCriteria {
+public
+enum SmsStatsCriteria {
 
-	route, service, affiliate, batch, network;
+	route,
+	service,
+	affiliate,
+	batch,
+	network;
 
 }

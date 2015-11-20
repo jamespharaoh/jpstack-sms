@@ -1,5 +1,9 @@
 package wbs.sms.smpp.daemon;
 
-public interface SmppResponseHandler {
-	void handle(SmppPdu pdu);
+public
+interface SmppResponseHandler {
+
+	void handle (
+			SmppPdu pdu);
+
 }

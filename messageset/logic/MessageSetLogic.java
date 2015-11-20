@@ -6,7 +6,8 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.number.core.model.NumberRec;
 
-public interface MessageSetLogic {
+public
+interface MessageSetLogic {
 
 	Integer sendMessageSet (
 			MessageSetRec messageSet,
