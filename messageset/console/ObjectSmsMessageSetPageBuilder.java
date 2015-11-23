@@ -9,6 +9,8 @@ import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import lombok.NonNull;
+
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
 import wbs.console.context.ConsoleContextPrivLookup;
@@ -28,6 +30,7 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.record.Record;
 import wbs.framework.web.Action;
 import wbs.framework.web.Responder;
 import wbs.platform.core.console.CoreAuthAction;
@@ -35,7 +38,9 @@ import wbs.platform.core.console.CoreAuthAction;
 @PrototypeComponent ("objectSmsMessageSetPageBuilder")
 @ConsoleModuleBuilderHandler
 public
-class ObjectSmsMessageSetPageBuilder {
+class ObjectSmsMessageSetPageBuilder<
+	ObjectType extends Record<ObjectType>
+> {
 
 	// dependencies
 
@@ -71,7 +76,7 @@ class ObjectSmsMessageSetPageBuilder {
 	// builder
 
 	@BuilderParent
-	ConsoleContextBuilderContainer container;
+	ConsoleContextBuilderContainer<ObjectType> container;
 
 	@BuilderSource
 	ObjectSmsMessageSetPageSpec spec;
@@ -81,7 +86,7 @@ class ObjectSmsMessageSetPageBuilder {
 
 	// state
 
-	ConsoleHelper<?> consoleHelper;
+	ConsoleHelper<ObjectType> consoleHelper;
 
 	String privKey;
 	String tabName;
@@ -97,7 +102,7 @@ class ObjectSmsMessageSetPageBuilder {
 
 	public
 	void buildMeta (
-			ConsoleMetaModuleImplementation consoleMetaModule) {
+			@NonNull ConsoleMetaModuleImplementation consoleMetaModule) {
 
 	}
 
@@ -106,15 +111,17 @@ class ObjectSmsMessageSetPageBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		setDefaults ();
 
 		prepare ();
 
-		for (ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
+		for (
+			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
 				: consoleMetaManager.resolveExtensionPoint (
-					container.extensionPointName ())) {
+					container.extensionPointName ())
+		) {
 
 			buildTab (
 				resolvedExtensionPoint);
@@ -144,7 +151,7 @@ class ObjectSmsMessageSetPageBuilder {
 	}
 
 	void buildTab (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
 
 		consoleModule.addContextTab (
 			"end",
@@ -158,7 +165,7 @@ class ObjectSmsMessageSetPageBuilder {
 	}
 
 	void buildFile (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
 
 		Provider<PagePart> partFactory =
 			new Provider<PagePart> () {
@@ -168,7 +175,9 @@ class ObjectSmsMessageSetPageBuilder {
 			PagePart get () {
 
 				return messageSetPartProvider.get ()
-					.messageSetFinder (messageSetFinder);
+
+					.messageSetFinder (
+						messageSetFinder);
 
 			}
 

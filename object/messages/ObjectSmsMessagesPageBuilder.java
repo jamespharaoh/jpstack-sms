@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
@@ -45,7 +46,9 @@ import wbs.sms.route.core.model.RouteRec;
 @PrototypeComponent ("objectSmsMessagesPageBuilder")
 @ConsoleModuleBuilderHandler
 public
-class ObjectSmsMessagesPageBuilder {
+class ObjectSmsMessagesPageBuilder<
+	ObjectType extends Record<ObjectType>
+> {
 
 	// dependencies
 
@@ -81,7 +84,7 @@ class ObjectSmsMessagesPageBuilder {
 	// builder
 
 	@BuilderParent
-	ConsoleContextBuilderContainer container;
+	ConsoleContextBuilderContainer<ObjectType> container;
 
 	@BuilderSource
 	ObjectSmsMessagesPageSpec objectSmsMessagesPageSpec;
@@ -91,7 +94,7 @@ class ObjectSmsMessagesPageBuilder {
 
 	// state
 
-	ConsoleHelper<?> consoleHelper;
+	ConsoleHelper<ObjectType> consoleHelper;
 	String privKey;
 	String tabName;
 	String fileName;
@@ -104,16 +107,18 @@ class ObjectSmsMessagesPageBuilder {
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull Builder builder) {
 
 		setDefaults ();
 
 		buildPartFactory ();
 		buildResponder ();
 
-		for (ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
+		for (
+			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
 				: consoleMetaManager.resolveExtensionPoint (
-					container.extensionPointName ())) {
+					container.extensionPointName ())
+		) {
 
 			buildContextTab (
 				resolvedExtensionPoint);
@@ -126,7 +131,7 @@ class ObjectSmsMessagesPageBuilder {
 	}
 
 	void buildContextTab (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
 
 		consoleModule.addContextTab (
 			"end",
@@ -317,7 +322,7 @@ class ObjectSmsMessagesPageBuilder {
 	}
 
 	void buildContextFile (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
 
 		consoleModule.addContextFile (
 			fileName,
