@@ -624,7 +624,7 @@ class OutboxLogicImplementation
 				message.getDirection (),
 				MessageDirection.out)
 		) {
-		
+
 			throw new RuntimeException ();
 
 		} else if (
@@ -638,18 +638,18 @@ class OutboxLogicImplementation
 
 				.setMessage (
 					message)
-	
+
 				.setRoute (
 					message.getRoute ())
-	
+
 				.setCreatedTime (
 					instantToDate (
 						transaction.now ()))
-	
+
 				.setRetryTime (
 					instantToDate (
 						transaction.now ()))
-	
+
 				.setRemainingTries (
 					message.getRoute ().getMaxTries ())
 
@@ -669,14 +669,14 @@ class OutboxLogicImplementation
 					message);
 
 			existingOutbox
-	
+
 				.setRetryTime (
 					instantToDate (
 						earliest (
 							dateToInstant (
 								existingOutbox.getRetryTime ()),
 							transaction.now ())))
-	
+
 				.setRemainingTries (
 					existingOutbox.getRemainingTries () != null
 						? Math.max (
