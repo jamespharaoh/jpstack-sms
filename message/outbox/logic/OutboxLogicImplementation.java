@@ -629,7 +629,8 @@ class OutboxLogicImplementation
 
 		} else if (
 			in (message.getStatus (),
-				MessageStatus.failed)
+				MessageStatus.failed,
+				MessageStatus.cancelled)
 		) {
 
 			outboxHelper.insert (
@@ -660,8 +661,7 @@ class OutboxLogicImplementation
 
 		} else if (
 			in (message.getStatus (),
-				MessageStatus.pending,
-				MessageStatus.cancelled)
+				MessageStatus.pending)
 		) {
 
 			OutboxRec existingOutbox =
