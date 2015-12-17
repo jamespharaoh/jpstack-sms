@@ -654,6 +654,10 @@ class OutboxLogicImplementation
 
 			);
 
+			messageLogic.messageStatus (
+				message,
+				MessageStatus.pending);
+
 		} else if (
 			in (message.getStatus (),
 				MessageStatus.pending)
