@@ -20,10 +20,14 @@ import lombok.extern.log4j.Log4j;
 
 import org.json.simple.JSONObject;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
+import wbs.platform.exception.logic.ExceptionLogger;
+import wbs.platform.exception.model.ExceptionResolution;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.OutboxLogic;
@@ -51,6 +55,9 @@ class AbstractSmsSender2
 
 	@Inject
 	Database database;
+
+	@Inject
+	ExceptionLogger exceptionLogger;
 
 	@Inject
 	MessageLogic messageLogic;
@@ -337,6 +344,13 @@ class AbstractSmsSender2
 						throw new NullPointerException ();
 
 				} catch (Exception exception) {
+
+					exceptionLogger.logThrowable (
+						"console",
+						getClass ().getSimpleName (),
+						exception,
+						Optional.<Integer>absent (),
+						ExceptionResolution.fatalError);
 
 					setupSendResult =
 						new SetupSendResult ()
