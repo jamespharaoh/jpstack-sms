@@ -1,5 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.stringToBytes;
@@ -345,9 +346,11 @@ class AbstractSmsSender2
 
 						.message (
 							stringFormat (
-								"Error setuping up send: %s: %s",
+								"Error setting up send: %s: %s",
 								exception.getClass ().getSimpleName (),
-								exception.getMessage ()))
+								ifNull (
+									exception.getMessage (),
+									"null")))
 
 						.exception (
 							exception);
