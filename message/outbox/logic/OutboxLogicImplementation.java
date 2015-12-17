@@ -660,7 +660,8 @@ class OutboxLogicImplementation
 
 		} else if (
 			in (message.getStatus (),
-				MessageStatus.pending)
+				MessageStatus.pending,
+				MessageStatus.cancelled)
 		) {
 
 			OutboxRec existingOutbox =

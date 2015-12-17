@@ -133,9 +133,10 @@ class MessageActionsPart
 				message.getDirection (),
 				MessageDirection.out)
 
-			&& equal (
+			&& in (
 				message.getStatus (),
-				MessageStatus.failed)
+				MessageStatus.failed,
+				MessageStatus.cancelled)
 
 		) {
 

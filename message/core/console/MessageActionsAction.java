@@ -269,9 +269,10 @@ class MessageActionsAction
 			@NonNull Transaction transaction) {
 
 		if (
-			notEqual (
+			notIn (
 				message.getStatus (),
-				MessageStatus.failed)
+				MessageStatus.failed,
+				MessageStatus.cancelled)
 		) {
 
 			requestContext.addError (
