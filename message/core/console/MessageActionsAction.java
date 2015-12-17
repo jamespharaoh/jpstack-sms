@@ -123,6 +123,15 @@ class MessageActionsAction
 			return manuallyUnhold (
 				transaction);
 
+		} else if (
+			isNotNull (
+				requestContext.parameter (
+					"manuallyRetry"))
+		) {
+
+			return manuallyRetry (
+				transaction);
+
 		} else {
 
 			throw new RuntimeException ();
@@ -250,6 +259,40 @@ class MessageActionsAction
 
 		requestContext.addNotice (
 			"Message manually unheld");
+
+		return null;
+
+	}
+
+	private
+	Responder manuallyRetry (
+			@NonNull Transaction transaction) {
+
+		if (
+			notEqual (
+				message.getStatus (),
+				MessageStatus.failed)
+		) {
+
+			requestContext.addError (
+				"Message in invalid state for this operation");
+
+			return null;
+
+		}
+
+		outboxLogic.retryMessage (
+			message);
+
+		eventLogic.createEvent (
+			"message_manually_retried",
+			myUser,
+			message);
+
+		transaction.commit ();
+
+		requestContext.addNotice (
+			"Message manually retried");
 
 		return null;
 

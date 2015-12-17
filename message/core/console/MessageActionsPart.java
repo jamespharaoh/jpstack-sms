@@ -106,6 +106,10 @@ class MessageActionsPart
 		} else if (
 
 			equal (
+				message.getDirection (),
+				MessageDirection.out)
+
+			&& equal (
 				message.getStatus (),
 				MessageStatus.held)
 
@@ -122,6 +126,31 @@ class MessageActionsPart
 				" name=\"manuallyUnhold\"",
 				" value=\"manually unhold\"",
 				"></p>\n");
+
+		} else if (
+
+			equal (
+				message.getDirection (),
+				MessageDirection.out)
+
+			&& equal (
+				message.getStatus (),
+				MessageStatus.failed)
+
+		) {
+
+			printFormat (
+				"<p>This outbound message is in the \"%h\" ",
+				message.getStatus ().getDescription (),
+				"state, and can be manually retried.</p>\n");
+
+			printFormat (
+				"<p><input",
+				" type=\"submit\"",
+				" name=\"manuallyRetry\"",
+				" value=\"manually retry\"",
+				"></p>\n");
+
 		} else {
 
 			printFormat (

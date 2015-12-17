@@ -2,7 +2,9 @@ package wbs.sms.message.outbox.logic;
 
 import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earliest;
+import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -612,30 +614,76 @@ class OutboxLogicImplementation
 	@Override
 	public
 	void retryMessage (
-			MessageRec message) {
+			@NonNull MessageRec message) {
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		OutboxRec outbox =
-			outboxHelper.find (
-				message);
+		if (
+			notEqual (
+				message.getDirection (),
+				MessageDirection.out)
+		) {
+		
+			throw new RuntimeException ();
 
-		outbox
+		} else if (
+			in (message.getStatus (),
+				MessageStatus.failed)
+		) {
 
-			.setRetryTime (
-				instantToDate (
-					earliest (
-						dateToInstant (
-							outbox.getRetryTime ()),
-						transaction.now ())))
+			outboxHelper.insert (
+				outboxHelper.createInstance ()
 
-			.setRemainingTries (
-				outbox.getRemainingTries () != null
-					? Math.max (
-						outbox.getRemainingTries (),
-						1)
-					: null);
+				.setMessage (
+					message)
+	
+				.setRoute (
+					message.getRoute ())
+	
+				.setCreatedTime (
+					instantToDate (
+						transaction.now ()))
+	
+				.setRetryTime (
+					instantToDate (
+						transaction.now ()))
+	
+				.setRemainingTries (
+					message.getRoute ().getMaxTries ())
+
+			);
+
+		} else if (
+			in (message.getStatus (),
+				MessageStatus.pending)
+		) {
+
+			OutboxRec existingOutbox =
+				outboxHelper.find (
+					message);
+
+			existingOutbox
+	
+				.setRetryTime (
+					instantToDate (
+						earliest (
+							dateToInstant (
+								existingOutbox.getRetryTime ()),
+							transaction.now ())))
+	
+				.setRemainingTries (
+					existingOutbox.getRemainingTries () != null
+						? Math.max (
+							existingOutbox.getRemainingTries (),
+							1)
+						: null);
+
+		} else {
+
+			throw new RuntimeException ();
+
+		}
 
 	}
 
