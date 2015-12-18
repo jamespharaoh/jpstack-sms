@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import com.google.common.collect.ImmutableMap;
@@ -74,8 +75,10 @@ class SmsStatsConsoleLogicImplementation
 
 		serviceIds.add (-1);
 
-		for (ServiceRec service
-				: serviceHelper.findAll ()) {
+		for (
+			ServiceRec service
+				: serviceHelper.findAll ()
+		) {
 
 			try {
 
@@ -106,8 +109,10 @@ class SmsStatsConsoleLogicImplementation
 
 		affiliateIds.add (-1);
 
-		for (AffiliateRec affiliate
-				: affiliateHelper.findAll ()) {
+		for (
+			AffiliateRec affiliate
+				: affiliateHelper.findAll ()
+		) {
 
 			try {
 
@@ -138,18 +143,38 @@ class SmsStatsConsoleLogicImplementation
 
 		routeIds.add (-1);
 
-		for (RouteRec route
-				: routeHelper.findAll ()) {
+		for (
+			RouteRec route
+				: routeHelper.findAll ()
+		) {
 
-			if (privChecker.can (route, "stats"))
-				routeIds.add (route.getId ());
+			if (
+				privChecker.can (
+					route,
+					"stats")
+			) {
+
+				routeIds.add (
+					route.getId ());
+
+			}
 
 		}
 
 		return ImmutableMap.<SmsStatsCriteria,Set<Integer>>builder ()
-			.put (SmsStatsCriteria.service, serviceIds)
-			.put (SmsStatsCriteria.affiliate, affiliateIds)
-			.put (SmsStatsCriteria.route, routeIds)
+
+			.put (
+				SmsStatsCriteria.service, 
+				serviceIds)
+
+			.put (
+				SmsStatsCriteria.affiliate, 
+				affiliateIds)
+
+			.put (
+				SmsStatsCriteria.route, 
+				routeIds)
+
 			.build ();
 
 	}
@@ -157,34 +182,25 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	String lookupGroupName (
-			SmsStatsCriteria crit,
+			@NonNull SmsStatsCriteria crit,
 			int id) {
 
 		switch (crit) {
 
 		case route:
 
-			return objectManager.objectPath (
-				routeHelper.find (id),
-				null,
-				true,
-				false);
+			return objectManager.objectPathMini (
+				routeHelper.find (id));
 
 		case service:
 
-			return objectManager.objectPath (
-				serviceHelper.find (id),
-				null,
-				true,
-				false);
+			return objectManager.objectPathMini (
+				serviceHelper.find (id));
 
 		case affiliate:
 
-			return objectManager.objectPath (
-				affiliateHelper.find (id),
-				null,
-				true,
-				false);
+			return objectManager.objectPathMini (
+				affiliateHelper.find (id));
 
 		case network:
 
