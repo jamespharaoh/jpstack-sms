@@ -164,15 +164,15 @@ class SmsStatsConsoleLogicImplementation
 		return ImmutableMap.<SmsStatsCriteria,Set<Integer>>builder ()
 
 			.put (
-				SmsStatsCriteria.service, 
+				SmsStatsCriteria.service,
 				serviceIds)
 
 			.put (
-				SmsStatsCriteria.affiliate, 
+				SmsStatsCriteria.affiliate,
 				affiliateIds)
 
 			.put (
-				SmsStatsCriteria.route, 
+				SmsStatsCriteria.route,
 				routeIds)
 
 			.build ();
