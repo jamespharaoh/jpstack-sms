@@ -34,7 +34,7 @@ class NumberServicesPart
 	PrivChecker privChecker;
 
 	Map<String,ServiceRec> services =
-		new TreeMap<String,ServiceRec>();
+		new TreeMap<String,ServiceRec> ();
 
 	@Override
 	public
@@ -42,23 +42,24 @@ class NumberServicesPart
 
 		NumberRec number =
 			numberHelper.find (
-				requestContext.stuffInt ("numberId"));
+				requestContext.stuffInt (
+					"numberId"));
 
 		List<ServiceRec> allServices =
 			messageHelper.projectServices (
 				number);
 
-		for (ServiceRec service : allServices) {
+		for (
+			ServiceRec service
+				: allServices
+		) {
 
 			if (! objectManager.canView (service))
 				continue;
 
 			services.put (
-				objectManager.objectPath (
-					service,
-					null,
-					true,
-					false),
+				objectManager.objectPathMini (
+					service),
 				service);
 
 		}
@@ -87,8 +88,10 @@ class NumberServicesPart
 
 		}
 
-		for (ServiceRec service
-				: services.values ()) {
+		for (
+			ServiceRec service
+				: services.values ()
+		) {
 
 			Record<?> parent =
 				objectManager.getParent (
