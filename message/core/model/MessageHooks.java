@@ -1,9 +1,5 @@
 package wbs.sms.message.core.model;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import lombok.NonNull;
 
 import org.joda.time.DateTime;
@@ -14,25 +10,7 @@ public
 class MessageHooks
 	extends AbstractObjectHooks<MessageRec> {
 
-	// dependencies
-
-	@Inject
-	MessageDao messageDao;
-
 	// implementation
-
-	@Override
-	public
-	List<Integer> searchIds (
-			@NonNull Object search) {
-
-		MessageSearch messageSearch =
-			(MessageSearch) search;
-
-		return messageDao.searchIds (
-			messageSearch);
-
-	}
 
 	@Override
 	public

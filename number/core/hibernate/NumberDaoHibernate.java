@@ -2,6 +2,8 @@ package wbs.sms.number.core.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -20,7 +22,7 @@ class NumberDaoHibernate
 	@Override
 	public
 	List<Integer> searchIds (
-			NumberSearch numberSearch) {
+			@NonNull NumberSearch numberSearch) {
 
 		Criteria criteria =
 			createCriteria (
