@@ -5,6 +5,7 @@ import static wbs.framework.utils.etc.Misc.stringFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -229,8 +230,7 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
-			Map<SmsStatsCriteria,
-			Set<Integer>>... critMaps) {
+			@NonNull List<Map<SmsStatsCriteria,Set<Integer>>> critMaps) {
 
 		// start with an empty map (will return everything)
 
@@ -239,12 +239,17 @@ class SmsStatsConsoleLogicImplementation
 
 		// now intersect this with each map in turn
 
-		for (Map<SmsStatsCriteria,Set<Integer>> critMap : critMaps) {
+		for (
+			Map<SmsStatsCriteria,Set<Integer>> critMap
+				: critMaps
+		) {
 
 			// for each criterion to ids mapping...
 
-			for (Map.Entry<SmsStatsCriteria,Set<Integer>> ent
-					: critMap.entrySet ()) {
+			for (
+				Map.Entry<SmsStatsCriteria,Set<Integer>> ent
+					: critMap.entrySet ()
+			) {
 
 				SmsStatsCriteria crit =
 					ent.getKey ();

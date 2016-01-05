@@ -14,6 +14,8 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
+import com.google.common.collect.ImmutableList;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
@@ -54,11 +56,11 @@ class SmsStatsSourceImplementation
 			Map<SmsStatsCriteria,Set<Integer>> dynamicCriteriaMap,
 			Map<SmsStatsCriteria,Set<Integer>> filterMap) {
 
-		@SuppressWarnings ("unchecked")
 		Map<SmsStatsCriteria,Set<Integer>> intersectedCriteriaMap =
 			smsStatsConsoleLogic.criteriaMapIntersect (
-				fixedCriteriaMap,
-				dynamicCriteriaMap);
+				ImmutableList.<Map<SmsStatsCriteria,Set<Integer>>>of (
+					fixedCriteriaMap,
+					dynamicCriteriaMap));
 
 		MessageStatsSearch search =
 			smsStatsConsoleLogic.critMapToMessageStatsSearch (

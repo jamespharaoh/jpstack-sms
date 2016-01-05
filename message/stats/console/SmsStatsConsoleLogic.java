@@ -1,6 +1,7 @@
 package wbs.sms.message.stats.console;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,8 +17,7 @@ interface SmsStatsConsoleLogic {
 			int id);
 
 	Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
-			Map<SmsStatsCriteria,
-			Set<Integer>>... critMaps);
+			List<Map<SmsStatsCriteria,Set<Integer>>> critMaps);
 
 	MessageStatsSearch setSearchCriteria (
 			MessageStatsSearch messageStatsSearch,
