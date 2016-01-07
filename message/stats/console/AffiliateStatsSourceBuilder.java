@@ -45,7 +45,6 @@ class AffiliateStatsSourceBuilder
 			affiliates =
 				Collections.singletonList (
 					(AffiliateRec)
-					(Object)
 					parent);
 
 		} else {
@@ -63,8 +62,10 @@ class AffiliateStatsSourceBuilder
 		Set<Integer> affiliateIds =
 			new HashSet<Integer> ();
 
-		for (AffiliateRec affiliate
-				: affiliates) {
+		for (
+			AffiliateRec affiliate
+				: affiliates
+		) {
 
 			affiliateIds.add (
 				affiliate.getId ());

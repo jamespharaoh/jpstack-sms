@@ -177,36 +177,32 @@ class ObjectSmsMessagesPageBuilder<
 				List<RouteRec> routes =
 					Collections.<RouteRec>emptyList ();
 
-				if ((Object) object instanceof AffiliateRec) {
+				if (object instanceof AffiliateRec) {
 
 					affiliates =
 						Collections.singletonList (
 							(AffiliateRec)
-							(Object)
 							object);
 
-				} else if ((Object) object instanceof ServiceRec) {
+				} else if (object instanceof ServiceRec) {
 
 					services =
 						Collections.singletonList (
 							(ServiceRec)
-							(Object)
 							object);
 
-				} else if ((Object) object instanceof BatchRec) {
+				} else if (object instanceof BatchRec) {
 
 					batches =
 						Collections.singletonList (
 							(BatchRec)
-							(Object)
 							object);
 
-				} else if ((Object) object instanceof RouteRec) {
+				} else if (object instanceof RouteRec) {
 
 					routes =
 						Collections.singletonList (
 							(RouteRec)
-							(Object)
 							object);
 
 				} else {

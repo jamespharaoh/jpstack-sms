@@ -40,7 +40,6 @@ class NumberListNumberLookupHelper
 
 		NumberListRec numberList =
 			(NumberListRec)
-			(Object)
 			objectManager.getParent (
 				numberLookup);
 

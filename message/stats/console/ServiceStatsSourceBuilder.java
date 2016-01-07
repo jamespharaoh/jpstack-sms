@@ -41,12 +41,11 @@ class ServiceStatsSourceBuilder
 
 		List<ServiceRec> services;
 
-		if ((Object) parent instanceof ServiceRec) {
+		if (parent instanceof ServiceRec) {
 
 			services =
 				Collections.singletonList (
 					(ServiceRec)
-					(Object)
 					parent);
 
 		} else {

@@ -304,14 +304,16 @@ class Gsm {
 				byteValue =
 					byteBuffer.get() & 0xff;
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					(byteValue & 0x7f); // 0111 1111
 
 				break;
 
 			case 0x01:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0x80) >> 7); // 1000 0000
 
 				byteValue =
@@ -324,7 +326,8 @@ class Gsm {
 
 			case 0x02:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0xc0) >> 6); // 1100 0000
 
 				byteValue =
@@ -337,7 +340,8 @@ class Gsm {
 
 			case 0x03:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0xe0) >> 5); // 1110 0000
 
 				byteValue =
@@ -363,7 +367,8 @@ class Gsm {
 
 			case 0x05:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0xf8) >> 3); // 1111 1000
 
 				byteValue =
@@ -376,7 +381,8 @@ class Gsm {
 
 			case 0x06:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0xfc) >> 2); // 1111 1100
 
 				byteValue =
@@ -389,7 +395,8 @@ class Gsm {
 
 			case 0x07:
 
-				targetByteArray [index] = (byte)
+				targetByteArray [index] =
+					(byte)
 					((byteValue & 0xfe) >> 1); // 1111 1110
 
 				break;

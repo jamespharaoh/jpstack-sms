@@ -35,7 +35,6 @@ class SimpleRouterHelper
 
 		SimpleRouterRec simpleRouter =
 			(SimpleRouterRec)
-			(Object)
 			objectManager.getParent (
 				router);
 
