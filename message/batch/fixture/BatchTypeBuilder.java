@@ -1,7 +1,7 @@
 package wbs.sms.message.batch.fixture;
 
+import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 import static wbs.framework.utils.etc.Misc.camelToUnderscore;
-import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -77,7 +77,7 @@ class BatchTypeBuilder {
 						ifNull (
 							spec.subject (),
 							parent.name ())),
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())));
 
 			createBatchType ();
@@ -91,7 +91,7 @@ class BatchTypeBuilder {
 						ifNull (
 							spec.subject (),
 							parent.name ())),
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())),
 				exception);
 
@@ -143,7 +143,7 @@ class BatchTypeBuilder {
 				subjectType)
 
 			.setCode (
-				codify (
+				simplifyToCodeRequired (
 					spec.name ()))
 
 			.setName (

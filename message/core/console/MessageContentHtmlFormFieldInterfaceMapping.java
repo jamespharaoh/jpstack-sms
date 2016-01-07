@@ -1,12 +1,14 @@
 package wbs.sms.message.core.console;
 
-import java.util.List;
+import static wbs.framework.utils.etc.Misc.successResult;
 
 import javax.inject.Inject;
 
 import lombok.NonNull;
 
 import com.google.common.base.Optional;
+
+import fj.data.Either;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -26,10 +28,9 @@ class MessageContentHtmlFormFieldInterfaceMapping
 
 	@Override
 	public
-	Optional<MessageRec> interfaceToGeneric (
+	Either<Optional<MessageRec>,String> interfaceToGeneric (
 			@NonNull MessageRec container,
-			@NonNull Optional<String> interfaceValue,
-			@NonNull List<String> errors) {
+			@NonNull Optional<String> interfaceValue) {
 
 		throw new UnsupportedOperationException ();
 
@@ -37,13 +38,14 @@ class MessageContentHtmlFormFieldInterfaceMapping
 
 	@Override
 	public
-	Optional<String> genericToInterface (
+	Either<Optional<String>,String> genericToInterface (
 			@NonNull MessageRec container,
 			@NonNull Optional<MessageRec> genericValue) {
 
-		return Optional.of (
-			messageConsoleLogic.messageContentHtml (
-				container));
+		return successResult (
+			Optional.of (
+				messageConsoleLogic.messageContentHtml (
+					container)));
 
 	}
 

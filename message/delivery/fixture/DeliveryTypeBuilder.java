@@ -1,6 +1,6 @@
 package wbs.sms.message.delivery.fixture;
 
-import static wbs.framework.utils.etc.Misc.codify;
+import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.sql.SQLException;
@@ -66,7 +66,7 @@ class DeliveryTypeBuilder {
 			log.info (
 				stringFormat (
 					"Create delivery type %s",
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())));
 
 			createDeliveryType ();
@@ -76,7 +76,7 @@ class DeliveryTypeBuilder {
 			throw new RuntimeException (
 				stringFormat (
 					"Error creating delivery type %s",
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())),
 				exception);
 
@@ -101,7 +101,7 @@ class DeliveryTypeBuilder {
 			deliveryTypeHelper.createInstance ()
 
 			.setCode (
-				codify (
+				simplifyToCodeRequired (
 					spec.name ()))
 
 			.setDescription (

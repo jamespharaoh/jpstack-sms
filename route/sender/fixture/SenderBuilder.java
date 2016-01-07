@@ -1,6 +1,6 @@
 package wbs.sms.route.sender.fixture;
 
-import static wbs.framework.utils.etc.Misc.codify;
+import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.sql.SQLException;
@@ -66,7 +66,7 @@ class SenderBuilder {
 			log.info (
 				stringFormat (
 					"Create sender %s",
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())));
 
 			createSender ();
@@ -76,7 +76,7 @@ class SenderBuilder {
 			throw new RuntimeException (
 				stringFormat (
 					"Error creating sender %s",
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())),
 				exception);
 
@@ -101,7 +101,7 @@ class SenderBuilder {
 			senderHelper.createInstance ()
 
 			.setCode (
-				codify (
+				simplifyToCodeRequired (
 					spec.name ()))
 
 			.setDescription (

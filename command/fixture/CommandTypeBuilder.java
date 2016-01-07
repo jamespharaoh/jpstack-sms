@@ -1,7 +1,7 @@
 package wbs.sms.command.fixture;
 
+import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 import static wbs.framework.utils.etc.Misc.camelToUnderscore;
-import static wbs.framework.utils.etc.Misc.codify;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -78,7 +78,7 @@ class CommandTypeBuilder {
 						ifNull (
 							spec.subject (),
 							parent.name ())),
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())));
 
 			createCommandType ();
@@ -92,7 +92,7 @@ class CommandTypeBuilder {
 						ifNull (
 							spec.subject (),
 							parent.name ())),
-					codify (
+					simplifyToCodeRequired (
 						spec.name ())),
 				exception);
 
@@ -133,7 +133,7 @@ class CommandTypeBuilder {
 				parentType)
 
 			.setCode (
-				codify (
+				simplifyToCodeRequired (
 					spec.name ()))
 
 			.setDescription (
