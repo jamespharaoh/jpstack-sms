@@ -1,5 +1,6 @@
 package wbs.sms.message.core.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.TreeSet;
 
@@ -11,7 +12,8 @@ import org.joda.time.Instant;
 @Accessors (fluent = true)
 @Data
 public
-class MessageSearch {
+class MessageSearch
+	implements Serializable {
 
 	Integer messageId;
 
