@@ -1,5 +1,7 @@
 package wbs.sms.customer.model;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,7 +12,11 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @ToString
 public
-class SmsCustomerSearch {
+class SmsCustomerSearch
+	implements Serializable {
+
 	Integer smsCustomerManagerId;
+
 	String numberLike;
+
 }

@@ -1,5 +1,7 @@
 package wbs.sms.number.core.model;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,6 +12,9 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @ToString
 public
-class NumberSearch {
+class NumberSearch
+	implements Serializable {
+
 	String number;
+
 }

@@ -1,5 +1,6 @@
 package wbs.sms.message.stats.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import lombok.Data;
@@ -10,7 +11,8 @@ import org.joda.time.LocalDate;
 @Accessors (fluent = true)
 @Data
 public
-class MessageStatsSearch {
+class MessageStatsSearch
+	implements Serializable {
 
 	LocalDate dateAfter;
 	LocalDate dateBefore;
