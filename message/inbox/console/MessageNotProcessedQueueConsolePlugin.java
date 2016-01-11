@@ -9,7 +9,6 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.Responder;
 import wbs.platform.queue.console.AbstractQueueConsolePlugin;
 import wbs.platform.queue.model.QueueItemRec;
-import wbs.platform.queue.model.QueueRec;
 
 @PrototypeComponent ("messageNotProcessedQueueConsolePlugin")
 public
@@ -48,15 +47,6 @@ class MessageNotProcessedQueueConsolePlugin
 
 		return responder ("messageNotProcessedFormResponder")
 			.get ();
-
-	}
-
-	@Override
-	public
-	long preferredUserDelay (
-			QueueRec queue) {
-
-		return 0L;
 
 	}
 
