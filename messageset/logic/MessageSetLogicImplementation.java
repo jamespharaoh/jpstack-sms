@@ -42,9 +42,9 @@ class MessageSetLogicImplementation
 
 	@Override
 	public
-	Integer sendMessageSet (
+	Long sendMessageSet (
 			@NonNull MessageSetRec messageSet,
-			Integer threadId,
+			Long threadId,
 			@NonNull NumberRec number,
 			ServiceRec service,
 			AffiliateRec affiliate) {
@@ -80,8 +80,13 @@ class MessageSetLogicImplementation
 
 				.send ();
 
-			if (threadId == null)
-				threadId = message.getId ();
+			if (threadId == null) {
+
+				threadId =
+					(long) (int)
+					message.getId ();
+
+			}
 
 		}
 
@@ -91,9 +96,9 @@ class MessageSetLogicImplementation
 
 	@Override
 	public
-	Integer sendMessageSet (
+	Long sendMessageSet (
 			MessageSetRec messageSet,
-			Integer threadId,
+			Long threadId,
 			NumberRec number,
 			ServiceRec service) {
 

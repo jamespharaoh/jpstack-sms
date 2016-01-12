@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Optional;
+
 import wbs.sms.message.stats.model.MessageStatsSearch;
 
 public
@@ -26,6 +28,6 @@ interface SmsStatsConsoleLogic {
 
 	MessageStatsSearch critMapToMessageStatsSearch (
 			Map<SmsStatsCriteria,Set<Integer>> critMap,
-			Map<SmsStatsCriteria,Set<Integer>> filterMap);
+			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap);
 
 }

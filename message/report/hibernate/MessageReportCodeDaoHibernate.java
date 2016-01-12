@@ -16,9 +16,9 @@ class MessageReportCodeDaoHibernate
 	public
 	MessageReportCodeRec find (
 			MessageReportCodeType type,
-			Integer status,
-			Integer statusType,
-			Integer reason) {
+			Long status,
+			Long statusType,
+			Long reason) {
 
 		return findOne (
 			MessageReportCodeRec.class,

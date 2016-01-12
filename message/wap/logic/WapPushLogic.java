@@ -85,7 +85,7 @@ class WapPushLogic
 
 	public
 	MessageRec wapPushSend (
-			Integer threadId,
+			Long threadId,
 			Object number,
 			String numFrom,
 			TextRec text,
@@ -95,7 +95,7 @@ class WapPushLogic
 			BatchRec batch,
 			AffiliateRec affiliate,
 			DeliveryTypeRec deliveryType,
-			Integer ref,
+			Long ref,
 			boolean sendNow,
 			Set<String> tags,
 			NetworkRec network) {
@@ -205,7 +205,7 @@ class WapPushLogic
 				wapPushMessageType)
 
 			.setNumAttempts (
-				0);
+				0l);
 
 		if (tags != null) {
 
@@ -350,7 +350,7 @@ class WapPushLogic
 					"wap_push"))
 
 			.setNumAttempts (
-				0);
+				0l);
 
 		if (oldMessage.getTags () != null) {
 

@@ -17,12 +17,6 @@ class MessageStatsSearch
 	LocalDate dateAfter;
 	LocalDate dateBefore;
 
-	Integer routeId;
-	Integer serviceId;
-	Integer affiliateId;
-	Integer batchId;
-	Integer networkId;
-
 	Collection<Integer> routeIdIn;
 	Collection<Integer> serviceIdIn;
 	Collection<Integer> affiliateIdIn;
@@ -30,8 +24,17 @@ class MessageStatsSearch
 	Collection<Integer> networkIdIn;
 
 	Boolean filter = false;
+
 	Collection<Integer> filterServiceIds;
 	Collection<Integer> filterAffiliateIds;
 	Collection<Integer> filterRouteIds;
+
+	Boolean group = false;
+
+	Boolean groupByRoute = false;
+	Boolean groupByService = false;
+	Boolean groupByAffiliate = false;
+	Boolean groupByBatch = false;
+	Boolean groupByNetwork = false;
 
 }

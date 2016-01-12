@@ -64,7 +64,7 @@ interface SmsTrackerLogic {
 	 */
 	SimpleTrackerResult simpleTrackerScanCore (
 			Collection<? extends MessageRec> messagesSource,
-			int failureCountMin,
+			long failureCountMin,
 			long failureSingleMsMin,
 			long failureTotalMsMin);
 
@@ -80,7 +80,8 @@ interface SmsTrackerLogic {
 	 * - okSoFar: the number is ok but more messages might change the result
 	 * - notOk: the number is NOT ok
 	 */
-	public static enum SimpleTrackerResult {
+	public static
+	enum SimpleTrackerResult {
 		ok,
 		okSoFar,
 		notOk

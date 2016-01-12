@@ -59,9 +59,9 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	int countNotProcessed () {
+	long countNotProcessed () {
 
-		return (int) (long) findOne (
+		return findOne (
 			Long.class,
 
 			createQuery (
@@ -109,7 +109,7 @@ class MessageDaoHibernate
 	@Override
 	public
 	List<MessageRec> findByThreadId (
-			int threadId) {
+			long threadId) {
 
 		return findMany (
 			MessageRec.class,
@@ -120,6 +120,7 @@ class MessageDaoHibernate
 
 			.setInteger (
 				"threadId",
+				(int) (long)
 				threadId)
 
 			.list ());
@@ -129,7 +130,7 @@ class MessageDaoHibernate
 	@Override
 	public
 	List<MessageRec> findRecentLimit (
-			int maxResults) {
+			long maxResults) {
 
 		return findMany (
 			MessageRec.class,
@@ -141,7 +142,7 @@ class MessageDaoHibernate
 				Order.desc ("id"))
 
 			.setMaxResults (
-				maxResults)
+				(int) maxResults)
 
 			.list ());
 

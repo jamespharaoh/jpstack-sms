@@ -14,7 +14,7 @@ interface MagicNumberUseDaoMethods {
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec command,
-			Integer ref);
+			Long ref);
 
 	MagicNumberUseRec findExistingLeastRecentlyUsed (
 			MagicNumberSetRec magicNumberSet,

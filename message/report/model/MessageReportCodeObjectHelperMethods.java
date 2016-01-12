@@ -4,9 +4,9 @@ public
 interface MessageReportCodeObjectHelperMethods {
 
 	MessageReportCodeRec findOrCreate (
-			Integer status,
-			Integer statusType,
-			Integer reason,
+			Long status,
+			Long statusType,
+			Long reason,
 			MessageReportCodeType type,
 			boolean success,
 			boolean permanent,

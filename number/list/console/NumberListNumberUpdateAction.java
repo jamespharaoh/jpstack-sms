@@ -112,7 +112,7 @@ class NumberListNumberUpdateAction
 				myUser)
 
 			.setNumberCount (
-				0);
+				0l);
 
 		// parse numbers
 

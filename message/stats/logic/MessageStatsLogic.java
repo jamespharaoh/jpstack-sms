@@ -5,6 +5,7 @@ import wbs.sms.message.stats.model.MessageStatsData;
 public
 interface MessageStatsLogic {
 
+	@Deprecated
 	void addTo (
 			MessageStatsData target,
 			MessageStatsData difference);

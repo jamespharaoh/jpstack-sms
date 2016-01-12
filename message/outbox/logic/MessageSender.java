@@ -105,7 +105,7 @@ class MessageSender {
 	// properties
 
 	@Getter @Setter
-	Integer threadId;
+	Long threadId;
 
 	@Getter @Setter
 	NumberRec number;
@@ -133,7 +133,7 @@ class MessageSender {
 		Optional.<DeliveryTypeRec>absent ();
 
 	@Getter @Setter
-	Integer ref;
+	Long ref;
 
 	@Getter @Setter
 	TextRec subjectText;
@@ -401,7 +401,7 @@ class MessageSender {
 				user)
 
 			.setNumAttempts (
-				0);
+				0l);
 
 		if (medias != null) {
 

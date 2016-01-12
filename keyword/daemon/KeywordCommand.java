@@ -86,7 +86,7 @@ class KeywordCommand
 	CommandRec command;
 
 	@Getter @Setter
-	Optional<Integer> commandRef;
+	Optional<Long> commandRef;
 
 	@Getter @Setter
 	String rest;
@@ -196,7 +196,7 @@ class KeywordCommand
 			return commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
-				Optional.<Integer>absent (),
+				Optional.<Long>absent (),
 				messageRest);
 
 		}
@@ -228,7 +228,7 @@ class KeywordCommand
 			return commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
-				Optional.<Integer>absent (),
+				Optional.<Long>absent (),
 				rest);
 
 		}
@@ -375,7 +375,7 @@ class KeywordCommand
 			commandManagerProvider.get ().handle (
 				inbox,
 				nextCommand,
-				Optional.<Integer>absent (),
+				Optional.<Long>absent (),
 				rest));
 
 	}

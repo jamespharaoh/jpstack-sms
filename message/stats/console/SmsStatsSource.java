@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Optional;
+
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -24,8 +26,9 @@ interface SmsStatsSource {
 	List<MessageStatsRec> findMessageStats (
 			LocalDate startDate,
 			LocalDate endDate,
+			Optional<SmsStatsCriteria> groupCriteria,
 			Map<SmsStatsCriteria,Set<Integer>> criteriaMap,
-			Map<SmsStatsCriteria,Set<Integer>> filterMap);
+			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap);
 
 	/**
 	 * Finds the default route for this source. This returns null if there is no

@@ -61,10 +61,10 @@ class NumberFormatFixtureProvider
 				"44")
 
 			.setMinimumLength (
-				12)
+				12l)
 
 			.setMaximumLength (
-				12)
+				12l)
 
 			.setOutputPrefix (
 				"44")
@@ -83,10 +83,10 @@ class NumberFormatFixtureProvider
 				"+44")
 
 			.setMinimumLength (
-				13)
+				13l)
 
 			.setMaximumLength (
-				13)
+				13l)
 
 			.setOutputPrefix (
 				"44")
@@ -105,10 +105,10 @@ class NumberFormatFixtureProvider
 				"0")
 
 			.setMinimumLength (
-				11)
+				11l)
 
 			.setMaximumLength (
-				11)
+				11l)
 
 			.setOutputPrefix (
 				"44")

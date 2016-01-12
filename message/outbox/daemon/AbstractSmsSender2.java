@@ -403,6 +403,7 @@ class AbstractSmsSender2
 						message)
 
 					.setIndex (
+						(int) (long)
 						message.getNumAttempts ())
 
 					.setState (

@@ -130,7 +130,7 @@ class RouteFixtureProvider
 				true)
 
 			.setOutCharge (
-				500)
+				500l)
 
 			.setCurrency (
 				currencyHelper.findByCode (

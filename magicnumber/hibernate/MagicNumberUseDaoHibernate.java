@@ -47,7 +47,7 @@ class MagicNumberUseDaoHibernate
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
-			@NonNull Integer ref) {
+			@NonNull Long ref) {
 
 		return findOne (
 			MagicNumberUseRec.class,
@@ -76,6 +76,7 @@ class MagicNumberUseDaoHibernate
 
 			.setInteger (
 				"ref",
+				(int) (long)
 				ref)
 
 			.list ());

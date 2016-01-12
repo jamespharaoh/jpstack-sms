@@ -65,7 +65,7 @@ class MagicNumberCommandTypeHandler
 	CommandRec command;
 
 	@Getter @Setter
-	Optional<Integer> commandRef;
+	Optional<Long> commandRef;
 
 	@Getter @Setter
 	String rest;
@@ -133,7 +133,8 @@ class MagicNumberCommandTypeHandler
 		return commandManagerProvider.get ().handle (
 			inbox,
 			magicNumberUse.getCommand (),
-			Optional.of (magicNumberUse.getRefId ()),
+			Optional.of (
+				magicNumberUse.getRefId ()),
 			rest);
 
 	}

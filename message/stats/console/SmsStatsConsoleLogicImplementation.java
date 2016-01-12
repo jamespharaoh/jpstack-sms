@@ -1,5 +1,6 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
@@ -292,7 +294,7 @@ class SmsStatsConsoleLogicImplementation
 	public
 	MessageStatsSearch critMapToMessageStatsSearch (
 			Map<SmsStatsCriteria,Set<Integer>> critMap,
-			Map<SmsStatsCriteria,Set<Integer>> filterMap) {
+			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap) {
 
 		MessageStatsSearch search =
 			new MessageStatsSearch ();
@@ -309,7 +311,10 @@ class SmsStatsConsoleLogicImplementation
 
 		}
 
-		if (filterMap != null) {
+		if (
+			isPresent (
+				filterMap)
+		) {
 
 			search
 
@@ -317,15 +322,15 @@ class SmsStatsConsoleLogicImplementation
 					true)
 
 				.filterServiceIds (
-					filterMap.get (
+					filterMap.get ().get (
 						SmsStatsCriteria.service))
 
 				.filterAffiliateIds (
-					filterMap.get (
+					filterMap.get ().get (
 						SmsStatsCriteria.affiliate))
 
 				.filterRouteIds (
-					filterMap.get (
+					filterMap.get ().get (
 						SmsStatsCriteria.route));
 
 		}

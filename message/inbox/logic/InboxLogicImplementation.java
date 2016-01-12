@@ -352,6 +352,7 @@ class InboxLogicImplementation
 				inbox)
 
 			.setIndex (
+				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (
@@ -439,6 +440,7 @@ class InboxLogicImplementation
 				inbox)
 
 			.setIndex (
+				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (
@@ -636,6 +638,7 @@ class InboxLogicImplementation
 				inbox)
 
 			.setIndex (
+				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (

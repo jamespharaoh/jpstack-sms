@@ -82,7 +82,7 @@ class MagicNumberLogicImplementation
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
-			int ref) {
+			long ref) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -191,12 +191,12 @@ class MagicNumberLogicImplementation
 
 	@Override
 	public
-	Integer sendMessage (
+	Long sendMessage (
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
-			@NonNull Integer magicRef,
-			@NonNull Optional<Integer> threadId,
+			@NonNull Long magicRef,
+			@NonNull Optional<Long> threadId,
 			@NonNull Collection<TextRec> parts,
 			@NonNull RouterRec router,
 			@NonNull ServiceRec service,
@@ -259,6 +259,7 @@ class MagicNumberLogicImplementation
 
 				threadId =
 					Optional.of (
+						(long)
 						message.getId ());
 
 			}
@@ -275,8 +276,8 @@ class MagicNumberLogicImplementation
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
-			int magicRef,
-			@NonNull Optional<Integer> threadId,
+			long magicRef,
+			@NonNull Optional<Long> threadId,
 			@NonNull TextRec messageText,
 			@NonNull RouterRec router,
 			@NonNull ServiceRec service,

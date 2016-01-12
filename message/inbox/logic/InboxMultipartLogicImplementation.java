@@ -64,9 +64,9 @@ class InboxMultipartLogicImplementation
 	public
 	InboxMultipartBufferRec insertInboxMultipart (
 			RouteRec route,
-			int multipartId,
-			int multipartSegMax,
-			int multipartSeg,
+			long multipartId,
+			long multipartSegMax,
+			long multipartSeg,
 			String msgTo,
 			String msgFrom,
 			Date msgNetworkTime,
@@ -223,15 +223,22 @@ class InboxMultipartLogicImplementation
 
 		InboxMultipartBufferRec[] bits =
 			new InboxMultipartBufferRec [
+				(int) (long)
 				inboxMultipartBuffer.getMultipartSegMax ()];
 
-		for (InboxMultipartBufferRec recentInboxMultipartBuffer
-				: recentInboxMultipartBuffers) {
+		for (
+			InboxMultipartBufferRec recentInboxMultipartBuffer
+				: recentInboxMultipartBuffers
+		) {
 
 			log.info (
 				"MULTI: found " + recentInboxMultipartBuffer.getMultipartSeg ());
 
-			bits [recentInboxMultipartBuffer.getMultipartSeg () - 1] =
+			int bitIndex =
+				(int) (long)
+				recentInboxMultipartBuffer.getMultipartSeg () - 1;
+
+			bits [bitIndex] =
 				recentInboxMultipartBuffer;
 
 		}

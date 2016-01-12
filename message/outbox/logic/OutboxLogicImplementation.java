@@ -158,7 +158,7 @@ class OutboxLogicImplementation
 					old.getTags ()))
 
 			.setNumAttempts (
-				0)
+				0l)
 
 		);
 
@@ -428,7 +428,9 @@ class OutboxLogicImplementation
 				.setExpiryTime (
 					Instant.now ()
 						.toDateTime ()
-						.plusSeconds (route.getExpirySecs ())
+						.plusSeconds (
+							(int) (long)
+							route.getExpirySecs ())
 						.toInstant ()
 						.toDate ()));
 
@@ -588,7 +590,8 @@ class OutboxLogicImplementation
 
 			calendar.add (
 				Calendar.SECOND,
-				10 * outbox.getTries ());
+				(int) (
+					outbox.getTries () * 10l));
 
 			outbox
 

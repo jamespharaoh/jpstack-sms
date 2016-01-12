@@ -101,6 +101,7 @@ class SmsTrackerLogicImplementation
 
 		cal.add (
 			Calendar.SECOND,
+			(int) (long)
 			smsSimpleTracker.getSinceScanSecsMax ());
 
 		if (
@@ -184,7 +185,7 @@ class SmsTrackerLogicImplementation
 	public
 	SimpleTrackerResult simpleTrackerScanCore (
 			@NonNull Collection<? extends MessageRec> messagesSource,
-			int failureCountMin,
+			long failureCountMin,
 			long failureSingleMsMin,
 			long failureTotalMsMin) {
 

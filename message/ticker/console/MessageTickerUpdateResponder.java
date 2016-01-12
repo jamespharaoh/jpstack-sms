@@ -54,7 +54,7 @@ class MessageTickerUpdateResponder
 	List<String> commands =
 		new ArrayList<String> ();
 
-	int newGeneration = 0;
+	long newGeneration = 0;
 
 	// implementation
 
@@ -65,11 +65,15 @@ class MessageTickerUpdateResponder
 		Collection<MessageTickerMessage> messageTickerMessages =
 			messageTickerManager.getMessages ();
 
-		int generation =
-			Integer.parseInt (requestContext.parameter ("gen"));
+		long generation =
+			Long.parseLong (
+				requestContext.parameter (
+					"gen"));
 
-		for (MessageTickerMessage messageTickerMessage
-				: messageTickerMessages) {
+		for (
+			MessageTickerMessage messageTickerMessage
+				: messageTickerMessages
+		) {
 
 			if (
 

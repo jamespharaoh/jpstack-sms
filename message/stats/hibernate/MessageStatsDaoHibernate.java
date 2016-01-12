@@ -2,9 +2,16 @@ package wbs.sms.message.stats.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.Criteria;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import com.google.common.collect.ImmutableList;
+
+import wbs.framework.hibernate.AliasToBeanNestedResultTransformer;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.stats.model.MessageStatsDao;
 import wbs.sms.message.stats.model.MessageStatsRec;
@@ -18,11 +25,12 @@ class MessageStatsDaoHibernate
 	@Override
 	public
 	List<MessageStatsRec> search (
-			MessageStatsSearch search) {
+			@NonNull MessageStatsSearch search) {
 
 		Criteria criteria =
 			createCriteria (
-				MessageStatsRec.class);
+				MessageStatsRec.class,
+				"_messageStats");
 
 		if (search.dateAfter () != null) {
 
@@ -42,30 +50,12 @@ class MessageStatsDaoHibernate
 
 		}
 
-		if (search.routeId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"messageStatsId.route.id",
-					search.routeId ()));
-
-		}
-
 		if (search.routeIdIn () != null) {
 
 			criteria.add (
 				Restrictions.in (
 					"messageStatsId.route.id",
 					search.routeIdIn ()));
-
-		}
-
-		if (search.serviceId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"messageStatsId.service.id",
-					search.serviceId ()));
 
 		}
 
@@ -78,15 +68,6 @@ class MessageStatsDaoHibernate
 
 		}
 
-		if (search.affiliateId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"messageStatsId.affiliate.id",
-					search.affiliateId ()));
-
-		}
-
 		if (search.affiliateIdIn () != null) {
 
 			criteria.add (
@@ -96,30 +77,12 @@ class MessageStatsDaoHibernate
 
 		}
 
-		if (search.batchId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"messageStatsId.batch.id",
-					search.batchId ()));
-
-		}
-
 		if (search.batchIdIn () != null) {
 
 			criteria.add (
 				Restrictions.in (
 					"messageStatsId.batch.id",
 					search.batchIdIn ()));
-
-		}
-
-		if (search.networkId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"messageStatsId.network.id",
-					search.networkId ()));
 
 		}
 
@@ -148,6 +111,92 @@ class MessageStatsDaoHibernate
 				Restrictions.in (
 					"messageStatsId.route.id",
 					search.filterRouteIds ())));
+
+		}
+
+		if (search.group ()) {
+
+			ProjectionList projectionList =
+				Projections.projectionList ();
+
+			ImmutableList.<String>of (
+				"inTotal",
+				"outTotal",
+				"outPending",
+				"outCancelled",
+				"outFailed",
+				"outSent",
+				"outSubmitted",
+				"outDelivered",
+				"outUndelivered",
+				"outReportTimedOut",
+				"outHeld",
+				"outBlacklisted",
+				"outManuallyUndelivered"
+			).forEach (
+				fieldName ->
+					projectionList.add (
+						Projections.sum (
+							"_messageStats.stats." + fieldName),
+						"stats." + fieldName)
+			);
+
+			projectionList.add (
+				Projections.groupProperty (
+					"_messageStats.messageStatsId.date"),
+				"messageStatsId.date");
+
+			if (search.groupByAffiliate ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.affiliate"),
+					"messageStatsId.affiliate");
+
+			}
+
+			if (search.groupByBatch ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.batch"),
+					"messageStatsId.batch");
+
+			}
+
+			if (search.groupByNetwork ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.network"),
+					"messageStatsId.network");
+
+			}
+
+			if (search.groupByRoute ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.route"),
+					"messageStatsId.route");
+
+			}
+
+			if (search.groupByService ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.service"),
+					"messageStatsId.service");
+
+			}
+
+			criteria.setProjection (
+				projectionList);
+
+			criteria.setResultTransformer (
+				new AliasToBeanNestedResultTransformer (
+					MessageStatsRec.class));
 
 		}
 

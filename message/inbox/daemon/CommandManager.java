@@ -12,7 +12,7 @@ interface CommandManager {
 	InboxAttemptRec handle (
 			InboxRec inbox,
 			CommandRec command,
-			Optional<Integer> ref,
+			Optional<Long> ref,
 			String rest);
 
 }

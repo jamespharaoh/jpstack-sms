@@ -146,7 +146,7 @@ class CommandManagerImplementation
 	InboxAttemptRec handle (
 			@NonNull InboxRec inbox,
 			@NonNull CommandRec command,
-			@NonNull Optional<Integer> ref,
+			@NonNull Optional<Long> ref,
 			@NonNull String rest) {
 
 		return getHandler (

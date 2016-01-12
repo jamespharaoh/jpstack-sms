@@ -91,7 +91,7 @@ class NumberListLogicImplementation
 				true)
 
 			.setNumberCount (
-				1)
+				1l)
 
 			.setNumbers (
 				Collections.singleton (
@@ -180,7 +180,7 @@ class NumberListLogicImplementation
 				false)
 
 			.setNumberCount (
-				1)
+				1l)
 
 			.setNumbers (
 				Collections.singleton (

@@ -10,7 +10,7 @@ interface SmsCustomerLogic {
 
 	void sessionStart (
 			SmsCustomerRec customer,
-			Optional<Integer> threadId);
+			Optional<Long> threadId);
 
 	void sessionTimeoutAuto (
 			SmsCustomerSessionRec session);

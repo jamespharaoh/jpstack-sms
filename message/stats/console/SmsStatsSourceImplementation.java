@@ -1,5 +1,7 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.framework.utils.etc.Misc.equal;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,11 +11,13 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -51,10 +55,11 @@ class SmsStatsSourceImplementation
 	@Override
 	public
 	List<MessageStatsRec> findMessageStats (
-			LocalDate startDate,
-			LocalDate endDate,
-			Map<SmsStatsCriteria,Set<Integer>> dynamicCriteriaMap,
-			Map<SmsStatsCriteria,Set<Integer>> filterMap) {
+			@NonNull LocalDate startDate,
+			@NonNull LocalDate endDate,
+			@NonNull Optional<SmsStatsCriteria> groupCriteria,
+			@NonNull Map<SmsStatsCriteria,Set<Integer>> dynamicCriteriaMap,
+			@NonNull Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap) {
 
 		Map<SmsStatsCriteria,Set<Integer>> intersectedCriteriaMap =
 			smsStatsConsoleLogic.criteriaMapIntersect (
@@ -73,7 +78,40 @@ class SmsStatsSourceImplementation
 				startDate)
 
 			.dateBefore (
-				endDate);
+				endDate)
+
+			.group (
+				true)
+
+			.groupByAffiliate (
+				equal (
+					groupCriteria,
+					Optional.of (
+						SmsStatsCriteria.affiliate)))
+
+			.groupByBatch (
+				equal (
+					groupCriteria,
+					Optional.of (
+						SmsStatsCriteria.batch)))
+
+			.groupByNetwork (
+				equal (
+					groupCriteria,
+					Optional.of (
+						SmsStatsCriteria.network)))
+
+			.groupByRoute (
+				equal (
+					groupCriteria,
+					Optional.of (
+						SmsStatsCriteria.route)))
+
+			.groupByService (
+				equal (
+					groupCriteria,
+					Optional.of (
+						SmsStatsCriteria.service)));
 
 		return messageStatsHelper.search (
 			search);

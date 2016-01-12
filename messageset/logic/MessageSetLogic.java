@@ -9,16 +9,16 @@ import wbs.sms.number.core.model.NumberRec;
 public
 interface MessageSetLogic {
 
-	Integer sendMessageSet (
+	Long sendMessageSet (
 			MessageSetRec messageSet,
-			Integer threadId,
+			Long threadId,
 			NumberRec number,
 			ServiceRec service,
 			AffiliateRec affiliate);
 
-	Integer sendMessageSet (
+	Long sendMessageSet (
 			MessageSetRec messageSet,
-			Integer threadId,
+			Long threadId,
 			NumberRec number,
 			ServiceRec service);
 

@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Optional;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.record.Record;
@@ -75,11 +77,13 @@ class GroupedStatsSourceImplementation
 
 		if (
 			route == null
-			&& critMap.containsKey (SmsStatsCriteria.route)
+			&& critMap.containsKey (
+				SmsStatsCriteria.route)
 		) {
 
 			Set<Integer> routeIds =
-				critMap.get (SmsStatsCriteria.route);
+				critMap.get (
+					SmsStatsCriteria.route);
 
 			if (routeIds.size () == 1) {
 
@@ -96,12 +100,19 @@ class GroupedStatsSourceImplementation
 				: statsSource.findMessageStats (
 					start,
 					end,
+					Optional.fromNullable (
+						groupCriteria),
 					critMap,
-					filterMap)
+					Optional.fromNullable (
+						filterMap))
 		) {
 
+System.out.println (messageStats.getMessageStatsId ().getDate ());
+System.out.println (messageStats.getStats ().getOutTotal ());
+
 			String groupName =
-				groupName (messageStats);
+				groupName (
+					messageStats);
 
 			if (groupCriteria == SmsStatsCriteria.route) {
 

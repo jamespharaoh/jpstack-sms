@@ -18,7 +18,7 @@ interface CommandHandler {
 			CommandRec command);
 
 	CommandHandler commandRef (
-			Optional<Integer> commandRef);
+			Optional<Long> commandRef);
 
 	CommandHandler rest (
 			String rest);

@@ -23,14 +23,14 @@ interface MagicNumberLogic {
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec command,
-			int ref);
+			long ref);
 
 	MessageRec sendMessage (
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,
-			int magicRef,
-			Optional<Integer> threadId,
+			long magicRef,
+			Optional<Long> threadId,
 			TextRec messageText,
 			RouterRec router,
 			ServiceRec service,
@@ -38,12 +38,12 @@ interface MagicNumberLogic {
 			AffiliateRec affiliate,
 			Optional<UserRec> user);
 
-	Integer sendMessage (
+	Long sendMessage (
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,
-			Integer magicRef,
-			Optional<Integer> threadId,
+			Long magicRef,
+			Optional<Long> threadId,
 			Collection<TextRec> parts,
 			RouterRec router,
 			ServiceRec service,

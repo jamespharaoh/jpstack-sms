@@ -48,7 +48,7 @@ class SmsCoreFixtureProvider
 				"SMS")
 
 			.setOrder (
-				30)
+				30l)
 
 		);
 

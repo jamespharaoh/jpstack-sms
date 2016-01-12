@@ -9,6 +9,6 @@ interface DeliveryHandler {
 
 	void handle (
 			int deliveryNoticeQueueId,
-			Integer ref);
+			Long ref);
 
 }

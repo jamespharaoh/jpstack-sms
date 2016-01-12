@@ -15,14 +15,14 @@ interface MessageDaoMethods {
 			String otherId);
 
 	List<MessageRec> findByThreadId (
-			int threadId);
+			long threadId);
 
 	List<MessageRec> findNotProcessed ();
 
 	List<MessageRec> findRecentLimit (
-			int maxResults);
+			long maxResults);
 
-	int countNotProcessed ();
+	long countNotProcessed ();
 
 	List<ServiceRec> projectServices (
 			NumberRec number);

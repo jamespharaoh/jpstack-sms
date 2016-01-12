@@ -489,11 +489,18 @@ class ModemPollDaemon
 							modemPollQueue);
 
 					} catch (Exception e) {
+
 						Calendar cal = Calendar.getInstance();
-						cal.add(Calendar.SECOND, modemPollQueue.getTries() * 10);
+
+						cal.add (
+							Calendar.SECOND,
+							(int) (
+								modemPollQueue.getTries () * 10l));
+
 						modemPollQueue.setRetryTime(cal.getTime());
 						modemPollQueue.setTries(modemPollQueue.getTries() + 1);
 						modemPollQueue.setError(e.getMessage());
+
 					}
 
 					transaction.commit();

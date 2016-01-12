@@ -15,6 +15,7 @@ class NumberFormatPatternHooks
 			numberFormatPattern.getNumberFormat ();
 
 		numberFormatPattern.setIndex (
+			(int) (long)
 			numberFormat.getNumPatterns ());
 
 		numberFormat.setNumPatterns (

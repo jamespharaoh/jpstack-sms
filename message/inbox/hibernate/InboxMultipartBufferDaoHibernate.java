@@ -66,10 +66,12 @@ class InboxMultipartBufferDaoHibernate
 
 			.setInteger (
 				"multipartId",
+				(int) (long)
 				inboxMultipartBuffer.getMultipartId ())
 
 			.setInteger (
 				"multipartSegMax",
+				(int) (long)
 				inboxMultipartBuffer.getMultipartSegMax ())
 
 			.setTimestamp (

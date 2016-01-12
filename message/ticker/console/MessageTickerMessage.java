@@ -17,10 +17,10 @@ public
 class MessageTickerMessage {
 
 	@Getter
-	int messageGeneration;
+	long messageGeneration;
 
 	@Getter
-	int statusGeneration;
+	long statusGeneration;
 
 	@Getter
 	int messageId;
@@ -53,7 +53,7 @@ class MessageTickerMessage {
 	MessageStatus status;
 
 	@Getter
-	int charge;
+	long charge;
 
 	@Getter
 	List<Integer> mediaIds =

@@ -52,8 +52,8 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionStart (
-			SmsCustomerRec customer,
-			Optional<Integer> threadId) {
+			@NonNull SmsCustomerRec customer,
+			@NonNull Optional<Long> threadId) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -80,6 +80,7 @@ class SmsCustomerLogicImplementation
 				customer)
 
 			.setIndex (
+				(int) (long)
 				customer.getNumSessions ())
 
 			.setStartTime (
@@ -110,7 +111,7 @@ class SmsCustomerLogicImplementation
 
 	void sendWelcomeMessage (
 			SmsCustomerSessionRec session,
-			Optional<Integer> threadId) {
+			Optional<Long> threadId) {
 
 		SmsCustomerRec customer =
 			session.getCustomer ();
@@ -164,7 +165,7 @@ class SmsCustomerLogicImplementation
 
 	void sendWarningMessage (
 			SmsCustomerSessionRec session,
-			Optional<Integer> threadId) {
+			Optional<Long> threadId) {
 
 		SmsCustomerRec customer =
 			session.getCustomer ();
