@@ -405,7 +405,7 @@ class GenericMessageStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					dateField.date.plusDays (98)));
+					dateField.date.plusDays (49)));
 
 			printFormat (
 				"<a href=\"%h\">Next weeks</a>\n",
@@ -431,7 +431,7 @@ class GenericMessageStatsPart
 			myUrlParams.set (
 				"date",
 				timeFormatter.localDateToDateString (
-					dateField.date.plusMonths (12)));
+					dateField.date.plusMonths (6)));
 
 			printFormat (
 				"<a href=\"%h\">Next months</a>",
