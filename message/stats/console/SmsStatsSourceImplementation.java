@@ -57,6 +57,7 @@ class SmsStatsSourceImplementation
 	List<MessageStatsRec> findMessageStats (
 			@NonNull LocalDate startDate,
 			@NonNull LocalDate endDate,
+			@NonNull SmsStatsTimeScheme timeScheme,
 			@NonNull Optional<SmsStatsCriteria> groupCriteria,
 			@NonNull Map<SmsStatsCriteria,Set<Integer>> dynamicCriteriaMap,
 			@NonNull Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap) {
@@ -84,7 +85,10 @@ class SmsStatsSourceImplementation
 				true)
 
 			.groupByDate (
-				true)
+				timeScheme.groupByDate ())
+
+			.groupByMonth (
+				timeScheme.groupByMonth ())
 
 			.groupByAffiliate (
 				equal (

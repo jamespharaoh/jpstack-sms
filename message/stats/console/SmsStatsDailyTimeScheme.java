@@ -203,4 +203,16 @@ class SmsStatsDailyTimeScheme
 
 	}
 
+	@Override
+	public
+	boolean groupByDate () {
+		return true;
+	}
+
+	@Override
+	public
+	boolean groupByMonth () {
+		return false;
+	}
+
 }

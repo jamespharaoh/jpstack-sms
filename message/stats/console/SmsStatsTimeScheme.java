@@ -24,4 +24,7 @@ interface SmsStatsTimeScheme {
 	boolean[] getHilites (
 			LocalDate start);
 
+	boolean groupByDate ();
+	boolean groupByMonth ();
+
 }

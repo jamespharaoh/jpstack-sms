@@ -95,6 +95,7 @@ class SmsStatsFormatter {
 
 		stats =
 			groupedStatsSource.load (
+				timeScheme,
 				startDate,
 				endDate);
 

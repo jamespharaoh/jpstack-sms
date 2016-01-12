@@ -15,6 +15,7 @@ interface GroupedStatsSource {
 
 	public
 	Map<String,GroupStats> load (
+			SmsStatsTimeScheme timeScheme,
 			LocalDate start,
 			LocalDate end);
 

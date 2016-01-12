@@ -26,6 +26,7 @@ interface SmsStatsSource {
 	List<MessageStatsRec> findMessageStats (
 			LocalDate startDate,
 			LocalDate endDate,
+			SmsStatsTimeScheme timeScheme,
 			Optional<SmsStatsCriteria> groupCriteria,
 			Map<SmsStatsCriteria,Set<Integer>> criteriaMap,
 			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap);

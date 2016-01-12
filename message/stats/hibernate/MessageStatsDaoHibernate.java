@@ -8,6 +8,9 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.CustomType;
+import org.hibernate.type.Type;
+import org.jadira.usertype.dateandtime.joda.PersistentLocalDate;
 
 import com.google.common.collect.ImmutableList;
 
@@ -146,6 +149,23 @@ class MessageStatsDaoHibernate
 				projectionList.add (
 					Projections.groupProperty (
 						"_messageStats.messageStatsId.date"),
+					"messageStatsId.date");
+
+			}
+
+			if (search.groupByMonth ()) {
+
+				projectionList.add (
+					Projections.sqlGroupProjection (
+						"date_trunc ('month', {alias}.date)::date AS date",
+						"date_trunc ('month', {alias}.date)::date",
+						new String [] {
+							"date"
+						},
+						new Type [] {
+							new CustomType (
+								new PersistentLocalDate ()),
+						}),
 					"messageStatsId.date");
 
 			}

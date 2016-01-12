@@ -237,6 +237,18 @@ class SmsStatsMonthlyTimeScheme
 
 	}
 
+	@Override
+	public
+	boolean groupByDate () {
+		return false;
+	}
+
+	@Override
+	public
+	boolean groupByMonth () {
+		return true;
+	}
+
 	public final static
 	SmsStatsTimeScheme instance =
 		new SmsStatsMonthlyTimeScheme ();

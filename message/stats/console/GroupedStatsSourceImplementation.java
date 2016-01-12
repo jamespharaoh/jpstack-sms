@@ -1,5 +1,6 @@
 package wbs.sms.message.stats.console;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -7,6 +8,7 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -66,11 +68,12 @@ class GroupedStatsSourceImplementation
 	@Override
 	public
 	Map<String,GroupStats> load (
-			LocalDate start,
-			LocalDate end) {
+			@NonNull SmsStatsTimeScheme timeScheme,
+			@NonNull LocalDate start,
+			@NonNull LocalDate end) {
 
 		Map<String,GroupStats> ret =
-			new TreeMap<String,GroupStats> ();
+			new TreeMap<> ();
 
 		RouteRec route =
 			statsSource.findRoute ();
@@ -95,16 +98,20 @@ class GroupedStatsSourceImplementation
 
 		}
 
+		List<MessageStatsRec> allMessageStats =
+			statsSource.findMessageStats (
+				start,
+				end,
+				timeScheme,
+				Optional.fromNullable (
+					groupCriteria),
+				critMap,
+				Optional.fromNullable (
+					filterMap));
+
 		for (
 			MessageStatsRec messageStats
-				: statsSource.findMessageStats (
-					start,
-					end,
-					Optional.fromNullable (
-						groupCriteria),
-					critMap,
-					Optional.fromNullable (
-						filterMap))
+				: allMessageStats
 		) {
 
 			String groupName =

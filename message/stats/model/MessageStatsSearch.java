@@ -32,6 +32,8 @@ class MessageStatsSearch
 	Boolean group = false;
 
 	Boolean groupByDate = false;
+	Boolean groupByMonth = false;
+
 	Boolean groupByRoute = false;
 	Boolean groupByService = false;
 	Boolean groupByAffiliate = false;
