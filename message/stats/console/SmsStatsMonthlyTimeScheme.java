@@ -172,12 +172,16 @@ class SmsStatsMonthlyTimeScheme
 
 			calendar.clear ();
 
-			calendar.setTime (start.toDate ());
+			calendar.setTime (
+				start.toDate ());
 
-			calendar.add (Calendar.MONTH, month);
+			calendar.add (
+				Calendar.MONTH,
+				month);
 
 			int currentMonth =
-				calendar.get (Calendar.MONTH);
+				calendar.get (
+					Calendar.MONTH);
 
 			do {
 

@@ -1,5 +1,7 @@
 package wbs.sms.message.report.hibernate;
 
+import static wbs.framework.utils.etc.Misc.toIntegerNullSafe;
+
 import org.hibernate.type.IntegerType;
 
 import wbs.framework.hibernate.HibernateDao;
@@ -43,17 +45,20 @@ class MessageReportCodeDaoHibernate
 
 			.setParameter (
 				"status",
-				status,
+				toIntegerNullSafe (
+					status),
 				IntegerType.INSTANCE)
 
 			.setParameter (
 				"status_type",
-				statusType,
+				toIntegerNullSafe (
+					statusType),
 				IntegerType.INSTANCE)
 
 			.setParameter (
 				"reason",
-				reason,
+				toIntegerNullSafe (
+					reason),
 				IntegerType.INSTANCE)
 
 			.list ());

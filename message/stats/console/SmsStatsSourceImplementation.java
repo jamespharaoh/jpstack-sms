@@ -83,6 +83,9 @@ class SmsStatsSourceImplementation
 			.group (
 				true)
 
+			.groupByDate (
+				true)
+
 			.groupByAffiliate (
 				equal (
 					groupCriteria,
@@ -123,7 +126,8 @@ class SmsStatsSourceImplementation
 	RouteRec findRoute () {
 
 		Collection<Integer> routeIds =
-			fixedCriteriaMap.get (SmsStatsCriteria.route);
+			fixedCriteriaMap.get (
+				SmsStatsCriteria.route);
 
 		if (routeIds == null
 				|| routeIds.size () != 1)

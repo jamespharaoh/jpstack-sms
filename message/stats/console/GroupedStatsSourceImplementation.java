@@ -107,9 +107,6 @@ class GroupedStatsSourceImplementation
 						filterMap))
 		) {
 
-System.out.println (messageStats.getMessageStatsId ().getDate ());
-System.out.println (messageStats.getStats ().getOutTotal ());
-
 			String groupName =
 				groupName (
 					messageStats);
@@ -129,7 +126,8 @@ System.out.println (messageStats.getStats ().getOutTotal ());
 				groupStats =
 					new GroupStats (
 						route,
-						groupUrl (messageStats));
+						groupUrl (
+							messageStats));
 
 				ret.put (
 					groupName,

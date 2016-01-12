@@ -123,10 +123,10 @@ class SmsStatsFormatter {
 		String fieldName;
 
 		public
-		int getData (
+		long getData (
 				MessageStatsData messageStats) {
 
-			return (Integer)
+			return (Long)
 				BeanLogic.getProperty (
 					messageStats,
 					fieldName);
@@ -324,11 +324,13 @@ class SmsStatsFormatter {
 
 				} else {
 
-					int messageCount =
-						row.getData (messageStatus);
+					long messageCount =
+						row.getData (
+							messageStatus);
 
-					if (messageCount > 0)
+					if (messageCount > 0) {
 						foundSomething = true;
+					}
 
 					switch (row.direction) {
 
@@ -338,8 +340,9 @@ class SmsStatsFormatter {
 							route != null && route.getInCharge () > 0
 								? currencyLogic.formatText (
 									route.getCurrency (),
-									Long.valueOf(route.getInCharge () * messageCount))
-								: noZero (messageCount);
+									route.getInCharge () * messageCount)
+								: noZero (
+									messageCount);
 
 						break;
 
@@ -439,7 +442,18 @@ class SmsStatsFormatter {
 
 		return num == 0
 			? ""
-			: Integer.toString (num);
+			: Integer.toString (
+				num);
+
+	}
+
+	String noZero (
+			long num) {
+
+		return num == 0
+			? ""
+			: Long.toString (
+				num);
 
 	}
 

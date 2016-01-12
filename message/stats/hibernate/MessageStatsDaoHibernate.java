@@ -141,10 +141,14 @@ class MessageStatsDaoHibernate
 						"stats." + fieldName)
 			);
 
-			projectionList.add (
-				Projections.groupProperty (
-					"_messageStats.messageStatsId.date"),
-				"messageStatsId.date");
+			if (search.groupByDate ()) {
+
+				projectionList.add (
+					Projections.groupProperty (
+						"_messageStats.messageStatsId.date"),
+					"messageStatsId.date");
+
+			}
 
 			if (search.groupByAffiliate ()) {
 
