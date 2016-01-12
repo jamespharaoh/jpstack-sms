@@ -187,7 +187,8 @@ class SmsStatsMonthlyTimeScheme
 
 				MessageStatsData messageStats =
 					groupStats.get (
-						LocalDate.fromCalendarFields (calendar));
+						LocalDate.fromCalendarFields (
+							calendar));
 
 				if (messageStats != null) {
 
@@ -197,7 +198,9 @@ class SmsStatsMonthlyTimeScheme
 
 				}
 
-				calendar.add (Calendar.DATE, 1);
+				calendar.add (
+					Calendar.DATE,
+					1);
 
 			} while (calendar.get (Calendar.MONTH) == currentMonth);
 
