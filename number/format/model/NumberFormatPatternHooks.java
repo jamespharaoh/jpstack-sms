@@ -1,10 +1,10 @@
 package wbs.sms.number.format.model;
 
-import wbs.framework.object.AbstractObjectHooks;
+import wbs.framework.object.ObjectHooks;
 
 public
 class NumberFormatPatternHooks
-	extends AbstractObjectHooks<NumberFormatPatternRec> {
+	implements ObjectHooks<NumberFormatPatternRec> {
 
 	@Override
 	public

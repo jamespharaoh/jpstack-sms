@@ -6,10 +6,6 @@
 		<plugin-dependency name="sms-core"/>
 	</plugin-dependencies>
 
-	<layer name="logic">
-		<bean class="logic.GazetteerLogicImplementation"/>
-	</layer>
-
 	<models>
 		<model name="gazetteer"/>
 		<model name="gazetteerEntry"/>
@@ -18,6 +14,17 @@
 	<fixtures>
 		<fixture name="gazetteer"/>
 	</fixtures>
+
+	<layer name="logic">
+		<bean class="logic.GazetteerLogicImplementation"/>
+	</layer>
+
+	<layer name="console">
+		<bean class="console.GazetteerCodeFormFieldNativeMapping"/>
+		<bean class="console.GazetteerFormFieldBuilder"/>
+		<bean class="console.GazetteerFormFieldInterfaceMapping"/>
+		<bean class="console.GazetteerFormFieldSpec"/>
+	</layer>
 
 	<console-modules>
 		<console-module name="gazetteer"/>
