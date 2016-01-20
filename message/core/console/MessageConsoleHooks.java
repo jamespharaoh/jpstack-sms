@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
-import wbs.console.helper.AbstractConsoleHooks;
+import wbs.console.helper.ConsoleHooks;
 import wbs.console.priv.PrivChecker;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
@@ -26,7 +26,7 @@ import wbs.sms.route.core.model.RouteRec;
 @SingletonComponent ("messageConsoleHooks")
 public
 class MessageConsoleHooks
-	extends AbstractConsoleHooks<MessageRec> {
+	implements ConsoleHooks<MessageRec> {
 
 	// dependencies
 
