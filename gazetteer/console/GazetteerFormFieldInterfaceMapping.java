@@ -45,12 +45,6 @@ class GazetteerFormFieldInterfaceMapping<Container>
 	@Getter @Setter
 	String gazetteerFieldName;
 
-	@Getter @Setter
-	String fieldName;
-
-	@Getter @Setter
-	String codeFieldName;
-
 	// implementation
 
 	@Override
@@ -87,8 +81,7 @@ class GazetteerFormFieldInterfaceMapping<Container>
 
 			return errorResult (
 				stringFormat (
-					"Cannot update field because there is no gazetteer ",
-					"configured"));
+					"You must configure a gazetteer first"));
 
 		}
 

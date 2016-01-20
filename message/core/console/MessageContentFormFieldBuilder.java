@@ -15,6 +15,7 @@ import wbs.console.forms.HtmlFormFieldRenderer;
 import wbs.console.forms.IdentityFormFieldAccessor;
 import wbs.console.forms.IdentityFormFieldNativeMapping;
 import wbs.console.forms.ReadOnlyFormField;
+import wbs.console.forms.RequiredFormFieldValueValidator;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
@@ -36,14 +37,6 @@ class MessageContentFormFieldBuilder {
 	// prototype dependencies
 
 	@Inject
-	Provider<MessageContentCsvFormFieldInterfaceMapping>
-	messageContentCsvFormFieldInterfaceMappingProvider;
-
-	@Inject
-	Provider<MessageContentHtmlFormFieldInterfaceMapping>
-	messageContentHtmlFormFieldInterfaceMappingProvider;
-
-	@Inject
 	Provider<HtmlFormFieldRenderer>
 	htmlFormFieldRendererProvider;
 
@@ -56,8 +49,20 @@ class MessageContentFormFieldBuilder {
 	identityFormFieldNativeMappingProvider;
 
 	@Inject
+	Provider<MessageContentCsvFormFieldInterfaceMapping>
+	messageContentCsvFormFieldInterfaceMappingProvider;
+
+	@Inject
+	Provider<MessageContentHtmlFormFieldInterfaceMapping>
+	messageContentHtmlFormFieldInterfaceMappingProvider;
+
+	@Inject
 	Provider<ReadOnlyFormField>
 	readOnlyFormFieldProvider;
+
+	@Inject
+	Provider<RequiredFormFieldValueValidator>
+	requiredFormFieldValueValidatorProvider;
 
 	// builder
 

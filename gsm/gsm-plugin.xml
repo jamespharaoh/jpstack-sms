@@ -2,4 +2,10 @@
 	name="gsm"
 	package="wbs.sms.gsm">
 
+	<layer name="console">
+		<bean class="console.GsmFormFieldBuilder"/>
+		<bean class="console.GsmFormFieldSpec"/>
+		<bean class="console.GsmFormFieldValueValidator"/>
+	</layer>
+
 </plugin>
