@@ -4,7 +4,6 @@ import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.parsePartialTimestamp;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.ArrayList;
@@ -19,8 +18,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Interval;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
@@ -350,28 +347,20 @@ class MessageDaoHibernate
 
 		if (
 			isNotNull (
-				search.createdTimePartial ())
+				search.createdTime ())
 		) {
-
-			// TODO timezone should not be hardcoded
-
-			Interval interval =
-				parsePartialTimestamp (
-					DateTimeZone.forID (
-						"Europe/London"),
-					search.createdTimePartial ());
 
 			criteria.add (
 				Restrictions.ge (
 					"createdTime",
 					instantToDate (
-						interval.getStart ())));
+						search.createdTime ().getStart ())));
 
 			criteria.add (
 				Restrictions.lt (
 					"createdTime",
 					instantToDate (
-						interval.getEnd ())));
+						search.createdTime ().getEnd ())));
 
 		}
 

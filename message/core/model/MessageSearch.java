@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 
 @Accessors (fluent = true)
 @Data
@@ -36,7 +37,7 @@ class MessageSearch
 
 	Integer networkId;
 
-	String createdTimePartial;
+	Interval createdTime;
 
 	Instant createdTimeAfter;
 	Instant createdTimeBefore;
@@ -124,8 +125,8 @@ class MessageSearch
 		this.networkId =
 			original.networkId;
 
-		this.createdTimePartial =
-			original.createdTimePartial;
+		this.createdTime =
+			original.createdTime;
 
 		this.createdTimeAfter =
 			original.createdTimeAfter;

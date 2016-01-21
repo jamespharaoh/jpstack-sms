@@ -94,7 +94,7 @@
 			name="number"
 			nullable="yes"/>
 
-		<object-id-field
+		<object-field
 			name="routeId"
 			object-type="route"
 			nullable="yes"/>
@@ -109,23 +109,23 @@
 			helper="messageDirectionConsoleHelper"
 			nullable="yes"/>
 
-		<object-id-field
+		<object-field
 			name="userId"
 			object-type="user"
 			nullable="yes"/>
 
-		<object-id-field
+		<object-field
 			name="serviceId"
 			object-type="service"
 			nullable="yes"/>
 
-		<object-id-field
+		<object-field
 			name="affiliateId"
 			object-type="affiliate"
 			nullable="yes"/>
 
-		<timestamp-partial-field
-			name="createdTimePartial"
+		<interval-field
+			name="createdTime"
 			label="Date/time"
 			nullable="yes"/>
 
@@ -144,7 +144,7 @@
 			label="Message text"
 			nullable="yes"/>
 
-		<object-id-field
+		<object-field
 			name="networkId"
 			object-type="network"
 			nullable="yes"/>
