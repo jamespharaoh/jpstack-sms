@@ -3,7 +3,7 @@
 
 	<console-helper-provider
 		object-name="sender"
-		view-delegate-field="parent">
+		view-priv="parent">
 
 		<context-stuff
 			name="senderName"
