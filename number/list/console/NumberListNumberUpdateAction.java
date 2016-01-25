@@ -238,7 +238,7 @@ class NumberListNumberUpdateAction
 					false);
 
 				numberListUpdate.setNumberCount (
-					numberListUpdate.getNumberCount () - 1);
+					numberListUpdate.getNumberCount () + 1);
 
 				numberListUpdate.getNumbers ().add (
 					number);
