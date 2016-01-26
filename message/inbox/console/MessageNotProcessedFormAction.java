@@ -10,6 +10,7 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
+import wbs.platform.event.logic.EventLogic;
 import wbs.platform.queue.logic.QueueLogic;
 import wbs.platform.user.console.UserConsoleHelper;
 import wbs.platform.user.model.UserRec;
@@ -27,6 +28,9 @@ class MessageNotProcessedFormAction
 
 	@Inject
 	Database database;
+
+	@Inject
+	EventLogic eventLogic;
 
 	@Inject
 	InboxConsoleHelper inboxHelper;
@@ -114,6 +118,11 @@ class MessageNotProcessedFormAction
 
 			);
 
+			eventLogic.createEvent (
+				"message_processed_again",
+				myUser,
+				message);
+
 			transaction.commit ();
 
 			requestContext.addNotice (
@@ -139,6 +148,11 @@ class MessageNotProcessedFormAction
 				.setNotProcessedQueueItem (
 					null);
 
+			eventLogic.createEvent (
+				"message_ignored",
+				myUser,
+				message);
+
 			transaction.commit ();
 
 			requestContext.addNotice (
@@ -163,6 +177,11 @@ class MessageNotProcessedFormAction
 
 				.setNotProcessedQueueItem (
 					null);
+
+			eventLogic.createEvent (
+				"message_manually_processed",
+				myUser,
+				message);
 
 			transaction.commit ();
 

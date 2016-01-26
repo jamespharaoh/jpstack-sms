@@ -208,6 +208,21 @@
 			text="%0 manually retried %1"
 			admin="no"/>
 
+		<event-type
+			name="Message manually processed"
+			text="%0 manually processed %1"
+			admin="no"/>
+
+		<event-type
+			name="Message ignored"
+			text="%0 ignored %1"
+			admin="no"/>
+
+		<event-type
+			name="Message processed again"
+			text="%0 processed %1 again"
+			admin="no"/>
+
 	</event-types>
 
 </model-meta>
