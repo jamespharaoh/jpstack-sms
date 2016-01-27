@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 public
 class DateFinder {
 
-	// =-======================================================== date matchers
+	// ========================================================== date matchers
 
 	private static
 	int parseInt (
