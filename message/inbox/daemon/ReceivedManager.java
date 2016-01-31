@@ -17,13 +17,13 @@ import com.google.common.base.Optional;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.GenericExceptionResolution;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.daemon.ThreadManager;
-import wbs.platform.exception.logic.ExceptionLogger;
-import wbs.platform.exception.model.ExceptionResolution;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -204,7 +204,7 @@ class ReceivedManager
 					route.getCode ()),
 				exception,
 				Optional.<Integer>absent (),
-				ExceptionResolution.tryAgainLater);
+				GenericExceptionResolution.tryAgainLater);
 
 			inboxLogic.inboxProcessingFailed (
 				inbox,

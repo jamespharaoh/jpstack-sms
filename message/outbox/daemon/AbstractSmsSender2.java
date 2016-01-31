@@ -24,10 +24,10 @@ import com.google.common.base.Optional;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.exception.logic.ExceptionLogger;
-import wbs.platform.exception.model.ExceptionResolution;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.OutboxLogic;
@@ -350,7 +350,7 @@ class AbstractSmsSender2
 						getClass ().getSimpleName (),
 						exception,
 						Optional.<Integer>absent (),
-						ExceptionResolution.fatalError);
+						GenericExceptionResolution.fatalError);
 
 					setupSendResult =
 						new SetupSendResult ()
