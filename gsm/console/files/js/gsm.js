@@ -85,6 +85,83 @@ outerLoop:
 
 }
 
+function gsmCharCountNew (control, container, data) {
+
+	if (! data) {
+		data = {};
+	}
+
+	if (! data.max) {
+		data.max = 160;
+	}
+
+	if (data.maxReduceField) {
+
+		data.max -=
+			$("#" + data.maxReduceField).val ().length;
+
+	}
+
+	if (! data.paramLengths) {
+		data.paramLengths = {};
+	}
+
+	var text = container.firstChild;
+
+	// check its valid
+
+	if (! isGsm (control.value)) {
+		text.data = "ERR";
+		return;
+	}
+
+	// check params are alright
+
+	var params = getParams (control.value);
+	var paramsLen = 0;
+outerLoop:
+
+	for (var i = 0; i < params.length; i++) {
+		var param = params [i];
+
+		for (var j = 0; j < data.paramLengths.length; j++) {
+			var paramLength = data.paramLengths [j];
+
+			if (paramLength.name == param) {
+				paramsLen += paramLength.maxLen;
+				continue outerLoop;
+			}
+
+		}
+
+		text.data = "ERR";
+		return;
+
+	}
+
+	// get string length
+
+	var len = gsmlen (zapParams (control.value)) + paramsLen;
+
+	// work out the text
+
+	var str;
+	if (data.max == 0) {
+		str = String (len);
+	} else {
+		if (len <= data.max) {
+			str = "-" + String (data.max - len);
+		} else {
+			str = "+" + String (len - data.max);
+		}
+	}
+
+	// set the text
+
+	text.data = str;
+
+}
+
 function gsmCharCountMultiple (control, container) {
 
 	var options =
