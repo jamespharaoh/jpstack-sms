@@ -138,8 +138,7 @@
 			name="inboundImpliesAdult"/>
 
 		<integer-field
-			name="maxTries"
-			nullable="yes"/>
+			name="maxTries"/>
 
 		<enum-field
 			name="networkBehaviour"
@@ -168,11 +167,13 @@
 
 		<object-field
 			name="sender"
-			object-type="sender"/>
+			object-type="sender"
+			nullable="yes"/>
 
 		<object-field
 			name="command"
-			object-type="command"/>
+			object-type="command"
+			nullable="yes"/>
 
 		<integer-field
 			name="inCharge"
@@ -193,7 +194,8 @@
 
 		<seconds-field
 			name="expirySecs"
-			label="Expiry time"/>
+			label="Expiry time"
+			nullable="yes"/>
 
 		<yes-no-field
 			name="avRequired"
@@ -208,15 +210,18 @@
 
 		<enum-field
 			name="networkBehaviour"
-			helper="routeNetworkBehaviourConsoleHelper"/>
+			helper="routeNetworkBehaviourConsoleHelper"
+			nullable="yes"/>
 
 		<object-field
 			name="currency"
-			object-type="currency"/>
+			object-type="currency"
+			nullable="yes"/>
 
 		<object-field
 			name="blockNumberLookup"
-			object-type="numberLookup"/>
+			object-type="numberLookup"
+			nullable="yes"/>
 
 	</field-set>
 
