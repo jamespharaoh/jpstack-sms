@@ -29,19 +29,6 @@ class MessageSetLogicImplementation
 
 	@Override
 	public
-	MessageSetRec findMessageSet (
-			MajorRecord<?> parent,
-			String code) {
-
-		return objectManager.findChildByCode (
-			MessageSetRec.class,
-			parent,
-			code);
-
-	}
-
-	@Override
-	public
 	Long sendMessageSet (
 			@NonNull MessageSetRec messageSet,
 			Long threadId,
