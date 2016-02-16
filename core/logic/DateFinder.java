@@ -9,8 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import lombok.NonNull;
+
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -331,24 +334,30 @@ class DateFinder {
 	// =================================================================== find
 
 	public static
-	LocalDate find (
-			String input,
-			int origin) {
+	Optional<LocalDate> find (
+			@NonNull String input,
+			@NonNull Integer origin) {
 
-		for (DateMatcher dateMatcher
-				: dateMatchers) {
+		for (
+			DateMatcher dateMatcher
+				: dateMatchers
+		) {
 
 			LocalDate date =
 				dateMatcher.getDate (
 					input,
 					origin);
 
-			if (date != null)
-				return date;
+			if (date != null) {
+
+				return Optional.of (
+					date);
+
+			}
 
 		}
 
-		return null;
+		return Optional.absent ();
 
 	}
 

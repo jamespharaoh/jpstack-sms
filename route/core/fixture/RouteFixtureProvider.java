@@ -135,6 +135,7 @@ class RouteFixtureProvider
 			.setCurrency (
 				currencyHelper.findByCode (
 					GlobalId.root,
+					"test",
 					"gbp"))
 
 		);

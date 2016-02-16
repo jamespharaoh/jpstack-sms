@@ -31,7 +31,19 @@
 
 		<reference-field
 			name="activeSession"
-			type="smsCustomerSession"/>
+			type="smsCustomerSession"
+			nullable="yes"/>
+
+		<!-- settings -->
+
+		<date-field
+			name="dateOfBirth"
+			nullable="yes"/>
+
+		<reference-field
+			name="notesText"
+			type="text"
+			nullable="yes"/>
 
 		<!-- statistics -->
 
