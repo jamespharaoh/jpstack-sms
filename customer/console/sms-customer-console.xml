@@ -108,10 +108,18 @@
 
 		<object-field
 			name="activeSession"
-			object-type="smsCustomerSession"/>
+			object-type="smsCustomerSession"
+			root-field="this"/>
 
 		<integer-field
 			name="numSessions"/>
+
+		<date-field
+			name="dateOfBirth"/>
+
+		<text-area-field
+			name="notesText"
+			label="Notes"/>
 
 	</field-set>
 
@@ -119,9 +127,14 @@
 		name="settings"
 		object-name="smsCustomer">
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
+		<date-field
+			name="dateOfBirth"
+			nullable="yes"/>
+
+		<text-area-field
+			name="notesText"
+			label="Notes"
+			nullable="yes"/>
 
 	</field-set>
 
