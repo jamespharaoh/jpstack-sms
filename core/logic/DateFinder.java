@@ -68,31 +68,40 @@ class DateFinder {
 	static
 	class DateMatcher {
 
+		DateStyle dateStyle;
 		Pattern pattern;
 
 		DateMatcher (
+				DateStyle dateStyle,
 				Pattern newPattern) {
+
+			this.dateStyle =
+				dateStyle;
 
 			pattern = newPattern;
 
 		}
 
 		DateMatcher (
+				DateStyle dateStyle,
 				String newPatternString)
 			throws PatternSyntaxException {
 
 			this (
+				dateStyle,
 				Pattern.compile (
 					newPatternString));
 
 		}
 
 		DateMatcher (
+				DateStyle dateStyle,
 				String newPatternString,
 				int newPatternFlags)
 			throws PatternSyntaxException {
 
 			this (
+				dateStyle,
 				Pattern.compile (
 					newPatternString,
 					newPatternFlags));
@@ -104,19 +113,50 @@ class DateFinder {
 				Matcher matcher,
 				int origin) {
 
+			int yearIndex;
+			int monthIndex;
+			int dateIndex;
+
+			switch (dateStyle) {
+
+			case dmy:
+
+				dateIndex = 1;
+				monthIndex = 2;
+				yearIndex = 3;
+
+				break;
+
+			case mdy:
+
+				monthIndex = 1;
+				dateIndex = 2;
+				yearIndex = 3;
+
+				break;
+
+			default:
+
+				throw new RuntimeException ();
+
+			}
+
 			int year =
 				stringToYear (
-					matcher.group (3),
+					matcher.group (
+						yearIndex),
 					origin);
 
 			int month =
 				stringToMonth (
-					matcher.group (2));
+					matcher.group (
+						monthIndex));
 
 			int date =
 				parseInt (
 					stripSuffix (
-						matcher.group (1)));
+						matcher.group (
+							dateIndex)));
 
 			return new LocalDate (
 				year,
@@ -190,6 +230,7 @@ class DateFinder {
 		ImmutableList.<DateMatcher>of (
 
 			new DateMatcher (
+				DateStyle.dmy,
 				"\\b" +
 				"(" + dayOfMonthRegexp + ")" +
 				"\\W+" +
@@ -199,6 +240,7 @@ class DateFinder {
 				"\\b"),
 
 			new DateMatcher (
+				DateStyle.dmy,
 				"\\b" +
 				"(" + dayOfMonthRegexp + ")" +
 				"\\W+" +
@@ -209,6 +251,18 @@ class DateFinder {
 				Pattern.CASE_INSENSITIVE),
 
 			new DateMatcher (
+				DateStyle.mdy,
+				"\\b" +
+				"(" + monthNameRegexp + ")" +
+				"\\W+" +
+				"(" + dayOfMonthRegexp + ")" +
+				"\\W+" +
+				"(\\d{4}|\\d{2})" +
+				"\\b",
+				Pattern.CASE_INSENSITIVE),
+
+			new DateMatcher (
+				DateStyle.dmy,
 				"\\b" +
 				"(" + dayOfMonthRegexp + ")" +
 				"(" + monthNameRegexp + ")" +
@@ -217,11 +271,28 @@ class DateFinder {
 				Pattern.CASE_INSENSITIVE),
 
 			new DateMatcher (
+				DateStyle.mdy,
+				"\\b" +
+				"(" + monthNameRegexp + ")" +
+				"(" + dayOfMonthRegexp + ")" +
+				"\\W+" +
+				"(\\d{4}|\\d{2})" +
+				"\\b",
+				Pattern.CASE_INSENSITIVE),
+
+			new DateMatcher (
+				DateStyle.dmy,
 				"\\b" +
 				"(" + dayOfMonthRegexp + ")" +
 				"([0oO][1lI23456789]|[1lI][0oO1lI2])" +
 				"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})" +
 				"\\b"));
+
+	static
+	enum DateStyle {
+		dmy,
+		mdy;
+	}
 
 	/** Takes off the 'st' or whatever from a number. */
 	private static String stripSuffix(String source) {
