@@ -7,7 +7,6 @@ import lombok.NonNull;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
-import wbs.framework.record.MajorRecord;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
