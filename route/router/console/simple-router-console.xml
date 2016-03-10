@@ -94,6 +94,7 @@
 		<parent-field/>
 		<name-field/>
 		<description-field/>
+		<deleted-field/>
 
 		<object-field
 			name="route"

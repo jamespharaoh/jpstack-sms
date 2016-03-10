@@ -1,21 +1,27 @@
 package wbs.sms.core.logic;
 
+import static wbs.framework.utils.etc.Misc.contains;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.joinWithSeparator;
+import static wbs.framework.utils.etc.Misc.joinWithPipe;
+import static wbs.framework.utils.etc.Misc.joinWithoutSeparator;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import lombok.NonNull;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Contains utility function to search a string for a date, in various formats.
@@ -78,38 +84,27 @@ class DateFinder {
 			this.dateStyle =
 				dateStyle;
 
-			pattern = newPattern;
+			pattern =
+				newPattern;
 
 		}
 
 		DateMatcher (
 				DateStyle dateStyle,
-				String newPatternString)
+				String... newPatternStringParts)
 			throws PatternSyntaxException {
 
 			this (
 				dateStyle,
 				Pattern.compile (
-					newPatternString));
-
-		}
-
-		DateMatcher (
-				DateStyle dateStyle,
-				String newPatternString,
-				int newPatternFlags)
-			throws PatternSyntaxException {
-
-			this (
-				dateStyle,
-				Pattern.compile (
-					newPatternString,
-					newPatternFlags));
+					joinWithoutSeparator (
+						newPatternStringParts),
+					Pattern.CASE_INSENSITIVE));
 
 		}
 
 		public
-		LocalDate getDate (
+		Optional<LocalDate> getDate (
 				Matcher matcher,
 				int origin) {
 
@@ -158,10 +153,19 @@ class DateFinder {
 						matcher.group (
 							dateIndex)));
 
-			return new LocalDate (
-				year,
-				month,
-				date);
+			try {
+
+				return Optional.of (
+					new LocalDate (
+						year,
+						month,
+						date));
+
+			} catch (IllegalFieldValueException exception) {
+
+				return Optional.absent ();
+
+			}
 
 		}
 
@@ -176,117 +180,228 @@ class DateFinder {
 			if (! matcher.find ())
 				return null;
 
-			return getDate (
-				matcher,
-				origin);
+			Optional<LocalDate> result =
+				getDate (
+					matcher,
+					origin);
+
+			return result.orNull ();
 
 		}
 
 	}
 
 	static
+	String numericDayOfMonthRegexp =
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[0oO23]?[1lI]",
+				"[0oO2]?2",
+				"[0oO2]?3",
+				"[0oO]?[4-9]",
+				"[1lI][0oO1lI23456789]",
+				"2[0oO456789]",
+				"3[0oO]"),
+			")");
+
+	static
 	String dayOfMonthRegexp =
-		joinWithSeparator (
-			"|",
-			"[0oO23]?[1lI](?:st)?",
-			"[0oO2]?2(?:nd)?",
-			"[0oO2]?3(?:rd)?",
-			"[0oO]?[4-9](?:th)?",
-			"[1lI][0oO1lI23456789](?:th)?",
-			"2[0oO456789](?:th)?",
-			"3[0oO](?:th)?");
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[0oO23]?[1lI](?:st)?",
+				"[0oO2]?2(?:nd)?",
+				"[0oO2]?3(?:rd)?",
+				"[0oO]?[4-9](?:th)?",
+				"[1lI][0oO1lI23456789](?:th)?",
+				"2[0oO456789](?:th)?",
+				"3[0oO](?:th)?"),
+			")");
+
+	@SuppressWarnings ("unchecked")
+	static
+	List<List<String>> monthNames =
+		ImmutableList.of (
+			ImmutableList.of (
+				"jan",
+				"january"),
+			ImmutableList.of (
+				"feb",
+				"february",
+				"febuary"),
+			ImmutableList.of (
+				"mar",
+				"march"),
+			ImmutableList.of (
+				"apr",
+				"april"),
+			ImmutableList.of (
+				"may"),
+			ImmutableList.of (
+				"jun",
+				"june"),
+			ImmutableList.of (
+				"jul",
+				"july"),
+			ImmutableList.of (
+				"aug",
+				"august"),
+			ImmutableList.of (
+				"sep",
+				"sept",
+				"september"),
+			ImmutableList.of (
+				"oct",
+				"october"),
+			ImmutableList.of (
+				"nov",
+				"november"),
+			ImmutableList.of (
+				"dec",
+				"december"));
+
+	static
+	List<String> allMonthNames =
+		monthNames.stream ()
+			.flatMap (List::stream)
+			.collect (Collectors.toList ());
+
+	static
+	Map<String,Integer> monthsByName =
+		IntStream.range (0, monthNames.size ())
+			.mapToObj (index ->
+				monthNames.get (index).stream ()
+					.map (monthName -> Pair.of (monthName, index + 1))
+					.collect (Collectors.toList ()))
+			.flatMap (List::stream)
+			.collect (Collectors.toMap (Pair::getKey, Pair::getRight));
 
 	static
 	String monthNameRegexp =
-		joinWithSeparator (
-			"|",
-			"jan",
-			"january",
-			"feb",
-			"february",
-			"mar",
-			"march",
-			"apr",
-			"april",
-			"may",
-			"jun",
-			"june",
-			"jul",
-			"july",
-			"aug",
-			"august",
-			"sep",
-			"sept",
-			"september",
-			"oct",
-			"october",
-			"nov",
-			"november",
-			"dec",
-			"december");
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				allMonthNames),
+			")");
+
+	final static
+	String beforeDigitRegexp =
+		joinWithoutSeparator (
+			"(?:",
+			joinWithPipe (
+				"\\b",
+				"\\D"),
+			")");
+
+	final static
+	String afterDigitRegexp =
+		joinWithoutSeparator (
+			"(?:",
+			joinWithPipe (
+				"\\b",
+				"\\D"),
+			")");
+
+	final static
+	String separatorRegexp =
+		joinWithoutSeparator (
+			"\\P{Alnum}+");
 
 	static
 	Collection<DateMatcher> dateMatchers =
 		ImmutableList.<DateMatcher>of (
 
-			new DateMatcher (
-				DateStyle.dmy,
-				"\\b" +
-				"(" + dayOfMonthRegexp + ")" +
-				"\\W+" +
-				"([0oO]?[1lI23456789]|[1lI][0oO1lI2])" +
-				"\\W+" +
-				"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})" +
-				"\\b"),
+		// european
 
-			new DateMatcher (
-				DateStyle.dmy,
-				"\\b" +
-				"(" + dayOfMonthRegexp + ")" +
-				"\\W+" +
-				"(" + monthNameRegexp + ")" +
-				"\\W+" +
-				"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})" +
-				"\\b",
-				Pattern.CASE_INSENSITIVE),
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			dayOfMonthRegexp,
+			separatorRegexp,
+			"([0oO]?[1lI23456789]|[1lI][0oO1lI2])",
+			separatorRegexp,
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
 
-			new DateMatcher (
-				DateStyle.mdy,
-				"\\b" +
-				"(" + monthNameRegexp + ")" +
-				"\\W+" +
-				"(" + dayOfMonthRegexp + ")" +
-				"\\W+" +
-				"(\\d{4}|\\d{2})" +
-				"\\b",
-				Pattern.CASE_INSENSITIVE),
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			dayOfMonthRegexp,
+			separatorRegexp,
+			monthNameRegexp,
+			separatorRegexp,
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
 
-			new DateMatcher (
-				DateStyle.dmy,
-				"\\b" +
-				"(" + dayOfMonthRegexp + ")" +
-				"(" + monthNameRegexp + ")" +
-				"(\\d{4}|\\d{2})" +
-				"\\b",
-				Pattern.CASE_INSENSITIVE),
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			dayOfMonthRegexp,
+			"\\P{Alnum}+of\\P{Alnum}+",
+			monthNameRegexp,
+			separatorRegexp,
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
 
-			new DateMatcher (
-				DateStyle.mdy,
-				"\\b" +
-				"(" + monthNameRegexp + ")" +
-				"(" + dayOfMonthRegexp + ")" +
-				"\\W+" +
-				"(\\d{4}|\\d{2})" +
-				"\\b",
-				Pattern.CASE_INSENSITIVE),
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			dayOfMonthRegexp,
+			monthNameRegexp,
+			"(\\d{4}|\\d{2})",
+			afterDigitRegexp),
 
-			new DateMatcher (
-				DateStyle.dmy,
-				"\\b" +
-				"(" + dayOfMonthRegexp + ")" +
-				"([0oO][1lI23456789]|[1lI][0oO1lI2])" +
-				"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})" +
-				"\\b"));
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			numericDayOfMonthRegexp,
+			"\\P{Alnum}*of\\P{Alnum}+",
+			monthNameRegexp,
+			separatorRegexp,
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			dayOfMonthRegexp,
+			"([0oO][1lI23456789]|[1lI][0oO1lI2])",
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
+
+		// american
+
+		new DateMatcher (
+			DateStyle.mdy,
+			beforeDigitRegexp,
+			"([0oO]?[1lI23456789]|[1lI][0oO1lI2])",
+			separatorRegexp,
+			dayOfMonthRegexp,
+			separatorRegexp,
+			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.mdy,
+			"\\b",
+			monthNameRegexp,
+			separatorRegexp,
+			dayOfMonthRegexp,
+			separatorRegexp,
+			"(\\d{4}|\\d{2})",
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.mdy,
+			"\\b",
+			monthNameRegexp,
+			dayOfMonthRegexp,
+			separatorRegexp,
+			"(\\d{4}|\\d{2})",
+			afterDigitRegexp)
+
+	);
 
 	static
 	enum DateStyle {
@@ -354,31 +469,6 @@ class DateFinder {
 		Pattern.compile (
 			"[0oO]?[1lI23456789]|[1lI][0oO1lI2]");
 
-	private final static
-	Pattern monthNamesPattern =
-		Pattern.compile (
-			"(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul"
-				+ "|july|aug|august|sep|sept|september|oct|october|nov"
-				+ "|november|dec|december)",
-			Pattern.CASE_INSENSITIVE);
-
-	private final static
-	Map<String,Integer> stringToMonth =
-		ImmutableMap.<String,Integer>builder ()
-			.put ("jan", 1)
-			.put ("feb", 2)
-			.put ("mar", 3)
-			.put ("apr", 4)
-			.put ("may", 5)
-			.put ("jun", 6)
-			.put ("jul", 7)
-			.put ("aug", 8)
-			.put ("sep", 9)
-			.put ("oct", 10)
-			.put ("nov", 11)
-			.put ("dec", 12)
-			.build ();
-
 	public static
 	Integer stringToMonth (
 			String string) {
@@ -389,12 +479,14 @@ class DateFinder {
 
 		}
 
-		if (monthNamesPattern.matcher (string).matches ()) {
+		if (
+			contains (
+				monthsByName,
+				string.toLowerCase ())
+		) {
 
-			return stringToMonth.get (
-				string
-					.substring (0, 3)
-					.toLowerCase ());
+			return monthsByName.get (
+				string.toLowerCase ());
 
 		}
 

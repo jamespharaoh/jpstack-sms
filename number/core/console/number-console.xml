@@ -3,7 +3,6 @@
 
 	<console-helper-provider
 		object-name="number"
-		view-priv="parent"
 		cryptor="numberCryptor">
 
 		<priv-key

@@ -64,6 +64,12 @@
 			description="View outbox messages waiting to be sent"
 			template="yes"/>
 
+		<priv-type
+			subject="slice"
+			name="Outbox view"
+			description="View outbox messages waiting to be sent"
+			template="yes"/>
+
 	</priv-types>
 
 	<event-types>

@@ -53,6 +53,14 @@
 			description="View SMS messages in the inbox"
 			template="yes"/>
 
+		<!-- slice -->
+
+		<priv-type
+			subject="slice"
+			name="Inbox view"
+			description="View SMS messages in the inbox for this slice"
+			template="yes"/>
+
 	</priv-types>
 
 </model-meta>

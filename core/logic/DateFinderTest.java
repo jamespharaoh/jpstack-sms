@@ -1,5 +1,8 @@
 package wbs.sms.core.logic;
 
+import static wbs.framework.utils.etc.Misc.isNotPresent;
+import static wbs.framework.utils.etc.Misc.isPresent;
+import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -41,11 +44,71 @@ class DateFinderTest
 	public
 	void test () {
 
-		assertEquals (
-			example.result (),
+		Optional<LocalDate> actual =
 			DateFinder.find (
 				example.input (),
-				example.baseYear ()));
+				example.baseYear ());
+
+		if (
+
+			isNotPresent (
+				example.result ())
+
+			&& isPresent (
+				actual)
+
+		) {
+
+			fail (
+				stringFormat (
+					"Expected '%s' ",
+					example.input (),
+					"to fail but matched '%s' ",
+					actual.get ().toString (),
+					"(base year %s)",
+					example.baseYear ()));
+
+		}
+
+		if (
+
+			isPresent (
+				example.result ())
+
+			&& isNotPresent (
+				actual)
+
+		) {
+
+			fail (
+				stringFormat (
+					"Expected '%s' ",
+					example.input (),
+					"to find '%s' ",
+					example.result ().get ().toString (),
+					"but failed (base year %s)",
+					example.baseYear ()));
+
+		}
+
+		if (
+			notEqual (
+				example.result (),
+				actual)
+		) {
+
+			fail (
+				stringFormat (
+					"Expected '%s' ",
+					example.input (),
+					"to find '%s' ",
+					example.result ().get ().toString (),
+					"but found '%s' ",
+					actual.get ().toString (),
+					"(base year %s)",
+					example.baseYear ()));
+
+		}
 
 	}
 
@@ -174,6 +237,51 @@ class DateFinderTest
 				1900,
 				date (1966, 6, 27)),
 
+			passingExample (
+				"Mandy parke 9 of march 1981",
+				1900,
+				date (1981, 3, 9)),
+
+			passingExample (
+				"a01/01/01",
+				1900,
+				date (1901, 1, 1)),
+
+			passingExample (
+				"01/01/01a",
+				1900,
+				date (1901, 1, 1)),
+
+			passingExample (
+				"Date of birth9 8 48 my name is sarah",
+				1900,
+				date (1948, 8, 9)),
+
+			passingExample (
+				"14_07_1987 nonna",
+				1900,
+				date (1987, 7, 14)),
+
+			passingExample (
+				"Kim 11of Feb 1975",
+				1900,
+				date (1975, 2, 11)),
+
+			passingExample (
+				"12th of febuary 1997 and silly tack",
+				1900,
+				date (1997, 2, 12)),
+
+			passingExample (
+				"02/19/1965. Florian",
+				1900,
+				date (1965, 2, 19)),
+
+			passingExample (
+				"Sheridon 8th of February 1980",
+				1900,
+				date (1980, 2, 8)),
+
 			// ----- origin 1950
 
 			passingExample (
@@ -192,13 +300,13 @@ class DateFinderTest
 				"This is not a valid date 32 jan 2003"),
 
 			failingExample (
-				"12/13/06"),
+				"13/13/1900"),
 
 			failingExample (
-				"a01/01/01"),
+				"01001900"),
 
 			failingExample (
-				"01/01/01a")
+				"30 feb 1950")
 
 		);
 
