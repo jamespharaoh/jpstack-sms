@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
@@ -42,7 +44,7 @@ class OutboxDaoHibernate
 	@Override
 	public
 	OutboxRec find (
-			MessageRec message) {
+			@NonNull MessageRec message) {
 
 		return get (
 			OutboxRec.class,
@@ -78,8 +80,8 @@ class OutboxDaoHibernate
 	@Override
 	public
 	OutboxRec findNext (
-			Instant now,
-			RouteRec route) {
+			@NonNull Instant now,
+			@NonNull RouteRec route) {
 
 		return findOne (
 			OutboxRec.class,
