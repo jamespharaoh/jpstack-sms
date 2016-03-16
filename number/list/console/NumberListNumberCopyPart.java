@@ -63,7 +63,7 @@ class NumberListNumberCopyPart
 			if (someNumberList == thisNumberList)
 				continue;
 
-			if (! privChecker.can (
+			if (! privChecker.canRecursive (
 					someNumberList,
 					"number_list_browse"))
 				continue;
@@ -123,7 +123,7 @@ class NumberListNumberCopyPart
 		printFormat (
 			"<p>\n");
 
-		if (privChecker.can (
+		if (privChecker.canRecursive (
 				thisNumberList,
 				"number_list_add")) {
 
@@ -136,7 +136,7 @@ class NumberListNumberCopyPart
 
 		}
 
-		if (privChecker.can (
+		if (privChecker.canRecursive (
 				thisNumberList,
 				"number_list_remove")) {
 

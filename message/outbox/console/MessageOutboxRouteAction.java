@@ -96,7 +96,7 @@ class MessageOutboxRouteAction
 
 		// check privs
 
-		if (! privChecker.can (
+		if (! privChecker.canRecursive (
 			ImmutableMap.<Object,Collection<String>>builder ()
 
 				.put (

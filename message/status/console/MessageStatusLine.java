@@ -64,7 +64,7 @@ class MessageStatusLine
 		// count inboxes (if visible)
 
 		if (
-			privChecker.can (
+			privChecker.canRecursive (
 				GlobalId.root,
 				"inbox_view")
 		) {
@@ -77,7 +77,7 @@ class MessageStatusLine
 		// count outboxes (if visible)
 
 		if (
-			privChecker.can (
+			privChecker.canRecursive (
 				GlobalId.root,
 				"outbox_view")
 		) {

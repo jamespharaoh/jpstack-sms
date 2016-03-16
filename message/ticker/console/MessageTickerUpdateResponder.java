@@ -77,15 +77,15 @@ class MessageTickerUpdateResponder
 
 			if (
 
-				! privChecker.can (
+				! privChecker.canRecursive (
 					messageTickerMessage.routeGlobalId (),
 					"messages")
 
-				&& ! privChecker.can (
+				&& ! privChecker.canRecursive (
 					messageTickerMessage.serviceParentGlobalId (),
 					"messages")
 
-				&& ! privChecker.can (
+				&& ! privChecker.canRecursive (
 					messageTickerMessage.affiliateParentGlobalId (),
 					"messages")
 
@@ -116,15 +116,15 @@ class MessageTickerUpdateResponder
 
 			if (
 
-				! privChecker.can (
+				! privChecker.canRecursive (
 					messageTickerMessage.routeGlobalId (),
 					"messages")
 
-				&& ! privChecker.can (
+				&& ! privChecker.canRecursive (
 					messageTickerMessage.serviceParentGlobalId (),
 					"messages")
 
-				&& ! privChecker.can (
+				&& ! privChecker.canRecursive (
 					messageTickerMessage.affiliateParentGlobalId (),
 					"messages")
 

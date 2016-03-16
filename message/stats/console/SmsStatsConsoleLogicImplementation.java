@@ -68,7 +68,7 @@ class SmsStatsConsoleLogicImplementation
 	public
 	Map<SmsStatsCriteria,Set<Integer>> makeFilterMap () {
 
-		if (privChecker.can (
+		if (privChecker.canRecursive (
 				GlobalId.root,
 				"stats"))
 			return null;
@@ -85,7 +85,7 @@ class SmsStatsConsoleLogicImplementation
 
 			try {
 
-				if (! privChecker.can (
+				if (! privChecker.canRecursive (
 						objectManager.getParent (service),
 						"stats"))
 					continue;
@@ -119,7 +119,7 @@ class SmsStatsConsoleLogicImplementation
 
 			try {
 
-				if (! privChecker.can (
+				if (! privChecker.canRecursive (
 						objectManager.getParent (affiliate),
 						"stats"))
 					continue;
@@ -152,7 +152,7 @@ class SmsStatsConsoleLogicImplementation
 		) {
 
 			if (
-				privChecker.can (
+				privChecker.canRecursive (
 					route,
 					"stats")
 			) {

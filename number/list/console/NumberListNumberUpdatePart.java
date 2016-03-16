@@ -90,7 +90,7 @@ class NumberListNumberUpdatePart
 			"<p>\n");
 
 		if (
-			privChecker.can (
+			privChecker.canRecursive (
 				numberList,
 				"number_list_add")
 		) {
@@ -105,7 +105,7 @@ class NumberListNumberUpdatePart
 		}
 
 		if (
-			privChecker.can (
+			privChecker.canRecursive (
 				numberList,
 				"number_list_remove")
 		) {

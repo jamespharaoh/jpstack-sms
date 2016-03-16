@@ -108,7 +108,7 @@ class MessageConsoleHooks
 					service);
 
 			 if (
-			 	! privChecker.can (
+			 	! privChecker.canRecursive (
 			 		serviceParent,
 			 		"messages")
 			 ) {
@@ -140,7 +140,7 @@ class MessageConsoleHooks
 					affiliate);
 
 			if (
-				! privChecker.can (
+				! privChecker.canRecursive (
 					affiliateParent,
 					"messages")
 			) {
@@ -168,7 +168,7 @@ class MessageConsoleHooks
 		) {
 
 			if (
-				! privChecker.can (
+				! privChecker.canRecursive (
 					route,
 					"messages")
 			) {
