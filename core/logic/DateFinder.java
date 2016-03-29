@@ -192,7 +192,35 @@ class DateFinder {
 	}
 
 	static
-	String numericDayOfMonthRegexp =
+	String strictNumericDayOfMonthRegexp =
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[023]?1",
+				"[02]?2",
+				"[02]?3",
+				"0?[4-9]",
+				"1[0123456789]",
+				"2[0456789]",
+				"30"),
+			")");
+
+	static
+	String strictFixedNumericDayOfMonthRegexp =
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[023]1",
+				"[02]2",
+				"[02]3",
+				"0[4-9]",
+				"1[0123456789]",
+				"2[0456789]",
+				"30"),
+			")");
+
+	static
+	String relaxedNumericDayOfMonthRegexp =
 		joinWithoutSeparator (
 			"(",
 			joinWithPipe (
@@ -206,7 +234,35 @@ class DateFinder {
 			")");
 
 	static
-	String dayOfMonthRegexp =
+	String relaxedFixedNumericDayOfMonthRegexp =
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[0oO23][1lI]",
+				"[0oO2]2",
+				"[0oO2]3",
+				"[0oO][4-9]",
+				"[1lI][0oO1lI23456789]",
+				"2[0oO456789]",
+				"3[0oO]"),
+			")");
+
+	static
+	String strictDayOfMonthRegexp =
+		joinWithoutSeparator (
+			"(",
+			joinWithPipe (
+				"[023]?1(?:st)?",
+				"[02]?2(?:nd)?",
+				"[02]?3(?:rd)?",
+				"[0]?[4-9](?:th)?",
+				"1[0123456789](?:th)?",
+				"2[0456789](?:th)?",
+				"30(?:th)?"),
+			")");
+
+	static
+	String relaxedDayOfMonthRegexp =
 		joinWithoutSeparator (
 			"(",
 			joinWithPipe (
@@ -218,6 +274,38 @@ class DateFinder {
 				"2[0oO456789](?:th)?",
 				"3[0oO](?:th)?"),
 			")");
+
+	static
+	String strictNumericMonthRegexp =
+		"(0?[123456789]|1[012])";
+
+	static
+	String strictFixedNumericMonthRegexp =
+		"(0[123456789]|1[012])";
+
+	static
+	String relaxedNumericMonthRegexp =
+		"([0oO]?[1lI23456789]|[1lI][0oO1lI2])";
+
+	static
+	String relaxedFixedNumericMonthRegexp =
+		"([0oO][1lI23456789]|[1lI][0oO1lI2])";
+
+	static
+	String strictNumericYearRegexp =
+		"([0123456789]{4}|[0123456789]{2})";
+
+	static
+	String strictFixedNumericYearRegexp =
+		"([0123456789]{4}|[0123456789]{2})";
+
+	static
+	String relaxedNumericYearRegexp =
+		"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})";
+
+	static
+	String relaxedFixedNumericYearRegexp =
+		"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})";
 
 	@SuppressWarnings ("unchecked")
 	static
@@ -312,74 +400,74 @@ class DateFinder {
 	Collection<DateMatcher> dateMatchers =
 		ImmutableList.<DateMatcher>of (
 
-		// european
+		// european strict
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			separatorRegexp,
-			"([0oO]?[1lI23456789]|[1lI][0oO1lI2])",
+			strictNumericMonthRegexp,
 			separatorRegexp,
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			separatorRegexp,
 			monthNameRegexp,
 			separatorRegexp,
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			"\\P{Alnum}+of\\P{Alnum}+",
 			monthNameRegexp,
 			separatorRegexp,
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			monthNameRegexp,
-			"(\\d{4}|\\d{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			numericDayOfMonthRegexp,
+			strictNumericDayOfMonthRegexp,
 			"\\P{Alnum}*of\\P{Alnum}+",
 			monthNameRegexp,
 			separatorRegexp,
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
 			beforeDigitRegexp,
-			dayOfMonthRegexp,
-			"([0oO][1lI23456789]|[1lI][0oO1lI2])",
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictFixedNumericDayOfMonthRegexp,
+			strictFixedNumericMonthRegexp,
+			strictFixedNumericYearRegexp,
 			afterDigitRegexp),
 
-		// american
+		// american strict
 
 		new DateMatcher (
 			DateStyle.mdy,
 			beforeDigitRegexp,
-			"([0oO]?[1lI23456789]|[1lI][0oO1lI2])",
+			strictNumericMonthRegexp,
 			separatorRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			separatorRegexp,
-			"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
@@ -387,18 +475,107 @@ class DateFinder {
 			"\\b",
 			monthNameRegexp,
 			separatorRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			separatorRegexp,
-			"(\\d{4}|\\d{2})",
+			strictNumericYearRegexp,
 			afterDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.mdy,
 			"\\b",
 			monthNameRegexp,
-			dayOfMonthRegexp,
+			strictDayOfMonthRegexp,
 			separatorRegexp,
-			"(\\d{4}|\\d{2})",
+			strictNumericYearRegexp,
+			afterDigitRegexp),
+
+		// european relaxed
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedDayOfMonthRegexp,
+			separatorRegexp,
+			relaxedNumericMonthRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedDayOfMonthRegexp,
+			separatorRegexp,
+			monthNameRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedDayOfMonthRegexp,
+			"\\P{Alnum}+of\\P{Alnum}+",
+			monthNameRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedDayOfMonthRegexp,
+			monthNameRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedNumericDayOfMonthRegexp,
+			"\\P{Alnum}*of\\P{Alnum}+",
+			monthNameRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.dmy,
+			beforeDigitRegexp,
+			relaxedFixedNumericDayOfMonthRegexp,
+			relaxedFixedNumericMonthRegexp,
+			relaxedFixedNumericYearRegexp,
+			afterDigitRegexp),
+
+		// american relaxed
+
+		new DateMatcher (
+			DateStyle.mdy,
+			beforeDigitRegexp,
+			relaxedNumericMonthRegexp,
+			separatorRegexp,
+			relaxedDayOfMonthRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.mdy,
+			"\\b",
+			monthNameRegexp,
+			separatorRegexp,
+			relaxedDayOfMonthRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
+			afterDigitRegexp),
+
+		new DateMatcher (
+			DateStyle.mdy,
+			"\\b",
+			monthNameRegexp,
+			relaxedDayOfMonthRegexp,
+			separatorRegexp,
+			relaxedNumericYearRegexp,
 			afterDigitRegexp)
 
 	);

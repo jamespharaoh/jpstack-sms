@@ -282,6 +282,11 @@ class DateFinderTest
 				1900,
 				date (1980, 2, 8)),
 
+			passingExample (
+				"Bonnie angell 10/12/1996",
+				1900,
+				date (1996, 12, 10)),
+
 			// ----- origin 1950
 
 			passingExample (
