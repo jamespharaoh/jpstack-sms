@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import org.joda.time.Instant;
-import org.joda.time.Interval;
+
+import wbs.framework.utils.TextualInterval;
 
 @Accessors (fluent = true)
 @Data
@@ -37,7 +38,7 @@ class MessageSearch
 
 	Integer networkId;
 
-	Interval createdTime;
+	TextualInterval createdTime;
 
 	Instant createdTimeAfter;
 	Instant createdTimeBefore;

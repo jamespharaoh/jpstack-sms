@@ -354,13 +354,13 @@ class MessageDaoHibernate
 				Restrictions.ge (
 					"createdTime",
 					instantToDate (
-						search.createdTime ().getStart ())));
+						search.createdTime ().start ())));
 
 			criteria.add (
 				Restrictions.lt (
 					"createdTime",
 					instantToDate (
-						search.createdTime ().getEnd ())));
+						search.createdTime ().end ())));
 
 		}
 
