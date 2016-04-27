@@ -1,6 +1,6 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
+import static wbs.framework.utils.etc.Misc.laterThan;
 
 import java.util.List;
 
@@ -8,6 +8,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
+
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -90,26 +93,32 @@ final class RouteTesterDaemon
 		List<RouteTesterRec> routeTesters =
 			routeTesterHelper.findAll ();
 
-		long now =
-			System.currentTimeMillis ();
-
 		// for each one...
 
-		for (RouteTesterRec routeTester
-				: routeTesters) {
+		for (
+			RouteTesterRec routeTester
+				: routeTesters
+		) {
 
 			// if it's had a test recently skip it
 
 			if (routeTester.getLastTest () != null) {
 
-				long lastTest =
-					routeTester.getLastTest ().getTime ();
+				Instant lastTest =
+					routeTester.getLastTest ();
 
-				long nextTest =
-					lastTest + 1000 * routeTester.getIntervalSecs ();
+				Instant nextTest =
+					lastTest.plus (
+						Duration.standardSeconds (
+							routeTester.getIntervalSecs ()));
 
-				if (nextTest > now)
+				if (
+					laterThan (
+						nextTest,
+						transaction.now ())
+				) {
 					continue;
+				}
 
 			}
 
@@ -141,8 +150,7 @@ final class RouteTesterDaemon
 				routeTester.getRoute ())
 
 			.setSentTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 		);
 
@@ -201,8 +209,7 @@ final class RouteTesterDaemon
 		routeTester
 
 			.setLastTest (
-				instantToDate (
-					transaction.now ()));
+				transaction.now ());
 
 	}
 

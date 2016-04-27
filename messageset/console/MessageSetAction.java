@@ -20,14 +20,12 @@ import lombok.extern.log4j.Log4j;
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
-import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
-import wbs.platform.user.model.UserObjectHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.gsm.Gsm;
 import wbs.sms.messageset.model.MessageSetMessageObjectHelper;
 import wbs.sms.messageset.model.MessageSetMessageRec;
@@ -43,9 +41,6 @@ class MessageSetAction
 	extends ConsoleAction {
 
 	@Inject
-	ConsoleRequestContext requestContext;
-
-	@Inject
 	Provider<ConsoleManager> consoleManagerProvider;
 
 	@Inject
@@ -54,23 +49,23 @@ class MessageSetAction
 	@Inject
 	EventLogic eventLogic;
 
+	@Getter @Setter
+	MessageSetFinder messageSetFinder;
+
 	@Inject
 	MessageSetMessageObjectHelper messageSetMessageHelper;
+
+	@Getter @Setter
+	BooleanLookup privLookup;
+
+	@Getter @Setter
+	Provider<Responder> responder;
 
 	@Inject
 	RouteObjectHelper routeHelper;
 
 	@Inject
-	UserObjectHelper userHelper;
-
-	@Getter @Setter
-	Provider<Responder> responder;
-
-	@Getter @Setter
-	MessageSetFinder messageSetFinder;
-
-	@Getter @Setter
-	BooleanLookup privLookup;
+	UserConsoleLogic userConsoleLogic;
 
 	@Override
 	public
@@ -198,12 +193,6 @@ class MessageSetAction
 
 		}
 
-		// lookup the current user
-
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
-
 		// iterate over the input and do it
 
 		for (
@@ -247,7 +236,7 @@ class MessageSetAction
 
 				eventLogic.createEvent (
 					"messageset_message_removed",
-					myUser,
+					userConsoleLogic.userRequired (),
 					index,
 					messageSet);
 
@@ -307,7 +296,7 @@ class MessageSetAction
 
 					eventLogic.createEvent (
 						"messageset_message_created",
-						myUser,
+						userConsoleLogic.userRequired (),
 						index,
 						messageSet,
 						newRoute,
@@ -335,7 +324,7 @@ class MessageSetAction
 
 						eventLogic.createEvent (
 							"messageset_message_route",
-							myUser,
+							userConsoleLogic.userRequired (),
 							index,
 							messageSet,
 							newRoute);
@@ -355,7 +344,7 @@ class MessageSetAction
 
 						eventLogic.createEvent (
 							"messageset_message_number",
-							myUser,
+							userConsoleLogic.userRequired (),
 							index,
 							messageSet,
 							newNumber);
@@ -375,7 +364,7 @@ class MessageSetAction
 
 						eventLogic.createEvent (
 							"messageset_message_message",
-							myUser,
+							userConsoleLogic.userRequired (),
 							index,
 							messageSet,
 							newMessage);

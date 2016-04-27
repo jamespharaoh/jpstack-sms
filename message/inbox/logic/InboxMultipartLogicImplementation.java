@@ -1,7 +1,5 @@
 package wbs.sms.message.inbox.logic;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
-
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -69,7 +67,7 @@ class InboxMultipartLogicImplementation
 			long multipartSeg,
 			String msgTo,
 			String msgFrom,
-			Date msgNetworkTime,
+			Instant msgNetworkTime,
 			NetworkRec msgNetwork,
 			String msgOtherId,
 			String msgText) {
@@ -120,8 +118,7 @@ class InboxMultipartLogicImplementation
 					route)
 
 				.setTimestamp (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setMultipartId (
 					multipartId)
@@ -282,8 +279,7 @@ class InboxMultipartLogicImplementation
 				inboxMultipartBuffer.getRoute ())
 
 			.setTimestamp (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setMsgFrom (
 				inboxMultipartBuffer.getMsgFrom ())

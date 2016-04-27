@@ -14,15 +14,14 @@ import com.google.common.collect.ImmutableSet;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
-import wbs.platform.user.model.UserObjectHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.OutboxLogic;
@@ -52,16 +51,20 @@ class MessageOutboxRouteAction
 	OutboxLogic outboxLogic;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	@Inject
-	UserObjectHelper userHelper;
+	UserConsoleLogic userConsoleLogic;
+
+	// details
 
 	@Override
 	public
 	Responder backupResponder () {
 		return responder ("messageOutboxRouteResponder");
 	}
+
+	// implementation
 
 	@Override
 	public
@@ -71,10 +74,6 @@ class MessageOutboxRouteAction
 		Transaction transaction =
 			database.beginReadWrite (
 				this);
-
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
 
 		OutboxRec outbox =
 			outboxHelper.find (
@@ -159,7 +158,7 @@ class MessageOutboxRouteAction
 
 			eventLogic.createEvent (
 				"sms_outbox_cancelled",
-				myUser,
+				userConsoleLogic.userRequired (),
 				outbox.getMessage ());
 
 			transaction.commit ();
@@ -180,7 +179,7 @@ class MessageOutboxRouteAction
 
 			eventLogic.createEvent (
 				"sms_outbox_retried",
-				myUser,
+				userConsoleLogic.userRequired (),
 				outbox.getMessage ());
 
 			transaction.commit ();

@@ -14,13 +14,21 @@
 		<master-field
 			type="message"/>
 
-		<!-- data -->
+		<!-- statistics -->
 
 		<timestamp-field
 			name="createdTime"
 			column-type="iso"/>
 
-		<!-- statistics -->
+		<timestamp-field
+			name="processedTime"
+			column-type="postgresql"
+			nullable="yes"/>
+
+		<timestamp-field
+			name="lastAttempt"
+			column-type="postgresql"
+			nullable="yes"/>
 
 		<integer-field
 			name="numAttempts"

@@ -1,6 +1,5 @@
 package wbs.sms.magicnumber.logic;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -113,8 +112,7 @@ class MagicNumberLogicImplementation
 			magicNumberUse
 
 				.setLastUseTimestamp (
-					instantToDate (
-						transaction.now ()));
+					transaction.now ());
 
 			return magicNumberUse.getMagicNumber ();
 
@@ -146,8 +144,7 @@ class MagicNumberLogicImplementation
 					ref)
 
 				.setLastUseTimestamp (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 			);
 
@@ -182,8 +179,7 @@ class MagicNumberLogicImplementation
 				ref)
 
 			.setLastUseTimestamp (
-				instantToDate (
-					transaction.now ()));
+				transaction.now ());
 
 		return magicNumberUse.getMagicNumber ();
 

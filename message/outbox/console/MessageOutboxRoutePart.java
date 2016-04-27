@@ -1,6 +1,5 @@
 package wbs.sms.message.outbox.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
@@ -9,9 +8,9 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -23,6 +22,8 @@ public
 class MessageOutboxRoutePart
 	extends AbstractPagePart {
 
+	// dependencies
+
 	@Inject
 	ConsoleObjectManager objectManager;
 
@@ -33,7 +34,9 @@ class MessageOutboxRoutePart
 	RouteConsoleHelper routeHelper;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
+
+	// state
 
 	RouteRec route;
 
@@ -105,10 +108,8 @@ class MessageOutboxRoutePart
 				outbox.getId (),
 
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())),
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()),
 
 				"<td>%h</td>\n",
 				outbox.getTries ());

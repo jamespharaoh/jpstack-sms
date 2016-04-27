@@ -1,6 +1,5 @@
 package wbs.sms.message.outbox.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -17,6 +16,7 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.utils.TimeFormatter;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
@@ -33,6 +33,9 @@ class MessageOutboxSummaryPart
 
 	@Inject
 	RouteOutboxSummaryObjectHelper routeOutboxSummaryHelper;
+
+	@Inject
+	TimeFormatter timeFormatter;
 
 	// state
 
@@ -118,9 +121,8 @@ class MessageOutboxSummaryPart
 
 			printFormat (
 				"<td>%h</td>\n",
-				requestContext.prettyDateDiff (
-					dateToInstant (
-						routeOutboxSummary.getOldestTime ()),
+				timeFormatter.prettyDuration (
+					routeOutboxSummary.getOldestTime (),
 					transaction.now ()));
 
 			printFormat (

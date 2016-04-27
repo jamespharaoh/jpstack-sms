@@ -17,8 +17,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
-import wbs.platform.user.console.UserConsoleHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -51,12 +50,11 @@ class MessageActionsAction
 	ConsoleRequestContext requestContext;
 
 	@Inject
-	UserConsoleHelper userHelper;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
 	MessageRec message;
-	UserRec myUser;
 
 	// details
 
@@ -84,10 +82,6 @@ class MessageActionsAction
 				this);
 
 		// load data
-
-		myUser =
-			userHelper.find (
-				requestContext.userId ());
 
 		message =
 			messageHelper.find (
@@ -173,7 +167,7 @@ class MessageActionsAction
 
 		eventLogic.createEvent (
 			"message_manually_undelivered",
-			myUser,
+			userConsoleLogic.userRequired (),
 			message);
 
 		transaction.commit ();
@@ -218,7 +212,7 @@ class MessageActionsAction
 
 		eventLogic.createEvent (
 			"message_manually_delivered",
-			myUser,
+			userConsoleLogic.userRequired (),
 			message);
 
 		transaction.commit ();
@@ -252,7 +246,7 @@ class MessageActionsAction
 
 		eventLogic.createEvent (
 			"message_manually_unheld",
-			myUser,
+			userConsoleLogic.userRequired (),
 			message);
 
 		transaction.commit ();
@@ -287,7 +281,7 @@ class MessageActionsAction
 
 		eventLogic.createEvent (
 			"message_manually_retried",
-			myUser,
+			userConsoleLogic.userRequired (),
 			message);
 
 		transaction.commit ();

@@ -1,19 +1,19 @@
 package wbs.sms.tracker.logic;
 
+import static wbs.framework.utils.etc.Misc.earlierThan;
+import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import lombok.NonNull;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
@@ -54,6 +54,9 @@ class SmsTrackerLogicImplementation
 			@NonNull NumberRec number,
 			@NonNull Optional<Instant> date) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
 			smsSimpleTrackerNumberHelper.find (
 				smsSimpleTracker,
@@ -93,20 +96,15 @@ class SmsTrackerLogicImplementation
 
 		// check if the result has expired
 
-		Calendar cal =
-			new GregorianCalendar ();
-
-		cal.setTime (
-			smsSimpleTrackerNumber.getLastScan ());
-
-		cal.add (
-			Calendar.SECOND,
-			(int) (long)
-			smsSimpleTracker.getSinceScanSecsMax ());
+		Instant expiryTime =
+			smsSimpleTrackerNumber.getLastScan ().plus (
+				Duration.standardSeconds (
+					smsSimpleTracker.getSinceScanSecsMax ()));
 
 		if (
-			cal.getTime ().getTime ()
-				< System.currentTimeMillis ()
+			earlierThan (
+				expiryTime,
+				transaction.now ())
 		) {
 
 			return simpleTrackerNumberScanAndUpdate (
@@ -143,8 +141,7 @@ class SmsTrackerLogicImplementation
 		trackerNumber
 
 			.setLastScan (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setBlocked (
 				! result);
@@ -200,9 +197,14 @@ class SmsTrackerLogicImplementation
 		Collections.sort (
 			messages);
 
-		long lastTime = 0;
-		long lastCountedTime = 0;
-		long firstTime = 0;
+		Instant lastTime =
+			new Instant (0);
+
+		Instant lastCountedTime =
+			new Instant (0);
+
+		Instant firstTime =
+			new Instant (0);
 
 		int numFound = 0;
 
@@ -211,8 +213,8 @@ class SmsTrackerLogicImplementation
 				: messages
 		) {
 
-			long thisTime =
-				message.getCreatedTime ().getTime ();
+			Instant thisTime =
+				message.getCreatedTime ();
 
 			// if we see a message delivered we stop straight away
 
@@ -236,11 +238,15 @@ class SmsTrackerLogicImplementation
 
 				// if its the first one we always pick it up
 
-				lastTime == 0
+				equal (
+					lastTime.getMillis (),
+					0)
 
 			) {
 
 				lastCountedTime =
+					thisTime;
+
 				firstTime =
 					thisTime;
 
@@ -251,8 +257,10 @@ class SmsTrackerLogicImplementation
 				// otherwise we only care if it is far enough back from the last
 				// one we counted
 
-				thisTime + failureSingleMsMin
-					< lastCountedTime
+				earlierThan (
+					thisTime.plus (
+						failureSingleMsMin),
+					lastCountedTime)
 
 			) {
 
@@ -270,8 +278,10 @@ class SmsTrackerLogicImplementation
 				numFound
 					>= failureCountMin
 
-				&& thisTime + failureTotalMsMin
-					< firstTime
+				&& earlierThan (
+					thisTime.plus (
+						failureTotalMsMin),
+					firstTime)
 
 			) {
 

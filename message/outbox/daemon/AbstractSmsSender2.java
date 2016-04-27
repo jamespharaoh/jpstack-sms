@@ -349,7 +349,7 @@ class AbstractSmsSender2
 						"console",
 						getClass ().getSimpleName (),
 						exception,
-						Optional.<Integer>absent (),
+						Optional.absent (),
 						GenericExceptionResolution.fatalError);
 
 					setupSendResult =

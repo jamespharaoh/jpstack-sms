@@ -12,8 +12,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.queue.logic.QueueLogic;
-import wbs.platform.user.console.UserConsoleHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
@@ -48,7 +47,7 @@ class MessageNotProcessedFormAction
 	ConsoleRequestContext requestContext;
 
 	@Inject
-	UserConsoleHelper userHelper;
+	UserConsoleLogic userConsoleLogic;
 
 	// details
 
@@ -79,10 +78,6 @@ class MessageNotProcessedFormAction
 				requestContext.stuffInt (
 					"messageId"));
 
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
-
 		// check the message status is correct
 
 		if (message.getStatus () != MessageStatus.notProcessed) {
@@ -99,7 +94,7 @@ class MessageNotProcessedFormAction
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
-				myUser);
+				userConsoleLogic.userRequired ());
 
 			messageLogic.messageStatus (
 				message,
@@ -120,7 +115,7 @@ class MessageNotProcessedFormAction
 
 			eventLogic.createEvent (
 				"message_processed_again",
-				myUser,
+				userConsoleLogic.userRequired (),
 				message);
 
 			transaction.commit ();
@@ -137,7 +132,7 @@ class MessageNotProcessedFormAction
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
-				myUser);
+				userConsoleLogic.userRequired ());
 
 			messageLogic.messageStatus (
 				message,
@@ -150,7 +145,7 @@ class MessageNotProcessedFormAction
 
 			eventLogic.createEvent (
 				"message_ignored",
-				myUser,
+				userConsoleLogic.userRequired (),
 				message);
 
 			transaction.commit ();
@@ -167,7 +162,7 @@ class MessageNotProcessedFormAction
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
-				myUser);
+				userConsoleLogic.userRequired ());
 
 			messageLogic.messageStatus (
 				message,
@@ -180,7 +175,7 @@ class MessageNotProcessedFormAction
 
 			eventLogic.createEvent (
 				"message_manually_processed",
-				myUser,
+				userConsoleLogic.userRequired (),
 				message);
 
 			transaction.commit ();

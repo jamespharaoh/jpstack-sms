@@ -1,6 +1,5 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.implode;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -10,11 +9,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -44,7 +43,7 @@ class MessageSummaryPart
 	FailedMessageObjectHelper failedMessageHelper;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -186,41 +185,29 @@ class MessageSummaryPart
 			printFormat (
 				"<tr>\n",
 				"<th>Time sent</th>\n",
-
 				"<td>%h</td>\n",
 				message.getNetworkTime () != null
-					? timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							message.getNetworkTime ()))
+					? userConsoleLogic.timestampWithTimezoneString (
+						message.getNetworkTime ())
 					: "-",
-
 				"</tr>\n");
 
 			printFormat (
 				"<tr>\n",
 				"<th>Time received</th>\n",
-
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())),
-
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()),
 				"</tr>\n");
 
 			printFormat (
 				"<tr>\n",
 				"<th>Time processed</th>\n",
-
 				"<td>%h</td>\n",
 				message.getProcessedTime () != null
-					? timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							message.getProcessedTime ()))
+					? userConsoleLogic.timestampWithTimezoneString (
+						message.getProcessedTime ())
 					: "-",
-
 				"</tr>\n");
 
 			printFormat (
@@ -239,27 +226,20 @@ class MessageSummaryPart
 			printFormat (
 				"<tr>\n",
 				"<th>Time created</th>\n",
-
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())),
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()),
 
 				"</tr>\n");
 
 			printFormat (
 				"<tr>\n",
 				"<th>Time sent</th>\n",
-
 				"<td>%h</td>\n",
 				message.getProcessedTime () != null
-					? timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							message.getProcessedTime ()))
+					? userConsoleLogic.timestampWithTimezoneString (
+						message.getProcessedTime ())
 					: "-",
-
 				"</tr>\n");
 
 			printFormat (
@@ -268,10 +248,8 @@ class MessageSummaryPart
 
 				"<td>%h</td>\n",
 				message.getNetworkTime () != null
-					? timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							message.getNetworkTime ()))
+					? userConsoleLogic.timestampWithTimezoneString (
+						message.getNetworkTime ())
 					: "-",
 
 				"</tr>\n");

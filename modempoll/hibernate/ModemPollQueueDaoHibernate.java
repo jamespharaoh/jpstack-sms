@@ -1,10 +1,9 @@
 package wbs.sms.modempoll.hibernate;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
-
 import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.modempoll.model.ModemPollQueueDao;
 import wbs.sms.modempoll.model.ModemPollQueueRec;
 
@@ -26,10 +25,10 @@ class ModemPollQueueDaoHibernate
 				"WHERE mpq.retryTime < :now " +
 				"ORDER BY mpq.retryTime")
 
-			.setTimestamp (
+			.setParameter (
 				"now",
-				instantToDate (
-					now))
+				now,
+				TimestampWithTimezoneUserType.INSTANCE)
 
 			.list ());
 

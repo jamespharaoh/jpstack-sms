@@ -9,9 +9,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 
@@ -33,7 +33,7 @@ class NumberSubscriptionsPart
 	ConsoleObjectManager objectManager;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// properties
 
@@ -120,8 +120,7 @@ class NumberSubscriptionsPart
 			printFormat (
 				"<td>%h</td>\n",
 				link.getStartTime () != null
-					? timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
+					? userConsoleLogic.timestampWithTimezoneString (
 						link.getStartTime ())
 					: "-");
 
@@ -130,8 +129,7 @@ class NumberSubscriptionsPart
 				printFormat (
 					"<td>%h</td>\n",
 					link.getEndTime () != null
-						? timeFormatter.instantToTimestampString (
-							timeFormatter.defaultTimezone (),
+						? userConsoleLogic.timestampWithTimezoneString (
 							link.getEndTime ())
 						: "-");
 

@@ -2,16 +2,15 @@ package wbs.sms.message.report.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
-
-import java.util.Date;
 
 import javax.inject.Inject;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.ReadableInstant;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -62,7 +61,7 @@ class ReportLogicImplementation
 	void deliveryReport (
 			@NonNull MessageRec message,
 			MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,
@@ -111,8 +110,7 @@ class ReportLogicImplementation
 				message)
 
 			.setReceivedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setNewMessageStatus (
 				newMessageStatus == null
@@ -134,8 +132,7 @@ class ReportLogicImplementation
 			message
 
 				.setProcessedTime (
-					instantToDate (
-						transaction.now ()));
+					transaction.now ());
 
 		}
 
@@ -251,7 +248,7 @@ class ReportLogicImplementation
 			@NonNull RouteRec route,
 			@NonNull String otherId,
 			@NonNull MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,
@@ -294,7 +291,7 @@ class ReportLogicImplementation
 	void deliveryReport (
 			int messageId,
 			MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,

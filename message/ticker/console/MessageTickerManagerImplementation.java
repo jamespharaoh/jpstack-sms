@@ -1,6 +1,5 @@
 package wbs.sms.message.ticker.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earlierThan;
 import static wbs.framework.utils.etc.Misc.millisToInstant;
 import static wbs.framework.utils.etc.Misc.spacify;
@@ -144,8 +143,7 @@ class MessageTickerManagerImplementation
 						message.getAffiliate ());
 
 				messageTickerMessage.createdTime =
-					dateToInstant (
-						message.getCreatedTime ());
+					message.getCreatedTime ();
 
 				messageTickerMessage.numFrom =
 					message.getNumFrom ();

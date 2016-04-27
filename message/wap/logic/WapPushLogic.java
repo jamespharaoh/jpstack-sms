@@ -1,7 +1,6 @@
 package wbs.sms.message.wap.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Map;
@@ -192,8 +191,7 @@ class WapPushLogic
 				affiliate)
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setDeliveryType (
 				deliveryType)
@@ -243,12 +241,10 @@ class WapPushLogic
 					route)
 
 				.setCreatedTime (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setRetryTime (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setRemainingTries (
 					route.getMaxTries ())
@@ -335,8 +331,7 @@ class WapPushLogic
 				oldMessage.getAffiliate ())
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setDeliveryType (
 				oldMessage.getDeliveryType ())
@@ -386,12 +381,10 @@ class WapPushLogic
 				message.getRoute ())
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRetryTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRemainingTries (
 				message.getRoute ().getMaxTries ())

@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.number.list.model.NumberListRec;
 
@@ -29,7 +29,7 @@ class NumberListNumberCopyPart
 	ConsoleObjectManager objectManager;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	// state
 

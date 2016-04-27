@@ -1,7 +1,5 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,8 +134,7 @@ class RouteTesterCommand
 		routeTest
 
 			.setReturnedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setReturnedMessage (
 				message);

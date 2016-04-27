@@ -2,7 +2,6 @@ package wbs.sms.message.outbox.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 
 import java.util.Collection;
 import java.util.Set;
@@ -375,8 +374,7 @@ class MessageSender {
 				affiliate)
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setDate (
 				transaction.now ().toDateTime ().toLocalDate ())
@@ -444,12 +442,10 @@ class MessageSender {
 					route)
 
 				.setCreatedTime (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setRetryTime (
-					instantToDate (
-						sendTime))
+					sendTime)
 
 				.setRemainingTries (
 					route.getMaxTries ()));

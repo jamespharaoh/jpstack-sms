@@ -16,11 +16,11 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.html.ObsoleteDateField;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.utils.TimeFormatter;
 import wbs.framework.web.UrlParams;
 
 @Accessors (fluent = true)
@@ -369,7 +369,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.minusWeeks (1)));
 
 			printFormat (
@@ -378,7 +378,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.plusWeeks (1)));
 
 			printFormat (
@@ -395,7 +395,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.minusDays (49)));
 
 			printFormat (
@@ -404,7 +404,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.plusDays (49)));
 
 			printFormat (
@@ -421,7 +421,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.minusMonths (6)));
 
 			printFormat (
@@ -430,7 +430,7 @@ class GenericMessageStatsPart
 
 			myUrlParams.set (
 				"date",
-				timeFormatter.localDateToDateString (
+				timeFormatter.dateString (
 					dateField.date.plusMonths (6)));
 
 			printFormat (

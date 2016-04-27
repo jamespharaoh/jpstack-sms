@@ -12,8 +12,8 @@ import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.platform.user.model.UserObjectHelper;
-import wbs.platform.user.model.UserRec;
 import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.blacklist.model.BlacklistRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
@@ -45,6 +45,9 @@ class BlacklistAddAction
 
 	@Inject
 	ConsoleRequestContext requestContext;
+
+	@Inject
+	UserConsoleLogic userConsoleLogic;
 
 	@Inject
 	UserObjectHelper userHelper;
@@ -134,13 +137,9 @@ class BlacklistAddAction
 
 		// create an event
 
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
-
 		eventLogic.createEvent (
 			"number_blacklisted",
-			myUser,
+			userConsoleLogic.userRequired (),
 			blacklist);
 
 		transaction.commit ();

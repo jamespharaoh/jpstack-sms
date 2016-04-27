@@ -1,6 +1,5 @@
 package wbs.sms.keyword.daemon;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -345,8 +344,7 @@ class KeywordCommand
 						keywordSet.getFallbackTimeout ()));
 
 			Instant timestamp =
-				dateToInstant (
-					keywordSetFallback.getTimestamp ());
+				keywordSetFallback.getTimestamp ();
 
 			if (timestamp.isBefore (maxAge))
 				return Optional.absent ();

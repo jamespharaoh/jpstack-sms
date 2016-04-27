@@ -1,15 +1,13 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
@@ -28,7 +26,7 @@ class MessageInboxSummaryPart
 	ConsoleObjectManager objectManager;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -98,10 +96,8 @@ class MessageInboxSummaryPart
 
 			printFormat (
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())));
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()));
 
 			printFormat (
 				"<td>%h</td>\n",

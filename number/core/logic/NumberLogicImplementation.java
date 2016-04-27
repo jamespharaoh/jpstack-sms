@@ -1,6 +1,5 @@
 package wbs.sms.number.core.logic;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNull;
 
 import javax.inject.Inject;
@@ -101,8 +100,7 @@ class NumberLogicImplementation
 			chatUserNumberReportRec
 
 				.setLastSuccess (
-					instantToDate (
-						transaction.now ()));
+					transaction.now ());
 
 		} else if (
 			status.isBadType ()
@@ -117,8 +115,7 @@ class NumberLogicImplementation
 				chatUserNumberReportRec
 
 					.setFirstFailure (
-						instantToDate (
-							transaction.now ()));
+						transaction.now ());
 
 			}
 
@@ -147,8 +144,7 @@ class NumberLogicImplementation
 		oldNumber
 
 			.setArchiveDate (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setNumber (
 				currentNumber + "." + oldNumber.getId ());

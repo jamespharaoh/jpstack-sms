@@ -1,7 +1,5 @@
 package wbs.sms.keyword.logic;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
-
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -63,8 +61,7 @@ class KeywordLogicImplementation
 			keywordSetFallback
 
 				.setTimestamp (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setCommand (
 					command);
@@ -85,8 +82,7 @@ class KeywordLogicImplementation
 				number)
 
 			.setTimestamp (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setCommand (
 				command)

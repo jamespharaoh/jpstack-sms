@@ -16,8 +16,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
-import wbs.platform.user.console.UserConsoleHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
@@ -49,7 +48,7 @@ class MagicNumberUpdateAction
 	ConsoleRequestContext requestContext;
 
 	@Inject
-	UserConsoleHelper userHelper;
+	UserConsoleLogic userConsoleLogic;
 
 	// details
 
@@ -72,10 +71,6 @@ class MagicNumberUpdateAction
 		Transaction transaction =
 			database.beginReadWrite (
 				this);
-
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
 
 		MagicNumberSetRec magicNumberSet =
 			magicNumberSetHelper.find (
@@ -125,7 +120,7 @@ class MagicNumberUpdateAction
 
 				eventLogic.createEvent (
 					"object_created",
-					myUser,
+					userConsoleLogic.userRequired (),
 					magicNumber,
 					magicNumberSet);
 
@@ -173,7 +168,7 @@ class MagicNumberUpdateAction
 
 				eventLogic.createEvent (
 					"object_field_updated",
-					myUser,
+					userConsoleLogic.userRequired (),
 					"deleted",
 					magicNumber,
 					true);

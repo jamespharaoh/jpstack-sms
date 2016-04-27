@@ -1,7 +1,6 @@
 package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.bytesToString;
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -11,12 +10,12 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 
 @PrototypeComponent ("messageThreadPart")
@@ -36,7 +35,7 @@ class MessageThreadPart
 	MessageConsoleHelper messageHelper;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -105,10 +104,8 @@ class MessageThreadPart
 				message.getNumTo (),
 
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())),
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()),
 
 				"<td>%h</td>\n",
 				message.getRoute ().getCode (),

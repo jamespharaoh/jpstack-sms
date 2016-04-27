@@ -1,6 +1,5 @@
 package wbs.sms.locator.logic;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collections;
@@ -167,8 +166,7 @@ class LocatorManager {
 		locatorLog
 
 			.setEndTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setSuccess (
 				true)
@@ -254,8 +252,7 @@ class LocatorManager {
 				number)
 
 			.setStartTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setService (
 				service)

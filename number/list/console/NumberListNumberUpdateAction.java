@@ -18,8 +18,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
-import wbs.platform.user.console.UserConsoleHelper;
-import wbs.platform.user.model.UserRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
@@ -61,7 +60,7 @@ class NumberListNumberUpdateAction
 	ConsoleRequestContext requestContext;
 
 	@Inject
-	UserConsoleHelper userHelper;
+	UserConsoleLogic userConsoleLogic;
 
 	// details
 
@@ -90,10 +89,6 @@ class NumberListNumberUpdateAction
 
 		int loop = 0;
 
-		UserRec myUser =
-			userHelper.find (
-				requestContext.userId ());
-
 		NumberListRec numberList =
 			numberListHelper.find (
 				requestContext.stuffInt (
@@ -109,7 +104,7 @@ class NumberListNumberUpdateAction
 				transaction.now ())
 
 			.setUser (
-				myUser)
+				userConsoleLogic.userRequired ())
 
 			.setNumberCount (
 				0l);
@@ -267,7 +262,7 @@ class NumberListNumberUpdateAction
 
 			eventLogic.createEvent (
 				"number_list_numbers_added",
-				myUser,
+				userConsoleLogic.userRequired (),
 				numAdded,
 				numberList);
 
@@ -277,7 +272,7 @@ class NumberListNumberUpdateAction
 
 			eventLogic.createEvent (
 				"number_list_numbers_removed",
-				myUser,
+				userConsoleLogic.userRequired (),
 				numRemoved,
 				numberList);
 

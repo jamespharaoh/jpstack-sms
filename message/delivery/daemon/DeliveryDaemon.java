@@ -286,7 +286,7 @@ class DeliveryDaemon
 						"daemon",
 						"Delivery notice daemon",
 						exception,
-						Optional.<Integer>absent (),
+						Optional.absent (),
 						GenericExceptionResolution.tryAgainLater);
 
 				}

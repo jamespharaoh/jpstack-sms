@@ -1,16 +1,14 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
-
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.web.PageNotFoundException;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.report.model.MessageReportRec;
@@ -29,7 +27,7 @@ class MessageReportsPart
 	MessageObjectHelper messageHelper;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -83,24 +81,19 @@ class MessageReportsPart
 					: messageReports
 			) {
 
-				long interval =
-					+ messageReport.getReceivedTime ().getTime ()
-					- message.getProcessedTime ().getTime ();
-
 				printFormat (
 					"<tr>\n");
 
 				printFormat (
 					"<td>%h</td>\n",
-					timeFormatter.instantToTimestampString (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							messageReport.getReceivedTime ())));
+					userConsoleLogic.timestampWithTimezoneString (
+						messageReport.getReceivedTime ()));
 
 				printFormat (
 					"<td>%h</td>\n",
-					requestContext.prettyMsInterval (
-						interval));
+					userConsoleLogic.prettyDuration (
+						messageReport.getReceivedTime (),
+						message.getProcessedTime ()));
 
 				printFormat (
 					"%s\n",

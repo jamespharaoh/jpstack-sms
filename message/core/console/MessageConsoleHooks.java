@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import wbs.console.helper.ConsoleHooks;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.Record;
@@ -37,7 +37,7 @@ class MessageConsoleHooks
 	ObjectManager objectManager;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	@Inject
 	RouteObjectHelper routeHelper;

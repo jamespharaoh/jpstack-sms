@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
@@ -490,16 +490,18 @@ class ModemPollDaemon
 
 					} catch (Exception e) {
 
-						Calendar cal = Calendar.getInstance();
+						modemPollQueue
 
-						cal.add (
-							Calendar.SECOND,
-							(int) (
-								modemPollQueue.getTries () * 10l));
+							.setRetryTime (
+								transaction.now ().plus (
+									Duration.standardSeconds (
+										modemPollQueue.getTries () * 10)))
 
-						modemPollQueue.setRetryTime(cal.getTime());
-						modemPollQueue.setTries(modemPollQueue.getTries() + 1);
-						modemPollQueue.setError(e.getMessage());
+							.setTries (
+								modemPollQueue.getTries () + 1)
+
+							.setError (
+								e.getMessage ());
 
 					}
 

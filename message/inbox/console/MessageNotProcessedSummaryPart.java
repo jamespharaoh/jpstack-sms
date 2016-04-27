@@ -1,14 +1,13 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 
 import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -31,7 +30,7 @@ class MessageNotProcessedSummaryPart
 	ConsoleObjectManager objectManager;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -124,27 +123,19 @@ class MessageNotProcessedSummaryPart
 		printFormat (
 			"<tr>\n",
 			"<th>Time sent</th>\n",
-
 			"<td>%h</td>\n",
 			message.getNetworkTime () != null
-				? timeFormatter.instantToTimestampString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getNetworkTime ()))
+				? userConsoleLogic.timestampWithTimezoneString (
+					message.getNetworkTime ())
 				: "-",
-
 			"</tr>\n");
 
 		printFormat (
 			"<tr>\n",
 			"<th>Time received</th>\n",
-
 			"<td>%h</td>\n",
-			timeFormatter.instantToTimestampString (
-				timeFormatter.defaultTimezone (),
-				dateToInstant (
-					message.getCreatedTime ())),
-
+			userConsoleLogic.timestampWithTimezoneString (
+				message.getCreatedTime ()),
 			"</tr>\n");
 
 		printFormat (

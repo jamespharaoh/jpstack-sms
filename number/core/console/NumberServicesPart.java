@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.record.Record;
 import wbs.platform.service.model.ServiceRec;
@@ -31,7 +31,7 @@ class NumberServicesPart
 	MessageObjectHelper messageHelper;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	Map<String,ServiceRec> services =
 		new TreeMap<String,ServiceRec> ();

@@ -1,12 +1,11 @@
 package wbs.sms.message.core.hibernate;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
-
 import java.util.List;
 
 import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.message.core.model.MessageExpiryDao;
 import wbs.sms.message.core.model.MessageExpiryRec;
 
@@ -29,10 +28,10 @@ class MessageExpiryDaoHibernate
 				"WHERE messageExpiry.expiryTime < :now " +
 				"ORDER BY messageExpiry.expiryTime")
 
-			.setTimestamp (
+			.setParameter (
 				"now",
-				instantToDate (
-					now))
+				now,
+				TimestampWithTimezoneUserType.INSTANCE)
 
 			.setMaxResults (
 				maxResults)

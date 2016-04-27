@@ -19,11 +19,11 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.utils.ThreadManager;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
-import wbs.platform.daemon.ThreadManager;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -203,7 +203,7 @@ class ReceivedManager
 					"Route %s",
 					route.getCode ()),
 				exception,
-				Optional.<Integer>absent (),
+				Optional.absent (),
 				GenericExceptionResolution.tryAgainLater);
 
 			inboxLogic.inboxProcessingFailed (

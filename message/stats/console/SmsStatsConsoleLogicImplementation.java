@@ -19,7 +19,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.GlobalId;
@@ -53,7 +53,7 @@ class SmsStatsConsoleLogicImplementation
 	ConsoleObjectManager objectManager;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	@Inject
 	ConsoleRequestContext requestContext;

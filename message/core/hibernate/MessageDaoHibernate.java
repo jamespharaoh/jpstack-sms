@@ -1,7 +1,6 @@
 package wbs.sms.message.core.hibernate;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -353,14 +352,12 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.ge (
 					"createdTime",
-					instantToDate (
-						search.createdTime ().start ())));
+					search.createdTime ().start ()));
 
 			criteria.add (
 				Restrictions.lt (
 					"createdTime",
-					instantToDate (
-						search.createdTime ().end ())));
+					search.createdTime ().end ()));
 
 		}
 
@@ -372,8 +369,7 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.ge (
 					"createdTime",
-					instantToDate (
-						search.createdTimeAfter ())));
+					search.createdTimeAfter ()));
 
 		}
 
@@ -385,8 +381,7 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.lt (
 					"createdTime",
-					instantToDate (
-						search.createdTimeBefore ())));
+					search.createdTimeBefore ()));
 
 		}
 

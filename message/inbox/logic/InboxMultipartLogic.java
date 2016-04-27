@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.logic;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
 import wbs.sms.network.model.NetworkRec;
@@ -16,7 +16,7 @@ interface InboxMultipartLogic {
 			long multipartSeg,
 			String msgTo,
 			String msgFrom,
-			Date msgNetworkTime,
+			Instant msgNetworkTime,
 			NetworkRec msgNetwork,
 			String msgOtherId,
 			String msgText);

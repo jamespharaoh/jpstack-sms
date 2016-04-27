@@ -1,9 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.earliest;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -16,6 +14,7 @@ import javax.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.collect.ImmutableList;
@@ -134,8 +133,7 @@ class OutboxLogicImplementation
 				old.getAffiliate ())
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setDeliveryType (
 				old.getDeliveryType ())
@@ -172,12 +170,10 @@ class OutboxLogicImplementation
 				message.getRoute ())
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRetryTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRemainingTries (
 				message.getRoute ().getMaxTries ()));
@@ -217,12 +213,10 @@ class OutboxLogicImplementation
 				message.getRoute ())
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRetryTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRemainingTries (
 				message.getRoute ().getMaxTries ())
@@ -305,8 +299,7 @@ class OutboxLogicImplementation
 		outbox
 
 			.setSending (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setRemainingTries (
 				outbox.getRemainingTries () != null
@@ -340,8 +333,7 @@ class OutboxLogicImplementation
 			outbox
 
 				.setSending (
-					instantToDate (
-						transaction.now ()));
+					transaction.now ());
 
 			if (outbox.getRemainingTries () != null) {
 
@@ -406,8 +398,7 @@ class OutboxLogicImplementation
 		message
 
 			.setProcessedTime (
-				instantToDate (
-					transaction.now ()));
+				transaction.now ());
 
 		// create expiry if appropriate
 
@@ -426,13 +417,11 @@ class OutboxLogicImplementation
 					message)
 
 				.setExpiryTime (
-					Instant.now ()
-						.toDateTime ()
-						.plusSeconds (
-							(int) (long)
-							route.getExpirySecs ())
-						.toInstant ()
-						.toDate ()));
+					Instant.now ().plus (
+						Duration.standardSeconds (
+							route.getExpirySecs ())))
+
+			);
 
 		}
 
@@ -569,8 +558,7 @@ class OutboxLogicImplementation
 			message
 
 				.setProcessedTime (
-					instantToDate (
-						transaction.now ()));
+					transaction.now ());
 
 			failedMessageHelper.insert (
 				failedMessageHelper.createInstance ()
@@ -596,7 +584,9 @@ class OutboxLogicImplementation
 			outbox
 
 				.setRetryTime (
-					calendar.getTime ())
+					transaction.now ().plus (
+						Duration.standardSeconds (
+							outbox.getTries () * 10)))
 
 				.setTries (
 					outbox.getTries () + 1)
@@ -646,12 +636,10 @@ class OutboxLogicImplementation
 					message.getRoute ())
 
 				.setCreatedTime (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setRetryTime (
-					instantToDate (
-						transaction.now ()))
+					transaction.now ())
 
 				.setRemainingTries (
 					message.getRoute ().getMaxTries ())
@@ -674,11 +662,9 @@ class OutboxLogicImplementation
 			existingOutbox
 
 				.setRetryTime (
-					instantToDate (
-						earliest (
-							dateToInstant (
-								existingOutbox.getRetryTime ()),
-							transaction.now ())))
+					earliest (
+						existingOutbox.getRetryTime (),
+						transaction.now ()))
 
 				.setRemainingTries (
 					existingOutbox.getRemainingTries () != null

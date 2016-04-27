@@ -1,6 +1,6 @@
 package wbs.sms.message.report.logic;
 
-import java.util.Date;
+import org.joda.time.ReadableInstant;
 
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
@@ -15,7 +15,7 @@ interface ReportLogic {
 	void deliveryReport (
 			MessageRec message,
 			MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,
@@ -25,7 +25,7 @@ interface ReportLogic {
 			RouteRec route,
 			String otherId,
 			MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,
@@ -34,7 +34,7 @@ interface ReportLogic {
 	void deliveryReport (
 			int messageId,
 			MessageStatus newMessageStatus,
-			Date timestamp,
+			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
 			NoSuchMessageException,

@@ -9,8 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import wbs.console.misc.TimeFormatter;
-import wbs.console.priv.PrivChecker;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -18,6 +17,7 @@ import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 
@@ -44,10 +44,10 @@ class MessageTickerUpdateResponder
 	MessageTickerManager messageTickerManager;
 
 	@Inject
-	PrivChecker privChecker;
+	UserPrivChecker privChecker;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// state
 
@@ -238,8 +238,7 @@ class MessageTickerUpdateResponder
 						"/message.summary")),
 
 				", [ '%j'",
-				timeFormatter.instantToTimeString (
-					timeFormatter.defaultTimezone (),
+				userConsoleLogic.timeString (
 					messageTickerMessage.createdTime ()),
 
 				", '%j'",

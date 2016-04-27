@@ -2,7 +2,6 @@ package wbs.sms.message.inbox.logic;
 
 import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -211,8 +210,7 @@ class InboxLogicImplementation
 			messageHelper.createInstance ()
 
 			.setCreatedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setDirection (
 				MessageDirection.in)
@@ -246,7 +244,7 @@ class InboxLogicImplementation
 
 			.setNetworkTime (
 				networkTime.isPresent ()
-					? instantToDate (networkTime.get ())
+					? networkTime.get ()
 					: null)
 
 			.setService (
@@ -388,8 +386,7 @@ class InboxLogicImplementation
 		message
 
 			.setProcessedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setService (
 				service.or (
@@ -494,8 +491,7 @@ class InboxLogicImplementation
 		message
 
 			.setProcessedTime (
-				instantToDate (
-					transaction.now ()))
+				transaction.now ())
 
 			.setService (
 				service.isPresent ()

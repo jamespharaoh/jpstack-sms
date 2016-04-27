@@ -1,11 +1,11 @@
 package wbs.sms.tracker.logic;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import javax.inject.Inject;
 
 import junit.framework.TestCase;
+
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -26,18 +26,13 @@ class SmsUtilsTrackerTest
 			int days,
 			MessageStatus status) {
 
-		Calendar calendar =
-			new GregorianCalendar ();
-
 		MessageRec message =
 			messageHelper.createInstance ();
 
-		calendar.add (
-			Calendar.DATE,
-			- days);
-
 		message.setCreatedTime (
-			calendar.getTime ());
+			Instant.now ().minus (
+				Duration.standardDays (
+					days)));
 
 		message.setStatus (
 			status);

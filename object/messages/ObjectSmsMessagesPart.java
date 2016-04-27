@@ -1,7 +1,7 @@
 package wbs.sms.object.messages;
 
-import static wbs.framework.utils.etc.Misc.dateToInstant;
 import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.Misc.instantToDateNullSafe;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Calendar;
@@ -18,7 +18,6 @@ import lombok.experimental.Accessors;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.html.ObsoleteDateLinks;
-import wbs.console.misc.TimeFormatter;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
@@ -26,6 +25,7 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
+import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
@@ -48,7 +48,7 @@ class ObjectSmsMessagesPart
 	MessageConsoleLogic messageConsoleLogic;
 
 	@Inject
-	TimeFormatter timeFormatter;
+	UserConsoleLogic userConsoleLogic;
 
 	// properties
 
@@ -184,10 +184,14 @@ class ObjectSmsMessagesPart
 
 		int dayNumber = 0;
 
-		for (MessageRec message : messages) {
+		for (
+			MessageRec message
+				: messages
+		) {
 
 			calendar.setTime (
-				message.getCreatedTime ());
+				instantToDateNullSafe (
+					message.getCreatedTime ()));
 
 			int newDayNumber =
 				+ (calendar.get (Calendar.YEAR) << 9)
@@ -201,10 +205,8 @@ class ObjectSmsMessagesPart
 					"<tr style=\"font-weight: bold\">\n",
 
 					"<td colspan=\"7\">%h</td>\n",
-					timeFormatter.instantToDateStringLong (
-						timeFormatter.defaultTimezone (),
-						dateToInstant (
-							message.getCreatedTime ())),
+					userConsoleLogic.dateStringLong (
+						message.getCreatedTime ()),
 
 					"</tr>\n");
 
@@ -226,10 +228,8 @@ class ObjectSmsMessagesPart
 
 			printFormat (
 				"<td>%h</td>\n",
-				timeFormatter.instantToTimeString (
-					timeFormatter.defaultTimezone (),
-					dateToInstant (
-						message.getCreatedTime ())));
+				userConsoleLogic.timeString (
+					message.getCreatedTime ()));
 
 			printFormat (
 				"<td>%h</td>\n",

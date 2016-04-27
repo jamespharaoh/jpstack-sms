@@ -149,7 +149,7 @@ class SmsOutboxMonitorImplementation
 						"daemon",
 						"Outbox monitor",
 						exception,
-						Optional.<Integer>absent (),
+						Optional.absent (),
 						GenericExceptionResolution.tryAgainLater);
 
 					// sleep 1 minute

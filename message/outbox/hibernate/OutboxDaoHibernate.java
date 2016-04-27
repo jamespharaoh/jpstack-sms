@@ -1,8 +1,8 @@
 package wbs.sms.message.outbox.hibernate;
 
-import static wbs.framework.utils.etc.Misc.instantToDate;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,7 @@ import org.joda.time.Instant;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.model.OutboxDao;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -96,10 +97,10 @@ class OutboxDaoHibernate
 						"OR o.remainingTries > 0) " +
 				"ORDER BY o.pri, o.retryTime")
 
-			.setTimestamp (
+			.setParameter (
 				"now",
-				instantToDate (
-					now))
+				now,
+				TimestampWithTimezoneUserType.INSTANCE)
 
 			.setEntity (
 				"route",
@@ -133,8 +134,8 @@ class OutboxDaoHibernate
 
 			.setTimestamp (
 				"now",
-				instantToDate (
-					now))
+				new Timestamp (
+					now.getMillis ()))
 
 			.setEntity (
 				"route",
@@ -169,10 +170,10 @@ class OutboxDaoHibernate
 					"AND outbox.sending IS NULL ",
 					"GROUP BY outbox.route.id"))
 
-			.setTimestamp (
+			.setParameter (
 				"date",
-				instantToDate (
-					now))
+				now,
+				TimestampWithTimezoneUserType.INSTANCE)
 
 			.list ();
 
@@ -211,7 +212,7 @@ class OutboxDaoHibernate
 			.add (
 				Restrictions.lt (
 					"_outbox.sending",
-					sendingBefore.toDate ()))
+					sendingBefore))
 
 			.addOrder (
 				Order.asc (

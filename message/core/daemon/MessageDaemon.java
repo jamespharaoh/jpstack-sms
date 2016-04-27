@@ -104,7 +104,7 @@ class MessageDaemon
 					"daemon",
 					"MessageDaemon",
 					exception,
-					Optional.<Integer>absent (),
+					Optional.absent (),
 					GenericExceptionResolution.tryAgainLater);
 
 			}
