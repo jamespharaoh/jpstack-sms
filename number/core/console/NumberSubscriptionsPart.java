@@ -52,7 +52,8 @@ class NumberSubscriptionsPart
 
 		NumberRec number =
 			numberHelper.find (
-				requestContext.stuffInt ("numberId"));
+				requestContext.stuffInt (
+					"numberId"));
 
 		links =
 			numberLinkManager.findLinks (
@@ -96,10 +97,14 @@ class NumberSubscriptionsPart
 
 		}
 
-		for (NumberPlugin.Link link : links) {
+		for (
+			NumberPlugin.Link link
+				: links
+		) {
 
-			if (! link.canView ())
+			if (! link.canView ()) {
 				continue;
+			}
 
 			printFormat (
 				"<tr>\n");

@@ -35,8 +35,10 @@ class NumberLinkManager {
 		List<NumberPlugin.Link> links =
 			new ArrayList<NumberPlugin.Link> ();
 
-		for (NumberPlugin numberPlugin
-				: numberPlugins) {
+		for (
+			NumberPlugin numberPlugin
+				: numberPlugins
+		) {
 
 			links.addAll (
 				numberPlugin.findLinks (
