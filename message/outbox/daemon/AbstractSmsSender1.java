@@ -107,7 +107,7 @@ class AbstractSmsSender1<MessageContainer>
 		// get a list of routes
 
 		SenderRec sender =
-			senderHelper.findByCode (
+			senderHelper.findByCodeOrNull (
 				GlobalId.root,
 				getSenderCode ());
 
@@ -281,7 +281,7 @@ class AbstractSmsSender1<MessageContainer>
 					// TODO aaargh
 
 					BlacklistRec blacklist =
-						blacklistHelper.findByCode (
+						blacklistHelper.findByCodeOrNull (
 							GlobalId.root,
 							number);
 

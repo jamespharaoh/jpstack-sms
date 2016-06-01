@@ -119,7 +119,7 @@ class BatchTypeBuilder {
 					parent.name ()));
 
 		ObjectTypeRec subjectType =
-			objectTypeHelper.findByCode (
+			objectTypeHelper.findByCodeOrNull (
 				GlobalId.root,
 				subjectTypeCode);
 
@@ -130,7 +130,7 @@ class BatchTypeBuilder {
 				spec.batch ());
 
 		ObjectTypeRec batchType =
-			objectTypeHelper.findByCode (
+			objectTypeHelper.findByCodeOrNull (
 				GlobalId.root,
 				batchTypeCode);
 

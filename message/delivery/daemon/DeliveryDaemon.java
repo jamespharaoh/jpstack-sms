@@ -102,7 +102,7 @@ class DeliveryDaemon
 			) {
 
 				DeliveryTypeRec deliveryType =
-					deliveryTypeHelper.findByCode (
+					deliveryTypeHelper.findByCodeOrNull (
 						GlobalId.root,
 						deliveryTypeCode);
 

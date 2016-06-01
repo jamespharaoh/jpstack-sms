@@ -53,7 +53,7 @@ class NumberFormatFixtureProvider
 			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
-				numberFormatHelper.findByCode (
+				numberFormatHelper.findByCodeOrNull (
 					GlobalId.root,
 					"uk"))
 
@@ -75,7 +75,7 @@ class NumberFormatFixtureProvider
 			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
-				numberFormatHelper.findByCode (
+				numberFormatHelper.findByCodeOrNull (
 					GlobalId.root,
 					"uk"))
 
@@ -97,7 +97,7 @@ class NumberFormatFixtureProvider
 			numberFormatPatternHelper.createInstance ()
 
 			.setNumberFormat (
-				numberFormatHelper.findByCode (
+				numberFormatHelper.findByCodeOrNull (
 					GlobalId.root,
 					"uk"))
 
@@ -119,7 +119,7 @@ class NumberFormatFixtureProvider
 			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
-				menuGroupHelper.findByCode (
+				menuGroupHelper.findByCodeOrNull (
 					GlobalId.root,
 					"test",
 					"sms"))

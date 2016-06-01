@@ -117,7 +117,7 @@ class AbstractSmsSender2
 		// get a list of routes
 
 		SenderRec sender =
-			senderHelper.findByCode (
+			senderHelper.findByCodeOrNull (
 				GlobalId.root,
 				senderCode ());
 
@@ -312,7 +312,7 @@ class AbstractSmsSender2
 				// TODO aaargh
 
 				BlacklistRec blacklist =
-					blacklistHelper.findByCode (
+					blacklistHelper.findByCodeOrNull (
 						GlobalId.root,
 						number);
 

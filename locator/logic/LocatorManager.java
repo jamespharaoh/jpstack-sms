@@ -110,7 +110,7 @@ class LocatorManager {
 					codeParts [1];
 
 				ObjectTypeRec parentType =
-					objectTypeHelper.findByCode (
+					objectTypeHelper.findByCodeOrNull (
 						GlobalId.root,
 						parentTypeCode);
 

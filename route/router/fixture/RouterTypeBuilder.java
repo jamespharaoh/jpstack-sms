@@ -120,7 +120,7 @@ class RouterTypeBuilder {
 					parent.name ()));
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.findByCode (
+			objectTypeHelper.findByCodeOrNull (
 				GlobalId.root,
 				parentTypeCode);
 

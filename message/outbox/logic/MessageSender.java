@@ -194,7 +194,7 @@ class MessageSender {
 		return deliveryType (
 			deliveryTypeCode.isPresent ()
 				? Optional.of (
-					deliveryTypeHelper.findByCode (
+					deliveryTypeHelper.findByCodeOrNull (
 						GlobalId.root,
 						deliveryTypeCode.get ()))
 				: Optional.<DeliveryTypeRec>absent ());
@@ -234,7 +234,7 @@ class MessageSender {
 		if (affiliate == null) {
 
 			affiliate =
-				affiliateHelper.findByCode (
+				affiliateHelper.findByCodeOrNull (
 					GlobalId.root,
 					"system");
 
@@ -389,7 +389,7 @@ class MessageSender {
 				subjectText)
 
 			.setMessageType (
-				messageTypeHelper.findByCode (
+				messageTypeHelper.findByCodeOrNull (
 					GlobalId.root,
 					medias != null
 						? "mms"

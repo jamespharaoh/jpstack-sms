@@ -50,7 +50,7 @@ class GazetteerFixtureProvider
 	void createFixtures () {
 
 		MenuGroupRec smsMenuGroup =
-			menuGroupHelper.findByCode (
+			menuGroupHelper.findByCodeOrNull (
 				GlobalId.root,
 				"test",
 				"sms");
@@ -99,7 +99,7 @@ class GazetteerFixtureProvider
 				gazetteerHelper.createInstance ()
 
 			.setSlice (
-				sliceHelper.findByCode (
+				sliceHelper.findByCodeOrNull (
 					GlobalId.root,
 					"test"))
 

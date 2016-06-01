@@ -35,7 +35,7 @@ class NumberObjectHelperImplementation
 		// find existing
 
 		NumberRec numberRecord =
-			numberHelper.findByCode (
+			numberHelper.findByCodeOrNull (
 				GlobalId.root,
 				numberString);
 

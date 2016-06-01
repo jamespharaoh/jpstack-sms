@@ -80,7 +80,7 @@ class BlacklistSearchAction
 				this);
 
 		NumberFormatRec ukNumberFormat =
-			numberFormatHelper.findByCode (
+			numberFormatHelper.findByCodeOrNull (
 				GlobalId.root,
 				"uk");
 
@@ -103,7 +103,7 @@ class BlacklistSearchAction
 		}
 
 		BlacklistRec blacklist =
-			blacklistHelper.findByCode (
+			blacklistHelper.findByCodeOrNull (
 				GlobalId.root,
 				number);
 

@@ -262,7 +262,7 @@ class InboxLogicImplementation
 				avStatus.orNull ())
 
 			.setMessageType (
-				messageTypeHelper.findByCode (
+				messageTypeHelper.findByCodeOrNull (
 					GlobalId.root,
 					medias.isEmpty ()
 						? "sms"

@@ -39,7 +39,7 @@ class BatchFixtureProvider
 	void createFixtures () {
 
 		ObjectTypeRec rootType =
-			objectTypeHelper.findByCode (
+			objectTypeHelper.findByCodeOrNull (
 				GlobalId.root,
 				"root");
 
