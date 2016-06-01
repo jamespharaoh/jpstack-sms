@@ -42,7 +42,7 @@ class MessageMediaSummaryPart
 
 		mediaIndex =
 			Integer.parseInt (
-				requestContext.parameter ("index"));
+				requestContext.parameterOrNull ("index"));
 
 		media =
 			message.getMedias ().get (mediaIndex);

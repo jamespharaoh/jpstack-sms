@@ -108,7 +108,7 @@ class MessageSetTypeBuilder {
 					parent.name ()));
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.findByCodeOrNull (
+			objectTypeHelper.findByCodeRequired (
 				GlobalId.root,
 				parentTypeCode);
 

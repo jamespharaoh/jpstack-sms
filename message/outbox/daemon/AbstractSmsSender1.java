@@ -1,8 +1,7 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
-
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -10,6 +9,8 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -107,28 +108,19 @@ class AbstractSmsSender1<MessageContainer>
 		// get a list of routes
 
 		SenderRec sender =
-			senderHelper.findByCodeOrNull (
+			senderHelper.findByCodeRequired (
 				GlobalId.root,
 				getSenderCode ());
-
-		if (sender == null) {
-
-			throw new NullPointerException (
-				stringFormat (
-					"No such sender: %s",
-					getSenderCode ()));
-
-		}
-
-		Set<RouteRec> routes =
-			sender.getRoutes ();
 
 		// and for each one...
 
 		String threadName =
 			getThreadName ();
 
-		for (RouteRec route : routes) {
+		for (
+			RouteRec route
+				: sender.getRoutes ()
+		) {
 
 			Object routeLock =
 				new Object ();
@@ -280,12 +272,15 @@ class AbstractSmsSender1<MessageContainer>
 
 					// TODO aaargh
 
-					BlacklistRec blacklist =
-						blacklistHelper.findByCodeOrNull (
+					Optional<BlacklistRec> blacklistOptional =
+						blacklistHelper.findByCode (
 							GlobalId.root,
 							number);
 
-					if (blacklist != null) {
+					if (
+						isNotNull (
+							blacklistOptional)
+					) {
 
 						outbox.setSending (null);
 

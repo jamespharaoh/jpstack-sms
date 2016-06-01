@@ -126,7 +126,7 @@ class WapPushLogic
 		// check this route can send wap push
 
 		MessageTypeRec wapPushMessageType =
-			messageTypeHelper.findByCodeOrNull (
+			messageTypeHelper.findByCodeRequired (
 				GlobalId.root,
 				"wap_push");
 
@@ -340,7 +340,7 @@ class WapPushLogic
 				oldMessage.getRef ())
 
 			.setMessageType (
-				messageTypeHelper.findByCodeOrNull (
+				messageTypeHelper.findByCodeRequired (
 					GlobalId.root,
 					"wap_push"))
 

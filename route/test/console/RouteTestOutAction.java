@@ -118,10 +118,10 @@ class RouteTestOutAction
 				number)
 
 			.messageString (
-				requestContext.parameter ("message"))
+				requestContext.parameterOrNull ("message"))
 
 			.numFrom (
-				requestContext.parameter ("num_from"))
+				requestContext.parameterOrNull ("num_from"))
 
 			.route (
 				route)

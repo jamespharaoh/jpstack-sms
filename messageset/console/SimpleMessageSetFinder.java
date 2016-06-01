@@ -44,7 +44,7 @@ class SimpleMessageSetFinder
 				requestContext.contextStuff ());
 
 		MessageSetRec messageSet =
-			messageSetHelper.findByCode (
+			messageSetHelper.findByCodeOrNull (
 				object,
 				code);
 

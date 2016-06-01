@@ -105,7 +105,7 @@ class GenericMessageStatsPart
 		splitCriteria =
 			toEnum (
 				SmsStatsCriteria.class,
-				requestContext.parameter ("split"));
+				requestContext.parameterOrNull ("split"));
 
 		if (splitCriteria != null)
 			urlParams.add (
@@ -118,7 +118,7 @@ class GenericMessageStatsPart
 				: SmsStatsCriteria.values ()) {
 
 			String param =
-				requestContext.parameter (crit.toString ());
+				requestContext.parameterOrNull (crit.toString ());
 
 			if (param == null)
 				continue;
@@ -145,7 +145,7 @@ class GenericMessageStatsPart
 		viewMode =
 			toEnum (
 				SmsStatsViewMode.class,
-				requestContext.parameter ("view"));
+				requestContext.parameterOrNull ("view"));
 
 		if (viewMode == null)
 			viewMode = SmsStatsViewMode.daily;
@@ -158,7 +158,7 @@ class GenericMessageStatsPart
 
 		dateField =
 			ObsoleteDateField.parse (
-				requestContext.parameter ("date"));
+				requestContext.parameterOrNull ("date"));
 
 		urlParams.set (
 			"date",
@@ -596,11 +596,11 @@ class GenericMessageStatsPart
 
 			urlParams.add (
 				"view",
-				requestContext.parameter ("view"));
+				requestContext.parameterOrNull ("view"));
 
 			urlParams.add (
 				"date",
-				requestContext.parameter ("date"));
+				requestContext.parameterOrNull ("date"));
 
 			return urlParams.toUrl (
 				url);
@@ -656,11 +656,11 @@ class GenericMessageStatsPart
 
 			urlParams.add (
 				"view",
-				requestContext.parameter ("view"));
+				requestContext.parameterOrNull ("view"));
 
 			urlParams.add (
 				"date",
-				requestContext.parameter ("date"));
+				requestContext.parameterOrNull ("date"));
 
 			return urlParams.toUrl (url);
 

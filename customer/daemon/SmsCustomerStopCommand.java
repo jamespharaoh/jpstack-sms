@@ -124,14 +124,14 @@ class SmsCustomerStopCommand
 				inboundMessage.getNumber ());
 
 		ServiceRec stopService =
-			serviceHelper.findByCode (
+			serviceHelper.findByCodeOrNull (
 				customerManager,
 				"stop");
 
 		// send stop message
 
 		SmsCustomerTemplateRec stopTemplate =
-			smsCustomerTemplateHelper.findByCode (
+			smsCustomerTemplateHelper.findByCodeOrNull (
 				customerManager,
 				"stop");
 

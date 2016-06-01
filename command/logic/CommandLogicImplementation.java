@@ -58,7 +58,7 @@ class CommandLogicImplementation
 				objectManager.getObjectTypeId (parent));
 
 		CommandTypeRec commandType =
-			commandTypeHelper.findByCode (
+			commandTypeHelper.findByCodeOrNull (
 				parentType,
 				typeCode);
 

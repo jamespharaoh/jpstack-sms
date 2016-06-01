@@ -75,9 +75,9 @@ class RouteTestInAction
 			inboxLogic.inboxInsert (
 				Optional.<String>absent (),
 				textHelper.findOrCreate (
-					requestContext.parameter ("message")),
-				requestContext.parameter ("num_from"),
-				requestContext.parameter ("num_to"),
+					requestContext.parameterOrNull ("message")),
+				requestContext.parameterOrNull ("num_from"),
+				requestContext.parameterOrNull ("num_to"),
 				route,
 				Optional.<NetworkRec>absent (),
 				Optional.<Instant>absent (),

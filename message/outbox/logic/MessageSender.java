@@ -27,9 +27,7 @@ import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.scaffold.model.RootObjectHelper;
-import wbs.platform.scaffold.model.RootRec;
 import wbs.platform.scaffold.model.SliceObjectHelper;
-import wbs.platform.scaffold.model.SliceRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextObjectHelper;
@@ -194,7 +192,7 @@ class MessageSender {
 		return deliveryType (
 			deliveryTypeCode.isPresent ()
 				? Optional.of (
-					deliveryTypeHelper.findByCodeOrNull (
+					deliveryTypeHelper.findByCodeRequired (
 						GlobalId.root,
 						deliveryTypeCode.get ()))
 				: Optional.<DeliveryTypeRec>absent ());
@@ -207,7 +205,7 @@ class MessageSender {
 			@NonNull String code) {
 
 		return service (
-			serviceHelper.findByCode (
+			serviceHelper.findByCodeRequired (
 				parent,
 				code));
 
@@ -234,7 +232,7 @@ class MessageSender {
 		if (affiliate == null) {
 
 			affiliate =
-				affiliateHelper.findByCodeOrNull (
+				affiliateHelper.findByCodeRequired (
 					GlobalId.root,
 					"system");
 
@@ -266,30 +264,30 @@ class MessageSender {
 
 		// TODO remove big hacky route mapping
 
-		if (in (network.getCode (),
+		if (
+			in (network.getCode (),
 				"uk_o2",
 				"uk_three",
 				"uk_tmobile",
 				"uk_virgin",
-				"uk_vodafone")) {
+				"uk_vodafone")
+		) {
 
-			RootRec root =
-				rootHelper.find (0);
-
-			SliceRec defaultSlice =
-				sliceHelper.findByCode (
-					root,
-					wbsConfig.defaultSlice ());
-
-			if (equal (
+			if (
+				equal (
 					route.getCode (),
 					"cutemedia_84232_100")
 			) {
 
+				throw new RuntimeException (
+					"Hack to update route to oxygen8_84232_100 removed");
+
+				/*
 				route =
-					routeHelper.findByCode (
+					routeHelper.findByCodeOrNull (
 						defaultSlice,
 						"oxygen8_84232_100");
+				*/
 
 			}
 
@@ -298,10 +296,15 @@ class MessageSender {
 					"dialogue_89505_500")
 			) {
 
+				throw new RuntimeException (
+					"Hack to update route to oxygen8_89505_500 removed");
+
+				/*
 				route =
-					routeHelper.findByCode (
+					routeHelper.findByCodeOrNull (
 						defaultSlice,
 						"oxygen8_89505_500");
+				*/
 
 			}
 
@@ -309,10 +312,15 @@ class MessageSender {
 					route.getCode (),
 					"dialogue_88211_500")) {
 
+				throw new RuntimeException (
+					"Hack to update route to oxygen8_88211_500 removed");
+
+				/*
 				route =
-					routeHelper.findByCode (
+					routeHelper.findByCodeOrNull (
 						defaultSlice,
 						"oxygen8_88211_500");
+				*/
 
 			}
 
@@ -320,10 +328,15 @@ class MessageSender {
 					route.getCode (),
 					"dialogue_85722_500")) {
 
+				throw new RuntimeException (
+					"Hack to update route to oxygen8_85722_500 removed");
+
+				/*
 				route =
-					routeHelper.findByCode (
+					routeHelper.findByCodeOrNull (
 						defaultSlice,
 						"oxygen8_85722_500");
+				*/
 
 			}
 
@@ -389,7 +402,7 @@ class MessageSender {
 				subjectText)
 
 			.setMessageType (
-				messageTypeHelper.findByCodeOrNull (
+				messageTypeHelper.findByCodeRequired (
 					GlobalId.root,
 					medias != null
 						? "mms"

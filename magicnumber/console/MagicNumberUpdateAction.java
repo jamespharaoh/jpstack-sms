@@ -1,5 +1,8 @@
 package wbs.sms.magicnumber.console;
 
+import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
+import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -55,7 +58,10 @@ class MagicNumberUpdateAction
 	@Override
 	protected
 	Responder backupResponder () {
-		return responder ("magicNumberUpdateResponder");
+
+		return responder (
+			"magicNumberUpdateResponder");
+
 	}
 
 	// implementation
@@ -74,7 +80,8 @@ class MagicNumberUpdateAction
 
 		MagicNumberSetRec magicNumberSet =
 			magicNumberSetHelper.find (
-				requestContext.stuffInt ("magicNumberSetId"));
+				requestContext.stuffInt (
+					"magicNumberSetId"));
 
 		// parse numbers
 
@@ -85,7 +92,8 @@ class MagicNumberUpdateAction
 			numbers =
 				numberFormatLogic.parseLines (
 					magicNumberSet.getNumberFormat (),
-					requestContext.parameter ("numbers"));
+					requestContext.parameterRequired (
+						"numbers"));
 
 		} catch (WbsNumberFormatException exception) {
 
@@ -96,33 +104,87 @@ class MagicNumberUpdateAction
 
 		}
 
-		if (requestContext.parameter ("create") != null) {
+		if (
+			isPresent (
+				requestContext.parameter (
+					"create"))
+		) {
 
 			// add numbers
 
 			int numAdded = 0;
 
-			for (String number : numbers) {
+			for (
+				String number
+					: numbers
+			) {
 
-				MagicNumberRec magicNumber =
-					magicNumberHelper.insert (
-						magicNumberHelper.createInstance ()
+				MagicNumberRec existingMagicNumber =
+					magicNumberHelper.findByNumber (
+						number);
+	
+				if (
+					isNotNull (
+						existingMagicNumber)
+				) {
 
-					.setMagicNumberSet (
-						magicNumberSet)
+					if (
+						notEqual (
+							existingMagicNumber.getMagicNumberSet (),
+							magicNumberSet)
+					) {
 
-					.setNumber (
-						number)
+						requestContext.addNotice (
+							stringFormat (
+								"Number %s is already allocated to another ",
+								number,
+								"magic number set"));
 
-				);
+						return null;
 
-				numAdded ++;
+					}
 
-				eventLogic.createEvent (
-					"object_created",
-					userConsoleLogic.userRequired (),
-					magicNumber,
-					magicNumberSet);
+					if (! existingMagicNumber.getDeleted ()) {
+						continue;
+					}
+
+					existingMagicNumber
+
+						.setDeleted (
+							false);
+
+					numAdded ++;
+
+					eventLogic.createEvent (
+						"object_field_updated",
+						userConsoleLogic.userRequired (),
+						"deleted",
+						existingMagicNumber,
+						false);
+
+				} else {
+
+					MagicNumberRec newMagicNumber =				
+						magicNumberHelper.insert (
+							magicNumberHelper.createInstance ()
+
+						.setMagicNumberSet (
+							magicNumberSet)
+	
+						.setNumber (
+							number)
+	
+					);
+
+					numAdded ++;
+	
+					eventLogic.createEvent (
+						"object_created",
+						userConsoleLogic.userRequired (),
+						newMagicNumber,
+						magicNumberSet);
+
+				}
 
 			}
 
@@ -141,23 +203,36 @@ class MagicNumberUpdateAction
 
 			}
 
-		} else if (requestContext.parameter ("delete") != null) {
+		} else if (
+			isPresent (
+				requestContext.parameter (
+					"delete"))
+		) {
 
 			// delete numbers
 
 			int numDeleted = 0;
 
-			for (String number : numbers) {
+			for (
+				String number
+					: numbers
+			) {
 
 				MagicNumberRec magicNumber =
 					magicNumberHelper.findByNumber (
 						number);
 
-				if (magicNumber.getMagicNumberSet () != magicNumberSet)
+				if (
+					notEqual (
+						magicNumber.getMagicNumberSet (),
+						magicNumberSet)
+				) {
 					continue;
+				}
 
-				if (magicNumber.getDeleted ())
+				if (magicNumber.getDeleted ()) {
 					continue;
+				}
 
 				magicNumber
 

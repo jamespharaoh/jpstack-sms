@@ -92,7 +92,7 @@ class MessageActionsAction
 
 		if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"manuallyUndeliver"))
 		) {
 
@@ -101,7 +101,7 @@ class MessageActionsAction
 
 		} else if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"manuallyDeliver"))
 		) {
 
@@ -110,7 +110,7 @@ class MessageActionsAction
 
 		} else if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"manuallyUnhold"))
 		) {
 
@@ -119,7 +119,7 @@ class MessageActionsAction
 
 		} else if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"manuallyRetry"))
 		) {
 

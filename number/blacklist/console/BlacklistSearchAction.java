@@ -1,5 +1,7 @@
 package wbs.sms.number.blacklist.console;
 
+import static wbs.framework.utils.etc.Misc.isNotPresent;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
@@ -7,6 +9,8 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
+import com.google.common.base.Optional;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
@@ -80,7 +84,7 @@ class BlacklistSearchAction
 				this);
 
 		NumberFormatRec ukNumberFormat =
-			numberFormatHelper.findByCodeOrNull (
+			numberFormatHelper.findByCodeRequired (
 				GlobalId.root,
 				"uk");
 
@@ -91,7 +95,8 @@ class BlacklistSearchAction
 			number =
 				numberFormatLogic.parse (
 					ukNumberFormat,
-					requestContext.parameter ("number"));
+					requestContext.parameterRequired (
+						"number"));
 
 		} catch (WbsNumberFormatException exception) {
 
@@ -102,12 +107,15 @@ class BlacklistSearchAction
 
 		}
 
-		BlacklistRec blacklist =
-			blacklistHelper.findByCodeOrNull (
+		Optional<BlacklistRec> blacklistOptional =
+			blacklistHelper.findByCode (
 				GlobalId.root,
 				number);
 
-		if (blacklist == null) {
+		if (
+			isNotPresent (
+				blacklistOptional)
+		) {
 
 			requestContext.addError (
 				"Number is not blacklisted");
@@ -116,21 +124,33 @@ class BlacklistSearchAction
 
 		}
 
+		BlacklistRec blacklist =
+			blacklistOptional.get ();
+
 		// copied from eventconsolemodule for now
 
 		Collection<EventLinkRec> eventLinks =
 			eventLinkHelper.findByTypeAndRef (
-				objectManager.objectClassToTypeId (BlacklistRec.class),
+				objectManager.objectClassToTypeId (
+					BlacklistRec.class),
 				blacklist.getId ());
 
 		StringBuilder stringBuilder =
-			new StringBuilder ("Number is blacklisted ");
+			new StringBuilder (
+				"Number is blacklisted ");
 
 		Set<EventRec> events =
 			new TreeSet<EventRec> ();
 
-		for (EventLinkRec eventLink : eventLinks)
-			events.add (eventLink.getEvent ());
+		for (
+			EventLinkRec eventLink
+				: eventLinks
+		) {
+
+			events.add (
+				eventLink.getEvent ());
+
+		}
 
 		for (
 			EventRec event

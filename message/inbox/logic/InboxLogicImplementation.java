@@ -202,7 +202,7 @@ class InboxLogicImplementation
 		// create the message
 
 		AffiliateRec systemAffiliate =
-			affiliateHelper.findByCode (
+			affiliateHelper.findByCodeRequired (
 				root,
 				"system");
 
@@ -248,7 +248,7 @@ class InboxLogicImplementation
 					: null)
 
 			.setService (
-				serviceHelper.findByCode (
+				serviceHelper.findByCodeRequired (
 					root,
 					"system"))
 
@@ -262,7 +262,7 @@ class InboxLogicImplementation
 				avStatus.orNull ())
 
 			.setMessageType (
-				messageTypeHelper.findByCodeOrNull (
+				messageTypeHelper.findByCodeRequired (
 					GlobalId.root,
 					medias.isEmpty ()
 						? "sms"

@@ -118,7 +118,7 @@ class NumberListNumberCopyPart
 			" rows=\"8\"",
 			" cols=\"60\"",
 			">%h</textarea></p>\n",
-			requestContext.parameter ("numbers"));
+			requestContext.parameterOrNull ("numbers"));
 
 		printFormat (
 			"<p>\n");

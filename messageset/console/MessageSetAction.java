@@ -119,7 +119,7 @@ class MessageSetAction
 
 		int numMessages =
 			Integer.parseInt (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"num_messages"));
 
 		for (
@@ -130,7 +130,7 @@ class MessageSetAction
 
 			if (
 				isNull (
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"enabled_" + index))
 			) {
 				continue;
@@ -139,7 +139,7 @@ class MessageSetAction
 			if (
 				! Pattern.matches (
 					"\\d+",
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"route_" + index))
 			) {
 
@@ -154,7 +154,7 @@ class MessageSetAction
 
 			if (
 				isEmpty (
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"number_" + index))
 			) {
 
@@ -166,7 +166,7 @@ class MessageSetAction
 			}
 
 			String message =
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"message_" + index);
 
 			if (message == null) {
@@ -205,7 +205,7 @@ class MessageSetAction
 
 			boolean enabled =
 				isNotNull (
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"enabled_" + index));
 
 			MessageSetMessageRec messageSetMessage =
@@ -247,15 +247,15 @@ class MessageSetAction
 				RouteRec newRoute =
 					routeHelper.find (
 						Integer.parseInt (
-							requestContext.parameter (
+							requestContext.parameterOrNull (
 								"route_" + index)));
 
 				String newNumber =
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"number_" + index);
 
 				String newMessage =
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"message_" + index);
 
 				if (

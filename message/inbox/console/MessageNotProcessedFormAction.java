@@ -90,7 +90,7 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameter ("process_again") != null) {
+		if (requestContext.parameterOrNull ("process_again") != null) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
@@ -128,7 +128,7 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameter ("ignore") != null) {
+		if (requestContext.parameterOrNull ("ignore") != null) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
@@ -158,7 +158,7 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameter ("processed_manually") != null) {
+		if (requestContext.parameterOrNull ("processed_manually") != null) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),

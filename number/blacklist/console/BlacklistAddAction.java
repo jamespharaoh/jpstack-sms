@@ -1,8 +1,12 @@
 package wbs.sms.number.blacklist.console;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+
+import com.google.common.base.Optional;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
@@ -76,7 +80,7 @@ class BlacklistAddAction
 		// TODO this is messy
 
 		NumberFormatRec ukNumberFormat =
-			numberFormatHelper.findByCodeOrNull (
+			numberFormatHelper.findByCodeRequired (
 				GlobalId.root,
 				"uk");
 
@@ -87,7 +91,8 @@ class BlacklistAddAction
 			number =
 				numberFormatLogic.parse (
 					ukNumberFormat,
-					requestContext.parameter ("number"));
+					requestContext.parameterRequired (
+						"number"));
 
 		} catch (WbsNumberFormatException exception) {
 
@@ -98,12 +103,15 @@ class BlacklistAddAction
 
 		}
 
-		BlacklistRec blacklist =
-			blacklistHelper.findByCodeOrNull (
+		Optional<BlacklistRec> blacklistOptional =
+			blacklistHelper.findByCode (
 				GlobalId.root,
 				number);
 
-		if (blacklist != null) {
+		if (
+			isPresent (
+				blacklistOptional)
+		) {
 
 			requestContext.addError (
 				"Number is already blacklisted");
@@ -113,7 +121,8 @@ class BlacklistAddAction
 		}
 
 		String reason =
-			requestContext.parameter ("reason");
+			requestContext.parameterRequired (
+				"reason");
 
 		if (reason.length() < 5) {
 
@@ -140,7 +149,7 @@ class BlacklistAddAction
 		eventLogic.createEvent (
 			"number_blacklisted",
 			userConsoleLogic.userRequired (),
-			blacklist);
+			blacklistOptional.get ());
 
 		transaction.commit ();
 

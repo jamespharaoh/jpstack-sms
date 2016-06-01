@@ -67,7 +67,7 @@ class MessageTickerUpdateResponder
 
 		long generation =
 			Long.parseLong (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"gen"));
 
 		for (

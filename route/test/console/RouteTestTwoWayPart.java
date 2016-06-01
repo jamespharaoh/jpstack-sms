@@ -27,7 +27,7 @@ class RouteTestTwoWayPart
 	void prepare () {
 
 		String number =
-			requestContext.parameter ("num_from");
+			requestContext.parameterOrNull ("num_from");
 
 		if (number == null)
 			return;
@@ -60,7 +60,7 @@ class RouteTestTwoWayPart
 			"<table class=\"details\">\n");
 
 		String str =
-			requestContext.parameter ("num_from");
+			requestContext.parameterOrNull ("num_from");
 
 		if (str == null)
 			str = "";
@@ -81,7 +81,7 @@ class RouteTestTwoWayPart
 			"</tr>\n");
 
 		str =
-			requestContext.parameter ("num_to");
+			requestContext.parameterOrNull ("num_to");
 
 		if (str == null)
 			str = "";

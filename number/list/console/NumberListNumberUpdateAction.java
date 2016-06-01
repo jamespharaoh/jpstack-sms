@@ -118,7 +118,7 @@ class NumberListNumberUpdateAction
 			numbers =
 				numberFormatLogic.parseLines (
 					numberList.getNumberFormat (),
-					requestContext.parameter ("numbers"));
+					requestContext.parameterOrNull ("numbers"));
 
 		} catch (WbsNumberFormatException exception) {
 
@@ -136,7 +136,7 @@ class NumberListNumberUpdateAction
 
 		if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"add"))
 		) {
 
@@ -199,7 +199,7 @@ class NumberListNumberUpdateAction
 		int numRemoved = 0;
 		int numAlreadyRemoved = 0;
 
-		if (requestContext.parameter ("remove") != null) {
+		if (requestContext.parameterOrNull ("remove") != null) {
 
 			numberListUpdate.setPresent (false);
 

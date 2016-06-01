@@ -74,13 +74,13 @@ class RouteTestTwoWayAction
 			routeHelper.find (routeId);
 
 		String messageString =
-			requestContext.parameter ("message");
+			requestContext.parameterOrNull ("message");
 
 		String numFrom =
-			requestContext.parameter ("num_from");
+			requestContext.parameterOrNull ("num_from");
 
 		String numTo =
-			requestContext.parameter ("num_to");
+			requestContext.parameterOrNull ("num_to");
 
 		if (
 			messageString != null

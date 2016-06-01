@@ -82,7 +82,7 @@ class GazetteerCodeFormFieldNativeMapping<Container>
 		}
 
 		GazetteerEntryRec entry =
-			gazetteerEntryHelper.findByCode (
+			gazetteerEntryHelper.findByCodeOrNull (
 				gazetteer,
 				nativeValue.get ());
 

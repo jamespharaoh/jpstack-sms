@@ -1,6 +1,7 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.stringToBytes;
@@ -117,18 +118,9 @@ class AbstractSmsSender2
 		// get a list of routes
 
 		SenderRec sender =
-			senderHelper.findByCodeOrNull (
+			senderHelper.findByCodeRequired (
 				GlobalId.root,
 				senderCode ());
-
-		if (sender == null) {
-
-			throw new NullPointerException (
-				stringFormat (
-					"No such sender: %s",
-					senderCode ()));
-
-		}
 
 		Set<RouteRec> routes =
 			sender.getRoutes ();
@@ -311,12 +303,15 @@ class AbstractSmsSender2
 
 				// TODO aaargh
 
-				BlacklistRec blacklist =
-					blacklistHelper.findByCodeOrNull (
+				Optional<BlacklistRec> blacklistOptional =
+					blacklistHelper.findByCode (
 						GlobalId.root,
 						number);
 
-				if (blacklist != null) {
+				if (
+					isPresent (
+						blacklistOptional)
+				) {
 
 					outbox.setSending (null);
 

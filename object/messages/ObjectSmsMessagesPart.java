@@ -81,7 +81,7 @@ class ObjectSmsMessagesPart
 
 		viewMode =
 			viewModesByName.get (
-				requestContext.parameter ("view"));
+				requestContext.parameterOrNull ("view"));
 
 		if (viewMode == null)
 			viewMode = defaultViewMode;
@@ -94,7 +94,7 @@ class ObjectSmsMessagesPart
 
 		dateField =
 			ObsoleteDateField.parse (
-				requestContext.parameter ("date"));
+				requestContext.parameterOrNull ("date"));
 
 		if (dateField.date == null) {
 			requestContext.addError ("Invalid date");

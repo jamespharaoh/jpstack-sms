@@ -49,7 +49,7 @@ class MessageOutboxRoutePart
 		route =
 			routeHelper.find (
 				Integer.parseInt (
-					requestContext.parameter ("routeId")));
+					requestContext.parameterOrNull ("routeId")));
 
 		outboxes =
 			new TreeSet<OutboxRec> (

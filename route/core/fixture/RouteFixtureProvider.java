@@ -71,8 +71,8 @@ class RouteFixtureProvider
 				true)
 
 			.setCommand (
-				commandHelper.findByCode (
-					keywordSetHelper.findByCode (
+				commandHelper.findByCodeOrNull (
+					keywordSetHelper.findByCodeOrNull (
 						sliceHelper.findByCodeOrNull (
 							GlobalId.root,
 							"test"),
@@ -133,7 +133,7 @@ class RouteFixtureProvider
 				500l)
 
 			.setCurrency (
-				currencyHelper.findByCodeOrNull (
+				currencyHelper.findByCodeRequired (
 					GlobalId.root,
 					"test",
 					"gbp"))
@@ -144,7 +144,7 @@ class RouteFixtureProvider
 			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
-				menuGroupHelper.findByCodeOrNull (
+				menuGroupHelper.findByCodeRequired (
 					GlobalId.root,
 					"test",
 					"sms"))

@@ -123,7 +123,7 @@ class SmsCustomerLogicImplementation
 			customer.getSmsCustomerManager ();
 
 		SmsCustomerTemplateRec template =
-			smsCustomerTemplateHelper.findByCode (
+			smsCustomerTemplateHelper.findByCodeOrNull (
 				manager,
 				"welcome");
 
@@ -174,7 +174,7 @@ class SmsCustomerLogicImplementation
 			customer.getSmsCustomerManager ();
 
 		SmsCustomerTemplateRec template =
-			smsCustomerTemplateHelper.findByCode (
+			smsCustomerTemplateHelper.findByCodeOrNull (
 				manager,
 				"warning");
 

@@ -88,8 +88,10 @@ class LocatorManager {
 
 		// index locators by type
 
-		for (Map.Entry<String,Locator> locatorEntry
-				: locatorFactoriesByBeanName.entrySet ()) {
+		for (
+			Map.Entry<String,Locator> locatorEntry
+				: locatorFactoriesByBeanName.entrySet ()
+		) {
 
 			String beanName =
 				locatorEntry.getKey ();
@@ -97,8 +99,10 @@ class LocatorManager {
 			Locator locator =
 				locatorEntry.getValue ();
 
-			for (String code
-					: locator.getTypeCodes ()) {
+			for (
+				String code
+					: locator.getTypeCodes ()
+			) {
 
 				String[] codeParts =
 					code.split ("\\.", 2);
@@ -110,22 +114,12 @@ class LocatorManager {
 					codeParts [1];
 
 				ObjectTypeRec parentType =
-					objectTypeHelper.findByCodeOrNull (
+					objectTypeHelper.findByCodeRequired (
 						GlobalId.root,
 						parentTypeCode);
 
-				if (parentType == null) {
-
-					throw new RuntimeException (
-						stringFormat (
-							"No such parent object type %s from %s",
-							parentType,
-							beanName));
-
-				}
-
 				LocatorTypeRec locatorType =
-					locatorTypeHelper.findByCode (
+					locatorTypeHelper.findByCodeRequired (
 						parentType,
 						locatorTypeCode);
 

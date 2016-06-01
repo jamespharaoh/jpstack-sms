@@ -73,7 +73,7 @@ class BatchLogicImplementation
 				objectManager.getObjectTypeId (parent));
 
 		BatchTypeRec batchType =
-			batchTypeHelper.findByCode (
+			batchTypeHelper.findByCodeOrNull (
 				parentType,
 				typeCode);
 

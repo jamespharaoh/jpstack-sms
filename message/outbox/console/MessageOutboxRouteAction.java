@@ -78,7 +78,7 @@ class MessageOutboxRouteAction
 		OutboxRec outbox =
 			outboxHelper.find (
 				Integer.parseInt (
-					requestContext.parameter (
+					requestContext.parameterOrNull (
 						"messageId")));
 
 		if (outbox == null) {
@@ -147,7 +147,7 @@ class MessageOutboxRouteAction
 
 		if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"cancel"))
 		) {
 
@@ -168,7 +168,7 @@ class MessageOutboxRouteAction
 
 		} else if (
 			isNotNull (
-				requestContext.parameter (
+				requestContext.parameterOrNull (
 					"retry"))
 		) {
 

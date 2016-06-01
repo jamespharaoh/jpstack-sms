@@ -22,7 +22,8 @@ class MagicNumberUpdatePart
 			" rows=\"16\"",
 			" cols=\"40\"",
 			">%h</textarea></p>\n",
-			requestContext.parameter ("numbers"));
+			requestContext.parameterOrEmptyString (
+				"numbers"));
 
 		printFormat (
 			"<p><input",
