@@ -2,9 +2,9 @@ package wbs.sms.message.report.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.optionalEquals;
 import static wbs.framework.utils.etc.Misc.optionalIn;
+import static wbs.framework.utils.etc.Misc.optionalNotIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -77,13 +77,12 @@ class ReportLogicImplementation
 		// check arguments
 
 		if (
-			notIn (
-				newMessageStatus.orNull (),
+			optionalNotIn (
+				newMessageStatus,
 				MessageStatus.sent,
 				MessageStatus.submitted,
 				MessageStatus.undelivered,
-				MessageStatus.delivered,
-				null)
+				MessageStatus.delivered)
 		) {
 
 			throw new IllegalArgumentException (
