@@ -1,8 +1,10 @@
 package wbs.sms.message.report.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.notIn;
+import static wbs.framework.utils.etc.Misc.optionalEquals;
+import static wbs.framework.utils.etc.Misc.optionalIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -11,6 +13,8 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import org.joda.time.ReadableInstant;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -60,7 +64,7 @@ class ReportLogicImplementation
 	public
 	void deliveryReport (
 			@NonNull MessageRec message,
-			MessageStatus newMessageStatus,
+			@NonNull Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -74,7 +78,7 @@ class ReportLogicImplementation
 
 		if (
 			notIn (
-				newMessageStatus,
+				newMessageStatus.orNull (),
 				MessageStatus.sent,
 				MessageStatus.submitted,
 				MessageStatus.undelivered,
@@ -113,9 +117,8 @@ class ReportLogicImplementation
 				transaction.now ())
 
 			.setNewMessageStatus (
-				newMessageStatus == null
-					? message.getStatus ()
-					: newMessageStatus)
+				newMessageStatus.or (
+					message.getStatus ()))
 
 			.setMessageReportCode (
 				messageReportCode)
@@ -125,8 +128,14 @@ class ReportLogicImplementation
 		// update received time if appropriate
 
 		if (
-			newMessageStatus == MessageStatus.delivered
-			&& message.getProcessedTime () == null
+
+			optionalEquals (
+				newMessageStatus,
+				MessageStatus.delivered)
+
+			&& isNull (
+				message.getProcessedTime ())
+
 		) {
 
 			message
@@ -145,7 +154,8 @@ class ReportLogicImplementation
 			case sent:
 
 				if (
-					in (newMessageStatus,
+					optionalIn (
+						newMessageStatus,
 						MessageStatus.sent,
 						MessageStatus.submitted,
 						MessageStatus.undelivered,
@@ -154,7 +164,7 @@ class ReportLogicImplementation
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus);
+						newMessageStatus.get ());
 
 				}
 
@@ -163,7 +173,8 @@ class ReportLogicImplementation
 			case submitted:
 
 				if (
-					in (newMessageStatus,
+					optionalIn (
+						newMessageStatus,
 						MessageStatus.submitted,
 						MessageStatus.delivered,
 						MessageStatus.undelivered)
@@ -171,7 +182,7 @@ class ReportLogicImplementation
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus);
+						newMessageStatus.get ());
 
 				}
 
@@ -180,14 +191,15 @@ class ReportLogicImplementation
 			case reportTimedOut:
 
 				if (
-					in (newMessageStatus,
+					optionalIn (
+						newMessageStatus,
 						MessageStatus.delivered,
 						MessageStatus.undelivered)
 				) {
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus);
+						newMessageStatus.get ());
 
 				}
 
@@ -196,13 +208,14 @@ class ReportLogicImplementation
 			case undelivered:
 
 				if (
-					in (newMessageStatus,
+					optionalIn (
+						newMessageStatus,
 						MessageStatus.delivered)
 				) {
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus);
+						newMessageStatus.get ());
 
 				}
 
@@ -247,7 +260,7 @@ class ReportLogicImplementation
 	MessageRec deliveryReport (
 			@NonNull RouteRec route,
 			@NonNull String otherId,
-			@NonNull MessageStatus newMessageStatus,
+			@NonNull Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -290,7 +303,7 @@ class ReportLogicImplementation
 	public
 	void deliveryReport (
 			int messageId,
-			MessageStatus newMessageStatus,
+			Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws

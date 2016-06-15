@@ -2,6 +2,8 @@ package wbs.sms.message.report.logic;
 
 import org.joda.time.ReadableInstant;
 
+import com.google.common.base.Optional;
+
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
 import wbs.sms.message.core.model.MessageRec;
@@ -14,7 +16,7 @@ interface ReportLogic {
 
 	void deliveryReport (
 			MessageRec message,
-			MessageStatus newMessageStatus,
+			Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -24,7 +26,7 @@ interface ReportLogic {
 	MessageRec deliveryReport (
 			RouteRec route,
 			String otherId,
-			MessageStatus newMessageStatus,
+			Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -33,7 +35,7 @@ interface ReportLogic {
 
 	void deliveryReport (
 			int messageId,
-			MessageStatus newMessageStatus,
+			Optional<MessageStatus> newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws

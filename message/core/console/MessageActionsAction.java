@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 
@@ -91,8 +91,8 @@ class MessageActionsAction
 		// hand off to appropriate method
 
 		if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"manuallyUndeliver"))
 		) {
 
@@ -100,8 +100,8 @@ class MessageActionsAction
 				transaction);
 
 		} else if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"manuallyDeliver"))
 		) {
 
@@ -109,8 +109,8 @@ class MessageActionsAction
 				transaction);
 
 		} else if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"manuallyUnhold"))
 		) {
 
@@ -118,8 +118,8 @@ class MessageActionsAction
 				transaction);
 
 		} else if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"manuallyRetry"))
 		) {
 
@@ -266,7 +266,8 @@ class MessageActionsAction
 			notIn (
 				message.getStatus (),
 				MessageStatus.failed,
-				MessageStatus.cancelled)
+				MessageStatus.cancelled,
+				MessageStatus.blacklisted)
 		) {
 
 			requestContext.addError (

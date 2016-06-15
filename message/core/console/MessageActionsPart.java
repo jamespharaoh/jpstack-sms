@@ -136,7 +136,8 @@ class MessageActionsPart
 			&& in (
 				message.getStatus (),
 				MessageStatus.failed,
-				MessageStatus.cancelled)
+				MessageStatus.cancelled,
+				MessageStatus.blacklisted)
 
 		) {
 

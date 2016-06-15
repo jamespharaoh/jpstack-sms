@@ -623,7 +623,8 @@ class OutboxLogicImplementation
 		} else if (
 			in (message.getStatus (),
 				MessageStatus.failed,
-				MessageStatus.cancelled)
+				MessageStatus.cancelled,
+				MessageStatus.blacklisted)
 		) {
 
 			outboxHelper.insert (

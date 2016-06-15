@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -278,7 +278,7 @@ class AbstractSmsSender1<MessageContainer>
 							number);
 
 					if (
-						isNotNull (
+						isPresent (
 							blacklistOptional)
 					) {
 

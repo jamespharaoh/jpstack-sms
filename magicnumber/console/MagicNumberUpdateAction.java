@@ -122,7 +122,7 @@ class MagicNumberUpdateAction
 				MagicNumberRec existingMagicNumber =
 					magicNumberHelper.findByNumber (
 						number);
-	
+
 				if (
 					isNotNull (
 						existingMagicNumber)
@@ -164,20 +164,20 @@ class MagicNumberUpdateAction
 
 				} else {
 
-					MagicNumberRec newMagicNumber =				
+					MagicNumberRec newMagicNumber =
 						magicNumberHelper.insert (
 							magicNumberHelper.createInstance ()
 
 						.setMagicNumberSet (
 							magicNumberSet)
-	
+
 						.setNumber (
 							number)
-	
+
 					);
 
 					numAdded ++;
-	
+
 					eventLogic.createEvent (
 						"object_created",
 						userConsoleLogic.userRequired (),
