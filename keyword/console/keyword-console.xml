@@ -28,7 +28,8 @@
 			<object-list-page
 				fields="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				fields="create"/>
 
 		</list>
 
@@ -52,6 +53,28 @@
 		object-name="keyword">
 
 		<code-field/>
+
+		<description-field/>
+
+		<object-field
+			name="command"
+			object-type="command"/>
+
+		<yes-no-field
+			name="sticky"/>
+
+		<yes-no-field
+			name="leaveIntact"/>
+
+	</field-set>
+
+	<field-set
+		name="create"
+		object-name="keyword">
+
+		<code-field
+			pattern="relaxed"/>
+
 		<description-field/>
 
 		<object-field
@@ -72,7 +95,9 @@
 
 		<id-field/>
 		<parent-field/>
+
 		<code-field/>
+
 		<description-field/>
 
 		<object-field
@@ -92,7 +117,10 @@
 		object-name="keyword">
 
 		<id-field/>
-		<code-field/>
+
+		<code-field
+			pattern="relaxed"/>
+
 		<description-field/>
 
 		<object-field
