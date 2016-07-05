@@ -79,7 +79,7 @@ class NumberLogicImplementation
 		// TODO should not be here
 
 		ChatUserNumberReportRec chatUserNumberReportRec =
-			chatUserNumberReportHelper.find (
+			chatUserNumberReportHelper.findOrNull (
 				number.getId ());
 
 		if (chatUserNumberReportRec == null) {

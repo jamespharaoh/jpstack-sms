@@ -103,7 +103,7 @@ class RouteTesterCommand
 			Integer.parseInt (matcher.group (1));
 
 		RouteTestRec routeTest =
-			routeTestHelper.find (
+			routeTestHelper.findOrNull (
 				routeTestId);
 
 		if (routeTest == null) {

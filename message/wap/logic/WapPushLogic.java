@@ -112,16 +112,16 @@ class WapPushLogic
 		if (service == null) {
 
 			service =
-				serviceHelper.find (0);
+				serviceHelper.findOrNull (0);
 
 		}
 
 		if (affiliate == null)
 			affiliate =
-				affiliateHelper.find (0);
+				affiliateHelper.findOrNull (0);
 
 		if (batch == null)
-			batch = batchHelper.find (0);
+			batch = batchHelper.findOrNull (0);
 
 		// check this route can send wap push
 
@@ -278,7 +278,7 @@ class WapPushLogic
 			database.currentTransaction ();
 
 		WapPushMessageRec oldWapPushMessage =
-			wapPushMessageHelper.find (
+			wapPushMessageHelper.findOrNull (
 				oldMessage.getId ());
 
 		if (textRec == null) {

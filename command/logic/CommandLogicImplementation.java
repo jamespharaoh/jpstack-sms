@@ -54,7 +54,7 @@ class CommandLogicImplementation
 		// ...or create new command
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.find (
+			objectTypeHelper.findOrNull (
 				objectManager.getObjectTypeId (parent));
 
 		CommandTypeRec commandType =

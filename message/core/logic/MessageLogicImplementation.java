@@ -76,7 +76,7 @@ class MessageLogicImplementation
 			// lookup outbox
 
 			OutboxRec outbox =
-				outboxHelper.find (
+				outboxHelper.findOrNull (
 					message.getId ());
 
 			// check message is not being sent

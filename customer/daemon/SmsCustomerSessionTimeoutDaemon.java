@@ -117,7 +117,7 @@ class SmsCustomerSessionTimeoutDaemon
 				this);
 
 		SmsCustomerManagerRec manager =
-			smsCustomerManagerHelper.find (
+			smsCustomerManagerHelper.findOrNull (
 				managerId);
 
 		if (manager.getSessionTimeout () == null)
@@ -154,7 +154,7 @@ class SmsCustomerSessionTimeoutDaemon
 					this);
 
 			session =
-				smsCustomerSessionHelper.find (
+				smsCustomerSessionHelper.findOrNull (
 					session.getId ());
 
 			smsCustomerLogic.sessionTimeoutAuto (

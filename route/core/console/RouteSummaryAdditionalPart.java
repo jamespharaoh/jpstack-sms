@@ -33,7 +33,7 @@ class RouteSummaryAdditionalPart
 	void prepare () {
 
 		route =
-			routeHelper.find (
+			routeHelper.findOrNull (
 				requestContext.stuffInt ("routeId"));
 
 		if (route.getSender () != null) {

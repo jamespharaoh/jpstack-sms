@@ -245,7 +245,7 @@ class MessageSetAction
 				// set up some handy variables
 
 				RouteRec newRoute =
-					routeHelper.find (
+					routeHelper.findOrNull (
 						Integer.parseInt (
 							requestContext.parameterOrNull (
 								"route_" + index)));

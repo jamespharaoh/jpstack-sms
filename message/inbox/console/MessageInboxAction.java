@@ -72,7 +72,7 @@ class MessageInboxAction
 					matcher.group (1));
 
 			InboxRec inbox =
-				inboxHelper.find (
+				inboxHelper.findOrNull (
 					messageId);
 
 			if (inbox == null)

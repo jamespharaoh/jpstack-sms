@@ -84,7 +84,7 @@ class MessageActionsAction
 		// load data
 
 		message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt (
 					"messageId"));
 

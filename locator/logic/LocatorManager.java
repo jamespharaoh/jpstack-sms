@@ -154,7 +154,7 @@ class LocatorManager {
 				this);
 
 		LocatorLogRec locatorLog =
-			locatorLogHelper.find (
+			locatorLogHelper.findOrNull (
 				locatorLogId);
 
 		locatorLog
@@ -184,7 +184,7 @@ class LocatorManager {
 				this);
 
 		LocatorLogRec locatorLog =
-			locatorLogHelper.find (
+			locatorLogHelper.findOrNull (
 				locatorLogId);
 
 		locatorLog
@@ -214,19 +214,19 @@ class LocatorManager {
 				this);
 
 		LocatorRec locatorRec =
-			locatorHelper.find (
+			locatorHelper.findOrNull (
 				locatorId);
 
 		NumberRec number =
-			numberHelper.find (
+			numberHelper.findOrNull (
 				numberId);
 
 		ServiceRec service =
-			serviceHelper.find (
+			serviceHelper.findOrNull (
 				serviceId);
 
 		AffiliateRec affiliate =
-			affiliateHelper.find (
+			affiliateHelper.findOrNull (
 				affiliateId);
 
 		locatorTypeId =

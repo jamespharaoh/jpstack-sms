@@ -47,7 +47,7 @@ class MessageOutboxRoutePart
 	void prepare () {
 
 		route =
-			routeHelper.find (
+			routeHelper.findOrNull (
 				Integer.parseInt (
 					requestContext.parameterOrNull ("routeId")));
 

@@ -252,7 +252,7 @@ class AbstractSmsSender2
 						this);
 
 				RouteRec route =
-					routeHelper.find (
+					routeHelper.findOrNull (
 						routeId);
 
 				// get the next message
@@ -535,7 +535,7 @@ class AbstractSmsSender2
 							new String [] {}));
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
-						smsOutboxAttemptHelper.find (
+						smsOutboxAttemptHelper.findOrNull (
 							smsOutboxAttemptId);
 
 					smsOutboxAttempt
@@ -628,7 +628,7 @@ class AbstractSmsSender2
 						failureType);
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
-						smsOutboxAttemptHelper.find (
+						smsOutboxAttemptHelper.findOrNull (
 							smsOutboxAttemptId);
 
 					smsOutboxAttempt

@@ -71,7 +71,7 @@ class RouteTestTwoWayAction
 			requestContext.stuffInt ("routeId");
 
 		RouteRec route =
-			routeHelper.find (routeId);
+			routeHelper.findOrNull (routeId);
 
 		String messageString =
 			requestContext.parameterOrNull ("message");

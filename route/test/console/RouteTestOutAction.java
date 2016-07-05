@@ -76,7 +76,7 @@ class RouteTestOutAction
 			requestContext.stuffInt ("routeId");
 
 		RouteRec route =
-			routeHelper.find (routeId);
+			routeHelper.findOrNull (routeId);
 
 		// check params
 

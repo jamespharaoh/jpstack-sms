@@ -74,7 +74,7 @@ class MessageNotProcessedFormAction
 				this);
 
 		MessageRec message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt (
 					"messageId"));
 

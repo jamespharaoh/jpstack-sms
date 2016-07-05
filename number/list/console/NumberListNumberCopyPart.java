@@ -46,7 +46,7 @@ class NumberListNumberCopyPart
 		// this number list
 
 		thisNumberList =
-			numberListHelper.find (
+			numberListHelper.findOrNull (
 				requestContext.stuffInt ("numberListId"));
 
 		// browseable number lists

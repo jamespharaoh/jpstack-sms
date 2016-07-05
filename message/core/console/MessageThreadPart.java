@@ -48,7 +48,7 @@ class MessageThreadPart
 	void prepare () {
 
 		MessageRec message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt ("messageId"));
 
 		messages =

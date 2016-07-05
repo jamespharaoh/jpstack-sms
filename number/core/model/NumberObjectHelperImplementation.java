@@ -45,7 +45,7 @@ class NumberObjectHelperImplementation
 		// create it
 
 		NetworkRec defaultNetwork =
-			networkHelper.find (0);
+			networkHelper.findOrNull (0);
 
 		return numberHelper.insert (
 			numberHelper.createInstance ()

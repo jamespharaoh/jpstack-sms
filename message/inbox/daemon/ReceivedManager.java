@@ -131,11 +131,11 @@ class ReceivedManager
 					this);
 
 			InboxRec inbox =
-				inboxHelper.find (
+				inboxHelper.findOrNull (
 					messageId);
 
 			MessageRec message =
-				messageHelper.find (
+				messageHelper.findOrNull (
 					messageId);
 
 			dumpMessageInfo (
@@ -188,7 +188,7 @@ class ReceivedManager
 					this);
 
 			InboxRec inbox =
-				inboxHelper.find (
+				inboxHelper.findOrNull (
 					messageId);
 
 			MessageRec message =

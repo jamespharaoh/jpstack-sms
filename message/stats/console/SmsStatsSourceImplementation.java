@@ -137,7 +137,7 @@ class SmsStatsSourceImplementation
 				|| routeIds.size () != 1)
 			return null;
 
-		return routeHelper.find (
+		return routeHelper.findOrNull (
 			routeIds.iterator ().next ());
 
 	}

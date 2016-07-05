@@ -238,7 +238,7 @@ class OutboxLogicImplementation
 			// lookup outbox
 
 			OutboxRec outbox =
-				outboxHelper.find (
+				outboxHelper.findOrNull (
 					message.getId ());
 
 			// check message is not being sent
@@ -362,7 +362,7 @@ class OutboxLogicImplementation
 		log.debug ("outbox success id = " + messageId);
 
 		OutboxRec outbox =
-			outboxHelper.find (
+			outboxHelper.findOrNull (
 				messageId);
 
 		MessageRec message =
@@ -521,7 +521,7 @@ class OutboxLogicImplementation
 			"outbox failure id = " + messageId);
 
 		OutboxRec outbox =
-			outboxHelper.find (
+			outboxHelper.findOrNull (
 				messageId);
 
 		MessageRec message =

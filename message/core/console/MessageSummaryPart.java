@@ -59,11 +59,11 @@ class MessageSummaryPart
 	void prepare () {
 
 		message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt ("messageId"));
 
 		failedMessage =
-			failedMessageHelper.find (
+			failedMessageHelper.findOrNull (
 				message.getId ());
 
 	}

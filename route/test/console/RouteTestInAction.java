@@ -69,7 +69,7 @@ class RouteTestInAction
 			requestContext.stuffInt ("routeId");
 
 		RouteRec route =
-			routeHelper.find (routeId);
+			routeHelper.findOrNull (routeId);
 
 		MessageRec message =
 			inboxLogic.inboxInsert (

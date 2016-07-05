@@ -36,7 +36,7 @@ class NumberListNumberUpdatePart
 	void prepare () {
 
 		numberList =
-			numberListHelper.find (
+			numberListHelper.findOrNull (
 				requestContext.stuffInt (
 					"numberListId"));
 

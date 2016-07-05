@@ -41,7 +41,7 @@ class MessageReportsPart
 	void prepare () {
 
 		message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt ("messageId"));
 
 		if (message == null)

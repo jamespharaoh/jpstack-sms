@@ -32,7 +32,7 @@ class MessageActionsPart
 	void prepare () {
 
 		message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				requestContext.stuffInt (
 					"messageId"));
 

@@ -312,7 +312,7 @@ class ReportLogicImplementation
 		// lookup the message
 
 		MessageRec message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				messageId);
 
 		if (message == null) {

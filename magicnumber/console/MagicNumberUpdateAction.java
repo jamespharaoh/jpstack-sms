@@ -79,7 +79,7 @@ class MagicNumberUpdateAction
 				this);
 
 		MagicNumberSetRec magicNumberSet =
-			magicNumberSetHelper.find (
+			magicNumberSetHelper.findOrNull (
 				requestContext.stuffInt (
 					"magicNumberSetId"));
 

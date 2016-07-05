@@ -91,7 +91,7 @@ class GroupedStatsSourceImplementation
 			if (routeIds.size () == 1) {
 
 				route =
-					routeHelper.find (
+					routeHelper.findOrNull (
 						routeIds.iterator ().next ());
 
 			}

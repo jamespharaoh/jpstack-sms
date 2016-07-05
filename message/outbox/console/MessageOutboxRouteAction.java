@@ -76,7 +76,7 @@ class MessageOutboxRouteAction
 				this);
 
 		OutboxRec outbox =
-			outboxHelper.find (
+			outboxHelper.findOrNull (
 				Integer.parseInt (
 					requestContext.parameterOrNull (
 						"messageId")));

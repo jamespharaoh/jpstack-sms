@@ -90,7 +90,7 @@ class NumberListNumberUpdateAction
 		int loop = 0;
 
 		NumberListRec numberList =
-			numberListHelper.find (
+			numberListHelper.findOrNull (
 				requestContext.stuffInt (
 					"numberListId"));
 

@@ -36,7 +36,7 @@ class WapPushConsolePlugin
 			MessageRec message) {
 
 		WapPushMessageRec wapPushMessage =
-			wapPushMessageHelper.find (
+			wapPushMessageHelper.findOrNull (
 				message.getId ());
 
 		if (wapPushMessage == null) {
@@ -56,7 +56,7 @@ class WapPushConsolePlugin
 			MessageRec message) {
 
 		WapPushMessageRec wapPushMessage =
-			wapPushMessageHelper.find (
+			wapPushMessageHelper.findOrNull (
 				message.getId ());
 
 		return stringFormat (

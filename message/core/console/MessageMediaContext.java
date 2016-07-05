@@ -112,7 +112,7 @@ class MessageMediaContext
 				this);
 
 		MessageRec message =
-			messageHelper.find (
+			messageHelper.findOrNull (
 				messageId);
 
 		MediaRec media =

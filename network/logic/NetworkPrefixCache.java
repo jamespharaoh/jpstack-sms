@@ -122,7 +122,7 @@ class NetworkPrefixCache {
 				log.debug (
 					"Found " + prefixToTry + ", networkId = " + networkId + " for " + number);
 
-				return networkHelper.find (networkId);
+				return networkHelper.findOrNull (networkId);
 
 			}
 

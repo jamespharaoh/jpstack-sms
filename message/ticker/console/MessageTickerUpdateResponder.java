@@ -258,7 +258,7 @@ class MessageTickerUpdateResponder
 				: messageTickerMessage.mediaIds ()) {
 
 			MediaRec media =
-				mediaHelper.find (
+				mediaHelper.findOrNull (
 					mediaId);
 
 			if (comma) {

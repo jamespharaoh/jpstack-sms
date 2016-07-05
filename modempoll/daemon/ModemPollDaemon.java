@@ -547,7 +547,7 @@ class ModemPollDaemon
 					pdu.getMessage ()));
 
 			RouteRec route =
-				routeHelper.find (routeId);
+				routeHelper.findOrNull (routeId);
 
 			inboxLogic.inboxInsert (
 				Optional.<String>absent (),

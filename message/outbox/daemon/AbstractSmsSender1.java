@@ -221,7 +221,7 @@ class AbstractSmsSender1<MessageContainer>
 							this);
 
 					RouteRec route =
-						routeHelper.find (
+						routeHelper.findOrNull (
 							routeId);
 
 					// get the next message

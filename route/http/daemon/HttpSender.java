@@ -105,7 +105,7 @@ class HttpSender
 				"wap_push")) {
 
 			wapPushMessage =
-				wapPushMessageHelper.find (
+				wapPushMessageHelper.findOrNull (
 					outbox.getId ());
 
 			if (wapPushMessage == null) {
@@ -203,7 +203,7 @@ class HttpSender
 		// then look for a non-specific route
 
 		NetworkRec defaultNetwork =
-			networkHelper.find (0);
+			networkHelper.findOrNull (0);
 
 		httpRoute =
 			httpRouteHelper.find (

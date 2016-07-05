@@ -45,7 +45,7 @@ class SmsSimpleTrackerHandler
 			@NonNull Optional<Instant> timestamp) {
 
 		SmsSimpleTrackerRec simpleTracker =
-			smsSimpleTrackerHelper.find (
+			smsSimpleTrackerHelper.findOrNull (
 				tracker.getParentId ());
 
 		return smsTrackerLogic.simpleTrackerConsult (

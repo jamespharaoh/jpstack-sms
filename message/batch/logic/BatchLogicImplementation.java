@@ -69,7 +69,7 @@ class BatchLogicImplementation
 		// or create new
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.find (
+			objectTypeHelper.findOrNull (
 				objectManager.getObjectTypeId (parent));
 
 		BatchTypeRec batchType =
