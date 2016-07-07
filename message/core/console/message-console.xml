@@ -95,6 +95,11 @@
 			nullable="yes"/>
 
 		<object-field
+			name="routeSliceId"
+			object-type="slice"
+			nullable="yes"/>
+
+		<object-field
 			name="routeId"
 			object-type="route"
 			nullable="yes"/>
@@ -115,6 +120,16 @@
 			nullable="yes"/>
 
 		<object-field
+			name="serviceSliceId"
+			object-type="slice"
+			nullable="yes"/>
+
+		<object-field
+			name="serviceParentTypeId"
+			object-type="objectType"
+			nullable="yes"/>
+
+		<object-field
 			name="serviceId"
 			object-type="service"
 			nullable="yes"/>
@@ -127,16 +142,6 @@
 		<interval-field
 			name="createdTime"
 			label="Date/time"
-			nullable="yes"/>
-
-		<timestamp-from-field
-			name="createdTimeAfter"
-			label="From date/time"
-			nullable="yes"/>
-
-		<timestamp-to-field
-			name="createdTimeBefore"
-			label="To date/time"
 			nullable="yes"/>
 
 		<text-field

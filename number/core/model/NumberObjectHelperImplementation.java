@@ -1,7 +1,11 @@
 package wbs.sms.number.core.model;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.record.GlobalId;
 import wbs.sms.network.model.NetworkObjectHelper;
@@ -34,18 +38,22 @@ class NumberObjectHelperImplementation
 
 		// find existing
 
-		NumberRec numberRecord =
-			numberHelper.findByCodeOrNull (
+		Optional<NumberRec> numberRecordOptional =
+			numberHelper.findByCode (
 				GlobalId.root,
 				numberString);
 
-		if (numberRecord != null)
-			return numberRecord;
+		if (
+			isPresent (
+				numberRecordOptional)
+		) {
+			return numberRecordOptional.get ();
+		}
 
 		// create it
 
 		NetworkRec defaultNetwork =
-			networkHelper.findOrNull (0);
+			networkHelper.findRequired (0);
 
 		return numberHelper.insert (
 			numberHelper.createInstance ()

@@ -2,11 +2,14 @@ package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.implode;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
 
 import javax.inject.Inject;
+
+import com.google.common.base.Optional;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
@@ -48,7 +51,7 @@ class MessageSummaryPart
 	// state
 
 	MessageRec message;
-	FailedMessageRec failedMessage;
+	Optional<FailedMessageRec> failedMessage;
 	MessageConsolePlugin plug;
 	String summaryHtml;
 
@@ -59,11 +62,12 @@ class MessageSummaryPart
 	void prepare () {
 
 		message =
-			messageHelper.findOrNull (
-				requestContext.stuffInt ("messageId"));
+			messageHelper.findRequired (
+				requestContext.stuffInt (
+					"messageId"));
 
 		failedMessage =
-			failedMessageHelper.findOrNull (
+			failedMessageHelper.find (
 				message.getId ());
 
 	}
@@ -71,15 +75,6 @@ class MessageSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent () {
-
-		if (message == null) {
-
-			printFormat (
-				"<p>Not found</p>\n");
-
-			return;
-
-		}
 
 		printFormat (
 			"<table class=\"details\">\n");
@@ -313,11 +308,17 @@ class MessageSummaryPart
 			implode (", ", message.getTags ()),
 			"</tr>\n");
 
-		if (failedMessage != null) {
+		if (
+			isPresent (
+				failedMessage)
+		) {
 
 			printFormat (
-				"<tr> <th>Failure reason</th> <td>%h</td> </tr>\n",
-				failedMessage.getError ());
+				"<tr>\n",
+				"<th>Failure reason</th>\n",
+				"<td>%h</td>",
+				failedMessage.get ().getError (),
+				"</tr>\n");
 
 		}
 

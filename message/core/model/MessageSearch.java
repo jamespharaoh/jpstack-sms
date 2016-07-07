@@ -7,8 +7,6 @@ import java.util.TreeSet;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import org.joda.time.Instant;
-
 import wbs.framework.utils.TextualInterval;
 
 @Accessors (fluent = true)
@@ -24,6 +22,8 @@ class MessageSearch
 
 	Integer userId;
 
+	Integer serviceSliceId;
+	Integer serviceParentTypeId;
 	Integer serviceId;
 	Collection<Integer> serviceIdIn;
 
@@ -33,6 +33,7 @@ class MessageSearch
 	Integer batchId;
 	Collection<Integer> batchIdIn;
 
+	Integer routeSliceId;
 	Integer routeId;
 	Collection<Integer> routeIdIn;
 
@@ -40,8 +41,8 @@ class MessageSearch
 
 	TextualInterval createdTime;
 
-	Instant createdTimeAfter;
-	Instant createdTimeBefore;
+	//Instant createdTimeAfter;
+	//Instant createdTimeBefore;
 
 	MessageDirection direction;
 
@@ -79,6 +80,12 @@ class MessageSearch
 		this.numberId =
 			original.numberId;
 
+		this.serviceSliceId =
+			original.serviceSliceId;
+
+		this.serviceParentTypeId =
+			original.serviceParentTypeId;
+
 		this.serviceId =
 			original.serviceId;
 
@@ -112,6 +119,9 @@ class MessageSearch
 
 		}
 
+		this.routeSliceId =
+			original.routeSliceId;
+
 		this.routeId =
 			original.routeId;
 
@@ -128,12 +138,6 @@ class MessageSearch
 
 		this.createdTime =
 			original.createdTime;
-
-		this.createdTimeAfter =
-			original.createdTimeAfter;
-
-		this.createdTimeBefore =
-			original.createdTimeBefore;
 
 		this.direction =
 			original.direction;

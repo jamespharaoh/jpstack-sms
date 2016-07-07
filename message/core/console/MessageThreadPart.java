@@ -48,8 +48,9 @@ class MessageThreadPart
 	void prepare () {
 
 		MessageRec message =
-			messageHelper.findOrNull (
-				requestContext.stuffInt ("messageId"));
+			messageHelper.findRequired (
+				requestContext.stuffInt (
+					"messageId"));
 
 		messages =
 			new TreeSet<MessageRec> (

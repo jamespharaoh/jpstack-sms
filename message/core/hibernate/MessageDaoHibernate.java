@@ -183,53 +183,63 @@ class MessageDaoHibernate
 
 		Criteria criteria =
 			createCriteria (
-				MessageRec.class)
+				MessageRec.class,
+				"_message")
 
 			.createAlias (
-				"network",
-				"network",
+				"_message.network",
+				"_network",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"number",
-				"number",
+				"_message.number",
+				"_number",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"route",
-				"route",
+				"_message.route",
+				"_route",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"service",
-				"service",
+				"_route.slice",
+				"_routeSlice")
+
+			.createAlias (
+				"_message.service",
+				"_service",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"affiliate",
-				"affiliate",
+				"_service.slice",
+				"_serviceSlice",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"batch",
-				"batch",
+				"_message.affiliate",
+				"_affiliate",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"text",
-				"text",
+				"_message.batch",
+				"_batch",
 				JoinType.LEFT_OUTER_JOIN)
 
 			.createAlias (
-				"user",
-				"user",
+				"_message.text",
+				"_text",
+				JoinType.LEFT_OUTER_JOIN)
+
+			.createAlias (
+				"_message.user",
+				"_user",
 				JoinType.LEFT_OUTER_JOIN);
 
 		if (search.messageId () != null) {
 
 			criteria.add (
 				Restrictions.eq (
-					"id",
+					"_message.id",
 					search.messageId ()));
 
 		}
@@ -238,7 +248,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.ilike (
-					"number.number",
+					"_number.number",
 					search.number ()));
 
 		}
@@ -247,8 +257,32 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"number.id",
+					"_number.id",
 					search.numberId ()));
+
+		}
+
+		if (
+			isNotNull (
+				search.serviceSliceId ())
+		) {
+
+			criteria.add (
+				Restrictions.eq (
+					"_serviceSlice.id",
+					search.serviceSliceId ()));
+
+		}
+
+		if (
+			isNotNull (
+				search.serviceParentTypeId ())
+		) {
+
+			criteria.add (
+				Restrictions.eq (
+					"_service.parentType.id",
+					search.serviceParentTypeId ()));
 
 		}
 
@@ -256,7 +290,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"service.id",
+					"_service.id",
 					search.serviceId ()));
 
 		}
@@ -268,7 +302,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.in (
-					"service.id",
+					"_service.id",
 					search.serviceIdIn ()));
 
 		}
@@ -277,7 +311,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"affiliate.id",
+					"_affiliate.id",
 					search.affiliateId ()));
 
 		}
@@ -295,7 +329,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"batch.id",
+					"_batch.id",
 					search.batchId ()));
 
 		}
@@ -304,8 +338,20 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.in (
-					"batch.id",
+					"_batch.id",
 					search.batchIdIn ()));
+
+		}
+
+		if (
+			isNotNull (
+				search.routeSliceId ())
+		) {
+
+			criteria.add (
+				Restrictions.eq (
+					"_routeSlice.id",
+					search.routeSliceId ()));
 
 		}
 
@@ -313,7 +359,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"route.id",
+					"_route.id",
 					search.routeId ()));
 
 		}
@@ -322,7 +368,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.in (
-					"route.id",
+					"_route.id",
 					search.routeIdIn ()));
 
 		}
@@ -331,7 +377,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"network.id",
+					"_network.id",
 					search.networkId ()));
 		}
 
@@ -339,7 +385,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"status",
+					"_message.status",
 					search.status ()));
 
 		}
@@ -351,37 +397,13 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.ge (
-					"createdTime",
+					"_message.createdTime",
 					search.createdTime ().start ()));
 
 			criteria.add (
 				Restrictions.lt (
-					"createdTime",
+					"_message.createdTime",
 					search.createdTime ().end ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.createdTimeAfter ())
-		) {
-
-			criteria.add (
-				Restrictions.ge (
-					"createdTime",
-					search.createdTimeAfter ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.createdTimeBefore ())
-		) {
-
-			criteria.add (
-				Restrictions.lt (
-					"createdTime",
-					search.createdTimeBefore ()));
 
 		}
 
@@ -392,7 +414,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"direction",
+					"_message.direction",
 					search.direction ()));
 
 		}
@@ -404,7 +426,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.in (
-					"status",
+					"_message.status",
 					search.statusIn ()));
 
 		}
@@ -417,7 +439,7 @@ class MessageDaoHibernate
 			criteria.add (
 				Restrictions.not (
 					Restrictions.in (
-						"status",
+						"_message.status",
 						search.statusNotIn ())));
 
 		}
@@ -429,7 +451,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.like (
-					"text.text",
+					"_text.text",
 					search.textLike ()));
 
 		}
@@ -441,7 +463,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.ilike (
-					"text.text",
+					"_text.text",
 					search.textILike ()));
 
 		}
@@ -453,7 +475,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.ilike (
-					"text.text",
+					"_text.text",
 					stringFormat (
 						"%%%s%%",
 						search.textContains ())));
@@ -467,7 +489,7 @@ class MessageDaoHibernate
 
 			criteria.add (
 				Restrictions.eq (
-					"user.id",
+					"_user.id",
 					search.userId ()));
 
 		}
@@ -491,14 +513,16 @@ class MessageDaoHibernate
 		case createdTime:
 
 			criteria.addOrder (
-				Order.asc ("createdTime"));
+				Order.asc (
+					"_message.createdTime"));
 
 			break;
 
 		case createdTimeDesc:
 
 			criteria.addOrder (
-				Order.desc ("createdTime"));
+				Order.desc (
+					"_message.createdTime"));
 
 			break;
 
@@ -521,7 +545,7 @@ class MessageDaoHibernate
 
 				filterCriteria.add (
 					Restrictions.in (
-						"service.id",
+						"_service.id",
 						search.filterServiceIds ()));
 
 			}
@@ -533,7 +557,7 @@ class MessageDaoHibernate
 
 				filterCriteria.add (
 					Restrictions.in (
-						"affiliate.id",
+						"_affiliate.id",
 						search.filterAffiliateIds ()));
 
 			}
@@ -545,7 +569,7 @@ class MessageDaoHibernate
 
 				filterCriteria.add (
 					Restrictions.in (
-						"route.id",
+						"_route.id",
 						search.filterRouteIds ()));
 
 			}

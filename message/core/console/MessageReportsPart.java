@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.framework.web.PageNotFoundException;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -41,11 +40,9 @@ class MessageReportsPart
 	void prepare () {
 
 		message =
-			messageHelper.findOrNull (
-				requestContext.stuffInt ("messageId"));
-
-		if (message == null)
-			throw new PageNotFoundException ();
+			messageHelper.findRequired (
+				requestContext.stuffInt (
+					"messageId"));
 
 		messageReports =
 			new TreeSet<MessageReportRec> (
