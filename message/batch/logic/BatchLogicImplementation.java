@@ -1,7 +1,5 @@
 package wbs.sms.message.batch.logic;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
-
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.SingletonComponent;
@@ -69,23 +67,14 @@ class BatchLogicImplementation
 		// or create new
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.findOrNull (
-				objectManager.getObjectTypeId (parent));
+			objectTypeHelper.findRequired (
+				objectManager.getObjectTypeId (
+					parent));
 
 		BatchTypeRec batchType =
-			batchTypeHelper.findByCodeOrNull (
+			batchTypeHelper.findByCodeRequired (
 				parentType,
 				typeCode);
-
-		if (batchType == null) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Batch type not found %s.%s",
-					parentType.getCode (),
-					typeCode));
-
-		}
 
 		return batchSubjectHelper.insert (
 			batchSubjectHelper.createInstance ()

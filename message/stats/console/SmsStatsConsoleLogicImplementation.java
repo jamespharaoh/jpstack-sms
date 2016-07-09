@@ -193,30 +193,38 @@ class SmsStatsConsoleLogicImplementation
 		case route:
 
 			return objectManager.objectPathMini (
-				routeHelper.findOrNull (id));
+				routeHelper.findRequired (
+					id));
 
 		case service:
 
 			return objectManager.objectPathMini (
-				serviceHelper.findOrNull (id));
+				serviceHelper.findRequired (
+					id));
 
 		case affiliate:
 
 			return objectManager.objectPathMini (
-				affiliateHelper.findOrNull (id));
+				affiliateHelper.findRequired (
+					id));
 
 		case network:
 
 			NetworkRec network =
-				networkHelper.findOrNull (id);
+				networkHelper.findRequired (
+					id);
 
 			return network.getDescription ();
 
 		case batch:
 
 			return batchHelper
-				.findOrNull (id)
+
+				.findRequired (
+					id)
+
 				.getId ()
+
 				.toString ();
 
 		}
