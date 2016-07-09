@@ -1,5 +1,6 @@
 package wbs.sms.customer.daemon;
 
+import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -93,8 +94,10 @@ class SmsCustomerSessionTimeoutDaemon
 
 		transaction.close ();
 
-		for (SmsCustomerManagerRec manager
-				: managers) {
+		for (
+			SmsCustomerManagerRec manager
+				: managers
+		) {
 
 			runOneManager (
 				manager.getId ());
@@ -117,11 +120,15 @@ class SmsCustomerSessionTimeoutDaemon
 				this);
 
 		SmsCustomerManagerRec manager =
-			smsCustomerManagerHelper.findOrNull (
+			smsCustomerManagerHelper.findRequired (
 				managerId);
 
-		if (manager.getSessionTimeout () == null)
+		if (
+			isNull (
+				manager.getSessionTimeout ())
+		) {
 			return;
+		}
 
 		Instant startTimeBefore =
 			readTransaction.now ()
@@ -145,8 +152,10 @@ class SmsCustomerSessionTimeoutDaemon
 				"Found %s sessions",
 				sessionsToTimeout.size ()));
 
-		for (SmsCustomerSessionRec session
-				: sessionsToTimeout) {
+		for (
+			SmsCustomerSessionRec session
+				: sessionsToTimeout
+		) {
 
 			@Cleanup
 			Transaction writeTransaction =
@@ -154,7 +163,7 @@ class SmsCustomerSessionTimeoutDaemon
 					this);
 
 			session =
-				smsCustomerSessionHelper.findOrNull (
+				smsCustomerSessionHelper.findRequired (
 					session.getId ());
 
 			smsCustomerLogic.sessionTimeoutAuto (

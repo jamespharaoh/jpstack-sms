@@ -8,6 +8,14 @@
 			name="smsCustomerManager.manage"
 			priv="manage"/>
 
+		<priv-key
+			name="smsCustomerManager.messages"
+			priv="messages"/>
+
+		<priv-key
+			name="smsCustomerManager.stats"
+			priv="stats"/>
+
 		<context-stuff
 			name="smsCustomerManagerName"
 			field="name"/>
@@ -32,20 +40,48 @@
 			<object-summary-page
 				fields="summary"/>
 
-			<object-settings-page
-				fields="settings"/>
+			<section
+				name="settings"
+				label="Settings">
+
+				<object-settings-page
+					short-name="general"
+					fields="settings"/>
+
+				<context-link
+					name="template"
+					link="smsCustomerTemplate"
+					label="Templates"
+					priv-key="smsCustomerManager.manage"/>
+
+			</section>
 
 			<context-link
-				name="template"
-				link="smsCustomerTemplate"
-				label="Templates"
-				priv-key="smsCustomerManager.manage"/>
+				name="affiliate"
+				link="smsCustomerAffiliate"
+				label="Affiliates"/>
 
-			<context-link
-				name="customer"
-				link="smsCustomer"
-				label="Customers"
-				priv-key="smsCustomerManager.manage"/>
+			<section
+				name="admin"
+				label="Admin">
+
+				<context-link
+					name="customer"
+					link="smsCustomer"
+					label="Customers"
+					priv-key="smsCustomerManager.manage"/>
+
+			</section>
+
+			<section
+				name="reports"
+				label="Reports">
+
+				<object-sms-messages-page/>
+
+				<object-sms-stats-page/>
+
+			</section>
 
 			<object-events-page/>
 

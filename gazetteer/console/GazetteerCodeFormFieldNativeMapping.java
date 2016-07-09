@@ -82,16 +82,9 @@ class GazetteerCodeFormFieldNativeMapping<Container>
 		}
 
 		GazetteerEntryRec entry =
-			gazetteerEntryHelper.findByCodeOrNull (
+			gazetteerEntryHelper.findByCodeRequired (
 				gazetteer,
 				nativeValue.get ());
-
-		if (
-			isNull (
-				entry)
-		) {
-			throw new RuntimeException ();
-		}
 
 		return Optional.of (
 			entry);

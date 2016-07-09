@@ -13,6 +13,7 @@
 
 	<models>
 		<model name="smsCustomer"/>
+		<model name="smsCustomerAffiliate"/>
 		<model name="smsCustomerManager"/>
 		<model name="smsCustomerSession"/>
 		<model name="smsCustomerTemplate"/>
@@ -33,6 +34,7 @@
 
 	<console-modules>
 		<console-module name="sms-customer"/>
+		<console-module name="sms-customer-affiliate"/>
 		<console-module name="sms-customer-manager"/>
 		<console-module name="sms-customer-session"/>
 		<console-module name="sms-customer-template"/>

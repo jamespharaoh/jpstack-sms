@@ -51,7 +51,7 @@ class RouteFixtureProvider
 			routeHelper.createInstance ()
 
 			.setSlice (
-				sliceHelper.findByCodeOrNull (
+				sliceHelper.findByCodeRequired (
 					GlobalId.root,
 					"test"))
 
@@ -71,11 +71,10 @@ class RouteFixtureProvider
 				true)
 
 			.setCommand (
-				commandHelper.findByCodeOrNull (
-					keywordSetHelper.findByCodeOrNull (
-						sliceHelper.findByCodeOrNull (
-							GlobalId.root,
-							"test"),
+				commandHelper.findByCodeRequired (
+					keywordSetHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
 						"inbound"),
 					"default"))
 
@@ -85,7 +84,7 @@ class RouteFixtureProvider
 			routeHelper.createInstance ()
 
 			.setSlice (
-				sliceHelper.findByCodeOrNull (
+				sliceHelper.findByCodeRequired (
 					GlobalId.root,
 					"test"))
 
@@ -110,7 +109,7 @@ class RouteFixtureProvider
 			routeHelper.createInstance ()
 
 			.setSlice (
-				sliceHelper.findByCodeOrNull (
+				sliceHelper.findByCodeRequired (
 					GlobalId.root,
 					"test"))
 

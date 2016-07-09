@@ -103,14 +103,14 @@ class GazetteerFormFieldInterfaceMapping<Container>
 
 		}
 
-		GazetteerEntryRec entry =
-			gazetteerEntryHelper.findByCodeOrNull (
+		Optional<GazetteerEntryRec> entryOptional =
+			gazetteerEntryHelper.findByCode (
 				gazetteer,
 				codeOptional.get ());
 
 		if (
-			isNull (
-				entry)
+			isNotPresent (
+				entryOptional)
 		) {
 
 			return errorResult (
@@ -118,6 +118,9 @@ class GazetteerFormFieldInterfaceMapping<Container>
 					"Location not found"));
 
 		}
+
+		GazetteerEntryRec entry =
+			entryOptional.get ();
 
 		return successResult (
 			Optional.of (

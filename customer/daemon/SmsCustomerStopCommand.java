@@ -1,6 +1,7 @@
 package wbs.sms.customer.daemon;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.optionalOrNull;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -15,11 +16,11 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
-import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
+import wbs.sms.customer.logic.SmsCustomerLogic;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerObjectHelper;
 import wbs.sms.customer.model.SmsCustomerRec;
@@ -63,6 +64,9 @@ class SmsCustomerStopCommand
 
 	@Inject
 	ServiceObjectHelper serviceHelper;
+
+	@Inject
+	SmsCustomerLogic smsCustomerLogic;
 
 	@Inject
 	SmsCustomerObjectHelper smsCustomerHelper;
@@ -124,14 +128,14 @@ class SmsCustomerStopCommand
 				inboundMessage.getNumber ());
 
 		ServiceRec stopService =
-			serviceHelper.findByCodeOrNull (
+			serviceHelper.findByCodeRequired (
 				customerManager,
 				"stop");
 
 		// send stop message
 
 		SmsCustomerTemplateRec stopTemplate =
-			smsCustomerTemplateHelper.findByCodeOrNull (
+			smsCustomerTemplateHelper.findByCodeRequired (
 				customerManager,
 				"stop");
 
@@ -163,6 +167,11 @@ class SmsCustomerStopCommand
 
 				.service (
 					stopService)
+
+				.affiliate (
+					optionalOrNull (
+						smsCustomerLogic.customerAffiliate (
+							customer)))
 
 				.send ();
 
@@ -212,8 +221,10 @@ class SmsCustomerStopCommand
 
 		return inboxLogic.inboxProcessed (
 			inbox,
-			Optional.of (stopService),
-			Optional.<AffiliateRec>absent (),
+			Optional.of (
+				stopService),
+			smsCustomerLogic.customerAffiliate (
+				customer),
 			command);
 
 	}

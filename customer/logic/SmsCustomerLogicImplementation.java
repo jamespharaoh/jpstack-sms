@@ -1,5 +1,10 @@
 package wbs.sms.customer.logic;
 
+import static wbs.framework.utils.etc.Misc.ifElse;
+import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isNotPresent;
+import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.optionalOrNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -16,6 +21,10 @@ import com.google.common.base.Optional;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.platform.affiliate.model.AffiliateObjectHelper;
+import wbs.platform.affiliate.model.AffiliateRec;
+import wbs.platform.event.logic.EventLogic;
+import wbs.sms.customer.model.SmsCustomerAffiliateRec;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerRec;
 import wbs.sms.customer.model.SmsCustomerSessionObjectHelper;
@@ -34,7 +43,13 @@ class SmsCustomerLogicImplementation
 	// dependencies
 
 	@Inject
+	AffiliateObjectHelper affiliateHelper;
+
+	@Inject
 	Database database;
+
+	@Inject
+	EventLogic eventLogic;
 
 	@Inject
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
@@ -110,25 +125,42 @@ class SmsCustomerLogicImplementation
 	}
 
 	void sendWelcomeMessage (
-			SmsCustomerSessionRec session,
-			Optional<Long> threadId) {
+			@NonNull SmsCustomerSessionRec session,
+			@NonNull Optional<Long> threadId) {
+
+		// only send once per session
+
+		if (
+			isNotNull (
+				session.getWelcomeMessage ())
+		) {
+			return;
+		}
+
+		// only send if welcome template is defined
 
 		SmsCustomerRec customer =
 			session.getCustomer ();
 
-		if (session.getWelcomeMessage () != null)
-			return;
-
 		SmsCustomerManagerRec manager =
 			customer.getSmsCustomerManager ();
 
-		SmsCustomerTemplateRec template =
-			smsCustomerTemplateHelper.findByCodeOrNull (
+		Optional<SmsCustomerTemplateRec> templateOptional =
+			smsCustomerTemplateHelper.findByCode (
 				manager,
 				"welcome");
 
-		if (template == null)
+		if (
+			isNotPresent (
+				templateOptional)
+		) {
 			return;
+		}
+
+		SmsCustomerTemplateRec template =
+			templateOptional.get ();
+
+		// send message
 
 		MessageRec message =
 			messageSenderProvider.get ()
@@ -152,6 +184,11 @@ class SmsCustomerLogicImplementation
 				manager,
 				"welcome")
 
+			.affiliate (
+				optionalOrNull (
+					customerAffiliate (
+						customer)))
+
 			.send ();
 
 		session
@@ -164,8 +201,8 @@ class SmsCustomerLogicImplementation
 	}
 
 	void sendWarningMessage (
-			SmsCustomerSessionRec session,
-			Optional<Long> threadId) {
+			@NonNull SmsCustomerSessionRec session,
+			@NonNull Optional<Long> threadId) {
 
 		SmsCustomerRec customer =
 			session.getCustomer ();
@@ -173,13 +210,20 @@ class SmsCustomerLogicImplementation
 		SmsCustomerManagerRec manager =
 			customer.getSmsCustomerManager ();
 
-		SmsCustomerTemplateRec template =
-			smsCustomerTemplateHelper.findByCodeOrNull (
+		Optional<SmsCustomerTemplateRec> templateOptional =
+			smsCustomerTemplateHelper.findByCode (
 				manager,
 				"warning");
 
-		if (template == null)
+		if (
+			isNotPresent (
+				templateOptional)
+		) {
 			return;
+		}
+
+		SmsCustomerTemplateRec template =
+			templateOptional.get ();
 
 		MessageRec message =
 			messageSenderProvider.get ()
@@ -202,6 +246,11 @@ class SmsCustomerLogicImplementation
 			.serviceLookup (
 				manager,
 				"warning")
+
+			.affiliate (
+				optionalOrNull (
+					customerAffiliate (
+						customer)))
 
 			.send ();
 
@@ -310,6 +359,49 @@ class SmsCustomerLogicImplementation
 				null)
 
 		;
+
+	}
+
+	@Override
+	public
+	Optional<AffiliateRec> customerAffiliate (
+			@NonNull SmsCustomerRec customer) {
+
+		return ifElse (
+			isNotNull (
+				customer.getSmsCustomerAffiliate ()),
+			() -> Optional.of (
+				affiliateHelper.findByCodeRequired (
+					customer.getSmsCustomerAffiliate (),
+					"default")),
+			() -> Optional.<AffiliateRec>absent ());
+
+	}
+
+	@Override
+	public
+	void customerAffiliateUpdate (
+			@NonNull SmsCustomerRec customer,
+			@NonNull SmsCustomerAffiliateRec affiliate,
+			@NonNull MessageRec message) {
+
+		if (
+			isNull (
+				customer.getSmsCustomerAffiliate ())
+		) {
+			return;
+		}
+
+		customer
+
+			.setSmsCustomerAffiliate (
+				affiliate);
+
+		eventLogic.createEvent (
+			"sms_customer_affiliate_update_message",
+			customer,
+			affiliate,
+			message);
 
 	}
 
