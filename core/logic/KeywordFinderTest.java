@@ -223,6 +223,25 @@ class KeywordFinderTest
 					"s",
 					"t o p")))
 
+		.put (
+			"Ts25 1bs",
+			ImmutableList.<List<String>>of (
+
+				ImmutableList.<String>of (
+					"Ts25 1bs",
+					"ts251bs",
+					""),
+
+				ImmutableList.<String>of (
+					"Ts25",
+					"ts25",
+					"1bs"),
+
+				ImmutableList.<String>of (
+					"Ts",
+					"ts",
+					"25 1bs")))
+
 		.build ();
 
 	List<String> prefixes =
