@@ -102,18 +102,9 @@ class DeliveryDaemon
 			) {
 
 				DeliveryTypeRec deliveryType =
-					deliveryTypeHelper.findByCodeOrNull (
+					deliveryTypeHelper.findByCodeRequired (
 						GlobalId.root,
 						deliveryTypeCode);
-
-				if (deliveryType == null) {
-
-					throw new RuntimeException (
-						stringFormat (
-							"No such delivery type: %s",
-							deliveryTypeCode));
-
-				}
 
 				handlersById.put (
 					deliveryType.getId (),

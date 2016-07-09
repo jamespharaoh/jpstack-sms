@@ -154,7 +154,7 @@ class LocatorManager {
 				this);
 
 		LocatorLogRec locatorLog =
-			locatorLogHelper.findOrNull (
+			locatorLogHelper.findRequired (
 				locatorLogId);
 
 		locatorLog
@@ -184,13 +184,20 @@ class LocatorManager {
 				this);
 
 		LocatorLogRec locatorLog =
-			locatorLogHelper.findOrNull (
+			locatorLogHelper.findRequired (
 				locatorLogId);
 
 		locatorLog
-			.setSuccess (false)
-			.setErrorText (textHelper.findOrCreate (error))
-			.setErrorCode (errorCode);
+
+			.setSuccess (
+				false)
+
+			.setErrorText (
+				textHelper.findOrCreate (
+					error))
+
+			.setErrorCode (
+				errorCode);
 
 		transaction.commit ();
 
@@ -214,19 +221,19 @@ class LocatorManager {
 				this);
 
 		LocatorRec locatorRec =
-			locatorHelper.findOrNull (
+			locatorHelper.findRequired (
 				locatorId);
 
 		NumberRec number =
-			numberHelper.findOrNull (
+			numberHelper.findRequired (
 				numberId);
 
 		ServiceRec service =
-			serviceHelper.findOrNull (
+			serviceHelper.findRequired (
 				serviceId);
 
 		AffiliateRec affiliate =
-			affiliateHelper.findOrNull (
+			affiliateHelper.findRequired (
 				affiliateId);
 
 		locatorTypeId =

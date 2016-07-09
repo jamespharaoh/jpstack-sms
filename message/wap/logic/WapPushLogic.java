@@ -1,6 +1,7 @@
 package wbs.sms.message.wap.logic;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Map;
@@ -109,19 +110,38 @@ class WapPushLogic
 		if (threadId != null && threadId < 0)
 			threadId = null;
 
-		if (service == null) {
+		if (
+			isNull (
+				service)
+		) {
 
 			service =
-				serviceHelper.findOrNull (0);
+				serviceHelper.findRequired (
+					0);
 
 		}
 
-		if (affiliate == null)
-			affiliate =
-				affiliateHelper.findOrNull (0);
+		if (
+			isNull (
+				affiliate)
+		) {
 
-		if (batch == null)
-			batch = batchHelper.findOrNull (0);
+			affiliate =
+				affiliateHelper.findRequired (
+					0);
+
+		}
+
+		if (
+			isNull (
+				batch)
+		) {
+
+			batch =
+				batchHelper.findRequired (
+					0);
+
+		}
 
 		// check this route can send wap push
 
@@ -278,10 +298,13 @@ class WapPushLogic
 			database.currentTransaction ();
 
 		WapPushMessageRec oldWapPushMessage =
-			wapPushMessageHelper.findOrNull (
+			wapPushMessageHelper.findRequired (
 				oldMessage.getId ());
 
-		if (textRec == null) {
+		if (
+			isNull (
+				textRec)
+		) {
 
 			textRec =
 				oldWapPushMessage.getTextText ();

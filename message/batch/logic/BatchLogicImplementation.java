@@ -1,6 +1,10 @@
 package wbs.sms.message.batch.logic;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
+
 import javax.inject.Inject;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
@@ -55,14 +59,17 @@ class BatchLogicImplementation
 
 		// lookup existing
 
-		BatchSubjectRec batchSubject =
-			objectManager.findChildByCode (
-				BatchSubjectRec.class,
+		Optional<BatchSubjectRec> batchSubjectOptional =
+			batchSubjectHelper.findByCode (
 				parent,
 				code);
 
-		if (batchSubject != null)
-			return batchSubject;
+		if (
+			isPresent (
+				batchSubjectOptional)
+		) {
+			return batchSubjectOptional.get ();
+		}
 
 		// or create new
 

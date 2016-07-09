@@ -241,7 +241,8 @@ class MessageSender {
 		if (batch == null) {
 
 			batch =
-				batchHelper.findOrNull (0);
+				batchHelper.findRequired (
+					0);
 
 		}
 

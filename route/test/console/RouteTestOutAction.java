@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -23,6 +22,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.framework.web.Responder;
+import wbs.platform.service.console.ServiceConsoleHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.MessageSender;
@@ -31,11 +31,12 @@ import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
-@Log4j
 @PrototypeComponent ("routeTestOutAction")
 public
 class RouteTestOutAction
 	extends ConsoleAction {
+
+	// dependencies
 
 	@Inject
 	ConsoleObjectManager objectManager;
@@ -53,13 +54,25 @@ class RouteTestOutAction
 	RouteConsoleHelper routeHelper;
 
 	@Inject
+	ServiceConsoleHelper serviceHelper;
+
+	// prototype dependencies
+
+	@Inject
 	Provider<MessageSender> messageSender;
+
+	// dependencies
 
 	@Override
 	public
 	Responder backupResponder () {
-		return responder ("routeTestOutResponder");
+
+		return responder (
+			"routeTestOutResponder");
+
 	}
+
+	// implementation
 
 	@Override
 	public
@@ -73,15 +86,18 @@ class RouteTestOutAction
 				this);
 
 		int routeId =
-			requestContext.stuffInt ("routeId");
+			requestContext.stuffInt (
+				"routeId");
 
 		RouteRec route =
-			routeHelper.findOrNull (routeId);
+			routeHelper.findRequired (
+				routeId);
 
 		// check params
 
 		Map<String,Object> params =
-			paramsChecker.apply (requestContext);
+			paramsChecker.apply (
+				requestContext);
 
 		if (params == null) {
 			throw new RuntimeException ();
@@ -94,22 +110,9 @@ class RouteTestOutAction
 				(String) params.get ("num_to"));
 
 		ServiceRec testService =
-			objectManager.findChildByCode (
-				ServiceRec.class,
+			serviceHelper.findByCodeRequired (
 				GlobalId.root,
 				"test");
-
-		if (testService == null) {
-
-			log.fatal (
-				"Service system/test not found");
-
-			requestContext.addError (
-				"System configuration error");
-
-			return null;
-
-		}
 
 		message =
 			messageSender.get ()
@@ -118,10 +121,12 @@ class RouteTestOutAction
 				number)
 
 			.messageString (
-				requestContext.parameterOrNull ("message"))
+				requestContext.parameterRequired (
+					"message"))
 
 			.numFrom (
-				requestContext.parameterOrNull ("num_from"))
+				requestContext.parameterRequired (
+					"num_from"))
 
 			.route (
 				route)

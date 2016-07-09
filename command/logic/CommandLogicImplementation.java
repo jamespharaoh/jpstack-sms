@@ -1,6 +1,10 @@
 package wbs.sms.command.logic;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
+
 import javax.inject.Inject;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
@@ -42,23 +46,27 @@ class CommandLogicImplementation
 
 		// lookup existing command...
 
-		CommandRec command =
-			objectManager.findChildByCode (
-				CommandRec.class,
+		Optional<CommandRec> existingCommandOptional =
+			commandHelper.findByCode (
 				parent,
 				code);
 
-		if (command != null)
-			return command;
+		if (
+			isPresent (
+				existingCommandOptional)
+		) {
+			return existingCommandOptional.get ();
+		}
 
 		// ...or create new command
 
 		ObjectTypeRec parentType =
-			objectTypeHelper.findOrNull (
-				objectManager.getObjectTypeId (parent));
+			objectTypeHelper.findRequired (
+				objectManager.getObjectTypeId (
+					parent));
 
 		CommandTypeRec commandType =
-			commandTypeHelper.findByCodeOrNull (
+			commandTypeHelper.findByCodeRequired (
 				parentType,
 				typeCode);
 

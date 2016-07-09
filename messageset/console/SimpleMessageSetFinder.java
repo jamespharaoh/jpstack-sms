@@ -1,7 +1,5 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
-
 import javax.inject.Inject;
 
 import lombok.Getter;
@@ -43,22 +41,9 @@ class SimpleMessageSetFinder
 			objectLookup.lookupObject (
 				requestContext.contextStuff ());
 
-		MessageSetRec messageSet =
-			messageSetHelper.findByCodeOrNull (
-				object,
-				code);
-
-		if (messageSet == null) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Can't find message set %s with parent %s",
-					code,
-					object));
-
-		}
-
-		return messageSet;
+		return messageSetHelper.findByCodeRequired (
+			object,
+			code);
 
 	}
 

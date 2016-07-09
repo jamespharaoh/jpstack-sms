@@ -31,7 +31,7 @@ class SmsCoreFixtureProvider
 			menuGroupHelper.createInstance ()
 
 			.setSlice (
-				sliceHelper.findByCodeOrNull (
+				sliceHelper.findByCodeRequired (
 					GlobalId.root,
 					"test"))
 

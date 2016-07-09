@@ -18,7 +18,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.service.model.ServiceRec;
+import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.MessageSender;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -48,6 +48,9 @@ final class RouteTesterDaemon
 
 	@Inject
 	RouteTesterObjectHelper routeTesterHelper;
+
+	@Inject
+	ServiceObjectHelper serviceHelper;
 
 	// prototype dependencies
 
@@ -190,9 +193,8 @@ final class RouteTesterDaemon
 				routeTester.getRoute ())
 
 			.service (
-				objectManager.findChildByCode (
-					ServiceRec.class,
-					new GlobalId (0, 0),
+				serviceHelper.findByCodeRequired (
+					GlobalId.root,
 					"test"))
 
 			.send ();

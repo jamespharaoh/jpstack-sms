@@ -130,7 +130,8 @@ class InboxLogicImplementation
 		// lookup basics
 
 		RootRec root =
-			rootHelper.findOrNull (0);
+			rootHelper.findRequired (
+				0);
 
 		// lookup the number
 
@@ -139,7 +140,8 @@ class InboxLogicImplementation
 
 		NetworkRec network =
 			optionalNetwork.or (
-				networkHelper.findOrNull (0));
+				networkHelper.findRequired (
+					0));
 
 		if (! route.getCanReceive ()) {
 
@@ -256,7 +258,8 @@ class InboxLogicImplementation
 				systemAffiliate)
 
 			.setBatch (
-				batchHelper.findOrNull (0))
+				batchHelper.findRequired (
+					0))
 
 			.setAdultVerified (
 				avStatus.orNull ())
