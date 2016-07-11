@@ -3,6 +3,8 @@ package wbs.sms.message.core.hibernate;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.lessThan;
+import static wbs.framework.utils.etc.Misc.moreThan;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.ArrayList;
@@ -395,15 +397,31 @@ class MessageDaoHibernate
 				search.createdTime ())
 		) {
 
-			criteria.add (
-				Restrictions.ge (
-					"_message.createdTime",
-					search.createdTime ().start ()));
+			if (
+				moreThan (
+					search.createdTime ().start ().getMillis (),
+					Long.MIN_VALUE)
+			) {
 
-			criteria.add (
-				Restrictions.lt (
-					"_message.createdTime",
-					search.createdTime ().end ()));
+				criteria.add (
+					Restrictions.ge (
+						"_message.createdTime",
+						search.createdTime ().start ()));
+
+			}
+
+			if (
+				lessThan (
+					search.createdTime ().end ().getMillis (),
+					Long.MAX_VALUE)
+			) {
+
+				criteria.add (
+					Restrictions.lt (
+						"_message.createdTime",
+						search.createdTime ().end ()));
+
+			}
 
 		}
 
