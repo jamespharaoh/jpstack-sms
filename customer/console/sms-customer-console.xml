@@ -86,6 +86,11 @@
 			name="numSessions"
 			label="Sessions"/>
 
+		<object-field
+			name="smsCustomerAffiliate"
+			label="Affiliate"
+			object-type="smsCustomerAffiliate"/>
+
 	</field-set>
 
 	<field-set
@@ -121,6 +126,11 @@
 			name="notesText"
 			label="Notes"/>
 
+		<object-field
+			name="smsCustomerAffiliate"
+			label="Affiliate"
+			object-type="smsCustomerAffiliate"/>
+
 	</field-set>
 
 	<field-set
@@ -134,6 +144,12 @@
 		<text-area-field
 			name="notesText"
 			label="Notes"
+			nullable="yes"/>
+
+		<object-field
+			name="smsCustomerAffiliate"
+			label="Affiliate"
+			object-type="smsCustomerAffiliate"
 			nullable="yes"/>
 
 	</field-set>

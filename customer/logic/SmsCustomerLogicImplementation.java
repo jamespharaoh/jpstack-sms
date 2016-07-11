@@ -3,7 +3,6 @@ package wbs.sms.customer.logic;
 import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNotPresent;
-import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.optionalOrNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -386,7 +385,7 @@ class SmsCustomerLogicImplementation
 			@NonNull MessageRec message) {
 
 		if (
-			isNull (
+			isNotNull (
 				customer.getSmsCustomerAffiliate ())
 		) {
 			return;
