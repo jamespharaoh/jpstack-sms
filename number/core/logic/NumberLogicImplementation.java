@@ -1,6 +1,7 @@
 package wbs.sms.number.core.logic;
 
 import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.optionalOrElse;
 
 import javax.inject.Inject;
 
@@ -78,26 +79,25 @@ class NumberLogicImplementation
 
 		// TODO should not be here
 
-		ChatUserNumberReportRec chatUserNumberReportRec =
-			chatUserNumberReportHelper.findOrNull (
-				number.getId ());
+		ChatUserNumberReportRec numberReport =
+			optionalOrElse (
 
-		if (chatUserNumberReportRec == null) {
+			chatUserNumberReportHelper.find (
+				number.getId ()),
 
-			chatUserNumberReportRec =
-				chatUserNumberReportHelper.insert (
-					chatUserNumberReportHelper.createInstance ()
+			() -> chatUserNumberReportHelper.insert (
+				chatUserNumberReportHelper.createInstance ()
 
 				.setNumber (
 					number)
 
-			);
+			)
 
-		}
+		);
 
 		if (status.isGoodType ()) {
 
-			chatUserNumberReportRec
+			numberReport
 
 				.setLastSuccess (
 					transaction.now ());
@@ -109,10 +109,10 @@ class NumberLogicImplementation
 
 			if (
 				isNull (
-					chatUserNumberReportRec.getFirstFailure ())
+					numberReport.getFirstFailure ())
 			) {
 
-				chatUserNumberReportRec
+				numberReport
 
 					.setFirstFailure (
 						transaction.now ());
