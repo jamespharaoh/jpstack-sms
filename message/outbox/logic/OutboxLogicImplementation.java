@@ -1,6 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
 import static wbs.framework.utils.etc.Misc.earliest;
+import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
@@ -232,13 +233,16 @@ class OutboxLogicImplementation
 
 		// check message state
 
-		if (message.getStatus ()
-				== MessageStatus.pending) {
+		if (
+			equal (
+				message.getStatus (),
+				MessageStatus.pending)
+		) {
 
 			// lookup outbox
 
 			OutboxRec outbox =
-				outboxHelper.findOrNull (
+				outboxHelper.findRequired (
 					message.getId ());
 
 			// check message is not being sent
@@ -262,7 +266,9 @@ class OutboxLogicImplementation
 				outbox);
 
 		} else if (
-			message.getStatus () == MessageStatus.held
+			equal (
+				message.getStatus (),
+				MessageStatus.held)
 		) {
 
 			// cancel message
@@ -362,15 +368,22 @@ class OutboxLogicImplementation
 		log.debug ("outbox success id = " + messageId);
 
 		OutboxRec outbox =
-			outboxHelper.findOrNull (
+			outboxHelper.findRequired (
 				messageId);
 
 		MessageRec message =
 			outbox.getMessage ();
 
 		if (
-			message.getStatus () != MessageStatus.pending
-			&& message.getStatus () != MessageStatus.cancelled
+
+			notEqual (
+				message.getStatus (),
+				MessageStatus.pending)
+
+			&& notEqual (
+				message.getStatus (),
+				MessageStatus.cancelled)
+
 		) {
 
 			throw new RuntimeException (
@@ -521,7 +534,7 @@ class OutboxLogicImplementation
 			"outbox failure id = " + messageId);
 
 		OutboxRec outbox =
-			outboxHelper.findOrNull (
+			outboxHelper.findRequired (
 				messageId);
 
 		MessageRec message =

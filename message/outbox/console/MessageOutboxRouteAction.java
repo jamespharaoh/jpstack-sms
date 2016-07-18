@@ -1,6 +1,7 @@
 package wbs.sms.message.outbox.console;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 
 import java.util.Collection;
@@ -73,13 +74,13 @@ class MessageOutboxRouteAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageOutboxRouteAction.goReal ()",
 				this);
 
 		OutboxRec outbox =
-			outboxHelper.findOrNull (
-				Integer.parseInt (
-					requestContext.parameterOrNull (
-						"messageId")));
+			outboxHelper.findRequired (
+				requestContext.parameterInteger (
+					"messageId"));
 
 		if (outbox == null) {
 
@@ -146,8 +147,8 @@ class MessageOutboxRouteAction
 		}
 
 		if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"cancel"))
 		) {
 
@@ -167,8 +168,8 @@ class MessageOutboxRouteAction
 				"Message cancelled");
 
 		} else if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"retry"))
 		) {
 

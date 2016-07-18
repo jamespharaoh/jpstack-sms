@@ -1,8 +1,9 @@
 package wbs.sms.messageset.console;
 
 import static wbs.framework.utils.etc.Misc.isEmpty;
-import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -107,6 +108,7 @@ class MessageSetAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageSetAction.goReal ()",
 				this);
 
 		// lookup the message set
@@ -117,20 +119,19 @@ class MessageSetAction
 
 		// iterate over the input and check them
 
-		int numMessages =
-			Integer.parseInt (
-				requestContext.parameterOrNull (
-					"num_messages"));
+		long numMessages =
+			requestContext.parameterInteger (
+				"num_messages");
 
 		for (
-			int index = 0;
+			long index = 0;
 			index < numMessages;
 			index ++
 		) {
 
 			if (
-				isNull (
-					requestContext.parameterOrNull (
+				isNotPresent (
+					requestContext.parameter (
 						"enabled_" + index))
 			) {
 				continue;
@@ -139,7 +140,7 @@ class MessageSetAction
 			if (
 				! Pattern.matches (
 					"\\d+",
-					requestContext.parameterOrNull (
+					requestContext.parameterRequired (
 						"route_" + index))
 			) {
 
@@ -154,7 +155,7 @@ class MessageSetAction
 
 			if (
 				isEmpty (
-					requestContext.parameterOrNull (
+					requestContext.parameterRequired (
 						"number_" + index))
 			) {
 
@@ -166,12 +167,8 @@ class MessageSetAction
 			}
 
 			String message =
-				requestContext.parameterOrNull (
+				requestContext.parameterRequired (
 					"message_" + index);
-
-			if (message == null) {
-				throw new NullPointerException ();
-			}
 
 			if (! Gsm.isGsm (message)) {
 
@@ -204,8 +201,8 @@ class MessageSetAction
 			log.debug (index);
 
 			boolean enabled =
-				isNotNull (
-					requestContext.parameterOrNull (
+				isPresent (
+					requestContext.parameter (
 						"enabled_" + index));
 
 			MessageSetMessageRec messageSetMessage =
@@ -245,17 +242,16 @@ class MessageSetAction
 				// set up some handy variables
 
 				RouteRec newRoute =
-					routeHelper.findOrNull (
-						Integer.parseInt (
-							requestContext.parameterOrNull (
-								"route_" + index)));
+					routeHelper.findRequired (
+						requestContext.parameterInteger (
+							"route_" + index));
 
 				String newNumber =
-					requestContext.parameterOrNull (
+					requestContext.parameterRequired (
 						"number_" + index);
 
 				String newMessage =
-					requestContext.parameterOrNull (
+					requestContext.parameterRequired (
 						"message_" + index);
 
 				if (

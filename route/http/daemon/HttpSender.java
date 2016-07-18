@@ -100,21 +100,19 @@ class HttpSender
 
 		WapPushMessageRec wapPushMessage = null;
 
-		if (equal (
+		if (
+			equal (
 				outbox.getMessage ().getMessageType ().getCode (),
-				"wap_push")) {
+				"wap_push")
+		) {
 
 			wapPushMessage =
-				wapPushMessageHelper.findOrNull (
-					outbox.getId ());
-
-			if (wapPushMessage == null) {
-
-				throw tempFailure (
-					"Wap push message not found for message "
-						+ outbox.getId ());
-
-			}
+				wapPushMessageHelper.findOrThrow (
+					outbox.getId (),
+					() -> tempFailure (
+						stringFormat (
+							"Wap push message not found for message %s",
+							outbox.getId ())));
 
 			wapPushMessage
 				.getUrlText ()
@@ -203,7 +201,8 @@ class HttpSender
 		// then look for a non-specific route
 
 		NetworkRec defaultNetwork =
-			networkHelper.findOrNull (0);
+			networkHelper.findRequired (
+				0);
 
 		httpRoute =
 			httpRouteHelper.find (

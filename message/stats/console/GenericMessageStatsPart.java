@@ -1,5 +1,8 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.framework.utils.etc.Misc.isNotPresent;
+import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.optionalOrNull;
 import static wbs.framework.utils.etc.Misc.toEnum;
 
 import java.util.Collections;
@@ -14,6 +17,8 @@ import javax.inject.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import com.google.common.base.Optional;
 
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
@@ -105,34 +110,52 @@ class GenericMessageStatsPart
 		splitCriteria =
 			toEnum (
 				SmsStatsCriteria.class,
-				requestContext.parameterOrNull ("split"));
+				requestContext.parameterOrEmptyString (
+					"split"));
 
-		if (splitCriteria != null)
+		if (splitCriteria != null) {
+
 			urlParams.add (
 				"split",
 				splitCriteria.toString ());
 
+		}
+
 		// check stats params
 
-		for (SmsStatsCriteria crit
-				: SmsStatsCriteria.values ()) {
+		for (
+			SmsStatsCriteria crit
+				: SmsStatsCriteria.values ()
+		) {
+
+			Optional<String> paramOptional =
+				requestContext.parameter (
+					crit.toString ());
+
+			if (
+				isNotPresent (
+					paramOptional)
+			) {
+				continue;
+			}
 
 			String param =
-				requestContext.parameterOrNull (crit.toString ());
-
-			if (param == null)
-				continue;
+				paramOptional.get ();
 
 			int critId =
-				Integer.parseInt (param);
+				Integer.parseInt (
+					param);
 
 			criteriaMap.put (
 				crit,
-				Collections.singleton (critId));
+				Collections.singleton (
+					critId));
 
 			criteriaInfo.put (
 				crit.toString (),
-				statsConsoleLogic.lookupGroupName (crit, critId));
+				statsConsoleLogic.lookupGroupName (
+					crit,
+					critId));
 
 			urlParams.set (
 				crit.toString (),
@@ -145,7 +168,8 @@ class GenericMessageStatsPart
 		viewMode =
 			toEnum (
 				SmsStatsViewMode.class,
-				requestContext.parameterOrNull ("view"));
+				requestContext.parameterOrEmptyString (
+					"view"));
 
 		if (viewMode == null)
 			viewMode = SmsStatsViewMode.daily;
@@ -158,7 +182,8 @@ class GenericMessageStatsPart
 
 		dateField =
 			ObsoleteDateField.parse (
-				requestContext.parameterOrNull ("date"));
+				requestContext.parameterOrNull (
+					"date"));
 
 		urlParams.set (
 			"date",
@@ -239,7 +264,10 @@ class GenericMessageStatsPart
 
 		// check inputs
 
-		if (dateField.date == null) {
+		if (
+			isNull (
+				dateField.date)
+		) {
 
 			requestContext.addError (
 				"Invalid date format");
@@ -579,8 +607,10 @@ class GenericMessageStatsPart
 			UrlParams urlParams =
 				new UrlParams ();
 
-			for (Map.Entry<SmsStatsCriteria,Set<Integer>> entry
-					: criteriaMap.entrySet ()) {
+			for (
+				Map.Entry<SmsStatsCriteria,Set<Integer>> entry
+					: criteriaMap.entrySet ()
+			) {
 
 				SmsStatsCriteria crit =
 					entry.getKey ();
@@ -596,11 +626,15 @@ class GenericMessageStatsPart
 
 			urlParams.add (
 				"view",
-				requestContext.parameterOrNull ("view"));
+				optionalOrNull (
+					requestContext.parameter (
+						"view")));
 
 			urlParams.add (
 				"date",
-				requestContext.parameterOrNull ("date"));
+				optionalOrNull (
+					requestContext.parameter (
+						"date")));
 
 			return urlParams.toUrl (
 				url);
@@ -636,8 +670,10 @@ class GenericMessageStatsPart
 				"split",
 				myCriteria.toString ());
 
-			for (Map.Entry<SmsStatsCriteria,Set<Integer>> entry
-					: criteriaMap.entrySet ()) {
+			for (
+				Map.Entry<SmsStatsCriteria,Set<Integer>> entry
+					: criteriaMap.entrySet ()
+			) {
 
 				SmsStatsCriteria crit =
 					entry.getKey ();
@@ -656,11 +692,15 @@ class GenericMessageStatsPart
 
 			urlParams.add (
 				"view",
-				requestContext.parameterOrNull ("view"));
+				optionalOrNull (
+					requestContext.parameter (
+						"view")));
 
 			urlParams.add (
 				"date",
-				requestContext.parameterOrNull ("date"));
+				optionalOrNull (
+					requestContext.parameter (
+						"date")));
 
 			return urlParams.toUrl (url);
 

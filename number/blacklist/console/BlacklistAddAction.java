@@ -75,6 +75,7 @@ class BlacklistAddAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"BlacklistAddAction.goReal ()",
 				this);
 
 		// TODO this is messy

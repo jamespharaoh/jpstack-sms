@@ -67,7 +67,7 @@ class MessageTickerUpdateResponder
 
 		long generation =
 			Long.parseLong (
-				requestContext.parameterOrNull (
+				requestContext.parameterRequired (
 					"gen"));
 
 		for (
@@ -254,11 +254,13 @@ class MessageTickerUpdateResponder
 
 		boolean comma = false;
 
-		for (Integer mediaId
-				: messageTickerMessage.mediaIds ()) {
+		for (
+			Integer mediaId
+				: messageTickerMessage.mediaIds ()
+		) {
 
 			MediaRec media =
-				mediaHelper.findOrNull (
+				mediaHelper.findRequired (
 					mediaId);
 
 			if (comma) {

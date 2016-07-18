@@ -65,51 +65,46 @@ class RouteTestTwoWayAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"RouteTestTwoWayAction.goReal ()",
 				this);
 
 		int routeId =
-			requestContext.stuffInt ("routeId");
+			requestContext.stuffInt (
+				"routeId");
 
 		RouteRec route =
-			routeHelper.findOrNull (routeId);
+			routeHelper.findRequired (
+				routeId);
 
 		String messageString =
-			requestContext.parameterOrNull ("message");
+			requestContext.parameterRequired (
+				"message");
 
 		String numFrom =
-			requestContext.parameterOrNull ("num_from");
+			requestContext.parameterRequired (
+				"num_from");
 
 		String numTo =
-			requestContext.parameterOrNull ("num_to");
+			requestContext.parameterRequired (
+				"num_to");
 
-		if (
-			messageString != null
-			&& messageString.length () > 0
-			&& numFrom != null
-			&& numFrom.length () > 0
-			&& numTo != null
-			&& numTo.length() > 0
-		) {
+		MessageRec messageRecord =
+			inboxLogic.inboxInsert (
+				Optional.<String>absent (),
+				textHelper.findOrCreate (messageString),
+				numFrom,
+				numTo,
+				route,
+				Optional.<NetworkRec>absent (),
+				Optional.<Instant>absent (),
+				Collections.<MediaRec>emptyList (),
+				Optional.<String>absent (),
+				Optional.<String>absent ());
 
-			MessageRec messageRecord =
-				inboxLogic.inboxInsert (
-					Optional.<String>absent (),
-					textHelper.findOrCreate (messageString),
-					numFrom,
-					numTo,
-					route,
-					Optional.<NetworkRec>absent (),
-					Optional.<Instant>absent (),
-					Collections.<MediaRec>emptyList (),
-					Optional.<String>absent (),
-					Optional.<String>absent ());
-
-			requestContext.addNotice (
-				stringFormat (
-					"Message %s inserted",
-					messageRecord.getId ()));
-
-		}
+		requestContext.addNotice (
+			stringFormat (
+				"Message %s inserted",
+				messageRecord.getId ()));
 
 		transaction.commit ();
 

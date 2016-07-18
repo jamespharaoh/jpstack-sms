@@ -46,8 +46,9 @@ class NumberListNumberCopyPart
 		// this number list
 
 		thisNumberList =
-			numberListHelper.findOrNull (
-				requestContext.stuffInt ("numberListId"));
+			numberListHelper.findRequired (
+				requestContext.stuffInt (
+					"numberListId"));
 
 		// browseable number lists
 
@@ -118,7 +119,8 @@ class NumberListNumberCopyPart
 			" rows=\"8\"",
 			" cols=\"60\"",
 			">%h</textarea></p>\n",
-			requestContext.parameterOrNull ("numbers"));
+			requestContext.parameterOrEmptyString (
+				"numbers"));
 
 		printFormat (
 			"<p>\n");

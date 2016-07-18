@@ -1,6 +1,8 @@
 package wbs.sms.message.stats.console;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.Misc.notEqual;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -133,11 +135,20 @@ class SmsStatsSourceImplementation
 			fixedCriteriaMap.get (
 				SmsStatsCriteria.route);
 
-		if (routeIds == null
-				|| routeIds.size () != 1)
-			return null;
+		if (
 
-		return routeHelper.findOrNull (
+			isNull (
+				routeIds)
+
+			|| notEqual (
+				routeIds.size (),
+				1)
+
+		) {
+			return null;
+		}
+
+		return routeHelper.findRequired (
 			routeIds.iterator ().next ());
 
 	}

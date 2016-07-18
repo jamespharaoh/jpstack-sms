@@ -3,6 +3,10 @@ package wbs.sms.message.inbox.hibernate;
 import java.util.Date;
 import java.util.List;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.inbox.model.InboxMultipartBufferDao;
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
@@ -16,69 +20,71 @@ class InboxMultipartBufferDaoHibernate
 	@Override
 	public
 	List<InboxMultipartBufferRec> findByOtherId (
-			RouteRec route,
-			String otherId) {
+			@NonNull RouteRec route,
+			@NonNull String otherId) {
 
 		return findMany (
+			"findByOtherId (route, otherId)",
 			InboxMultipartBufferRec.class,
 
-			createQuery (
-				"FROM InboxMultipartBufferRec inboxMultipartBuffer " +
-				"WHERE inboxMultipartBuffer.route = :route " +
-					"AND inboxMultipartBuffer.msgOtherId = :otherId")
+			createCriteria (
+				InboxMultipartBufferRec.class,
+				"_inboxMultipartBuffer")
 
-			.setEntity (
-				"route",
-				route)
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.route",
+					route))
 
-			.setString (
-				"otherId",
-				otherId)
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.msgOtherId",
+					otherId))
 
-			.list ());
+		);
 
 	}
 
 	@Override
 	public
 	List<InboxMultipartBufferRec> findRecent (
-			InboxMultipartBufferRec inboxMultipartBuffer,
-			Date timestamp) {
+			@NonNull InboxMultipartBufferRec inboxMultipartBuffer,
+			@NonNull Date timestamp) {
 
 		return findMany (
+			"findRecent (inboxMultipartBuffer, timestamp)",
 			InboxMultipartBufferRec.class,
 
-			createQuery (
-				"FROM InboxMultipartBufferRec inboxMultipartBuffer " +
-				"WHERE inboxMultipartBuffer.route = :route " +
-					"AND inboxMultipartBuffer.msgFrom = :msgFrom " +
-					"AND inboxMultipartBuffer.multipartId = :multipartId " +
-					"AND inboxMultipartBuffer.multipartSegMax = :multipartSegMax " +
-					"AND inboxMultipartBuffer.timestamp >= :timestamp")
+			createCriteria (
+				InboxMultipartBufferRec.class,
+				"_inboxMultipartBuffer")
 
-			.setEntity (
-				"route",
-				inboxMultipartBuffer.getRoute ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.route",
+					inboxMultipartBuffer.getRoute ()))
 
-			.setString (
-				"msgFrom",
-				inboxMultipartBuffer.getMsgFrom ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.msgFrom",
+					inboxMultipartBuffer.getMsgFrom ()))
 
-			.setInteger (
-				"multipartId",
-				(int) (long)
-				inboxMultipartBuffer.getMultipartId ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.multipartId",
+					inboxMultipartBuffer.getMultipartId ()))
 
-			.setInteger (
-				"multipartSegMax",
-				(int) (long)
-				inboxMultipartBuffer.getMultipartSegMax ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartBuffer.multipartSegMax",
+					inboxMultipartBuffer.getMultipartSegMax ()))
 
-			.setTimestamp (
-				"timestamp",
-				timestamp)
+			.add (
+				Restrictions.ge (
+					"_inboxMultipartBuffer.timestamp",
+					timestamp))
 
-			.list ());
+		);
 
 	}
 

@@ -113,6 +113,7 @@ class AbstractSmsSender2
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"AbstractSmsSender2.createThreads ()",
 				this);
 
 		// get a list of routes
@@ -249,10 +250,11 @@ class AbstractSmsSender2
 				@Cleanup
 				Transaction transaction =
 					database.beginReadWrite (
+						"AbstractSmsSender2.Worker.processOneMessage ()",
 						this);
 
 				RouteRec route =
-					routeHelper.findOrNull (
+					routeHelper.findRequired (
 						routeId);
 
 				// get the next message
@@ -527,6 +529,7 @@ class AbstractSmsSender2
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"AbstractSmsSender2.Worker.reliableOutboxSuccess (...)",
 							this);
 
 					outboxLogic.messageSuccess (
@@ -535,7 +538,7 @@ class AbstractSmsSender2
 							new String [] {}));
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
-						smsOutboxAttemptHelper.findOrNull (
+						smsOutboxAttemptHelper.findRequired (
 							smsOutboxAttemptId);
 
 					smsOutboxAttempt
@@ -620,6 +623,7 @@ class AbstractSmsSender2
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"AbstractSmsSender2.Worker.reliableOutboxFailure (...)",
 							this);
 
 					outboxLogic.messageFailure (
@@ -628,7 +632,7 @@ class AbstractSmsSender2
 						failureType);
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
-						smsOutboxAttemptHelper.findOrNull (
+						smsOutboxAttemptHelper.findRequired (
 							smsOutboxAttemptId);
 
 					smsOutboxAttempt

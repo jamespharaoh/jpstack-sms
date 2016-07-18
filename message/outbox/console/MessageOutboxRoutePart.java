@@ -47,9 +47,9 @@ class MessageOutboxRoutePart
 	void prepare () {
 
 		route =
-			routeHelper.findOrNull (
-				Integer.parseInt (
-					requestContext.parameterOrNull ("routeId")));
+			routeHelper.findRequired (
+				requestContext.parameterInteger (
+					"routeId"));
 
 		outboxes =
 			new TreeSet<OutboxRec> (

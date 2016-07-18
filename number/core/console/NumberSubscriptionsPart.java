@@ -51,7 +51,7 @@ class NumberSubscriptionsPart
 	void prepare () {
 
 		NumberRec number =
-			numberHelper.findOrNull (
+			numberHelper.findRequired (
 				requestContext.stuffInt (
 					"numberId"));
 

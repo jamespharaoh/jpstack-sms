@@ -1,5 +1,7 @@
 package wbs.sms.route.tester.daemon;
 
+import static wbs.framework.utils.etc.Misc.isNotPresent;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,11 +104,14 @@ class RouteTesterCommand
 		int routeTestId =
 			Integer.parseInt (matcher.group (1));
 
-		RouteTestRec routeTest =
-			routeTestHelper.findOrNull (
+		Optional<RouteTestRec> routeTestOptional =
+			routeTestHelper.find (
 				routeTestId);
 
-		if (routeTest == null) {
+		if (
+			isNotPresent (
+				routeTestOptional)
+		) {
 
 			return inboxLogic.inboxNotProcessed (
 				inbox,
@@ -116,6 +121,9 @@ class RouteTesterCommand
 				"Response to unknown route test id");
 
 		}
+
+		RouteTestRec routeTest =
+			routeTestOptional.get ();
 
 		message.setThreadId (
 			routeTest.getSentMessage ().getThreadId ());

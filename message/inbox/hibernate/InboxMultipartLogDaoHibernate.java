@@ -3,6 +3,10 @@ package wbs.sms.message.inbox.hibernate;
 import java.util.Date;
 import java.util.List;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
 import wbs.sms.message.inbox.model.InboxMultipartLogDao;
@@ -16,43 +20,43 @@ class InboxMultipartLogDaoHibernate
 	@Override
 	public
 	List<InboxMultipartLogRec> findRecent (
-			InboxMultipartBufferRec inboxMultipartBuffer,
-			Date timestamp) {
+			@NonNull InboxMultipartBufferRec inboxMultipartBuffer,
+			@NonNull Date timestamp) {
 
 		return findMany (
+			"findRecent (inboxMultipartBuffer, timestamp)",
 			InboxMultipartLogRec.class,
 
-			createQuery (
-				"FROM InboxMultipartLogRec inboxMultipartLog " +
-				"WHERE inboxMultipartLog.route = :route " +
-					"AND inboxMultipartLog.msgFrom = :msgFrom " +
-					"AND inboxMultipartLog.multipartId = :multipartId " +
-					"AND inboxMultipartLog.multipartSegMax = :multipartSegMax " +
-					"AND inboxMultipartLog.timestamp > :timestamp")
+			createCriteria (
+				InboxMultipartLogRec.class,
+				"_inboxMultipartLog")
 
-			.setEntity (
-				"route",
-				inboxMultipartBuffer.getRoute ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartLog.route",
+					inboxMultipartBuffer.getRoute ()))
 
-			.setString (
-				"msgFrom",
-				inboxMultipartBuffer.getMsgFrom ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartLog.msgFrom",
+					inboxMultipartBuffer.getMsgFrom ()))
 
-			.setInteger (
-				"multipartId",
-				(int) (long)
-				inboxMultipartBuffer.getMultipartId ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartLog.multipartId",
+					inboxMultipartBuffer.getMultipartId ()))
 
-			.setInteger (
-				"multipartSegMax",
-				(int) (long)
-				inboxMultipartBuffer.getMultipartSegMax ())
+			.add (
+				Restrictions.eq (
+					"_inboxMultipartLog.multipartSegMax",
+					inboxMultipartBuffer.getMultipartSegMax ()))
 
-			.setTimestamp (
-				"timestamp",
-				timestamp)
+			.add (
+				Restrictions.ge (
+					"_inboxMultipartLog.timestamp",
+					timestamp))
 
-			.list ());
+		);
 
 	}
 

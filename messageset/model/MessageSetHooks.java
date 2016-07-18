@@ -2,14 +2,16 @@ package wbs.sms.messageset.model;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -36,8 +38,8 @@ class MessageSetHooks
 
 	// state
 
-	Set<Integer> parentObjectTypeIds =
-		new HashSet<Integer> ();
+	Map<Long,List<Long>> messageSetTypeIdsByParentTypeId =
+		new HashMap<> ();
 
 	// lifecycle
 
@@ -48,24 +50,20 @@ class MessageSetHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"privHooks.init ()",
 				this);
 
-		List<ObjectTypeRec> objectTypes =
-			objectTypeDao.findAll ();
+		messageSetTypeIdsByParentTypeId =
+			messageSetTypeDao.findAll ().stream ()
 
-		for (ObjectTypeRec objectType : objectTypes) {
-
-			List<MessageSetTypeRec> messageSetTypes =
-				messageSetTypeDao.findByParentObjectType (
-					objectType);
-
-			if (messageSetTypes.isEmpty ())
-				continue;
-
-			parentObjectTypeIds.add (
-				objectType.getId ());
-
-		}
+			.collect (
+				Collectors.groupingBy (
+					messageSetType -> (long)
+						messageSetType.getParentType ().getId (),
+					Collectors.mapping (
+						messageSetType -> (long)
+							messageSetType.getId (),
+						Collectors.toList ())));
 
 	}
 
@@ -74,14 +72,14 @@ class MessageSetHooks
 	@Override
 	public
 	void createSingletons (
-			ObjectHelper<MessageSetRec> messageSetHelper,
-			ObjectHelper<?> parentHelper,
-			Record<?> parent) {
+			@NonNull ObjectHelper<MessageSetRec> messageSetHelper,
+			@NonNull ObjectHelper<?> parentHelper,
+			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				parentObjectTypeIds,
-				parentHelper.objectTypeId ())
+				messageSetTypeIdsByParentTypeId.keySet (),
+				(long) parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -90,14 +88,15 @@ class MessageSetHooks
 			objectTypeDao.findById (
 				parentHelper.objectTypeId ());
 
-		List<MessageSetTypeRec> messageSetTypes =
-			messageSetTypeDao.findByParentObjectType (
-				parentType);
-
 		for (
-			MessageSetTypeRec messageSetType
-				: messageSetTypes
+			Long messageSetTypeId
+				: messageSetTypeIdsByParentTypeId.get (
+					(long) parentHelper.objectTypeId ())
 		) {
+
+			MessageSetTypeRec messageSetType =
+				messageSetTypeDao.findRequired (
+					messageSetTypeId);
 
 			messageSetHelper.insert (
 				messageSetHelper.createInstance ()

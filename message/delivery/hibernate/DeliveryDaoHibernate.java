@@ -2,6 +2,8 @@ package wbs.sms.message.delivery.hibernate;
 
 import java.util.List;
 
+import org.hibernate.criterion.Order;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.delivery.model.DeliveryDao;
@@ -19,16 +21,21 @@ class DeliveryDaoHibernate
 			int maxResults) {
 
 		return findMany (
+			"findAllLimit (maxResults)",
 			DeliveryRec.class,
 
-			createQuery (
-				"FROM DeliveryRec delivery " +
-				"ORDER BY id")
+			createCriteria (
+				DeliveryRec.class,
+				"_delivery")
 
 			.setMaxResults (
 				maxResults)
 
-			.list ());
+			.addOrder (
+				Order.asc (
+					"id"))
+
+		);
 
 	}
 

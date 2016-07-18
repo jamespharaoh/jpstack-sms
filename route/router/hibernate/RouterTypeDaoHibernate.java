@@ -6,7 +6,6 @@ import lombok.NonNull;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
-import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.route.router.model.RouterTypeDao;
 import wbs.sms.route.router.model.RouterTypeRec;
 
@@ -18,21 +17,27 @@ class RouterTypeDaoHibernate
 
 	@Override
 	public
-	List<RouterTypeRec> findByParentType (
-			@NonNull ObjectTypeRec parentType) {
+	List<RouterTypeRec> findAll () {
 
 		return findMany (
+			"findAll ()",
 			RouterTypeRec.class,
 
-			createQuery (
-				"FROM RouterTypeRec routerType " +
-				"WHERE routerType.parentType = :parentType")
+			createCriteria (
+				RouterTypeRec.class)
 
-			.setEntity (
-				"parentType",
-				parentType)
+		);
 
-			.list ());
+	}
+
+	@Override
+	public
+	RouterTypeRec findRequired (
+			@NonNull Long routerTypeId) {
+
+		return get (
+			RouterTypeRec.class,
+			(int) (long) routerTypeId);
 
 	}
 

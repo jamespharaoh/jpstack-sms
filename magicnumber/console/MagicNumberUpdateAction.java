@@ -76,10 +76,11 @@ class MagicNumberUpdateAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MagicNumberUpdateAction.goReal ()",
 				this);
 
 		MagicNumberSetRec magicNumberSet =
-			magicNumberSetHelper.findOrNull (
+			magicNumberSetHelper.findRequired (
 				requestContext.stuffInt (
 					"magicNumberSetId"));
 

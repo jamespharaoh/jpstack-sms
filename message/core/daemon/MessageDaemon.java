@@ -130,6 +130,7 @@ class MessageDaemon
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageDaemon.expiresMessages ()",
 				this);
 
 		Collection<MessageExpiryRec> messageExpiries =

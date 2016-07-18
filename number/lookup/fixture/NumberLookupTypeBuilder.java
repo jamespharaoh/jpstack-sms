@@ -109,6 +109,7 @@ class NumberLookupTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"NumberLookupTypeBuilder.createNumberLookupType ()",
 				this);
 
 		// lookup parent type

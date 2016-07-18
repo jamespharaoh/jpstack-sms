@@ -55,7 +55,6 @@ CREATE TABLE message_tag (
 
 CREATE OR REPLACE FUNCTION message_after_insert ()
 RETURNS trigger AS $$
-
 BEGIN
 
 	INSERT INTO message_stats_queue (
@@ -79,15 +78,30 @@ BEGIN
 		NEW.status,
 		1);
 
+	INSERT INTO message_ids VALUES (NEW.id, -1);
+
+	IF NEW.other_id IS NOT NULL THEN
+
+		INSERT INTO message_other_ids (
+			id,
+			route_id,
+			direction,
+			other_id)
+		VALUES (
+			NEW.id,
+			NEW.route_id,
+			NEW.direction,
+			NEW.other_id);
+
+	END IF;
+
 	RETURN NULL;
 
 END;
-
 $$ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION message_after_update ()
 RETURNS trigger AS $$
-
 BEGIN
 
 	IF OLD.service_id != NEW.service_id
@@ -144,7 +158,8 @@ BEGIN
 
 	END IF;
 
-	IF OLD.status != NEW.status
+	IF
+		OLD.status != NEW.status
 		AND NEW.delivery_type_id IS NOT NULL
 	THEN
 
@@ -154,17 +169,54 @@ BEGIN
 			old_message_status,
 			new_message_status)
 		VALUES (
-			nextval ('delivery_id_seq'),
+			nextval ('delivery_notice_queue_id_seq'),
 			NEW.id,
 			OLD.status,
 			NEW.status);
 
 	END IF;
 
+	IF
+		OLD.other_id IS NULL
+		AND NEW.other_id IS NOT NULL
+	THEN
+
+		INSERT INTO message_other_ids (
+			id,
+			route_id,
+			direction,
+			other_id)
+		VALUES (
+			NEW.id,
+			NEW.route_id,
+			NEW.direction,
+			NEW.other_id);
+
+	ELSIF
+		OLD.other_id IS NOT NULL
+		AND NEW.other_id IS NULL
+	THEN
+
+		DELETE FROM message_other_ids
+		WHERE id = OLD.id;
+
+	ELSIF
+		OLD.route_id != NEW.route_id
+		OR OLD.direction != NEW.direction
+		OR OLD.other_id != NEW.other_id
+	THEN
+
+		UPDATE message_other_ids
+		SET route_id = NEW.route_id,
+			direction = NEW.direction,
+			other_id = NEW.other_id
+		WHERE id = OLD.id;
+
+	END IF;
+
 	RETURN NULL;
 
 END;
-
 $$ LANGUAGE 'plpgsql';
 
 CREATE TRIGGER message_after_insert

@@ -1,5 +1,9 @@
 package wbs.sms.tracker.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerNumberDao;
@@ -14,26 +18,28 @@ class SmsSimpleTrackerNumberDaoHibernate
 	@Override
 	public
 	SmsSimpleTrackerNumberRec find (
-			SmsSimpleTrackerRec smsSimpleTracker,
-			NumberRec number) {
+			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
+			@NonNull NumberRec number) {
 
 		return findOne (
+			"find (smsSimpleTracker, number)",
 			SmsSimpleTrackerNumberRec.class,
 
-			createQuery (
-				"FROM SmsSimpleTrackerNumberRec smsSimpleTrackerNumber " +
-				"WHERE smsSimpleTrackerNumber.smsSimpleTracker = :smsSimpleTracker " +
-					"AND smsSimpleTrackerNumber.number = :number")
+			createCriteria (
+				SmsSimpleTrackerNumberRec.class,
+				"_smsSimpleTrackerNumber")
 
-			.setEntity (
-				"smsSimpleTracker",
-				smsSimpleTracker)
+			.add (
+				Restrictions.eq (
+					"_smsSimpleTrackerNumber.smsSimpleTracker",
+					smsSimpleTracker))
 
-			.setEntity (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_smsSimpleTracker.number",
+					number))
 
-			.list ());
+		);
 
 	}
 

@@ -93,6 +93,7 @@ class DeliveryTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"DeliveryTypeBuilder.createDeliveryType ()",
 				this);
 
 		// create delivery type

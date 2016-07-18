@@ -2,10 +2,13 @@ package wbs.sms.message.core.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
-import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.message.core.model.MessageExpiryDao;
 import wbs.sms.message.core.model.MessageExpiryRec;
 
@@ -17,26 +20,30 @@ class MessageExpiryDaoHibernate
 	@Override
 	public
 	List<MessageExpiryRec> findPendingLimit (
-			Instant now,
+			@NonNull Instant now,
 			int maxResults) {
 
 		return findMany (
+			"findPendingLimit (now, maxResults)",
 			MessageExpiryRec.class,
 
-			createQuery (
-				"FROM MessageExpiryRec messageExpiry " +
-				"WHERE messageExpiry.expiryTime < :now " +
-				"ORDER BY messageExpiry.expiryTime")
+			createCriteria (
+				MessageExpiryRec.class,
+				"_messageExpiry")
 
-			.setParameter (
-				"now",
-				now,
-				TimestampWithTimezoneUserType.INSTANCE)
+			.add (
+				Restrictions.le (
+					"_messageExpiry.expiryTime",
+					now))
+
+			.addOrder (
+				Order.asc (
+					"_messageExpiry.expiryTime"))
 
 			.setMaxResults (
 				maxResults)
 
-			.list ());
+		);
 
 	}
 

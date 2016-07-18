@@ -1,8 +1,14 @@
 package wbs.sms.number.list.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
+import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListNumberDao;
 import wbs.sms.number.list.model.NumberListNumberRec;
+import wbs.sms.number.list.model.NumberListRec;
 
 public
 class NumberListNumberDaoHibernate
@@ -11,27 +17,29 @@ class NumberListNumberDaoHibernate
 
 	@Override
 	public
-	NumberListNumberRec findByNumberListAndNumber (
-			int numberListId,
-			int numberId) {
+	NumberListNumberRec find (
+			@NonNull NumberListRec numberList,
+			@NonNull NumberRec number) {
 
 		return findOne (
+			"find (numberList, number)",
 			NumberListNumberRec.class,
 
-			createQuery (
-				"FROM NumberListNumberRec numberListNumber " +
-				"WHERE numberListNumber.numberList.id = :numberListId " +
-					"AND numberListNumber.number.id = :numberId")
+			createCriteria (
+				NumberListNumberRec.class,
+				"_numberListNumber")
 
-			.setInteger (
-				"numberListId",
-				numberListId)
+			.add (
+				Restrictions.eq (
+					"_numberListNumber.numberList",
+					numberList))
 
-			.setInteger (
-				"numberId",
-				numberId)
+			.add (
+				Restrictions.eq (
+					"_numberListNumber.number",
+					number))
 
-			.list ());
+		);
 
 	}
 

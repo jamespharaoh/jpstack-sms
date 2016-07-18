@@ -1,8 +1,13 @@
 package wbs.sms.message.wap.console;
 
+import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
+
+import lombok.NonNull;
+
+import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.message.core.console.MessageConsolePlugin;
@@ -33,15 +38,21 @@ class WapPushConsolePlugin
 	@Override
 	public
 	String messageSummaryText (
-			MessageRec message) {
+			@NonNull MessageRec message) {
 
-		WapPushMessageRec wapPushMessage =
-			wapPushMessageHelper.findOrNull (
+		Optional<WapPushMessageRec> wapPushMessageOptional =
+			wapPushMessageHelper.find (
 				message.getId ());
 
-		if (wapPushMessage == null) {
+		if (
+			isNotPresent (
+				wapPushMessageOptional)
+		) {
 			return "";
 		}
+
+		WapPushMessageRec wapPushMessage =
+			wapPushMessageOptional.get ();
 
 		return stringFormat (
 			"%s (%s)",
@@ -53,10 +64,10 @@ class WapPushConsolePlugin
 	@Override
 	public
 	String messageSummaryHtml (
-			MessageRec message) {
+			@NonNull MessageRec message) {
 
 		WapPushMessageRec wapPushMessage =
-			wapPushMessageHelper.findOrNull (
+			wapPushMessageHelper.findRequired (
 				message.getId ());
 
 		return stringFormat (

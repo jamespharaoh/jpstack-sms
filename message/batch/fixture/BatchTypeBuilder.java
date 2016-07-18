@@ -108,6 +108,7 @@ class BatchTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"BatchTypeBuilder.createBatchType ()",
 				this);
 
 		// lookup subject

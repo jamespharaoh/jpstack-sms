@@ -128,14 +128,15 @@ class ReceivedManager
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
+					"ReceivedManager.ReceivedThread.doMessage (messageId)",
 					this);
 
 			InboxRec inbox =
-				inboxHelper.findOrNull (
+				inboxHelper.findRequired (
 					messageId);
 
 			MessageRec message =
-				messageHelper.findOrNull (
+				messageHelper.findRequired (
 					messageId);
 
 			dumpMessageInfo (
@@ -185,10 +186,11 @@ class ReceivedManager
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
+					"ReceivedManager.ReceivedThread.doError (messageId, exception)",
 					this);
 
 			InboxRec inbox =
-				inboxHelper.findOrNull (
+				inboxHelper.findRequired (
 					messageId);
 
 			MessageRec message =
@@ -271,6 +273,7 @@ class ReceivedManager
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"ReceivedManager.doQuery ()",
 				this);
 
 		List<InboxRec> inboxes =

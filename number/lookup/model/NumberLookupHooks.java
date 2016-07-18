@@ -2,14 +2,16 @@ package wbs.sms.number.lookup.model;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -36,8 +38,8 @@ class NumberLookupHooks
 
 	// state
 
-	Set<Integer> parentObjectTypeIds =
-		new HashSet<Integer> ();
+	Map<Long,List<Long>> numberLookupTypeIdsByParentTypeId =
+		new HashMap<> ();
 
 	// lifecycle
 
@@ -48,27 +50,26 @@ class NumberLookupHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"numberLookupHooks.init ()",
 				this);
 
-		List<ObjectTypeRec> objectTypes =
-			objectTypeDao.findAll ();
+		// preload object types
 
-		for (
-			ObjectTypeRec objectType
-				: objectTypes
-		) {
+		objectTypeDao.findAll ();
 
-			List<NumberLookupTypeRec> numberLookupTypes =
-				numberLookupTypeDao.findByParentObjectType (
-					objectType);
+		// load number lookup types and construct index
 
-			if (numberLookupTypes.isEmpty ())
-				continue;
+		numberLookupTypeIdsByParentTypeId =
+			numberLookupTypeDao.findAll ().stream ()
 
-			parentObjectTypeIds.add (
-				objectType.getId ());
-
-		}
+			.collect (
+				Collectors.groupingBy (
+					numberLookupType -> (long)
+						numberLookupType.getParentType ().getId (),
+					Collectors.mapping (
+						numberLookupType -> (long)
+							numberLookupType.getId (),
+						Collectors.toList ())));
 
 	}
 
@@ -77,14 +78,14 @@ class NumberLookupHooks
 	@Override
 	public
 	void createSingletons (
-			ObjectHelper<NumberLookupRec> numberLookupHelper,
-			ObjectHelper<?> parentHelper,
-			Record<?> parent) {
+			@NonNull ObjectHelper<NumberLookupRec> numberLookupHelper,
+			@NonNull ObjectHelper<?> parentHelper,
+			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				parentObjectTypeIds,
-				parentHelper.objectTypeId ())
+				numberLookupTypeIdsByParentTypeId.keySet (),
+				(long) parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -93,14 +94,15 @@ class NumberLookupHooks
 			objectTypeDao.findById (
 				parentHelper.objectTypeId ());
 
-		List<NumberLookupTypeRec> numberLookupTypes =
-			numberLookupTypeDao.findByParentObjectType (
-				parentType);
-
 		for (
-			NumberLookupTypeRec numberLookupType
-				: numberLookupTypes
+			Long numberLookupTypeId
+				: numberLookupTypeIdsByParentTypeId.get (
+					(long) parentHelper.objectTypeId ())
 		) {
+
+			NumberLookupTypeRec numberLookupType =
+				numberLookupTypeDao.findRequired (
+					numberLookupTypeId);
 
 			numberLookupHelper.insert (
 				numberLookupHelper.createInstance ()

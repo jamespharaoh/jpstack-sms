@@ -1,5 +1,9 @@
 package wbs.sms.route.http.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteRec;
@@ -14,26 +18,28 @@ class HttpRouteDaoHibernate
 	@Override
 	public
 	HttpRouteRec find (
-			RouteRec route,
-			NetworkRec network) {
+			@NonNull RouteRec route,
+			@NonNull NetworkRec network) {
 
 		return findOne (
+			"find (route, network)",
 			HttpRouteRec.class,
 
-			createQuery (
-				"FROM HttpRouteRec httpRoute " +
-				"WHERE httpRoute.route = :route " +
-					"AND httpRoute.network = :network")
+			createCriteria (
+				HttpRouteRec.class,
+				"_httpRoute")
 
-			.setEntity (
-				"route",
-				route)
+			.add (
+				Restrictions.eq (
+					"_httpRoute.route",
+					route))
 
-			.setEntity (
-				"network",
-				network)
+			.add (
+				Restrictions.eq (
+					"_httpRoute.network",
+					network))
 
-			.list ());
+		);
 
 	}
 

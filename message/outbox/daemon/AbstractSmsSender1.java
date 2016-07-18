@@ -103,6 +103,7 @@ class AbstractSmsSender1<MessageContainer>
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"AbstractSmsSender1.createThreads ()",
 				this);
 
 		// get a list of routes
@@ -218,10 +219,11 @@ class AbstractSmsSender1<MessageContainer>
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"AbstractSmsSender1.Worker.processMessages ()",
 							this);
 
 					RouteRec route =
-						routeHelper.findOrNull (
+						routeHelper.findRequired (
 							routeId);
 
 					// get the next message
@@ -389,6 +391,7 @@ class AbstractSmsSender1<MessageContainer>
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"AbstractSmsSender1.Worker.reliableOutboxSuccess (...)",
 							this);
 
 					outboxLogic.messageSuccess (
@@ -456,6 +459,7 @@ class AbstractSmsSender1<MessageContainer>
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"AbstractSmsSender1.Worker.reliableOutboxFailure (...)",
 							this);
 
 					outboxLogic.messageFailure (

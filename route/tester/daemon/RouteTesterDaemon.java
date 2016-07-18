@@ -89,6 +89,7 @@ final class RouteTesterDaemon
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"RouteTesterDaemon.doIt ()",
 				this);
 
 		// retrieve all route testers

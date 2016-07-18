@@ -37,18 +37,22 @@ class MessageMediaSummaryPart
 	void prepare () {
 
 		MessageRec message =
-			messageHelper.findOrNull (
-				requestContext.stuffInt ("messageId"));
+			messageHelper.findRequired (
+				requestContext.stuffInt (
+					"messageId"));
 
 		mediaIndex =
 			Integer.parseInt (
-				requestContext.parameterOrNull ("index"));
+				requestContext.parameterRequired (
+					"index"));
 
 		media =
-			message.getMedias ().get (mediaIndex);
+			message.getMedias ().get (
+				mediaIndex);
 
 		image =
-			mediaLogic.getImage (media);
+			mediaLogic.getImage (
+				media);
 
 	}
 

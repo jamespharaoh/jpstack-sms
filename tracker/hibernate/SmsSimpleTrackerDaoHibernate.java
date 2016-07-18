@@ -2,6 +2,8 @@ package wbs.sms.tracker.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.core.hibernate.MessageDirectionType;
 import wbs.sms.message.core.model.MessageDirection;
@@ -18,8 +20,8 @@ class SmsSimpleTrackerDaoHibernate
 	@Override
 	public
 	List<MessageRec> findMessages (
-			SmsSimpleTrackerRec smsSimpleTracker,
-			NumberRec number) {
+			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
+			@NonNull NumberRec number) {
 
 		return findMany (
 			MessageRec.class,

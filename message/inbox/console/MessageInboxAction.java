@@ -50,6 +50,7 @@ class MessageInboxAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageInboxAction.goReal ()",
 				this);
 
 		List<String> notices =
@@ -72,11 +73,8 @@ class MessageInboxAction
 					matcher.group (1));
 
 			InboxRec inbox =
-				inboxHelper.findOrNull (
+				inboxHelper.findRequired (
 					messageId);
-
-			if (inbox == null)
-				throw new RuntimeException ();
 
 			MessageRec message =
 				inbox.getMessage ();

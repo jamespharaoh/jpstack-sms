@@ -93,6 +93,7 @@ class SenderBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"SenderBuilder.createSender ()",
 				this);
 
 		// create sender

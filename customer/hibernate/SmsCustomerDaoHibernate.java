@@ -2,6 +2,8 @@ package wbs.sms.customer.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -24,7 +26,7 @@ class SmsCustomerDaoHibernate
 	@Override
 	public
 	List<Integer> searchIds (
-			SmsCustomerSearch search) {
+			@NonNull SmsCustomerSearch smsCustomerSearch) {
 
 		Criteria customerCriteria =
 			createCriteria (
@@ -38,21 +40,21 @@ class SmsCustomerDaoHibernate
 			customerCriteria.createCriteria (
 				"number");
 
-		if (search.getSmsCustomerManagerId () != null) {
+		if (smsCustomerSearch.getSmsCustomerManagerId () != null) {
 
 			managerCriteria.add (
 				Restrictions.eq (
 					"id",
-					search.getSmsCustomerManagerId ()));
+					smsCustomerSearch.getSmsCustomerManagerId ()));
 
 		}
 
-		if (search.getNumberLike () != null) {
+		if (smsCustomerSearch.getNumberLike () != null) {
 
 			numberCriteria.add (
 				Restrictions.ilike (
 					"number",
-					search.getNumberLike ()));
+					smsCustomerSearch.getNumberLike ()));
 
 		}
 
@@ -66,16 +68,17 @@ class SmsCustomerDaoHibernate
 			Projections.id ());
 
 		return findMany (
+			"searchIds (smsCustomerSearch)",
 			Integer.class,
-			customerCriteria.list ());
+			customerCriteria);
 
 	}
 
 	@Override
 	public
 	SmsCustomerRec find (
-			SmsCustomerManagerRec manager,
-			NumberRec number) {
+			@NonNull SmsCustomerManagerRec manager,
+			@NonNull NumberRec number) {
 
 		Criteria customerCriteria =
 			createCriteria (
@@ -92,8 +95,9 @@ class SmsCustomerDaoHibernate
 				number));
 
 		return findOne (
+			"find (manager, number)",
 			SmsCustomerRec.class,
-			customerCriteria.list ());
+			customerCriteria);
 
 	}
 

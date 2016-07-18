@@ -81,6 +81,7 @@ class BlacklistSearchAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"BlacklistSearchAction.goReal ()",
 				this);
 
 		NumberFormatRec ukNumberFormat =

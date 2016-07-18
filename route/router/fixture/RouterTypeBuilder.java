@@ -109,6 +109,7 @@ class RouterTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"RouterTypeBuilder.createRouterType ()",
 				this);
 
 		// lookup parent type

@@ -125,7 +125,7 @@ class KeywordCommand
 		}
 
 		keywordSet =
-			keywordSetHelper.findOrNull (
+			keywordSetHelper.findRequired (
 				command.getParentId ());
 
 		message =

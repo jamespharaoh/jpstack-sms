@@ -156,6 +156,7 @@ class ObjectSmsMessagesPageBuilder<
 				@Cleanup
 				Transaction transaction =
 					database.beginReadOnly (
+						"ObjectSmsMessagesPartFactory.get ()",
 						this);
 
 				Record<?> object =

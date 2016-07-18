@@ -1,9 +1,12 @@
 package wbs.sms.modempoll.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
-import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.modempoll.model.ModemPollQueueDao;
 import wbs.sms.modempoll.model.ModemPollQueueRec;
 
@@ -15,22 +18,29 @@ class ModemPollQueueDaoHibernate
 	@Override
 	public
 	ModemPollQueueRec findNext (
-			Instant now) {
+			@NonNull Instant now) {
 
 		return findOne (
+			"findNext (now)",
 			ModemPollQueueRec.class,
 
-			createQuery (
-				"FROM ModemPollQueue mpq " +
-				"WHERE mpq.retryTime < :now " +
-				"ORDER BY mpq.retryTime")
+			createCriteria (
+				ModemPollQueueRec.class,
+				"_modemPollQueue")
 
-			.setParameter (
-				"now",
-				now,
-				TimestampWithTimezoneUserType.INSTANCE)
+			.add (
+				Restrictions.le (
+					"_modemPollQueue.retryTime",
+					now))
 
-			.list ());
+			.addOrder (
+				Order.asc (
+					"_modemPollQueue.retryTime"))
+
+			.setMaxResults (
+				1)
+
+		);
 
 	}
 

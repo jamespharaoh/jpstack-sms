@@ -1,5 +1,9 @@
 package wbs.sms.magicnumber.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.magicnumber.model.MagicNumberDao;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -14,28 +18,30 @@ class MagicNumberDaoHibernate
 	@Override
 	public
 	MagicNumberRec findByNumber (
-			String number) {
+			@NonNull String number) {
 
 		return findOne (
+			"findByNumber (number)",
 			MagicNumberRec.class,
 
-			createQuery (
-				"FROM MagicNumberRec magicNumber " +
-				"WHERE magicNumber.number = :number")
+			createCriteria (
+				MagicNumberRec.class,
+				"_magicNumber")
 
-			.setString (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_magicNumber.number",
+					number))
 
-			.list ());
+		);
 
 	}
 
 	@Override
 	public
 	MagicNumberRec findExistingUnused (
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number) {
+			@NonNull MagicNumberSetRec magicNumberSet,
+			@NonNull NumberRec number) {
 
 		return findOne (
 			MagicNumberRec.class,

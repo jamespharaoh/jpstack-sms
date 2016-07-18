@@ -43,7 +43,7 @@ class MessageNotProcessedSummaryPart
 	void prepare () {
 
 		message =
-			messageHelper.findOrNull (
+			messageHelper.findRequired (
 				requestContext.stuffInt (
 					"messageId"));
 
@@ -157,6 +157,7 @@ class MessageNotProcessedSummaryPart
 
 			"</tr>\n");
 
+		/*
 		printFormat (
 			"<tr>\n",
 			"<th>Notes</th>\n",
@@ -166,6 +167,7 @@ class MessageNotProcessedSummaryPart
 				message.getNotes ()),
 
 			"</tr>");
+		*/
 
 		printFormat (
 			"</table>");

@@ -225,8 +225,9 @@ class MessageStatsDaoHibernate
 		}
 
 		return findMany (
+			"search (search)",
 			MessageStatsRec.class,
-			criteria.list ());
+			criteria);
 
 	}
 

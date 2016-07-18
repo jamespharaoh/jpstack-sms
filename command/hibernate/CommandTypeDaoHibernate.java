@@ -2,8 +2,9 @@ package wbs.sms.command.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import wbs.framework.hibernate.HibernateDao;
-import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.command.model.CommandTypeDao;
 import wbs.sms.command.model.CommandTypeRec;
 
@@ -14,21 +15,27 @@ class CommandTypeDaoHibernate
 
 	@Override
 	public
-	List<CommandTypeRec> findByParentObjectType (
-			ObjectTypeRec parentType) {
+	List<CommandTypeRec> findAll () {
 
 		return findMany (
+			"findAll ()",
 			CommandTypeRec.class,
 
-			createQuery (
-				"FROM CommandTypeRec ct " +
-				"WHERE ct.parentType = :parentType")
+			createCriteria (
+				CommandTypeRec.class)
 
-			.setEntity (
-				"parentType",
-				parentType)
+		);
 
-			.list ());
+	}
+
+	@Override
+	public
+	CommandTypeRec findRequired (
+			@NonNull Long commandTypeId) {
+
+		return get (
+			CommandTypeRec.class,
+			(int) (long) commandTypeId);
 
 	}
 

@@ -36,7 +36,7 @@ class NumberListNumberUpdatePart
 	void prepare () {
 
 		numberList =
-			numberListHelper.findOrNull (
+			numberListHelper.findRequired (
 				requestContext.stuffInt (
 					"numberListId"));
 
@@ -83,7 +83,7 @@ class NumberListNumberUpdatePart
 			" cols=\"60\"",
 			">%h</textarea></p>\n",
 			emptyStringIfNull (
-				requestContext.parameterOrNull (
+				requestContext.parameterOrEmptyString (
 					"numbers")));
 
 		printFormat (

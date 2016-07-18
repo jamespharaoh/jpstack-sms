@@ -417,6 +417,7 @@ class ModemPollDaemon
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
+					"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
 					this);
 
 			modemPollQueueHelper.insert (
@@ -471,6 +472,7 @@ class ModemPollDaemon
 					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
+							"ModemPollDaemon.ProcessThread.processAll ()",
 							this);
 
 					ModemPollQueueRec modemPollQueue =
@@ -538,6 +540,7 @@ class ModemPollDaemon
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
+					"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
 					this);
 
 			log.info (
@@ -547,7 +550,8 @@ class ModemPollDaemon
 					pdu.getMessage ()));
 
 			RouteRec route =
-				routeHelper.findOrNull (routeId);
+				routeHelper.findRequired (
+					routeId);
 
 			inboxLogic.inboxInsert (
 				Optional.<String>absent (),

@@ -97,6 +97,7 @@ class MessageSetTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageSetTypeBuilder.createMessageSetType ()",
 				this);
 
 		// lookup parent type

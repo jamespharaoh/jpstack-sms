@@ -84,6 +84,7 @@ class DeliveryDaemon
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"DeliveryDaemon.init ()",
 				this);
 
 		for (
@@ -192,6 +193,7 @@ class DeliveryDaemon
 			@Cleanup
 			Transaction transaction =
 				database.beginReadOnly (
+					"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
 					this);
 
 			List<DeliveryRec> deliveries =

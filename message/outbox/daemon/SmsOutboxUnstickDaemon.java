@@ -80,6 +80,7 @@ class SmsOutboxUnstickDaemon
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
+					"SmsOutboxUnstickDaemon.runOnce ()",
 					this);
 
 			Instant sendingBefore =

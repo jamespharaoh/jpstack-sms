@@ -1,10 +1,11 @@
 package wbs.sms.message.report.logic;
 
+import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.optionalEquals;
-import static wbs.framework.utils.etc.Misc.optionalIn;
-import static wbs.framework.utils.etc.Misc.optionalNotIn;
+import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -13,8 +14,6 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import org.joda.time.ReadableInstant;
-
-import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
@@ -64,7 +63,7 @@ class ReportLogicImplementation
 	public
 	void deliveryReport (
 			@NonNull MessageRec message,
-			@NonNull Optional<MessageStatus> newMessageStatus,
+			@NonNull MessageStatus newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -77,7 +76,7 @@ class ReportLogicImplementation
 		// check arguments
 
 		if (
-			optionalNotIn (
+			notIn (
 				newMessageStatus,
 				MessageStatus.sent,
 				MessageStatus.submitted,
@@ -116,8 +115,7 @@ class ReportLogicImplementation
 				transaction.now ())
 
 			.setNewMessageStatus (
-				newMessageStatus.or (
-					message.getStatus ()))
+				newMessageStatus)
 
 			.setMessageReportCode (
 				messageReportCode)
@@ -128,7 +126,7 @@ class ReportLogicImplementation
 
 		if (
 
-			optionalEquals (
+			equal (
 				newMessageStatus,
 				MessageStatus.delivered)
 
@@ -146,14 +144,17 @@ class ReportLogicImplementation
 
 		// depending on the new and old status, update it
 
-		if (newMessageStatus != null) {
+		if (
+			isNotNull (
+				newMessageStatus != null)
+		) {
 
 			switch (message.getStatus ()) {
 
 			case sent:
 
 				if (
-					optionalIn (
+					in (
 						newMessageStatus,
 						MessageStatus.sent,
 						MessageStatus.submitted,
@@ -163,7 +164,7 @@ class ReportLogicImplementation
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus.get ());
+						newMessageStatus);
 
 				}
 
@@ -172,7 +173,7 @@ class ReportLogicImplementation
 			case submitted:
 
 				if (
-					optionalIn (
+					in (
 						newMessageStatus,
 						MessageStatus.submitted,
 						MessageStatus.delivered,
@@ -181,7 +182,7 @@ class ReportLogicImplementation
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus.get ());
+						newMessageStatus);
 
 				}
 
@@ -190,7 +191,7 @@ class ReportLogicImplementation
 			case reportTimedOut:
 
 				if (
-					optionalIn (
+					in (
 						newMessageStatus,
 						MessageStatus.delivered,
 						MessageStatus.undelivered)
@@ -198,7 +199,7 @@ class ReportLogicImplementation
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus.get ());
+						newMessageStatus);
 
 				}
 
@@ -207,14 +208,14 @@ class ReportLogicImplementation
 			case undelivered:
 
 				if (
-					optionalIn (
+					in (
 						newMessageStatus,
 						MessageStatus.delivered)
 				) {
 
 					messageLogic.messageStatus (
 						message,
-						newMessageStatus.get ());
+						newMessageStatus);
 
 				}
 
@@ -259,7 +260,7 @@ class ReportLogicImplementation
 	MessageRec deliveryReport (
 			@NonNull RouteRec route,
 			@NonNull String otherId,
-			@NonNull Optional<MessageStatus> newMessageStatus,
+			@NonNull MessageStatus newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -302,7 +303,7 @@ class ReportLogicImplementation
 	public
 	void deliveryReport (
 			int messageId,
-			Optional<MessageStatus> newMessageStatus,
+			MessageStatus newMessageStatus,
 			ReadableInstant timestamp,
 			MessageReportCodeRec messageReportCode)
 		throws
@@ -312,16 +313,11 @@ class ReportLogicImplementation
 		// lookup the message
 
 		MessageRec message =
-			messageHelper.findOrNull (
-				messageId);
-
-		if (message == null) {
-
-			throw new NoSuchMessageException (
-				stringFormat (
-					"Message ID: %s"));
-
-		}
+			messageHelper.findOrThrow (
+				messageId,
+				() -> new NoSuchMessageException (
+					stringFormat (
+						"Message ID: %s")));
 
 		// process the report
 

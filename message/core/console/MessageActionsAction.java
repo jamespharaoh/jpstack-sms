@@ -79,12 +79,13 @@ class MessageActionsAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageActionsAction.goReal ()",
 				this);
 
 		// load data
 
 		message =
-			messageHelper.findOrNull (
+			messageHelper.findRequired (
 				requestContext.stuffInt (
 					"messageId"));
 

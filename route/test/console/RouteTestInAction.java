@@ -63,21 +63,27 @@ class RouteTestInAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"RouteTestInAction.goReal ()",
 				this);
 
 		int routeId =
-			requestContext.stuffInt ("routeId");
+			requestContext.stuffInt (
+				"routeId");
 
 		RouteRec route =
-			routeHelper.findOrNull (routeId);
+			routeHelper.findRequired (
+				routeId);
 
 		MessageRec message =
 			inboxLogic.inboxInsert (
 				Optional.<String>absent (),
 				textHelper.findOrCreate (
-					requestContext.parameterOrNull ("message")),
-				requestContext.parameterOrNull ("num_from"),
-				requestContext.parameterOrNull ("num_to"),
+					requestContext.parameterRequired (
+						"message")),
+				requestContext.parameterRequired (
+					"num_from"),
+				requestContext.parameterRequired (
+					"num_to"),
 				route,
 				Optional.<NetworkRec>absent (),
 				Optional.<Instant>absent (),

@@ -109,6 +109,7 @@ class CommandTypeBuilder {
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"CommandTypeBuilder.createCommandType ()",
 				this);
 
 		// lookup parent type

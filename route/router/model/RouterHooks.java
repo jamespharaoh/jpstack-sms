@@ -2,14 +2,16 @@ package wbs.sms.route.router.model;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -36,8 +38,8 @@ class RouterHooks
 
 	// state
 
-	Set<Integer> parentObjectTypeIds =
-		new HashSet<Integer> ();
+	Map<Long,List<Long>> routerTypeIdsByParentTypeId =
+		new HashMap<> ();
 
 	// lifecycle
 
@@ -48,41 +50,36 @@ class RouterHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"routerHooks.init ()",
 				this);
 
-		List<ObjectTypeRec> objectTypes =
-			objectTypeDao.findAll ();
+		routerTypeIdsByParentTypeId =
+			routerTypeDao.findAll ().stream ()
 
-		for (
-			ObjectTypeRec objectType
-				: objectTypes
-		) {
-
-			List<RouterTypeRec> routerTypes =
-				routerTypeDao.findByParentType (
-					objectType);
-
-			if (routerTypes.isEmpty ())
-				continue;
-
-			parentObjectTypeIds.add (
-				objectType.getId ());
-
-		}
+			.collect (
+				Collectors.groupingBy (
+					routerType -> (long)
+						routerType.getParentType ().getId (),
+					Collectors.mapping (
+						routerType -> (long)
+							routerType.getId (),
+						Collectors.toList ())));
 
 	}
+
+	// implementation
 
 	@Override
 	public
 	void createSingletons (
-			ObjectHelper<RouterRec> routerHelper,
-			ObjectHelper<?> parentHelper,
-			Record<?> parent) {
+			@NonNull ObjectHelper<RouterRec> routerHelper,
+			@NonNull ObjectHelper<?> parentHelper,
+			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				parentObjectTypeIds,
-				parentHelper.objectTypeId ())
+				routerTypeIdsByParentTypeId.keySet (),
+				(long) parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -91,14 +88,15 @@ class RouterHooks
 			objectTypeDao.findById (
 				parentHelper.objectTypeId ());
 
-		List<RouterTypeRec> routerTypes =
-			routerTypeDao.findByParentType (
-				parentType);
-
 		for (
-			RouterTypeRec routerType
-				: routerTypes
+			Long routerTypeId
+				: routerTypeIdsByParentTypeId.get (
+					(long) parentHelper.objectTypeId ())
 		) {
+
+			RouterTypeRec routerType =
+				routerTypeDao.findRequired (
+					routerTypeId);
 
 			routerHelper.insert (
 				routerHelper.createInstance ()

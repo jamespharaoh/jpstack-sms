@@ -1,6 +1,6 @@
 package wbs.sms.number.list.console;
 
-import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -85,12 +85,13 @@ class NumberListNumberUpdateAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"NumberListNumberUpdateAction.goReal ()",
 				this);
 
 		int loop = 0;
 
 		NumberListRec numberList =
-			numberListHelper.findOrNull (
+			numberListHelper.findRequired (
 				requestContext.stuffInt (
 					"numberListId"));
 
@@ -118,7 +119,8 @@ class NumberListNumberUpdateAction
 			numbers =
 				numberFormatLogic.parseLines (
 					numberList.getNumberFormat (),
-					requestContext.parameterOrNull ("numbers"));
+					requestContext.parameterRequired (
+						"numbers"));
 
 		} catch (WbsNumberFormatException exception) {
 
@@ -135,8 +137,8 @@ class NumberListNumberUpdateAction
 		int numAlreadyAdded = 0;
 
 		if (
-			isNotNull (
-				requestContext.parameterOrNull (
+			isPresent (
+				requestContext.parameter (
 					"add"))
 		) {
 
@@ -199,7 +201,11 @@ class NumberListNumberUpdateAction
 		int numRemoved = 0;
 		int numAlreadyRemoved = 0;
 
-		if (requestContext.parameterOrNull ("remove") != null) {
+		if (
+			isPresent (
+				requestContext.parameter (
+					"remove"))
+		) {
 
 			numberListUpdate.setPresent (false);
 

@@ -2,10 +2,9 @@ package wbs.sms.number.lookup.hibernate;
 
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
+import lombok.NonNull;
 
 import wbs.framework.hibernate.HibernateDao;
-import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.number.lookup.model.NumberLookupTypeDao;
 import wbs.sms.number.lookup.model.NumberLookupTypeRec;
 
@@ -16,22 +15,27 @@ class NumberLookupTypeDaoHibernate
 
 	@Override
 	public
-	List<NumberLookupTypeRec> findByParentObjectType (
-			ObjectTypeRec parentType) {
+	List<NumberLookupTypeRec> findAll () {
 
 		return findMany (
+			"findAll ()",
 			NumberLookupTypeRec.class,
 
 			createCriteria (
-				NumberLookupTypeRec.class,
-				"_numberLookupType")
+				NumberLookupTypeRec.class)
 
-			.add (
-				Restrictions.eq (
-					"_numberLookupType.parentType",
-					parentType))
+		);
 
-			.list ());
+	}
+
+	@Override
+	public
+	NumberLookupTypeRec findRequired (
+			@NonNull Long numberLookupTypeId) {
+
+		return get (
+			NumberLookupTypeRec.class,
+			(int) (long) numberLookupTypeId);
 
 	}
 

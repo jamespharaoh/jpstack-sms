@@ -1,5 +1,7 @@
 package wbs.sms.message.inbox.console;
 
+import static wbs.framework.utils.etc.Misc.isPresent;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
@@ -71,10 +73,11 @@ class MessageNotProcessedFormAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"MessageNotProcessedFormAction.goReal ()",
 				this);
 
 		MessageRec message =
-			messageHelper.findOrNull (
+			messageHelper.findRequired (
 				requestContext.stuffInt (
 					"messageId"));
 
@@ -90,7 +93,11 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameterOrNull ("process_again") != null) {
+		if (
+			isPresent (
+				requestContext.parameter (
+					"process_again"))
+		) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
@@ -128,7 +135,11 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameterOrNull ("ignore") != null) {
+		if (
+			isPresent (
+				requestContext.parameter (
+					"ignore"))
+		) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),
@@ -158,7 +169,11 @@ class MessageNotProcessedFormAction
 
 		}
 
-		if (requestContext.parameterOrNull ("processed_manually") != null) {
+		if (
+			isPresent (
+				requestContext.parameter (
+					"processed_manually"))
+		) {
 
 			queueLogic.processQueueItem (
 				message.getNotProcessedQueueItem (),

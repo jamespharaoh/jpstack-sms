@@ -2,6 +2,9 @@ package wbs.sms.magicnumber.hibernate;
 
 import lombok.NonNull;
 
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -18,26 +21,28 @@ class MagicNumberUseDaoHibernate
 	@Override
 	public
 	MagicNumberUseRec find (
-			MagicNumberRec magicNumber,
-			NumberRec number) {
+			@NonNull MagicNumberRec magicNumber,
+			@NonNull NumberRec number) {
 
 		return findOne (
+			"find (magicNumber, number)",
 			MagicNumberUseRec.class,
 
-			createQuery (
-				"FROM MagicNumberUseRec magicNumberUse " +
-				"WHERE magicNumberUse.magicNumber = :magicNumber " +
-					"AND magicNumberUse.number = :number")
+			createCriteria (
+				MagicNumberUseRec.class,
+				"_magicNumberUse")
 
-			.setEntity (
-				"magicNumber",
-				magicNumber)
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.magicNumber",
+					magicNumber))
 
-			.setEntity (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.number",
+					number))
 
-			.list ());
+		);
 
 	}
 
@@ -50,66 +55,86 @@ class MagicNumberUseDaoHibernate
 			@NonNull Long ref) {
 
 		return findOne (
+			"findExistingByRef (magicNumberSet, number, command, ref)",
 			MagicNumberUseRec.class,
 
-			createQuery (
-				"SELECT magicNumberUse " +
-				"FROM MagicNumberUseRec magicNumberUse " +
-					"INNER JOIN magicNumberUse.magicNumber magicNumber " +
-				"WHERE magicNumber.magicNumberSet = :magicNumberSet " +
-					"AND magicNumberUse.number= :number " +
-					"AND magicNumberUse.command= :command " +
-					"AND magicNumberUse.refId = :ref " +
-					"AND magicNumber.deleted = false")
+			createCriteria (
+				MagicNumberUseRec.class,
+				"_magicNumberUse")
 
-			.setEntity (
-				"magicNumberSet",
-				magicNumberSet)
+			.createAlias (
+				"_magicNumberUse.magicNumber",
+				"_magicNumber")
 
-			.setEntity (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_magicNumber.magicNumberSet",
+					magicNumberSet))
 
-			.setEntity (
-				"command",
-				command)
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.number",
+					number))
 
-			.setInteger (
-				"ref",
-				(int) (long)
-				ref)
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.command",
+					command))
 
-			.list ());
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.refId",
+					ref))
+
+			.add (
+				Restrictions.eq (
+					"_magicNumber.deleted",
+					false))
+
+		);
 
 	}
 
 	@Override
 	public
 	MagicNumberUseRec findExistingLeastRecentlyUsed (
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number) {
+			@NonNull MagicNumberSetRec magicNumberSet,
+			@NonNull NumberRec number) {
 
 		return findOne (
+			"findExistingLeastRecentlyUsed (magicNumberSet, number)",
 			MagicNumberUseRec.class,
 
-			createQuery (
-				"FROM MagicNumberUseRec magicNumberUse " +
-				"WHERE magicNumberUse.magicNumber.magicNumberSet = :magicNumberSet " +
-					"AND magicNumberUse.number = :number " +
-					"AND magicNumberUse.magicNumber.deleted = false " +
-				"ORDER BY magicNumberUse.lastUseTimestamp")
+			createCriteria (
+				MagicNumberUseRec.class,
+				"_magicNumberUse")
 
-			.setEntity (
-				"magicNumberSet",
-				magicNumberSet)
+			.createAlias (
+				"_magicNumberUse.magicNumber",
+				"_magicNumber")
 
-			.setEntity (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_magicNumber.magicNumberSet",
+					magicNumberSet))
+
+			.add (
+				Restrictions.eq (
+					"_magicNumberUse.number",
+					number))
+
+			.add (
+				Restrictions.eq (
+					"_magicNumber.deleted",
+					false))
+
+			.addOrder (
+				Order.asc (
+					"_magicNumberUse.lastUseTimestamp"))
 
 			.setMaxResults (1)
 
-			.list ());
+		);
 
 	}
 

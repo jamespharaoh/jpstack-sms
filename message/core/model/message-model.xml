@@ -75,9 +75,6 @@
 		<integer-field
 			name="charge"/>
 
-		<slave-field
-			type="outbox"/>
-
 		<integer-field
 			name="pri"
 			default="0"/>
@@ -109,11 +106,6 @@
 		<!-- TODO why is this a string???? -->
 		<string-field
 			name="adultVerified"
-			nullable="yes"/>
-
-		<!-- TODO what is this???? -->
-		<string-field
-			name="notes"
 			nullable="yes"/>
 
 		<integer-field

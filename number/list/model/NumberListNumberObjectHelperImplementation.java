@@ -16,18 +16,6 @@ class NumberListNumberObjectHelperImplementation
 
 	@Override
 	public
-	NumberListNumberRec find (
-			@NonNull NumberListRec numberList,
-			@NonNull NumberRec number) {
-
-		return numberListNumberHelper.get ().findByNumberListAndNumber (
-			numberList.getId (),
-			number.getId ());
-
-	}
-
-	@Override
-	public
 	NumberListNumberRec findOrCreate (
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number) {

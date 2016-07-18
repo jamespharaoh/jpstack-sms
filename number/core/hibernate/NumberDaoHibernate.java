@@ -54,8 +54,9 @@ class NumberDaoHibernate
 		// perform and return
 
 		return findMany (
+			"searchIds (numberSearch)",
 			Integer.class,
-			criteria.list ());
+			criteria);
 
 	}
 

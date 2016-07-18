@@ -1,13 +1,17 @@
 package wbs.sms.command.model;
 
-import java.util.HashSet;
+import static wbs.framework.utils.etc.Misc.doesNotContain;
+
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -34,8 +38,8 @@ class CommandHooks
 
 	// state
 
-	Set<Integer> parentObjectTypeIds =
-		new HashSet<Integer> ();
+	Map<Long,List<Long>> commandTypeIdsByParentTypeId =
+		new HashMap<> ();
 
 	// lifecycle
 
@@ -46,24 +50,20 @@ class CommandHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"commandHooks.init ()",
 				this);
 
-		List<ObjectTypeRec> objectTypes =
-			objectTypeDao.findAll ();
+		commandTypeIdsByParentTypeId =
+			commandTypeDao.findAll ().stream ()
 
-		for (ObjectTypeRec objectType : objectTypes) {
-
-			List<CommandTypeRec> commandTypes =
-				commandTypeDao.findByParentObjectType (
-					objectType);
-
-			if (commandTypes.isEmpty ())
-				continue;
-
-			parentObjectTypeIds.add (
-				objectType.getId ());
-
-		}
+			.collect (
+				Collectors.groupingBy (
+					commandType -> (long)
+						commandType.getParentType ().getId (),
+					Collectors.mapping (
+						commandType -> (long)
+							commandType.getId (),
+						Collectors.toList ())));
 
 	}
 
@@ -72,26 +72,31 @@ class CommandHooks
 	@Override
 	public
 	void createSingletons (
-			ObjectHelper<CommandRec> commandHelper,
-			ObjectHelper<?> parentHelper,
-			Record<?> parent) {
+			@NonNull ObjectHelper<CommandRec> commandHelper,
+			@NonNull ObjectHelper<?> parentHelper,
+			@NonNull Record<?> parent) {
 
-		if (! parentObjectTypeIds.contains (
-				parentHelper.objectTypeId ()))
+		if (
+			doesNotContain (
+				commandTypeIdsByParentTypeId.keySet (),
+				(long) parentHelper.objectTypeId ())
+		) {
 			return;
+		}
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
 				parentHelper.objectTypeId ());
 
-		List<CommandTypeRec> commandTypes =
-			commandTypeDao.findByParentObjectType (
-				parentType);
-
 		for (
-			CommandTypeRec commandType
-				: commandTypes
+			Long commandTypeId
+				: commandTypeIdsByParentTypeId.get (
+					(long) parentHelper.objectTypeId ())
 		) {
+
+			CommandTypeRec commandType =
+				commandTypeDao.findRequired (
+					commandTypeId);
 
 			commandHelper.insert (
 				commandHelper.createInstance ()

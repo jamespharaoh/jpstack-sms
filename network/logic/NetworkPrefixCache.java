@@ -1,5 +1,6 @@
 package wbs.sms.network.logic;
 
+import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.laterThan;
 import static wbs.framework.utils.etc.Misc.millisToInstant;
 
@@ -115,14 +116,19 @@ class NetworkPrefixCache {
 			log.debug ("Trying " + prefixToTry + " for " + number);
 
 			Integer networkId =
-				entries.get (prefixToTry);
+				entries.get (
+					prefixToTry);
 
-			if (networkId != null) {
+			if (
+				isNotNull (
+					networkId)
+			) {
 
 				log.debug (
 					"Found " + prefixToTry + ", networkId = " + networkId + " for " + number);
 
-				return networkHelper.findOrNull (networkId);
+				return networkHelper.findRequired (
+					networkId);
 
 			}
 

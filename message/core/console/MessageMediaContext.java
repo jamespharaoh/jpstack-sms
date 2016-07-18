@@ -109,10 +109,11 @@ class MessageMediaContext
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
+				"MessageMediaContext.initContext (pathParts, stuff)",
 				this);
 
 		MessageRec message =
-			messageHelper.findOrNull (
+			messageHelper.findRequired (
 				messageId);
 
 		MediaRec media =

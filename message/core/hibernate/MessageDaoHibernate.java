@@ -28,6 +28,7 @@ import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
+import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -44,14 +45,22 @@ class MessageDaoHibernate
 	List<MessageRec> findNotProcessed () {
 
 		return findMany (
+			"findNotProcessed",
 			MessageRec.class,
 
-			createQuery (
-				"FROM MessageRec message " +
-				"WHERE message.status = 7 " +
-				"ORDER BY message.createdTime DESC")
+			createCriteria (
+				MessageRec.class)
 
-			.list ());
+			.add (
+				Restrictions.eq (
+					"status",
+					MessageStatus.notProcessed))
+
+			.addOrder (
+				Order.desc (
+					"createdTime"))
+
+		);
 
 	}
 
@@ -60,14 +69,22 @@ class MessageDaoHibernate
 	long countNotProcessed () {
 
 		return findOne (
+			"countNotProcessed ()",
 			Long.class,
 
-			createQuery (
-				"SELECT count (*) " +
-				"FROM MessageRec message " +
-				"WHERE message.status = 7")
+			createCriteria (
+				MessageRec.class,
+				"_message")
 
-			.list ());
+			.add (
+				Restrictions.eq (
+					"_message.status",
+					MessageStatus.notProcessed))
+
+			.setProjection (
+				Projections.rowCount ())
+
+		);
 
 	}
 
@@ -79,28 +96,29 @@ class MessageDaoHibernate
 			@NonNull String otherId) {
 
 		return findOne (
+			"findByOtherId (direction, route, otherId)",
 			MessageRec.class,
 
-			createQuery (
-				"FROM MessageRec message " +
-				"WHERE message.direction = :direction " +
-					"AND message.route = :route " +
-					"AND message.otherId = :otherId")
+			createCriteria (
+				MessageRec.class,
+				"_message")
 
-			.setParameter (
-				"direction",
-				direction,
-				MessageDirectionType.INSTANCE)
+			.add (
+				Restrictions.eq (
+					"_message.direction",
+					direction))
 
-			.setEntity (
-				"route",
-				route)
+			.add (
+				Restrictions.eq (
+					"_message.route",
+					route))
 
-			.setString (
-				"otherId",
-				otherId)
+			.add (
+				Restrictions.eq (
+					"_message.otherId",
+					otherId))
 
-			.list ());
+		);
 
 	}
 
@@ -110,18 +128,18 @@ class MessageDaoHibernate
 			long threadId) {
 
 		return findMany (
+			"findByThreadId",
 			MessageRec.class,
 
-			createQuery (
-				"FROM MessageRec message " +
-				"WHERE message.threadId = :threadId")
+			createCriteria (
+				MessageRec.class)
 
-			.setInteger (
-				"threadId",
-				(int) (long)
-				threadId)
+			.add (
+				Restrictions.eq (
+					"threadId",
+					threadId))
 
-			.list ());
+		);
 
 	}
 
@@ -131,6 +149,7 @@ class MessageDaoHibernate
 			long maxResults) {
 
 		return findMany (
+			"findRecentLimit",
 			MessageRec.class,
 
 			createCriteria (
@@ -142,16 +161,17 @@ class MessageDaoHibernate
 			.setMaxResults (
 				(int) maxResults)
 
-			.list ());
+		);
 
 	}
 
 	@Override
 	public
 	List<ServiceRec> projectServices (
-			NumberRec number) {
+			@NonNull NumberRec number) {
 
 		return findMany (
+			"projectServices",
 			ServiceRec.class,
 
 			createCriteria (
@@ -174,7 +194,7 @@ class MessageDaoHibernate
 						Projections.groupProperty (
 							"_message.service")))
 
-			.list ());
+		);
 
 	}
 
@@ -603,8 +623,9 @@ class MessageDaoHibernate
 			Projections.id ());
 
 		return findMany (
+			"searchIds",
 			Integer.class,
-			criteria.list ());
+			criteria);
 
 	}
 

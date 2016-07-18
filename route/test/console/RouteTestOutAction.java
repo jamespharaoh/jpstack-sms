@@ -83,6 +83,7 @@ class RouteTestOutAction
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
+				"RouteTestOutAction.goReal ()",
 				this);
 
 		int routeId =

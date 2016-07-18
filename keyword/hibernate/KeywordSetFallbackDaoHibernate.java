@@ -1,5 +1,9 @@
 package wbs.sms.keyword.hibernate;
 
+import lombok.NonNull;
+
+import org.hibernate.criterion.Restrictions;
+
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.keyword.model.KeywordSetFallbackDao;
 import wbs.sms.keyword.model.KeywordSetFallbackRec;
@@ -14,26 +18,28 @@ class KeywordSetFallbackDaoHibernate
 	@Override
 	public
 	KeywordSetFallbackRec find (
-			KeywordSetRec keywordSet,
-			NumberRec number) {
+			@NonNull KeywordSetRec keywordSet,
+			@NonNull NumberRec number) {
 
 		return findOne (
+			"find (keywordSet, number)",
 			KeywordSetFallbackRec.class,
 
-			createQuery (
-				"FROM KeywordSetFallbackRec keywordSetFallback " +
-				"WHERE keywordSetFallback.keywordSet = :keywordSet " +
-					"AND keywordSetFallback.number = :number")
+			createCriteria (
+				KeywordSetFallbackRec.class,
+					"_keywordSetFallback")
 
-			.setEntity (
-				"keywordSet",
-				keywordSet)
+			.add (
+				Restrictions.eq (
+					"_keywordSetFallback.keywordSet",
+					keywordSet))
 
-			.setEntity (
-				"number",
-				number)
+			.add (
+				Restrictions.eq (
+					"_keywordSetFallback.number",
+					number))
 
-			.list ());
+		);
 
 	}
 

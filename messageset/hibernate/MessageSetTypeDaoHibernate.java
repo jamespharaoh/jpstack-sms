@@ -2,8 +2,9 @@ package wbs.sms.messageset.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import wbs.framework.hibernate.HibernateDao;
-import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.messageset.model.MessageSetTypeDao;
 import wbs.sms.messageset.model.MessageSetTypeRec;
 
@@ -14,21 +15,27 @@ class MessageSetTypeDaoHibernate
 
 	@Override
 	public
-	List<MessageSetTypeRec> findByParentObjectType (
-			ObjectTypeRec parentType) {
+	List<MessageSetTypeRec> findAll () {
 
 		return findMany (
+			"findAll ()",
 			MessageSetTypeRec.class,
 
-			createQuery (
-				"FROM MessageSetTypeRec messageSetType " +
-				"WHERE messageSetType.parentType = :parentType")
+			createCriteria (
+				MessageSetTypeRec.class)
 
-			.setEntity (
-				"parentType",
-				parentType)
+		);
 
-			.list ());
+	}
+
+	@Override
+	public
+	MessageSetTypeRec findRequired (
+			@NonNull Long messageSetTypeId) {
+
+		return get (
+			MessageSetTypeRec.class,
+			(int) (long) messageSetTypeId);
 
 	}
 

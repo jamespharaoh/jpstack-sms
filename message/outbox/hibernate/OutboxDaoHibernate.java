@@ -2,7 +2,6 @@ package wbs.sms.message.outbox.hibernate;
 
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.Map;
 import lombok.NonNull;
 
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
@@ -32,13 +32,17 @@ class OutboxDaoHibernate
 	int count () {
 
 		return (int) (long) findOne (
+			"count ()",
 			Long.class,
 
-			createQuery (
-				"SELECT count (*) " +
-				"FROM OutboxRec")
+			createCriteria (
+				OutboxRec.class,
+				"_outbox")
 
-			.list ());
+			.setProjection (
+				Projections.rowCount ())
+
+		);
 
 	}
 
@@ -56,25 +60,26 @@ class OutboxDaoHibernate
 	@Override
 	public
 	List<OutboxRec> findLimit (
-			RouteRec route,
+			@NonNull RouteRec route,
 			int maxResults) {
 
 		return findMany (
+			"findLimit (route, maxResults)",
 			OutboxRec.class,
 
-			createQuery (
-				"FROM OutboxRec outbox " +
-				"WHERE outbox.route = :route " +
-				"ORDER BY outbox.id")
+			createCriteria (
+				OutboxRec.class)
 
-			.setEntity (
-				"route",
-				route)
+			.add (
+				Restrictions.eq (
+					"route",
+					route))
 
-			.setMaxResults (
-				maxResults)
+			.addOrder (
+				Order.asc (
+					"id"))
 
-			.list ());
+		);
 
 	}
 
@@ -85,77 +90,137 @@ class OutboxDaoHibernate
 			@NonNull RouteRec route) {
 
 		return findOne (
+			"findNext (now, route)",
 			OutboxRec.class,
 
-			createQuery (
-				"FROM OutboxRec o " +
-				"WHERE o.retryTime < :now " +
-					"AND o.route = :route " +
-					"AND o.sending IS NULL " +
-					"AND o.message.number.archiveDate IS NULL " +
-					"AND (o.remainingTries IS NULL " +
-						"OR o.remainingTries > 0) " +
-				"ORDER BY o.pri, o.retryTime")
+			createCriteria (
+				OutboxRec.class,
+				"_outbox")
 
-			.setParameter (
-				"now",
-				now,
-				TimestampWithTimezoneUserType.INSTANCE)
+			.createAlias (
+				"_outbox.message",
+				"_message")
 
-			.setEntity (
-				"route",
-				route)
+			.createAlias (
+				"_message.number",
+				"_number")
 
-			.setMaxResults (1)
+			.add (
+				Restrictions.le (
+					"_outbox.retryTime",
+					now))
 
-			.list ());
+			.add (
+				Restrictions.eq (
+					"_outbox.route",
+					route))
+
+			.add (
+				Restrictions.isNull (
+					"_outbox.sending"))
+
+			.add (
+				Restrictions.isNull (
+					"_number.archiveDate"))
+
+			.add (
+				Restrictions.or (
+
+				Restrictions.isNull (
+					"_outbox.remainingTries"),
+
+				Restrictions.gt (
+					"_outbox.remainingTries",
+					0l)
+
+			))
+
+			.addOrder (
+				Order.asc (
+					"_outbox.pri"))
+
+			.addOrder (
+				Order.asc (
+					"_outbox.retryTime"))
+
+			.setMaxResults (
+				1)
+
+		);
 
 	}
 
 	@Override
 	public
 	List<OutboxRec> findNextLimit (
-			Instant now,
-			RouteRec route,
+			@NonNull Instant now,
+			@NonNull RouteRec route,
 			int maxResults) {
 
 		return findMany (
+			"findNextLimit (now, route, maxResults)",
 			OutboxRec.class,
 
-			createQuery (
-				"FROM OutboxRec o " +
-				"WHERE o.retryTime < :now " +
-					"AND o.route = :route " +
-					"AND o.sending IS NULL " +
-					"AND o.message.number.archiveDate IS NULL " +
-					"AND (o.remainingTries IS NULL " +
-						"OR o.remainingTries > 0) " +
-				"ORDER BY o.pri, o.retryTime")
+			createCriteria (
+				OutboxRec.class,
+				"_outbox")
 
-			.setTimestamp (
-				"now",
-				new Timestamp (
-					now.getMillis ()))
+			.createAlias (
+				"_outbox.message",
+				"_message")
 
-			.setEntity (
-				"route",
-				route)
+			.createAlias (
+				"_message.number",
+				"_number")
+
+			.add (
+				Restrictions.lt (
+					"_outbox.retryTime",
+					now))
+
+			.add (
+				Restrictions.eq (
+					"_outbox.route",
+					route))
+
+			.add (
+				Restrictions.isNull (
+					"_number.archiveDate"))
+
+			.add (
+				Restrictions.or (
+
+				Restrictions.isNull (
+					"_outbox.remainingTries"),
+
+				Restrictions.gt (
+					"_outbox.remainingTries",
+					0)
+
+			))
+
+			.addOrder (
+				Order.asc (
+					"_outbox.pri"))
+
+			.addOrder (
+				Order.asc (
+					"_outbox.retryTime"))
 
 			.setMaxResults (
 				maxResults)
 
-			.list ());
+		);
 
 	}
 
 	@Override
 	public
 	Map<Integer,Integer> generateRouteSummary (
-			Instant now) {
+			@NonNull Instant now) {
 
 		@SuppressWarnings ("unchecked")
 		List<Object[]> list =
-
 			createQuery (
 				stringFormat (
 					"SELECT ",
@@ -195,10 +260,11 @@ class OutboxDaoHibernate
 	@Override
 	public
 	List<OutboxRec> findSendingBeforeLimit (
-			Instant sendingBefore,
+			@NonNull Instant sendingBefore,
 			int maxResults) {
 
 		return findMany (
+			"findSendingBeforeLimit (sendingBefore, maxResults)",
 			OutboxRec.class,
 
 			createCriteria (
@@ -220,8 +286,6 @@ class OutboxDaoHibernate
 
 			.setMaxResults (
 				maxResults)
-
-			.list ()
 
 		);
 

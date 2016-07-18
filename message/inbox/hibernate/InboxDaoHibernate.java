@@ -2,6 +2,8 @@ package wbs.sms.message.inbox.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -24,6 +26,7 @@ class InboxDaoHibernate
 	int countPending () {
 
 		return (int) (long) findOne (
+			"countPending ()",
 			Long.class,
 
 			createCriteria (
@@ -38,17 +41,18 @@ class InboxDaoHibernate
 			.setProjection (
 				Projections.rowCount ())
 
-			.list ());
+		);
 
 	}
 
 	@Override
 	public
 	List<InboxRec> findPendingLimit (
-			Instant now,
+			@NonNull Instant now,
 			int maxResults) {
 
 		return findMany (
+			"findPendingLimit (now, maxResults)",
 			InboxRec.class,
 
 			createCriteria (
@@ -76,7 +80,7 @@ class InboxDaoHibernate
 			.setMaxResults (
 				maxResults)
 
-			.list ());
+		);
 
 	}
 
@@ -86,6 +90,7 @@ class InboxDaoHibernate
 			int maxResults) {
 
 		return findMany (
+			"findPendingLimit (maxResults)",
 			InboxRec.class,
 
 			createCriteria (
@@ -108,8 +113,7 @@ class InboxDaoHibernate
 			.setMaxResults (
 				maxResults)
 
-			.list ());
-
+		);
 
 	}
 
