@@ -1,7 +1,8 @@
 package wbs.sms.message.inbox.model;
 
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.Instant;
 
 import wbs.sms.route.core.model.RouteRec;
 
@@ -14,6 +15,6 @@ interface InboxMultipartBufferDaoMethods {
 
 	List<InboxMultipartBufferRec> findRecent (
 			InboxMultipartBufferRec inboxMultipartBuffer,
-			Date timestamp);
+			Instant timestamp);
 
 }

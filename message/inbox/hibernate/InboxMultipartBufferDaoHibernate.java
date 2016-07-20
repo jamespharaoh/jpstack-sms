@@ -1,11 +1,11 @@
 package wbs.sms.message.inbox.hibernate;
 
-import java.util.Date;
 import java.util.List;
 
 import lombok.NonNull;
 
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.Instant;
 
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.inbox.model.InboxMultipartBufferDao;
@@ -49,7 +49,7 @@ class InboxMultipartBufferDaoHibernate
 	public
 	List<InboxMultipartBufferRec> findRecent (
 			@NonNull InboxMultipartBufferRec inboxMultipartBuffer,
-			@NonNull Date timestamp) {
+			@NonNull Instant timestamp) {
 
 		return findMany (
 			"findRecent (inboxMultipartBuffer, timestamp)",

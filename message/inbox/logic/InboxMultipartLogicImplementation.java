@@ -1,14 +1,13 @@
 package wbs.sms.message.inbox.logic;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
@@ -178,27 +177,20 @@ class InboxMultipartLogicImplementation
 		Transaction transaction =
 			database.currentTransaction ();
 
-		// define "recent" as 24 hours ago
+		// define "recent" as 1 hour ago
 
-		Calendar calendar =
-			Calendar.getInstance ();
+		Instant recentTime =
+			Instant.now ()
 
-		calendar.add (
-			+ Calendar.HOUR,
-			- 36);
-
-		Date recentDate =
-			calendar.getTime ();
-
-		log.info (
-			"MULTI: recentDate " + recentDate);
+			.minus (
+				Duration.standardHours (1));
 
 		// check if there is a recent log entry, if so just ignore
 
 		List<InboxMultipartLogRec> logList =
 			inboxMultipartLogHelper.findRecent (
 				inboxMultipartBuffer,
-				recentDate);
+				recentTime);
 
 		if (! logList.isEmpty ()) {
 
@@ -214,7 +206,7 @@ class InboxMultipartLogicImplementation
 		List<InboxMultipartBufferRec> recentInboxMultipartBuffers =
 			inboxMultipartBufferHelper.findRecent (
 				inboxMultipartBuffer,
-				recentDate);
+				recentTime);
 
 		// concatenate all the bits, if there are any missing just return
 
