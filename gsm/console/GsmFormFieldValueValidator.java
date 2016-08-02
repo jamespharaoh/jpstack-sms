@@ -66,7 +66,7 @@ class GsmFormFieldValueValidator
 
 		// check length
 
-		int gsmLength =
+		long gsmLength =
 			Gsm.length (
 				stringValue);
 

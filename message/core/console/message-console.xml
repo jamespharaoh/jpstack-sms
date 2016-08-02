@@ -70,6 +70,12 @@
 				name="mediaSummary"
 				hide-tab="yes"/>
 
+			<context-link
+				name="attempt"
+				link="smsOutboxAttempt"
+				label="Delivery attempts"
+				priv-key="message.manage"/>
+
 			<context-tab-responder-page
 				name="thread"/>
 

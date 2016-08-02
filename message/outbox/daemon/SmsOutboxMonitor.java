@@ -4,7 +4,7 @@ public
 interface SmsOutboxMonitor {
 
 	void waitForRoute (
-			int routeId)
+			long routeId)
 		throws InterruptedException;
 
 }

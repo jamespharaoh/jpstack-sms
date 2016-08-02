@@ -32,7 +32,7 @@ import wbs.sms.message.core.model.MessageExpiryObjectHelper;
 import wbs.sms.message.core.model.MessageExpiryRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.outbox.logic.OutboxLogic;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.route.core.model.RouteObjectHelper;
 
 @Log4j
@@ -56,7 +56,7 @@ class MessageDaemon
 	MessageLogic messageLogic;
 
 	@Inject
-	OutboxLogic outboxLogic;
+	SmsOutboxLogic outboxLogic;
 
 	@Inject
 	RouteObjectHelper routeHelper;

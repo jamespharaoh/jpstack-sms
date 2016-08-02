@@ -1,3 +1,10 @@
+---------------------------------------- TABLE message_ids
+
+CREATE TABLE message_ids (
+	id bigint PRIMARY KEY,
+	partition smallint NOT NULL
+);
+
 ---------------------------------------- TABLE message
 
 ALTER TABLE MESSAGE

@@ -2,14 +2,17 @@ package wbs.sms.message.outbox.logic;
 
 import java.util.List;
 
+import com.google.common.base.Optional;
+
 import wbs.platform.text.model.TextRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageTypeRec;
 import wbs.sms.message.outbox.model.OutboxRec;
+import wbs.sms.message.outbox.model.SmsOutboxAttemptRec;
 import wbs.sms.route.core.model.RouteRec;
 
 public
-interface OutboxLogic {
+interface SmsOutboxLogic {
 
 	MessageRec resendMessage (
 			MessageRec old,
@@ -51,8 +54,8 @@ interface OutboxLogic {
 	 * @param otherId
 	 */
 	void messageSuccess (
-			int messageId,
-			String[] otherIds);
+			MessageRec message,
+			Optional<List<String>> otherIds);
 
 	/**
 	 * Removes the given message from the outbox and marks it as failed. The
@@ -63,16 +66,34 @@ interface OutboxLogic {
 	 * @param failureType
 	 */
 	void messageFailure (
-			int messageId,
+			MessageRec message,
 			String error,
 			FailureType failureType);
 
-	static
+	public static
 	enum FailureType {
-		perm, temp, daily
+		permanent,
+		temporary,
+		daily
 	}
 
 	void retryMessage (
 			MessageRec message);
+
+	SmsOutboxAttemptRec beginSendAttempt (
+			OutboxRec smsOutbox,
+			byte[] requestTrace);
+
+	void completeSendAttemptSuccess (
+			SmsOutboxAttemptRec smsOutboxAttempt,
+			Optional<List<String>> otherIds,
+			byte[] responseTrace);
+
+	void completeSendAttemptFailure (
+			SmsOutboxAttemptRec smsOutboxAttempt,
+			FailureType failureType,
+			String errorMessage,
+			Optional<byte[]> responseTrace,
+			byte[] errorTrace);
 
 }

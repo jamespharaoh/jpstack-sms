@@ -31,7 +31,7 @@ import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.logic.OutboxLogic;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.message.outbox.model.SmsOutboxAttemptObjectHelper;
 import wbs.sms.message.outbox.model.SmsOutboxAttemptRec;
@@ -44,6 +44,7 @@ import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.sender.model.SenderObjectHelper;
 import wbs.sms.route.sender.model.SenderRec;
 
+@Deprecated
 @Log4j
 public abstract
 class AbstractSmsSender2
@@ -67,7 +68,7 @@ class AbstractSmsSender2
 	NumberLookupManager numberLookupManager;
 
 	@Inject
-	OutboxLogic outboxLogic;
+	SmsOutboxLogic outboxLogic;
 
 	@Inject
 	SmsOutboxMonitor outboxMonitor;
@@ -377,9 +378,9 @@ class AbstractSmsSender2
 				) {
 
 					outboxLogic.messageFailure (
-						messageId,
+						outbox.getMessage (),
 						setupSendResult.message (),
-						OutboxLogic.FailureType.perm);
+						SmsOutboxLogic.FailureType.permanent);
 
 					transaction.commit ();
 
@@ -490,7 +491,7 @@ class AbstractSmsSender2
 					messageId,
 					smsOutboxAttemptId,
 					performSendResult.message (),
-					OutboxLogic.FailureType.temp,
+					SmsOutboxLogic.FailureType.temporary,
 					performSendResult.responseTrace (),
 					performSendResult.errorTrace ());
 
@@ -532,11 +533,6 @@ class AbstractSmsSender2
 							"AbstractSmsSender2.Worker.reliableOutboxSuccess (...)",
 							this);
 
-					outboxLogic.messageSuccess (
-						messageId,
-						otherIds.toArray (
-							new String [] {}));
-
 					SmsOutboxAttemptRec smsOutboxAttempt =
 						smsOutboxAttemptHelper.findRequired (
 							smsOutboxAttemptId);
@@ -555,6 +551,11 @@ class AbstractSmsSender2
 									responseTrace.toJSONString (),
 									"utf-8")
 								: null);
+
+					outboxLogic.messageSuccess (
+						smsOutboxAttempt.getMessage (),
+						Optional.of (
+							otherIds));
 
 					transaction.commit ();
 
@@ -608,7 +609,7 @@ class AbstractSmsSender2
 				int messageId,
 				int smsOutboxAttemptId,
 				String errorMessage,
-				OutboxLogic.FailureType failureType,
+				SmsOutboxLogic.FailureType failureType,
 				JSONObject responseTrace,
 				JSONObject errorTrace) {
 
@@ -625,11 +626,6 @@ class AbstractSmsSender2
 						database.beginReadWrite (
 							"AbstractSmsSender2.Worker.reliableOutboxFailure (...)",
 							this);
-
-					outboxLogic.messageFailure (
-						messageId,
-						errorMessage,
-						failureType);
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
 						smsOutboxAttemptHelper.findRequired (
@@ -656,6 +652,11 @@ class AbstractSmsSender2
 								errorTrace.toJSONString (),
 								"utf-8")
 							: null);
+
+					outboxLogic.messageFailure (
+						smsOutboxAttempt.getMessage (),
+						errorMessage,
+						failureType);
 
 					transaction.commit ();
 

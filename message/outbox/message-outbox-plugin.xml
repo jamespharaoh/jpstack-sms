@@ -16,7 +16,7 @@
 
 	<layer name="logic">
 		<bean class="logic.MessageSender"/>
-		<bean class="logic.OutboxLogicImplementation"/>
+		<bean class="logic.SmsOutboxLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
@@ -26,12 +26,15 @@
 	</layer>
 
 	<layer name="daemon">
+		<bean class="daemon.GenericSmsSenderImplementation"/>
+		<bean class="daemon.GenericSmsSenderService"/>
 		<bean class="daemon.SmsOutboxMonitorImplementation"/>
 		<bean class="daemon.SmsOutboxUnstickDaemon"/>
 	</layer>
 
 	<console-modules>
 		<console-module name="message-outbox"/>
+		<console-module name="sms-outbox-attempt"/>
 	</console-modules>
 
 </plugin>

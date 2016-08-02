@@ -3,6 +3,7 @@ package wbs.sms.message.outbox.logic;
 import static wbs.framework.utils.etc.Misc.earliest;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -18,6 +19,7 @@ import lombok.extern.log4j.Log4j;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -37,13 +39,16 @@ import wbs.sms.message.outbox.model.FailedMessageObjectHelper;
 import wbs.sms.message.outbox.model.OutboxDao;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 import wbs.sms.message.outbox.model.OutboxRec;
+import wbs.sms.message.outbox.model.SmsOutboxAttemptObjectHelper;
+import wbs.sms.message.outbox.model.SmsOutboxAttemptRec;
+import wbs.sms.message.outbox.model.SmsOutboxAttemptState;
 import wbs.sms.route.core.model.RouteRec;
 
 @Log4j
-@SingletonComponent ("outboxLogic")
+@SingletonComponent ("smsOutboxLogic")
 public
-class OutboxLogicImplementation
-	implements OutboxLogic {
+class SmsOutboxLogicImplementation
+	implements SmsOutboxLogic {
 
 	// dependencies
 
@@ -67,6 +72,9 @@ class OutboxLogicImplementation
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
+
+	@Inject
+	SmsOutboxAttemptObjectHelper smsOutboxAttemptHelper;
 
 	@Inject
 	TextObjectHelper textHelper;
@@ -359,20 +367,17 @@ class OutboxLogicImplementation
 	@Override
 	public
 	void messageSuccess (
-			int messageId,
-			String[] otherIds) {
+			@NonNull MessageRec message,
+			@NonNull Optional<List<String>> otherIds) {
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		log.debug ("outbox success id = " + messageId);
+		log.debug ("outbox success id = " + message.getId ());
 
 		OutboxRec outbox =
 			outboxHelper.findRequired (
-				messageId);
-
-		MessageRec message =
-			outbox.getMessage ();
+				message.getId ());
 
 		if (
 
@@ -405,8 +410,17 @@ class OutboxLogicImplementation
 			message,
 			MessageStatus.sent);
 
-		if (otherIds != null)
-			message.setOtherId (otherIds [0]);
+		if (
+			isPresent (
+				otherIds)
+		) {
+
+			message
+
+				.setOtherId (
+					otherIds.get ().get (0));
+
+		}
 
 		message
 
@@ -442,79 +456,76 @@ class OutboxLogicImplementation
 
 		// create multipart companions if appropriate
 
-		if (otherIds != null) {
+		if (
+			isPresent (
+				otherIds)
+		) {
 
-			for (
-				int index = 1;
-				index < otherIds.length;
-				index ++
-			) {
+			otherIds.get ().stream ().skip (1).forEach (
+				otherId ->
+					messageHelper.insert (
+						messageHelper.createInstance ()
 
-				messageHelper.insert (
-					messageHelper.createInstance ()
+				.setThreadId (
+					message.getThreadId ())
 
-					.setThreadId (
-						message.getThreadId ())
+				.setOtherId (
+					otherId)
 
-					.setOtherId (
-						otherIds [index])
+				.setText (
+					textHelper.findOrCreate (
+						stringFormat (
+							"[multipart companion for %s]",
+							message.getId ())))
 
-					.setText (
-						textHelper.findOrCreate (
-							stringFormat (
-								"[multipart companion for %s]",
-								message.getId ())))
+				.setNumFrom (
+					message.getNumFrom ())
 
-					.setNumFrom (
-						message.getNumFrom ())
+				.setNumTo (
+					message.getNumTo ())
 
-					.setNumTo (
-						message.getNumTo ())
+				.setDirection (
+					MessageDirection.out)
 
-					.setDirection (
-						MessageDirection.out)
+				.setNumber (
+					message.getNumber ())
 
-					.setNumber (
-						message.getNumber ())
+				.setCharge (
+					message.getCharge ())
 
-					.setCharge (
-						message.getCharge ())
+				.setMessageType (
+					message.getMessageType ())
 
-					.setMessageType (
-						message.getMessageType ())
+				.setRoute (
+					message.getRoute ())
 
-					.setRoute (
-						message.getRoute ())
+				.setService (
+					message.getService ())
 
-					.setService (
-						message.getService ())
+				.setNetwork (
+					message.getNetwork ())
 
-					.setNetwork (
-						message.getNetwork ())
+				.setBatch (
+					message.getBatch ())
 
-					.setBatch (
-						message.getBatch ())
+				.setAffiliate (
+					message.getAffiliate ())
 
-					.setAffiliate (
-						message.getAffiliate ())
+				.setStatus (
+					MessageStatus.sent)
 
-					.setStatus (
-						MessageStatus.sent)
+				.setCreatedTime (
+					message.getCreatedTime ())
 
-					.setCreatedTime (
-						message.getCreatedTime ())
+				.setProcessedTime (
+					message.getProcessedTime ())
 
-					.setProcessedTime (
-						message.getProcessedTime ())
+				.setNetworkTime (
+					null)
 
-					.setNetworkTime (
-						null)
+			));
 
-				);
-
-				// TODO expire multipart companions?
-
-			}
+			// TODO expire multipart companions?
 
 		}
 
@@ -523,22 +534,19 @@ class OutboxLogicImplementation
 	@Override
 	public
 	void messageFailure (
-			int messageId,
-			String error,
+			@NonNull MessageRec message,
+			@NonNull String error,
 			@NonNull FailureType failureType) {
 
 		Transaction transaction =
 			database.currentTransaction ();
 
 		log.debug (
-			"outbox failure id = " + messageId);
+			"outbox failure id = " + message.getId ());
 
 		OutboxRec outbox =
 			outboxHelper.findRequired (
-				messageId);
-
-		MessageRec message =
-			outbox.getMessage ();
+				message.getId ());
 
 		if (
 			notIn (
@@ -559,7 +567,7 @@ class OutboxLogicImplementation
 
 		}
 
-		if (failureType == FailureType.perm) {
+		if (failureType == FailureType.permanent) {
 
 			outboxHelper.remove (
 				outbox);
@@ -692,6 +700,118 @@ class OutboxLogicImplementation
 			throw new RuntimeException ();
 
 		}
+
+	}
+
+	@Override
+	public
+	SmsOutboxAttemptRec beginSendAttempt (
+			@NonNull OutboxRec smsOutbox,
+			@NonNull byte[] requestTrace) {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		MessageRec smsMessage =
+			smsOutbox.getMessage ();
+
+		SmsOutboxAttemptRec smsOutboxAttempt =
+			smsOutboxAttemptHelper.insert (
+				smsOutboxAttemptHelper.createInstance ()
+
+			.setMessage (
+				smsMessage)
+
+			.setIndex (
+				(int) (long)
+				smsMessage.getNumAttempts ())
+
+			.setState (
+				SmsOutboxAttemptState.sending)
+
+			.setRoute (
+				smsOutbox.getRoute ())
+
+			.setStartTime (
+				transaction.now ())
+
+			.setRequestTrace (
+				requestTrace)
+
+		);
+
+		smsMessage
+
+			.setNumAttempts (
+				smsMessage.getNumAttempts () + 1);
+
+		return smsOutboxAttempt;
+
+	}
+
+	@Override
+	public
+	void completeSendAttemptSuccess (
+			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
+			@NonNull Optional<List<String>> otherIds,
+			@NonNull byte[] responseTrace) {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		MessageRec smsMessage =
+			smsOutboxAttempt.getMessage ();
+
+		smsOutboxAttempt
+
+			.setState (
+				SmsOutboxAttemptState.success)
+
+			.setEndTime (
+				transaction.now ())
+
+			.setResponseTrace (
+				responseTrace);
+
+		messageSuccess (
+			smsMessage,
+			otherIds);
+
+	}
+
+	@Override
+	public
+	void completeSendAttemptFailure (
+			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
+			@NonNull FailureType failureType,
+			@NonNull String errorMessage,
+			@NonNull Optional<byte[]> responseTrace,
+			@NonNull byte[] errorTrace) {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		MessageRec smsMessage =
+			smsOutboxAttempt.getMessage ();
+
+		smsOutboxAttempt
+
+			.setState (
+				SmsOutboxAttemptState.failure)
+
+			.setEndTime (
+				transaction.now ())
+
+			.setResponseTrace (
+				responseTrace.orNull ())
+
+			.setErrorTrace (
+				errorTrace);
+
+		messageFailure (
+			smsMessage,
+			errorMessage,
+			failureType);
 
 	}
 

@@ -22,7 +22,7 @@ import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.outbox.logic.OutboxLogic;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 
 @PrototypeComponent ("messageActionsAction")
 public
@@ -44,7 +44,7 @@ class MessageActionsAction
 	MessageLogic messageLogic;
 
 	@Inject
-	OutboxLogic outboxLogic;
+	SmsOutboxLogic outboxLogic;
 
 	@Inject
 	ConsoleRequestContext requestContext;

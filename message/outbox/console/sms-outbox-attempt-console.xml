@@ -1,0 +1,94 @@
+<console-module
+	name="sms-outbox-attempt">
+
+	<console-helper-provider
+		object-name="smsOutboxAttempt"
+		view-priv="message.route:manage">
+
+		<priv-key
+			name="smsOutboxAttempt.manage"
+			delegate="message.route"
+			priv="manage"/>
+
+		<context-stuff
+			name="smsOutboxAttemptName"
+			field="id"/>
+
+		<context-stuff
+			name="messageId"
+			delegate="message"
+			field="id"/>
+
+		<run-post-processor
+			name="message"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="smsOutboxAttempt"
+		object-name="smsOutboxAttempt">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="smsOutboxAttempt">
+
+		<index-field/>
+
+		<enum-field
+			name="state"
+			helper="smsOutboxAttemptStateConsoleHelper"/>
+
+		<timestamp-field
+			name="startTime"/>
+
+		<timestamp-field
+			name="endTime"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="smsOutboxAttempt">
+
+		<id-field/>
+		<parent-field/>
+		<index-field/>
+
+		<enum-field
+			name="state"
+			helper="smsOutboxAttemptStateConsoleHelper"/>
+
+		<timestamp-field
+			name="startTime"/>
+
+		<timestamp-field
+			name="endTime"/>
+
+		<text-area-field
+			name="requestTrace"/>
+
+		<text-area-field
+			name="responseTrace"/>
+
+		<text-area-field
+			name="errorTrace"/>
+
+	</field-set>
+
+</console-module>

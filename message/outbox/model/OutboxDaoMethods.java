@@ -18,7 +18,7 @@ interface OutboxDaoMethods {
 
 	List<OutboxRec> findLimit (
 			RouteRec route,
-			int maxResults);
+			long maxResults);
 
 	OutboxRec findNext (
 			Instant now,
@@ -27,13 +27,13 @@ interface OutboxDaoMethods {
 	List<OutboxRec> findNextLimit (
 			Instant now,
 			RouteRec route,
-			int maxResults);
+			long maxResults);
 
 	List<OutboxRec> findSendingBeforeLimit (
 			Instant sendingBefore,
-			int maxResults);
+			long maxResults);
 
-	Map<Integer,Integer> generateRouteSummary (
+	Map<Long,Long> generateRouteSummary (
 			Instant now);
 
 }

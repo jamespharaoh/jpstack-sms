@@ -13,12 +13,17 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.application.config.WbsConfig;
@@ -133,8 +138,8 @@ class HttpSender
 
 	@Override
 	protected
-	String sendMessage (
-			HttpOutbox httpOutbox)
+	Optional<List<String>> sendMessage (
+			@NonNull HttpOutbox httpOutbox)
 		throws SendFailureException {
 
 		log.info (
@@ -166,7 +171,9 @@ class HttpSender
 
 			// and return
 
-			return otherId;
+			return Optional.of (
+				ImmutableList.of (
+					otherId));
 
 		} catch (IOException exception) {
 

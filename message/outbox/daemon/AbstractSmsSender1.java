@@ -3,10 +3,13 @@ package wbs.sms.message.outbox.daemon;
 import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
@@ -17,8 +20,10 @@ import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.MessageLogic;
-import wbs.sms.message.outbox.logic.OutboxLogic;
-import wbs.sms.message.outbox.logic.OutboxLogic.FailureType;
+import wbs.sms.message.core.model.MessageObjectHelper;
+import wbs.sms.message.core.model.MessageRec;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic.FailureType;
 import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.blacklist.model.BlacklistRec;
@@ -38,6 +43,7 @@ import wbs.sms.route.sender.model.SenderRec;
  * passed. More commonly extra route information will need to be looked up and
  * combined into a custom class.
  */
+@Deprecated
 @Log4j
 public abstract
 class AbstractSmsSender1<MessageContainer>
@@ -61,13 +67,16 @@ class AbstractSmsSender1<MessageContainer>
 	Database database;
 
 	@Inject
+	MessageObjectHelper messageHelper;
+
+	@Inject
 	MessageLogic messageLogic;
 
 	@Inject
 	NumberLookupManager numberLookupManager;
 
 	@Inject
-	OutboxLogic outboxLogic;
+	SmsOutboxLogic outboxLogic;
 
 	@Inject
 	SmsOutboxMonitor outboxMonitor;
@@ -92,7 +101,7 @@ class AbstractSmsSender1<MessageContainer>
 		throws SendFailureException;
 
 	protected abstract
-	Object sendMessage (
+	Optional<List<String>> sendMessage (
 			MessageContainer message)
 		throws SendFailureException;
 
@@ -210,9 +219,9 @@ class AbstractSmsSender1<MessageContainer>
 
 				OutboxRec outbox;
 
-				int messageId = -1; // always reinitialised
+				long messageId = -1; // always reinitialised
 
-				MessageContainer message;
+				MessageContainer messageContainer;
 
 				synchronized (routeLock) {
 
@@ -299,13 +308,13 @@ class AbstractSmsSender1<MessageContainer>
 
 					try {
 
-						message =
+						messageContainer =
 							getMessage (outbox);
 
 					} catch (SendFailureException exception) {
 
 						outboxLogic.messageFailure (
-							messageId,
+							outbox.getMessage (),
 							exception.errorMessage,
 							exception.failureType);
 
@@ -321,12 +330,13 @@ class AbstractSmsSender1<MessageContainer>
 
 				// now send it
 
-				Object otherIdObject;
+				Optional<List<String>> otherIds;
 
 				try {
 
-					otherIdObject =
-						sendMessage (message);
+					otherIds =
+						sendMessage (
+							messageContainer);
 
 				} catch (SendFailureException exception) {
 
@@ -335,32 +345,6 @@ class AbstractSmsSender1<MessageContainer>
 						exception);
 
 					continue;
-
-				}
-
-				String[] otherIds;
-
-				if (otherIdObject == null) {
-
-					otherIds = null;
-
-				} else if (otherIdObject instanceof String) {
-
-					otherIds =
-						new String [] {
-							(String) otherIdObject
-						};
-
-				} else if (otherIdObject instanceof String[]) {
-
-					otherIds =
-						(String[])
-						otherIdObject;
-
-				} else {
-
-					throw new RuntimeException (
-						otherIdObject.getClass ().toString ());
 
 				}
 
@@ -379,8 +363,8 @@ class AbstractSmsSender1<MessageContainer>
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxSuccess (
-				int messageId,
-				String[] otherIds) {
+				@NonNull Long messageId,
+				@NonNull Optional<List<String>> otherIds) {
 
 			boolean interrupted = false;
 
@@ -394,8 +378,12 @@ class AbstractSmsSender1<MessageContainer>
 							"AbstractSmsSender1.Worker.reliableOutboxSuccess (...)",
 							this);
 
+					MessageRec message =
+						messageHelper.findRequired (
+							messageId);
+
 					outboxLogic.messageSuccess (
-						messageId,
+						message,
 						otherIds);
 
 					if (interrupted)
@@ -447,7 +435,7 @@ class AbstractSmsSender1<MessageContainer>
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxFailure (
-				int messageId,
+				long messageId,
 				SendFailureException sendException) {
 
 			boolean interrupted = false;
@@ -462,8 +450,12 @@ class AbstractSmsSender1<MessageContainer>
 							"AbstractSmsSender1.Worker.reliableOutboxFailure (...)",
 							this);
 
+					MessageRec message =
+						messageHelper.findRequired (
+							messageId);
+
 					outboxLogic.messageFailure (
-						messageId,
+						message,
 						sendException.errorMessage,
 						sendException.failureType);
 
@@ -540,7 +532,7 @@ class AbstractSmsSender1<MessageContainer>
 
 		return new SendFailureException (
 			errorMessage,
-			FailureType.perm);
+			FailureType.permanent);
 
 	}
 
@@ -550,7 +542,7 @@ class AbstractSmsSender1<MessageContainer>
 
 		return new SendFailureException (
 			errorMessage,
-			FailureType.temp);
+			FailureType.temporary);
 
 	}
 

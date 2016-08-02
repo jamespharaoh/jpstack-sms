@@ -48,7 +48,7 @@ class SmsOutboxMonitorImplementation
 	// details
 
 	public final static
-	int sleepInterval = 1000;
+	long sleepInterval = 1000;
 
 	@Override
 	protected
@@ -63,8 +63,8 @@ class SmsOutboxMonitorImplementation
 		new Object ();
 
 	private
-	Map<Integer,CountDownLatch> waiters =
-		new HashMap<Integer,CountDownLatch> ();
+	Map<Long,CountDownLatch> waiters =
+		new HashMap<Long,CountDownLatch> ();
 
 	// implementation
 
@@ -81,7 +81,7 @@ class SmsOutboxMonitorImplementation
 	@Override
 	public
 	void waitForRoute (
-			int routeId)
+			long routeId)
 		throws InterruptedException {
 
 		CountDownLatch countDownLatch;
@@ -112,6 +112,7 @@ class SmsOutboxMonitorImplementation
 				routeId));
 
 		countDownLatch.await ();
+
 	}
 
 	private
@@ -185,7 +186,7 @@ class SmsOutboxMonitorImplementation
 					"SmsOutboxMonitorImplementation.runOnce ()",
 					this);
 
-			Map<Integer,Integer> routeSummary =
+			Map<Long,Long> routeSummary =
 				outboxHelper.generateRouteSummary (
 					transaction.now ());
 
@@ -196,14 +197,14 @@ class SmsOutboxMonitorImplementation
 			synchronized (waitersLock) {
 
 				for (
-					Map.Entry<Integer,Integer> routeSummaryEntry
+					Map.Entry<Long,Long> routeSummaryEntry
 						: routeSummary.entrySet ()
 				) {
 
-					int routeId =
+					long routeId =
 						routeSummaryEntry.getKey ();
 
-					int count =
+					long count =
 						routeSummaryEntry.getValue ();
 
 					log.debug (

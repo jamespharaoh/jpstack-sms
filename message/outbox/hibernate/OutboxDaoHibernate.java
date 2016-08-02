@@ -61,7 +61,7 @@ class OutboxDaoHibernate
 	public
 	List<OutboxRec> findLimit (
 			@NonNull RouteRec route,
-			int maxResults) {
+			long maxResults) {
 
 		return findMany (
 			"findLimit (route, maxResults)",
@@ -78,6 +78,9 @@ class OutboxDaoHibernate
 			.addOrder (
 				Order.asc (
 					"id"))
+
+			.setMaxResults (
+				(int) maxResults)
 
 		);
 
@@ -155,7 +158,7 @@ class OutboxDaoHibernate
 	List<OutboxRec> findNextLimit (
 			@NonNull Instant now,
 			@NonNull RouteRec route,
-			int maxResults) {
+			long maxResults) {
 
 		return findMany (
 			"findNextLimit (now, route, maxResults)",
@@ -185,6 +188,10 @@ class OutboxDaoHibernate
 
 			.add (
 				Restrictions.isNull (
+					"_outbox.sending"))
+
+			.add (
+				Restrictions.isNull (
 					"_number.archiveDate"))
 
 			.add (
@@ -195,7 +202,7 @@ class OutboxDaoHibernate
 
 				Restrictions.gt (
 					"_outbox.remainingTries",
-					0)
+					0l)
 
 			))
 
@@ -208,7 +215,7 @@ class OutboxDaoHibernate
 					"_outbox.retryTime"))
 
 			.setMaxResults (
-				maxResults)
+				(int) maxResults)
 
 		);
 
@@ -216,7 +223,7 @@ class OutboxDaoHibernate
 
 	@Override
 	public
-	Map<Integer,Integer> generateRouteSummary (
+	Map<Long,Long> generateRouteSummary (
 			@NonNull Instant now) {
 
 		@SuppressWarnings ("unchecked")
@@ -242,14 +249,17 @@ class OutboxDaoHibernate
 
 			.list ();
 
-		Map<Integer,Integer> map =
-			new HashMap<Integer,Integer> ();
+		Map<Long,Long> map =
+			new HashMap<Long,Long> ();
 
-		for (Object[] row : list) {
+		for (
+			Object[] row
+				: list
+		) {
 
 			map.put (
-				(Integer) row [0],
-				(int) (long) (Long) row [1]);
+				(long) (Integer) row [0],
+				(long) (Long) row [1]);
 
 		}
 
@@ -261,7 +271,7 @@ class OutboxDaoHibernate
 	public
 	List<OutboxRec> findSendingBeforeLimit (
 			@NonNull Instant sendingBefore,
-			int maxResults) {
+			long maxResults) {
 
 		return findMany (
 			"findSendingBeforeLimit (sendingBefore, maxResults)",
@@ -285,7 +295,7 @@ class OutboxDaoHibernate
 					"_outbox.sending"))
 
 			.setMaxResults (
-				maxResults)
+				(int) maxResults)
 
 		);
 

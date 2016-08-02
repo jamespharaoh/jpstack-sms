@@ -25,7 +25,7 @@ import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.outbox.logic.OutboxLogic;
+import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.message.outbox.model.OutboxRec;
 
 @PrototypeComponent ("messageOutboxRouteAction")
@@ -49,7 +49,7 @@ class MessageOutboxRouteAction
 	OutboxConsoleHelper outboxHelper;
 
 	@Inject
-	OutboxLogic outboxLogic;
+	SmsOutboxLogic outboxLogic;
 
 	@Inject
 	UserPrivChecker privChecker;

@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.NonNull;
+
 /**
  * Class containing static utility functions for dealing with GSM characters and
  * so on.
@@ -43,8 +45,8 @@ class Gsm {
 	 * @return the length
 	 */
 	public static
-	int length (
-			String string) {
+	long length (
+			@NonNull String string) {
 
 		if (! isGsm (string)) {
 
@@ -57,6 +59,37 @@ class Gsm {
 			gsmDoubleCharsPattern.matcher (string);
 
 		return matcher.replaceAll ("12").length ();
+
+	}
+
+	public static
+	long parts (
+			@NonNull Long gsmLength) {
+
+		if (gsmLength <= 0) {
+
+			throw new IllegalArgumentException (
+				"Length must be a positive integer");
+
+		} else if (gsmLength <= 160) {
+
+			return 1;
+
+		} else {
+
+			return (gsmLength + 152) / 153;
+
+		}
+
+	}
+
+	public static
+	long parts (
+			@NonNull String string) {
+
+		return parts (
+			length (
+				string));
 
 	}
 

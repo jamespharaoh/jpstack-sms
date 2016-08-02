@@ -112,7 +112,7 @@ class MessageSplitter {
 					Integer.toString (
 						pages)));
 
-		int spareLength =
+		long spareLength =
 			160 - Gsm.length (
 				template.replaceFirst (
 					"\\{message}",
@@ -143,11 +143,13 @@ class MessageSplitter {
 
 		// find how much we can fit in
 
-		int maxSplit = spareLength;
+		long maxSplit = spareLength;
 
 		while (
 			Gsm.length (
-				message.substring (0, maxSplit)
+				message.substring (
+					0,
+					(int) maxSplit)
 			) > spareLength
 		) {
 
@@ -157,18 +159,18 @@ class MessageSplitter {
 
 		// now go backwards to find a good place to split
 
-		int minSplit =
+		long minSplit =
 			(maxSplit + 2) * 2 / 3;
 
-		for (int d = maxSplit; d >= minSplit; d--) {
+		for (long d = maxSplit; d >= minSplit; d--) {
 
-			if (message.charAt (d) == ' ') {
+			if (message.charAt ((int) d) == ' ') {
 
 				String part1 =
-					message.substring(0, d).trim();
+					message.substring (0, (int) d).trim ();
 
 				String part2 =
-					message.substring(d).trim();
+					message.substring ((int) d).trim ();
 
 				return new String [] {
 
@@ -188,10 +190,10 @@ class MessageSplitter {
 		// that didn't work, just split it anywhere
 
 		String part1 =
-			message.substring (0, maxSplit);
+			message.substring (0, (int) maxSplit);
 
 		String part2 =
-			message.substring (maxSplit).trim ();
+			message.substring ((int) maxSplit).trim ();
 
 		return new String [] {
 
