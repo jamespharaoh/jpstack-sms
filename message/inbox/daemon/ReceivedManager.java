@@ -1,7 +1,7 @@
 package wbs.sms.message.inbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 
 import java.util.List;
 import java.util.Set;

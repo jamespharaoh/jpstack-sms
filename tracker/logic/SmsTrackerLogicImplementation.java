@@ -1,8 +1,8 @@
 package wbs.sms.tracker.logic;
 
-import static wbs.framework.utils.etc.Misc.earlierThan;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.TimeUtils.earlierThan;
 
 import java.util.ArrayList;
 import java.util.Collection;

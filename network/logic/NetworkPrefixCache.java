@@ -1,8 +1,8 @@
 package wbs.sms.network.logic;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.laterThan;
-import static wbs.framework.utils.etc.Misc.millisToInstant;
+import static wbs.framework.utils.etc.TimeUtils.laterThan;
+import static wbs.framework.utils.etc.TimeUtils.millisToInstant;
 
 import java.util.HashMap;
 import java.util.List;

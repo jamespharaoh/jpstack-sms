@@ -2,8 +2,8 @@ package wbs.sms.core.logic;
 
 import static wbs.framework.utils.etc.Misc.contains;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.joinWithPipe;
-import static wbs.framework.utils.etc.Misc.joinWithoutSeparator;
+import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
+import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 
 import java.util.Collection;
 import java.util.List;

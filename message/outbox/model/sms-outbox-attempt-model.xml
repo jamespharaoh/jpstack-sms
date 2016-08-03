@@ -25,6 +25,9 @@
 			name="state"
 			type="smsOutboxAttemptState"/>
 
+		<string-field
+			name="statusMessage"/>
+
 		<reference-field
 			type="route"/>
 

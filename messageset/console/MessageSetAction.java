@@ -1,9 +1,7 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.Misc.isEmpty;
-import static wbs.framework.utils.etc.Misc.isNotPresent;
+import static wbs.framework.utils.etc.Misc.isEmptyString;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -24,6 +22,8 @@ import wbs.console.module.ConsoleManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -154,7 +154,7 @@ class MessageSetAction
 			}
 
 			if (
-				isEmpty (
+				isEmptyString (
 					requestContext.parameterRequired (
 						"number_" + index))
 			) {

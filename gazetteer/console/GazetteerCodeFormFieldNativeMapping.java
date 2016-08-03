@@ -1,6 +1,5 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.isNull;
 
 import javax.inject.Inject;
@@ -14,6 +13,7 @@ import com.google.common.base.Optional;
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 

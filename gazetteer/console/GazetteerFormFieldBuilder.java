@@ -1,10 +1,7 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.Misc.camelToSpaces;
 import static wbs.framework.utils.etc.Misc.capitalise;
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-import static wbs.framework.utils.etc.Misc.isPresent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +38,11 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.utils.etc.BeanLogic;
+
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
+
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })

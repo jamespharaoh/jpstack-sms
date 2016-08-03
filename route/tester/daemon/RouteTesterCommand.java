@@ -1,7 +1,5 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +14,7 @@ import com.google.common.base.Optional;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;

@@ -1,6 +1,5 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.Collection;
@@ -23,6 +22,7 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.GlobalId;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;

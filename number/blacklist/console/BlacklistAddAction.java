@@ -1,7 +1,5 @@
 package wbs.sms.number.blacklist.console;
 
-import static wbs.framework.utils.etc.Misc.isPresent;
-
 import javax.inject.Inject;
 
 import lombok.Cleanup;
@@ -14,6 +12,7 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;

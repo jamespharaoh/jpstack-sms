@@ -1,6 +1,5 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import java.util.List;
@@ -18,6 +17,7 @@ import com.google.common.base.Optional;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;

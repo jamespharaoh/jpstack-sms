@@ -1,6 +1,6 @@
 package wbs.sms.gsm;
 
-import static wbs.framework.utils.etc.Misc.joinWithSeparator;
+import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
@@ -29,8 +29,7 @@ class Gsm {
 	private static final
 	Pattern gsmDoubleCharsPattern =
 		Pattern.compile (
-			joinWithSeparator (
-				"|",
+			joinWithPipe (
 				"\\u000c", // form feed
 				"\\[", // left square brace [
 				"\\\\", // backslash \

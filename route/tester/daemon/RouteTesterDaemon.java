@@ -1,6 +1,6 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.Misc.laterThan;
+import static wbs.framework.utils.etc.TimeUtils.laterThan;
 
 import java.util.List;
 

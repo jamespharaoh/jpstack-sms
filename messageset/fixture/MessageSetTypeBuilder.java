@@ -1,9 +1,9 @@
 package wbs.sms.messageset.fixture;
 
 import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
-import static wbs.framework.utils.etc.Misc.camelToUnderscore;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.camelToUnderscore;
 
 import java.sql.SQLException;
 

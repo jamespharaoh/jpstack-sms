@@ -1,7 +1,5 @@
 package wbs.sms.number.blacklist.console;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,6 +19,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.framework.record.Record;
 import wbs.framework.utils.etc.Html;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.model.EventLinkObjectHelper;
 import wbs.platform.event.model.EventLinkRec;

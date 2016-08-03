@@ -2,7 +2,6 @@ package wbs.sms.gsm.console;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
 import static wbs.framework.utils.etc.Misc.moreThan;
@@ -16,6 +15,7 @@ import com.google.common.base.Optional;
 
 import wbs.console.forms.FormFieldValueValidator;
 import wbs.framework.application.annotations.PrototypeComponent;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.sms.gsm.Gsm;
 
 @Accessors (fluent = true)

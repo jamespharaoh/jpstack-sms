@@ -1,7 +1,5 @@
 package wbs.sms.route.test.console;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -10,6 +8,7 @@ import com.google.common.base.Optional;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;

@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 
 import javax.inject.Inject;
 

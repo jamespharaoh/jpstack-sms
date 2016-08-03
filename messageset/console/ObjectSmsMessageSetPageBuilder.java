@@ -1,8 +1,8 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.Misc.camelToSpaces;
 import static wbs.framework.utils.etc.Misc.capitalise;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
 
 import java.util.Collections;
 

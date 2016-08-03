@@ -1,7 +1,5 @@
 package wbs.sms.command.logic;
 
-import static wbs.framework.utils.etc.Misc.isPresent;
-
 import javax.inject.Inject;
 
 import com.google.common.base.Optional;
@@ -9,6 +7,7 @@ import com.google.common.base.Optional;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.framework.record.Record;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.command.model.CommandObjectHelper;

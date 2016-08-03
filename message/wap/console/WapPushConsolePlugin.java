@@ -1,6 +1,5 @@
 package wbs.sms.message.wap.console;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -10,6 +9,7 @@ import lombok.NonNull;
 import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.sms.message.core.console.MessageConsolePlugin;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;

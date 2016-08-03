@@ -94,6 +94,6 @@ interface SmsOutboxLogic {
 			FailureType failureType,
 			String errorMessage,
 			Optional<byte[]> responseTrace,
-			byte[] errorTrace);
+			Optional<byte[]> errorTrace);
 
 }

@@ -1,7 +1,5 @@
 package wbs.sms.core.logic;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
@@ -23,6 +21,9 @@ import org.junit.runners.Parameterized.Parameters;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 
 @RunWith (Parameterized.class)
 public

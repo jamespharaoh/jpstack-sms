@@ -2,10 +2,8 @@ package wbs.sms.gazetteer.console;
 
 import static wbs.framework.utils.etc.CodeUtils.simplifyToCode;
 import static wbs.framework.utils.etc.Misc.errorResult;
-import static wbs.framework.utils.etc.Misc.isEmpty;
-import static wbs.framework.utils.etc.Misc.isNotPresent;
+import static wbs.framework.utils.etc.Misc.isEmptyString;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.successResult;
 
@@ -25,6 +23,8 @@ import fj.data.Either;
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 
@@ -61,7 +61,7 @@ class GazetteerFormFieldInterfaceMapping<Container>
 			isNotPresent (
 				interfaceValue)
 
-			|| isEmpty (
+			|| isEmptyString (
 				interfaceValue.get ())
 
 		) {

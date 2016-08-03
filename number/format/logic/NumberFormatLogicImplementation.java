@@ -1,9 +1,9 @@
 package wbs.sms.number.format.logic;
 
-import static wbs.framework.utils.etc.Misc.doesNotStartWith;
-import static wbs.framework.utils.etc.Misc.joinWithSeparator;
 import static wbs.framework.utils.etc.Misc.lessThan;
 import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.StringUtils.doesNotStartWith;
+import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +71,7 @@ class NumberFormatLogicImplementation
 				continue;
 			}
 
-			return joinWithSeparator (
-				"",
+			return joinWithoutSeparator (
 				numberFormatPattern.getOutputPrefix (),
 				number.substring (
 					numberFormatPattern.getInputPrefix ().length ()));

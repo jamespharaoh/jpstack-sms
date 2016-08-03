@@ -1,8 +1,8 @@
 package wbs.sms.message.ticker.console;
 
-import static wbs.framework.utils.etc.Misc.earlierThan;
-import static wbs.framework.utils.etc.Misc.millisToInstant;
-import static wbs.framework.utils.etc.Misc.spacify;
+import static wbs.framework.utils.etc.StringUtils.spacify;
+import static wbs.framework.utils.etc.TimeUtils.earlierThan;
+import static wbs.framework.utils.etc.TimeUtils.millisToInstant;
 
 import java.util.Collection;
 import java.util.List;

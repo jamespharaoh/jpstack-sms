@@ -1,9 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.Misc.earliest;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
@@ -26,6 +24,10 @@ import com.google.common.collect.ImmutableSet;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.TimeUtils.earliest;
+
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
 import wbs.sms.message.core.logic.MessageLogic;
@@ -786,7 +788,7 @@ class SmsOutboxLogicImplementation
 			@NonNull FailureType failureType,
 			@NonNull String errorMessage,
 			@NonNull Optional<byte[]> responseTrace,
-			@NonNull byte[] errorTrace) {
+			@NonNull Optional<byte[]> errorTrace) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -806,7 +808,7 @@ class SmsOutboxLogicImplementation
 				responseTrace.orNull ())
 
 			.setErrorTrace (
-				errorTrace);
+				errorTrace.orNull ());
 
 		messageFailure (
 			smsMessage,

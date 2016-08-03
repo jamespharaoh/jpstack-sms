@@ -1,9 +1,9 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.emptyStringIfNull;
-import static wbs.framework.utils.etc.Misc.implode;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
 
 import java.util.List;
 
@@ -305,7 +305,8 @@ class MessageSummaryPart
 			"<tr>\n",
 			"<th>Tags</th>\n",
 			"<td>%h</td>\n",
-			implode (", ", message.getTags ()),
+			joinWithCommaAndSpace (
+				message.getTags ()),
 			"</tr>\n");
 
 		if (

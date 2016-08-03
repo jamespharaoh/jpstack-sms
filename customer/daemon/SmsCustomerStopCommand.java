@@ -1,7 +1,6 @@
 package wbs.sms.customer.daemon;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.optionalOrNull;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -16,6 +15,7 @@ import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;

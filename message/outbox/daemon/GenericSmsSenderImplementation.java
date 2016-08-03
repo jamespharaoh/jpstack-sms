@@ -2,15 +2,19 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.JsonUtils.jsonToBytes;
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.isPresent;
-import static wbs.framework.utils.etc.Misc.joinWithSeparator;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.todo;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalMap;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrElse;
+import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
 
+import java.util.Map;
 import java.util.stream.LongStream;
 
 import javax.inject.Inject;
@@ -20,11 +24,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
-import org.json.simple.JSONObject;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
@@ -33,6 +38,7 @@ import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.record.GlobalId;
+import wbs.framework.utils.etc.JsonUtils;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.daemon.SmsSenderHelper.PerformSendResult;
@@ -52,6 +58,7 @@ import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.logic.NumberLookupManager;
 import wbs.sms.route.core.model.RouteRec;
 
+@Log4j
 @Accessors (fluent = true)
 @PrototypeComponent ("genericSmsSender")
 public
@@ -372,10 +379,45 @@ System.out.println ("XXX sender send 10");
 				PerformSendStatus.success)
 		) {
 
+			// set status message from exception if not present
+
 			if (
 
 				isNotNull (
 					performSendResult.exception ())
+
+				&& isNull (
+					performSendResult.statusMessage ())
+
+			) {
+
+				Throwable exception =
+					performSendResult.exception ();
+
+				performSendResult.statusMessage (
+					ifElse (
+						isNotNull (
+							exception.getMessage ()),
+
+					() -> stringFormat (
+						"Error sending message: %s: %s",
+						exception.getClass ().getSimpleName (),
+						exception.getMessage ()),
+
+					() -> stringFormat (
+						"Error sending message: %s",
+						exception.getClass ().getSimpleName ())
+
+				));
+
+			}
+
+			// set error trace from exception if not present
+
+			if (
+
+				isNotNull (
+					performSendResult.exception)
 
 				&& isNull (
 					performSendResult.errorTrace ())
@@ -388,39 +430,6 @@ System.out.println ("XXX sender send 10");
 
 			}
 
-			if (
-
-				isNotNull (
-					performSendResult.exception ())
-
-				&& isNull (
-					performSendResult.statusMessage ())
-
-			) {
-
-				performSendResult.statusMessage (
-					stringFormat (
-						"Error sending message: %s: %s",
-						performSendResult
-							.exception ()
-							.getClass ()
-							.getSimpleName (),
-						performSendResult
-							.exception ()
-							.getMessage ()));
-
-			}
-
-			if (
-				isNull (
-					performSendResult.errorTrace ())
-			) {
-
-				performSendResult.errorTrace (
-					new JSONObject ());
-
-			}
-
 		}
 
 	}
@@ -428,7 +437,7 @@ System.out.println ("XXX sender send 10");
 	void handlePerformSendError () {
 
 		boolean success =
-			LongStream.of (databaseRetriesMax).anyMatch (
+			LongStream.range (0, databaseRetriesMax).anyMatch (
 				attemptNumber ->
 					attemptToHandlePerformSendError (
 						attemptNumber));
@@ -476,8 +485,7 @@ System.out.println ("XXX sender send 10");
 					"%s.%s (%s)",
 					"GenericSmsSenderImplementation",
 					"attemptToHandlePerformSendErrorReal",
-					joinWithSeparator (
-						", ",
+					joinWithCommaAndSpace (
 						stringFormat (
 							"smsMessageId = %s",
 							smsMessageId),
@@ -498,8 +506,10 @@ System.out.println ("XXX sender send 10");
 			FailureType.temporary,
 			performSendResult.statusMessage (),
 			Optional.absent (),
-			jsonToBytes (
-				performSendResult.errorTrace ()));
+			optionalMap (
+				Optional.fromNullable (
+					performSendResult.errorTrace ()),
+				JsonUtils::jsonToBytes));
 
 		transaction.commit ();
 
@@ -508,7 +518,7 @@ System.out.println ("XXX sender send 10");
 	void processResponse () {
 
 		boolean success =
-			LongStream.of (databaseRetriesMax).anyMatch (
+			LongStream.range (0, databaseRetriesMax).anyMatch (
 				attemptNumber ->
 					attemptToProcessResponse (
 						state,
@@ -562,8 +572,7 @@ System.out.println ("XXX sender send 10");
 					"%s.%s (%s)",
 					"GenericSmsSenderImplementation",
 					"attemptToProcessResponseReal",
-					joinWithSeparator (
-						", ",
+					joinWithCommaAndSpace (
 						stringFormat (
 							"smsMessageId = %s",
 							smsMessageId),
@@ -629,15 +638,38 @@ System.out.println ("XXX sender send 10");
 
 		} else {
 
+			if (
+				isNull (
+					processResponseResult.failureType ())
+			) {
+
+				log.warn (
+					stringFormat (
+						"No failure type for send attempt %s ",
+						smsOutboxAttemptId,
+						"(defaulting to temporary)"));
+
+				processResponseResult.failureType (
+					FailureType.temporary);
+
+			}
+
 			smsOutboxLogic.completeSendAttemptFailure (
 				smsOutboxAttempt,
 				processResponseResult.failureType (),
-				processResponseResult.statusMessage (),
-				Optional.of (
-					jsonToBytes (
-						performSendResult.responseTrace ())),
-				jsonToBytes (
-					processResponseResult.errorTrace ()));
+				optionalOrElse (
+					Optional.fromNullable (
+						processResponseResult.statusMessage ()),
+					() -> defaultStatusMessages.get (
+						processResponseResult.failureType ())),
+				optionalMap (
+					Optional.fromNullable (
+						performSendResult.responseTrace ()),
+					JsonUtils::jsonToBytes),
+				optionalMap (
+					Optional.fromNullable (
+						processResponseResult.errorTrace ()),
+					JsonUtils::jsonToBytes));
 
 		}
 
@@ -687,5 +719,23 @@ System.out.println ("XXX sender send 10");
 		return false;
 
 	}
+
+	public final static
+	Map<FailureType,String> defaultStatusMessages =
+		ImmutableMap.<FailureType,String>builder ()
+
+		.put (
+			FailureType.daily,
+			"Unspecified daily failure")
+
+		.put (
+			FailureType.permanent,
+			"Unspecified permanent failure")
+
+		.put (
+			FailureType.temporary,
+			"Unspecified temporart failure")
+
+		.build ();
 
 }

@@ -1,8 +1,6 @@
 package wbs.sms.locator.model;
 
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.optionalRequired;
-import static wbs.framework.utils.etc.Misc.split;
 
 import java.util.List;
 
@@ -11,6 +9,9 @@ import lombok.Value;
 import lombok.experimental.Accessors;
 
 import com.google.common.base.Optional;
+
+import static wbs.framework.utils.etc.OptionalUtils.optionalRequired;
+import static wbs.framework.utils.etc.StringUtils.split;
 
 @Accessors (fluent = true)
 @Value

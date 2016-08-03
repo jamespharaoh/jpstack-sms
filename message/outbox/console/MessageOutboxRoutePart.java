@@ -169,7 +169,7 @@ class MessageOutboxRoutePart
 				"<input",
 				" type=\"submit\"",
 				" name=\"cancel\"",
-				" value=\"cancel\"><br>\n",
+				" value=\"cancel\">\n",
 
 				"<input",
 				" type=\"submit\"",

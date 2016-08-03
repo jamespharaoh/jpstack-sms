@@ -1,7 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 import static wbs.framework.utils.etc.Misc.stringToBytes;
@@ -28,6 +27,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.record.GlobalId;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;

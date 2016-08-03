@@ -2,8 +2,6 @@ package wbs.sms.customer.logic;
 
 import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.isNotPresent;
-import static wbs.framework.utils.etc.Misc.optionalOrNull;
 import static wbs.framework.utils.etc.Misc.stringFormat;
 
 import javax.inject.Inject;
@@ -20,6 +18,8 @@ import com.google.common.base.Optional;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.event.logic.EventLogic;

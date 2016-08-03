@@ -1,13 +1,12 @@
 package wbs.sms.number.core.model;
 
-import static wbs.framework.utils.etc.Misc.isPresent;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
 import wbs.framework.record.GlobalId;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 

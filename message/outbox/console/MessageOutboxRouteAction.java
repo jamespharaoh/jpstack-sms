@@ -1,7 +1,6 @@
 package wbs.sms.message.outbox.console;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.isPresent;
 import static wbs.framework.utils.etc.Misc.notEqual;
 
 import java.util.Collection;
@@ -20,6 +19,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;

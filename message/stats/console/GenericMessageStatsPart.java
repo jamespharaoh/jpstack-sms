@@ -1,8 +1,6 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.Misc.isNotPresent;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.optionalOrNull;
 import static wbs.framework.utils.etc.Misc.toEnum;
 
 import java.util.Collections;
@@ -26,6 +24,8 @@ import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.TimeFormatter;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import wbs.framework.web.UrlParams;
 
 @Accessors (fluent = true)

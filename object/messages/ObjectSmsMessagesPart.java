@@ -1,8 +1,8 @@
 package wbs.sms.object.messages;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.instantToDateNullSafe;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.TimeUtils.instantToDateNullSafe;
 
 import java.util.Calendar;
 import java.util.HashMap;

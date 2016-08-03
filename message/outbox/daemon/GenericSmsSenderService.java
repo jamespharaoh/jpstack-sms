@@ -2,10 +2,11 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isEmpty;
+import static wbs.framework.utils.etc.Misc.isEmptyString;
 import static wbs.framework.utils.etc.Misc.isZero;
-import static wbs.framework.utils.etc.Misc.joinWithFullStop;
 import static wbs.framework.utils.etc.Misc.stringFormat;
-import static wbs.framework.utils.etc.Misc.underscoreToHyphen;
+import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
+import static wbs.framework.utils.etc.StringUtils.underscoreToHyphen;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -175,7 +176,7 @@ System.out.println ("XXX ROUTE " + smsRoute.getCode ());
 						smsRoute.getCode ())),
 				this::messageClaimLoop);
 
-			LongStream.of (threadsPerRoute).forEach (
+			LongStream.range (0, threadsPerRoute).forEach (
 				threadIndex ->
 					createThread (
 						stringFormat (
