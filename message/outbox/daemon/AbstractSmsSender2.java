@@ -3,7 +3,9 @@ package wbs.sms.message.outbox.daemon;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.stringFormat;
-import static wbs.framework.utils.etc.Misc.stringToBytes;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.StringUtils.stringToBytes;
+import static wbs.framework.utils.etc.StringUtils.stringToUtf8;
 
 import java.util.List;
 import java.util.Set;
@@ -27,7 +29,6 @@ import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.record.GlobalId;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.MessageLogic;
 import wbs.sms.message.core.model.MessageRec;
@@ -547,9 +548,8 @@ class AbstractSmsSender2
 
 						.setResponseTrace (
 							responseTrace != null
-								? stringToBytes (
-									responseTrace.toJSONString (),
-									"utf-8")
+								? stringToUtf8 (
+									responseTrace.toJSONString ())
 								: null);
 
 					outboxLogic.messageSuccess (
@@ -648,9 +648,8 @@ class AbstractSmsSender2
 
 						.setErrorTrace (
 							errorTrace != null
-							? stringToBytes (
-								errorTrace.toJSONString (),
-								"utf-8")
+							? stringToUtf8 (
+								errorTrace.toJSONString ())
 							: null);
 
 					outboxLogic.messageFailure (

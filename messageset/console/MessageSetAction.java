@@ -27,7 +27,7 @@ import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
-import wbs.sms.gsm.Gsm;
+import wbs.sms.gsm.GsmUtils;
 import wbs.sms.messageset.model.MessageSetMessageObjectHelper;
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
@@ -170,7 +170,7 @@ class MessageSetAction
 				requestContext.parameterRequired (
 					"message_" + index);
 
-			if (! Gsm.isGsm (message)) {
+			if (! GsmUtils.isValidGsm (message)) {
 
 				requestContext.addError (
 					"Message " + (index + 1) + " has invalid characters");
@@ -179,7 +179,7 @@ class MessageSetAction
 
 			}
 
-			if (Gsm.length (message) > 160) {
+			if (GsmUtils.length (message) > 160) {
 
 				requestContext.addError (
 					"Message " + (index + 1) + " is too long");

@@ -30,6 +30,7 @@ class MessageStatusType
 		add (13, MessageStatus.blacklisted);
 		add (14, MessageStatus.manuallyUndelivered);
 		add (15, MessageStatus.manuallyDelivered);
+		add (16, MessageStatus.rejected);
 
 	}
 

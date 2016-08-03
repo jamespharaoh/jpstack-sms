@@ -5,12 +5,21 @@ CREATE TABLE message_ids (
 	partition smallint NOT NULL
 );
 
+---------------------------------------- TABLE message_other_ids
+
+CREATE TABLE message_other_ids (
+	id bigint PRIMARY KEY,
+	route_id bigint NOT NULL REFERENCES route,
+	direction smallint NOT NULL CHECK (direction IN (0, 1)),
+	other_id text NOT NULL
+);
+
 ---------------------------------------- TABLE message
 
 ALTER TABLE MESSAGE
 ADD CHECK (
 	(direction = 0 AND status IN (0, 1, 7, 8, 9))
-OR	(direction = 1 AND status IN (0, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14)));
+OR	(direction = 1 AND status IN (0, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16)));
 
 ALTER TABLE message
 ADD CHECK (date = created_time :: date);

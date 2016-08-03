@@ -144,13 +144,9 @@ class GenericSmsSenderImplementation<StateType>
 	public
 	void send () {
 
-System.out.println ("XXX sender send 0");
-
 		// setup request
 
 		setupSend ();
-
-System.out.println ("XXX sender send 1");
 
 		if (
 			notEqual (
@@ -158,26 +154,16 @@ System.out.println ("XXX sender send 1");
 				SetupRequestStatus.success)
 		) {
 
-System.out.println ("XXX sender send 2");
-
 			return;
 
 		}
 
-System.out.println ("XXX sender send 3");
-
 		state =
 			setupRequestResult.state ();
 
-System.out.println ("XXX sender send 4");
-
 		// perform send
 
-System.out.println ("XXX sender send 5");
-
 		performSend ();
-
-System.out.println ("XXX sender send 6");
 
 		if (
 			notEqual (
@@ -185,11 +171,7 @@ System.out.println ("XXX sender send 6");
 				PerformSendStatus.success)
 		) {
 
-System.out.println ("XXX sender send 7");
-
 			handlePerformSendError ();
-
-System.out.println ("XXX sender send 8");
 
 			return;
 
@@ -197,11 +179,7 @@ System.out.println ("XXX sender send 8");
 
 		// process response
 
-System.out.println ("XXX sender send 9");
-
 		processResponse ();
-
-System.out.println ("XXX sender send 10");
 
 	}
 
@@ -505,7 +483,10 @@ System.out.println ("XXX sender send 10");
 			smsOutboxAttempt,
 			FailureType.temporary,
 			performSendResult.statusMessage (),
-			Optional.absent (),
+			optionalMap (
+				Optional.fromNullable (
+					performSendResult.responseTrace ()),
+				JsonUtils::jsonToBytes),
 			optionalMap (
 				Optional.fromNullable (
 					performSendResult.errorTrace ()),

@@ -1,8 +1,8 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.bytesToString;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.bytesToString;
 
 import java.util.List;
 import java.util.Set;

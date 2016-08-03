@@ -97,8 +97,10 @@ class SmsOutboxUnstickDaemon
 			if (outboxesToUnstick.isEmpty ())
 				return;
 
-			for (OutboxRec outbox
-					: outboxesToUnstick) {
+			for (
+				OutboxRec outbox
+					: outboxesToUnstick
+			) {
 
 				log.warn (
 					stringFormat (

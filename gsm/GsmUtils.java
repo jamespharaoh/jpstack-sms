@@ -13,13 +13,13 @@ import lombok.NonNull;
  * so on.
  */
 public
-class Gsm {
+class GsmUtils {
 
 	/**
 	 * Private constructor never called.
 	 */
 	private
-	Gsm () {
+	GsmUtils () {
 		throw new RuntimeException ();
 	}
 
@@ -47,7 +47,7 @@ class Gsm {
 	long length (
 			@NonNull String string) {
 
-		if (! isGsm (string)) {
+		if (! isValidGsm (string)) {
 
 			throw new IllegalArgumentException (
 				"Provided string contains invalid GSM characters");
@@ -124,12 +124,21 @@ class Gsm {
 	 * @return true if s consists of gsm characters only
 	 */
 	public static
-	boolean isGsm (
-			String string) {
+	boolean isValidGsm (
+			@NonNull String string) {
 
 		return gsmCharsPattern
 			.matcher (string)
 			.matches ();
+
+	}
+
+	public static
+	boolean isNotValidGsm (
+			@NonNull String string) {
+
+		return ! isValidGsm (
+			string);
 
 	}
 

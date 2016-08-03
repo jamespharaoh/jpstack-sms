@@ -20,28 +20,28 @@ class MessageSplitter {
 				String newMiddle,
 				String newLast) {
 
-			if (! Gsm.isGsm (newSingle)) {
+			if (! GsmUtils.isValidGsm (newSingle)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in single template: " + newSingle);
 
 			}
 
-			if (! Gsm.isGsm (newFirst)) {
+			if (! GsmUtils.isValidGsm (newFirst)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in first template: " + newFirst);
 
 			}
 
-			if (! Gsm.isGsm (newMiddle)) {
+			if (! GsmUtils.isValidGsm (newMiddle)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in middle template: " + newMiddle);
 
 			}
 
-			if (! Gsm.isGsm (newLast)) {
+			if (! GsmUtils.isValidGsm (newLast)) {
 
 				throw new IllegalArgumentException(
 					"Non-GSM characters in last template: " + newLast);
@@ -113,7 +113,7 @@ class MessageSplitter {
 						pages)));
 
 		long spareLength =
-			160 - Gsm.length (
+			160 - GsmUtils.length (
 				template.replaceFirst (
 					"\\{message}",
 					""));
@@ -127,7 +127,7 @@ class MessageSplitter {
 
 		// if the message will fit as is then that's cool
 
-		if (Gsm.length (message) <= spareLength) {
+		if (GsmUtils.length (message) <= spareLength) {
 
 			return new String [] {
 
@@ -146,7 +146,7 @@ class MessageSplitter {
 		long maxSplit = spareLength;
 
 		while (
-			Gsm.length (
+			GsmUtils.length (
 				message.substring (
 					0,
 					(int) maxSplit)
@@ -233,7 +233,7 @@ class MessageSplitter {
 			String message,
 			Templates templates) {
 
-		if (! Gsm.isGsm (
+		if (! GsmUtils.isValidGsm (
 				message)) {
 
 			throw new IllegalArgumentException (
@@ -259,7 +259,7 @@ class MessageSplitter {
 				Matcher.quoteReplacement (
 					message.trim ()));
 
-		if (Gsm.length (singleMessage) <= 160) {
+		if (GsmUtils.length (singleMessage) <= 160) {
 
 			List<String> result =
 				new ArrayList<String> ();

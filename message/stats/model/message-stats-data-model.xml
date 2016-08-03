@@ -56,6 +56,14 @@
 			name="outManuallyUndelivered"
 			default="0"/>
 
+		<integer-field
+			name="outManuallyDelivered"
+			default="0"/>
+
+		<integer-field
+			name="outRejected"
+			default="0"/>
+
 	</fields>
 
 </model-meta>

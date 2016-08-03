@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.sms.gsm.Gsm;
+import wbs.sms.gsm.GsmUtils;
 
 @SingletonComponent ("keywordFinder")
 public
@@ -126,7 +126,7 @@ class KeywordFinder {
 	String stripKeyword (
 			String string) {
 
-		return Gsm.toSimpleAlpha (
+		return GsmUtils.toSimpleAlpha (
 			shitPattern
 				.matcher (string)
 				.replaceAll (""));

@@ -95,8 +95,8 @@ class Address {
 			return new Address (
 				typeOfNumber,
 				numberingPlanIdentification,
-				Gsm.decode (
-					Gsm.unpack7bit (
+				GsmUtils.decode (
+					GsmUtils.unpack7bit (
 						buffer,
 						numchars)));
 

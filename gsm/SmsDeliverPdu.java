@@ -155,8 +155,8 @@ class SmsDeliverPdu
 			messageLength -= userDataHeader.length() - 1;
 
 		String message =
-			Gsm.decode (
-				Gsm.unpack7bit (
+			GsmUtils.decode (
+				GsmUtils.unpack7bit (
 					byteBuffer,
 					messageLength));
 

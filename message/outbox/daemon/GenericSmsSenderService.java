@@ -96,8 +96,6 @@ class GenericSmsSenderService
 	protected
 	void createThreads () {
 
-System.out.println ("XXX CREATE THREADS");
-
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
@@ -107,8 +105,6 @@ System.out.println ("XXX CREATE THREADS");
 				this);
 
 		// get a list of routes
-
-System.out.println ("XXX SENDER HELPER: " + smsSenderHelper);
 
 		SenderRec sender =
 			senderHelper.findByCodeRequired (
@@ -124,8 +120,6 @@ System.out.println ("XXX SENDER HELPER: " + smsSenderHelper);
 			RouteRec smsRoute
 				: smsRoutes
 		) {
-
-System.out.println ("XXX ROUTE " + smsRoute.getCode ());
 
 			RouteSenderService routeSenderService =
 				new RouteSenderService ()
@@ -196,18 +190,10 @@ System.out.println ("XXX ROUTE " + smsRoute.getCode ());
 
 				try {
 
-System.out.println ("XXX wait for route " + smsRouteId);
-
 					outboxMonitor.waitForRoute (
 						smsRouteId);
 
-System.out.println ("XXX wait for route complete");
-
-System.out.println ("XXX claim all messages");
-
 					claimAllMessages ();
-
-System.out.println ("XXX claim all messages complete");
 
 				} catch (InterruptedException interruptedException) {
 					return;
@@ -257,8 +243,6 @@ System.out.println ("XXX claim all messages complete");
 		long waitForAvailableSenders ()
 			throws InterruptedException {
 
-System.out.println ("XXX wait for senders");
-
 			while (
 				equal (
 					claimedMessages,
@@ -270,8 +254,6 @@ System.out.println ("XXX wait for senders");
 			long numAvailable =
 				+ threadsPerRoute
 				- claimedMessages;
-
-System.out.println ("XXX num available " + numAvailable);
 
 			return numAvailable;
 
@@ -350,12 +332,8 @@ System.out.println ("XXX num available " + numAvailable);
 
 				try {
 
-System.out.println ("XXX wait for messages to send");
-
 					smsMessageId =
 						getOneMessageToSend ();
-
-System.out.println ("XXX got message " + smsMessageId);
 
 				} catch (InterruptedException interruptedException) {
 					return;

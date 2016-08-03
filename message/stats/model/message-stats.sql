@@ -321,6 +321,20 @@ BEGIN
 				out_manually_undelivered = out_manually_undelivered + the_diff
 			WHERE id = the_message_stats_id;
 
+		ELSIF the_status = 15 THEN
+
+			UPDATE message_stats
+			SET out_total = out_total + the_diff,
+				out_manually_delivered = out_manually_delivered + the_diff
+			WHERE id = the_message_stats_id;
+
+		ELSIF the_status = 16 THEN
+
+			UPDATE message_stats
+			SET out_total = out_total + the_diff,
+				out_rejected = out_rejected + the_diff
+			WHERE id = the_message_stats_id;
+
 		ELSE
 
 			UPDATE message_stats

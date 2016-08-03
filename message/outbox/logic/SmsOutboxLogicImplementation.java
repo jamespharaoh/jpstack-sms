@@ -5,6 +5,8 @@ import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.TimeUtils.earliest;
 
 import java.util.Calendar;
 import java.util.List;
@@ -24,10 +26,6 @@ import com.google.common.collect.ImmutableSet;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
-import static wbs.framework.utils.etc.TimeUtils.earliest;
-
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
 import wbs.sms.message.core.logic.MessageLogic;
@@ -731,6 +729,9 @@ class SmsOutboxLogicImplementation
 			.setState (
 				SmsOutboxAttemptState.sending)
 
+			.setStatusMessage (
+				"Sending")
+
 			.setRoute (
 				smsOutbox.getRoute ())
 
@@ -769,6 +770,9 @@ class SmsOutboxLogicImplementation
 			.setState (
 				SmsOutboxAttemptState.success)
 
+			.setStatusMessage (
+				"Success")
+
 			.setEndTime (
 				transaction.now ())
 
@@ -800,6 +804,9 @@ class SmsOutboxLogicImplementation
 
 			.setState (
 				SmsOutboxAttemptState.failure)
+
+			.setStatusMessage (
+				errorMessage)
 
 			.setEndTime (
 				transaction.now ())

@@ -16,7 +16,7 @@ import com.google.common.base.Optional;
 import wbs.console.forms.FormFieldValueValidator;
 import wbs.framework.application.annotations.PrototypeComponent;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import wbs.sms.gsm.Gsm;
+import wbs.sms.gsm.GsmUtils;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("gsmFormFieldValueValidator")
@@ -54,7 +54,7 @@ class GsmFormFieldValueValidator
 		// check validity
 
 		if (
-			! Gsm.isGsm (
+			! GsmUtils.isValidGsm (
 				stringValue)
 		) {
 
@@ -67,7 +67,7 @@ class GsmFormFieldValueValidator
 		// check length
 
 		long gsmLength =
-			Gsm.length (
+			GsmUtils.length (
 				stringValue);
 
 		if (
