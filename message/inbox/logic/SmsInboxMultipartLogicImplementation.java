@@ -27,10 +27,10 @@ import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @Log4j
-@SingletonComponent ("inboxMultipartLogic")
+@SingletonComponent ("smsInboxMultipartLogic")
 public
-class InboxMultipartLogicImplementation
-	implements InboxMultipartLogic {
+class SmsInboxMultipartLogicImplementation
+	implements SmsInboxMultipartLogic {
 
 	// dependencies
 
@@ -38,7 +38,7 @@ class InboxMultipartLogicImplementation
 	Database database;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	InboxMultipartBufferObjectHelper inboxMultipartBufferHelper;
@@ -248,7 +248,7 @@ class InboxMultipartLogicImplementation
 
 		// now create the message
 
-		inboxLogic.inboxInsert (
+		smsInboxLogic.inboxInsert (
 			Optional.of (bits [0].getMsgOtherId ()),
 			textHelper.findOrCreate (
 				stringBuilder.toString ()),

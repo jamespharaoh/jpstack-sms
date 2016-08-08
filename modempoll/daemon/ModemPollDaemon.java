@@ -35,7 +35,7 @@ import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.gsm.Pdu;
 import wbs.sms.gsm.SmsDeliverPdu;
-import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.modempoll.model.ModemPollQueueObjectHelper;
 import wbs.sms.modempoll.model.ModemPollQueueRec;
 import wbs.sms.network.model.NetworkRec;
@@ -51,7 +51,7 @@ class ModemPollDaemon
 	Database database;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	ModemPollQueueObjectHelper modemPollQueueHelper;
@@ -553,7 +553,7 @@ class ModemPollDaemon
 				routeHelper.findRequired (
 					routeId);
 
-			inboxLogic.inboxInsert (
+			smsInboxLogic.inboxInsert (
 				Optional.<String>absent (),
 				textHelper.findOrCreate (pdu.getMessage ()),
 				pdu.getOriginatingAddress ().getAddressValue (),

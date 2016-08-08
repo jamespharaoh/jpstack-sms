@@ -34,7 +34,7 @@ import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
 import wbs.sms.message.inbox.daemon.CommandManager;
-import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 
@@ -66,7 +66,7 @@ class KeywordCommand
 	KeywordSetObjectHelper keywordSetHelper;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
@@ -152,7 +152,7 @@ class KeywordCommand
 						keywordRecord,
 						message));
 
-				return inboxLogic.inboxNotProcessed (
+				return smsInboxLogic.inboxNotProcessed (
 					inbox,
 					Optional.<ServiceRec>absent (),
 					Optional.<AffiliateRec>absent (),
@@ -244,7 +244,7 @@ class KeywordCommand
 
 		}
 
-		return inboxLogic.inboxNotProcessed (
+		return smsInboxLogic.inboxNotProcessed (
 			inbox,
 			Optional.<ServiceRec>absent (),
 			Optional.<AffiliateRec>absent (),

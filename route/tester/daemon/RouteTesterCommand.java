@@ -21,7 +21,7 @@ import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.daemon.CommandHandler;
-import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.tester.model.RouteTestObjectHelper;
@@ -39,7 +39,7 @@ class RouteTesterCommand
 	Database database;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
@@ -91,7 +91,7 @@ class RouteTesterCommand
 
 		if (! matcher.find ()) {
 
-			return inboxLogic.inboxNotProcessed (
+			return smsInboxLogic.inboxNotProcessed (
 				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
@@ -112,7 +112,7 @@ class RouteTesterCommand
 				routeTestOptional)
 		) {
 
-			return inboxLogic.inboxNotProcessed (
+			return smsInboxLogic.inboxNotProcessed (
 				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
@@ -129,7 +129,7 @@ class RouteTesterCommand
 
 		if (routeTest.getReturnedTime () != null) {
 
-			return inboxLogic.inboxNotProcessed (
+			return smsInboxLogic.inboxNotProcessed (
 				inbox,
 				Optional.<ServiceRec>absent (),
 				Optional.<AffiliateRec>absent (),
@@ -146,7 +146,7 @@ class RouteTesterCommand
 			.setReturnedMessage (
 				message);
 
-		return inboxLogic.inboxProcessed (
+		return smsInboxLogic.inboxProcessed (
 			inbox,
 			Optional.<ServiceRec>absent (),
 			Optional.<AffiliateRec>absent (),

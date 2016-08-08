@@ -29,7 +29,7 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.message.inbox.model.InboxAttemptObjectHelper;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
@@ -60,7 +60,7 @@ class ReceivedManager
 	InboxObjectHelper inboxHelper;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	MessageObjectHelper messageHelper;
@@ -160,7 +160,7 @@ class ReceivedManager
 
 			} else {
 
-				inboxLogic.inboxNotProcessed (
+				smsInboxLogic.inboxNotProcessed (
 					inbox,
 					Optional.<ServiceRec>absent (),
 					Optional.<AffiliateRec>absent (),
@@ -208,7 +208,7 @@ class ReceivedManager
 				Optional.absent (),
 				GenericExceptionResolution.tryAgainLater);
 
-			inboxLogic.inboxProcessingFailed (
+			smsInboxLogic.inboxProcessingFailed (
 				inbox,
 				stringFormat (
 					"Threw %s: %s",

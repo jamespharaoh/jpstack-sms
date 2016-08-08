@@ -7,7 +7,7 @@ import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.model.RouteRec;
 
 public
-interface InboxMultipartLogic {
+interface SmsInboxMultipartLogic {
 
 	InboxMultipartBufferRec insertInboxMultipart (
 			RouteRec route,

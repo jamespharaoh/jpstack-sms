@@ -53,10 +53,10 @@ import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 
 @Log4j
-@SingletonComponent ("inboxLogic")
+@SingletonComponent ("smsInboxLogic")
 public
-class InboxLogicImplementation
-	implements InboxLogic {
+class SmsInboxLogicImplementation
+	implements SmsInboxLogic {
 
 	// dependencies
 

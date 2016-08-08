@@ -21,7 +21,7 @@ import wbs.framework.web.Responder;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.inbox.logic.InboxLogic;
+import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -40,7 +40,7 @@ class RouteTestTwoWayAction
 	Database database;
 
 	@Inject
-	InboxLogic inboxLogic;
+	SmsInboxLogic smsInboxLogic;
 
 	@Inject
 	RouteConsoleHelper routeHelper;
@@ -89,7 +89,7 @@ class RouteTestTwoWayAction
 				"num_to");
 
 		MessageRec messageRecord =
-			inboxLogic.inboxInsert (
+			smsInboxLogic.inboxInsert (
 				Optional.<String>absent (),
 				textHelper.findOrCreate (messageString),
 				numFrom,
