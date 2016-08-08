@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;

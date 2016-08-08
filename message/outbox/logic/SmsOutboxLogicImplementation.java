@@ -1,11 +1,13 @@
 package wbs.sms.message.outbox.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.TimeUtils.earliest;
 
 import java.util.Calendar;
@@ -707,7 +709,7 @@ class SmsOutboxLogicImplementation
 	public
 	SmsOutboxAttemptRec beginSendAttempt (
 			@NonNull OutboxRec smsOutbox,
-			@NonNull byte[] requestTrace) {
+			@NonNull Optional<byte[]> requestTrace) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -739,7 +741,8 @@ class SmsOutboxLogicImplementation
 				transaction.now ())
 
 			.setRequestTrace (
-				requestTrace)
+				optionalOrNull (
+					requestTrace))
 
 		);
 
@@ -757,7 +760,8 @@ class SmsOutboxLogicImplementation
 	void completeSendAttemptSuccess (
 			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
 			@NonNull Optional<List<String>> otherIds,
-			@NonNull byte[] responseTrace) {
+			@NonNull Optional<byte[]> requestTrace,
+			@NonNull Optional<byte[]> responseTrace) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -776,8 +780,14 @@ class SmsOutboxLogicImplementation
 			.setEndTime (
 				transaction.now ())
 
+			.setRequestTrace (
+				ifNull (
+					requestTrace.orNull (),
+					smsOutboxAttempt.getRequestTrace ()))
+
 			.setResponseTrace (
-				responseTrace);
+				optionalOrNull (
+					responseTrace));
 
 		messageSuccess (
 			smsMessage,
@@ -791,6 +801,7 @@ class SmsOutboxLogicImplementation
 			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
 			@NonNull FailureType failureType,
 			@NonNull String errorMessage,
+			@NonNull Optional<byte[]> requestTrace,
 			@NonNull Optional<byte[]> responseTrace,
 			@NonNull Optional<byte[]> errorTrace) {
 
@@ -810,6 +821,11 @@ class SmsOutboxLogicImplementation
 
 			.setEndTime (
 				transaction.now ())
+
+			.setRequestTrace (
+				ifNull (
+					requestTrace.orNull (),
+					smsOutboxAttempt.getRequestTrace ()))
 
 			.setResponseTrace (
 				responseTrace.orNull ())

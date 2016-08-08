@@ -6,7 +6,8 @@
 
 		<!-- id -->
 
-		<generated-id-field/>
+		<generated-id-field
+			sequence="delivery_notice_queue_id_seq"/>
 
 		<!-- identity -->
 

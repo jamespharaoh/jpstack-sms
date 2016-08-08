@@ -2,7 +2,7 @@ package wbs.sms.command.fixture;
 
 import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.camelToUnderscore;
 
 import java.sql.SQLException;

@@ -1,7 +1,7 @@
 package wbs.sms.route.sender.fixture;
 
 import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 

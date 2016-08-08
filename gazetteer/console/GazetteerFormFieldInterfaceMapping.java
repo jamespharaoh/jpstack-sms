@@ -2,9 +2,9 @@ package wbs.sms.gazetteer.console;
 
 import static wbs.framework.utils.etc.CodeUtils.simplifyToCode;
 import static wbs.framework.utils.etc.Misc.errorResult;
-import static wbs.framework.utils.etc.Misc.isEmptyString;
+import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.Misc.successResult;
 
 import java.util.Map;
@@ -61,7 +61,7 @@ class GazetteerFormFieldInterfaceMapping<Container>
 			isNotPresent (
 				interfaceValue)
 
-			|| isEmptyString (
+			|| stringIsEmpty (
 				interfaceValue.get ())
 
 		) {

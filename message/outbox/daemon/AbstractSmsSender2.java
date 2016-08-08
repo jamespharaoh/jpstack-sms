@@ -2,7 +2,7 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringToBytes;
 import static wbs.framework.utils.etc.StringUtils.stringToUtf8;

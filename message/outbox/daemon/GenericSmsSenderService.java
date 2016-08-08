@@ -2,9 +2,8 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isEmpty;
-import static wbs.framework.utils.etc.Misc.isEmptyString;
 import static wbs.framework.utils.etc.Misc.isZero;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
 import static wbs.framework.utils.etc.StringUtils.underscoreToHyphen;
 

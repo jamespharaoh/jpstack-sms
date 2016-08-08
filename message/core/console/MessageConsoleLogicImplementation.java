@@ -2,8 +2,8 @@ package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.isNotEmptyString;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringIsNotEmpty;
 import static wbs.framework.utils.etc.StringUtils.spacify;
 
 import javax.inject.Inject;
@@ -97,7 +97,7 @@ class MessageConsoleLogicImplementation
 				isNotNull (
 					message.getSubjectText ())
 
-				&& isNotEmptyString (
+				&& stringIsNotEmpty (
 					message.getSubjectText ().getText ())
 
 			) {

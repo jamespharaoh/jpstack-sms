@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

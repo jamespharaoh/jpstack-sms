@@ -82,17 +82,19 @@ interface SmsOutboxLogic {
 
 	SmsOutboxAttemptRec beginSendAttempt (
 			OutboxRec smsOutbox,
-			byte[] requestTrace);
+			Optional<byte[]> requestTrace);
 
 	void completeSendAttemptSuccess (
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			Optional<List<String>> otherIds,
-			byte[] responseTrace);
+			Optional<byte[]> requestTrace,
+			Optional<byte[]> responseTrace);
 
 	void completeSendAttemptFailure (
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			FailureType failureType,
 			String errorMessage,
+			Optional<byte[]> requestTrace,
 			Optional<byte[]> responseTrace,
 			Optional<byte[]> errorTrace);
 

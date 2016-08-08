@@ -2,7 +2,7 @@ package wbs.sms.customer.logic;
 
 import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

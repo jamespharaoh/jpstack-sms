@@ -1,17 +1,16 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.JsonUtils.jsonToBytes;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.Misc.todo;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.framework.utils.etc.OptionalUtils.optionalMap;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrElse;
 import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
 
 import java.util.Map;
@@ -304,8 +303,10 @@ class GenericSmsSenderImplementation<StateType>
 		SmsOutboxAttemptRec smsOutboxAttempt =
 			smsOutboxLogic.beginSendAttempt (
 				smsOutbox,
-				jsonToBytes (
-					setupRequestResult.requestTrace ()));
+				optionalMap (
+					optionalFromNullable (
+						setupRequestResult.requestTrace ()),
+					JsonUtils::jsonToBytes));
 
 		smsOutboxAttemptId =
 			(long) smsOutboxAttempt.getId ();
@@ -485,6 +486,10 @@ class GenericSmsSenderImplementation<StateType>
 			performSendResult.statusMessage (),
 			optionalMap (
 				Optional.fromNullable (
+					performSendResult.requestTrace ()),
+				JsonUtils::jsonToBytes),
+			optionalMap (
+				Optional.fromNullable (
 					performSendResult.responseTrace ()),
 				JsonUtils::jsonToBytes),
 			optionalMap (
@@ -612,10 +617,16 @@ class GenericSmsSenderImplementation<StateType>
 
 			smsOutboxLogic.completeSendAttemptSuccess (
 				smsOutboxAttempt,
-				Optional.fromNullable (
+				optionalFromNullable (
 					processResponseResult.otherIds ()),
-				jsonToBytes (
-					performSendResult.responseTrace ()));
+				optionalMap (
+					optionalFromNullable (
+						performSendResult.requestTrace ()),
+					JsonUtils::jsonToBytes),
+				optionalMap (
+					optionalFromNullable (
+						performSendResult.responseTrace ()),
+					JsonUtils::jsonToBytes));
 
 		} else {
 
@@ -635,14 +646,25 @@ class GenericSmsSenderImplementation<StateType>
 
 			}
 
+			if (
+				isNull (
+					processResponseResult.statusMessage ())
+			) {
+
+				processResponseResult.statusMessage (
+					defaultStatusMessages.get (
+						processResponseResult.failureType ()));
+
+			}
+
 			smsOutboxLogic.completeSendAttemptFailure (
 				smsOutboxAttempt,
 				processResponseResult.failureType (),
-				optionalOrElse (
+				processResponseResult.statusMessage (),
+				optionalMap (
 					Optional.fromNullable (
-						processResponseResult.statusMessage ()),
-					() -> defaultStatusMessages.get (
-						processResponseResult.failureType ())),
+						performSendResult.requestTrace ()),
+					JsonUtils::jsonToBytes),
 				optionalMap (
 					Optional.fromNullable (
 						performSendResult.responseTrace ()),

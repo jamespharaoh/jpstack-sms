@@ -2,7 +2,7 @@ package wbs.sms.route.http.daemon;
 
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

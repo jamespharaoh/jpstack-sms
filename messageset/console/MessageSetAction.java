@@ -1,9 +1,9 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.Misc.isEmptyString;
+import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.regex.Pattern;
 
@@ -154,7 +154,7 @@ class MessageSetAction
 			}
 
 			if (
-				isEmptyString (
+				stringIsEmpty (
 					requestContext.parameterRequired (
 						"number_" + index))
 			) {

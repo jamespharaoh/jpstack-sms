@@ -1,6 +1,6 @@
 package wbs.sms.smpp.daemon;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.hibernate;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.HashMap;
 import java.util.List;

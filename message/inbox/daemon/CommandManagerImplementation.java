@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collections;
 import java.util.HashMap;

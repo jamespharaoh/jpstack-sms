@@ -1,6 +1,6 @@
 package wbs.sms.core.logic;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Map;

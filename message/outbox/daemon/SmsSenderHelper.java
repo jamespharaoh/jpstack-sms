@@ -63,6 +63,7 @@ interface SmsSenderHelper<StateType> {
 		String statusMessage;
 		Throwable exception;
 
+		JSONObject requestTrace;
 		JSONObject responseTrace;
 		JSONObject errorTrace;
 

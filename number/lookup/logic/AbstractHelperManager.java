@@ -1,7 +1,7 @@
 package wbs.sms.number.lookup.logic;
 
-import static wbs.framework.utils.etc.Misc.capitalise;
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.capitalise;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +63,8 @@ class AbstractHelperManager<HelperType extends Helper> {
 				log.error (
 					stringFormat (
 						"%s helper for %s from both %s and %s",
-						capitalise (friendlyName ()),
+						capitalise (
+							friendlyName ()),
 						parentObjectTypeCode,
 						beanNamesByParentTypeCode.get (
 							parentObjectTypeCode),

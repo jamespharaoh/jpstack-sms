@@ -17,6 +17,8 @@ ALTER TABLE message_stats ALTER out_report_timed_out SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_held SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_blacklisted SET DEFAULT 0;
 ALTER TABLE message_stats ALTER out_manually_undelivered SET DEFAULT 0;
+ALTER TABLE message_stats ALTER out_manually_delivered SET DEFAULT 0;
+ALTER TABLE message_stats ALTER out_rejected SET DEFAULT 0;
 
 ---------------------------------------- TABLE message_stats_queue
 
@@ -409,7 +411,9 @@ BEGIN
 		out_report_timed_out,
 		out_held,
 		out_blacklisted,
-		out_manually_undelivered
+		out_manually_undelivered,
+		out_manually_delivered,
+		out_rejected
 	)
 	SELECT
 		nextval ('message_stats_id_seq'),
@@ -431,7 +435,9 @@ BEGIN
 		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 11 THEN 1 ELSE 0 END),
 		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 12 THEN 1 ELSE 0 END),
 		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 13 THEN 1 ELSE 0 END),
-		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 14 THEN 1 ELSE 0 END)
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 14 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 15 THEN 1 ELSE 0 END),
+		sum (CASE WHEN message_temp.direction = 1 AND message_temp.status = 16 THEN 1 ELSE 0 END)
 	FROM message_temp
 	GROUP BY
 		route_id,

@@ -1,6 +1,6 @@
 package wbs.sms.number.list.console;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 

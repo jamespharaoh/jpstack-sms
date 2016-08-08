@@ -1,6 +1,5 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.Misc.capitalise;
 import static wbs.framework.utils.etc.Misc.ifNull;
 
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import wbs.framework.utils.etc.BeanLogic;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
+import static wbs.framework.utils.etc.StringUtils.capitalise;
 
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 

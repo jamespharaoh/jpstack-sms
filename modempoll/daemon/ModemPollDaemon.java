@@ -1,6 +1,6 @@
 package wbs.sms.modempoll.daemon;
 
-import static wbs.framework.utils.etc.Misc.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
