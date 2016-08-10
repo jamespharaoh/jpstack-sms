@@ -15,7 +15,7 @@ import wbs.platform.event.logic.EventLogic;
 import wbs.platform.queue.logic.QueueLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleHelper;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
@@ -39,7 +39,7 @@ class MessageNotProcessedFormAction
 	MessageConsoleHelper messageHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic messageLogic;
 
 	@Inject
 	QueueLogic queueLogic;

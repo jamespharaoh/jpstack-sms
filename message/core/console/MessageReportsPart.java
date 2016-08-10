@@ -1,5 +1,7 @@
 package wbs.sms.message.core.console;
 
+import static wbs.framework.utils.etc.Misc.ifNull;
+
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -61,7 +63,8 @@ class MessageReportsPart
 			"<tr>\n",
 			"<th colspan=\"2\">Time</th>\n",
 			"<th>Status</th>\n",
-			"<th>Code</th>\n",
+			"<th>Their code</th>\n",
+			"<th>Their description</th>\n",
 			"</tr>\n");
 
 		if (messageReports.isEmpty ()) {
@@ -97,24 +100,17 @@ class MessageReportsPart
 					messageConsoleLogic.tdForMessageStatus (
 						messageReport.getNewMessageStatus ()));
 
-				if (messageReport.getCode () != null) {
+				printFormat (
+					"<td>%h</td>\n",
+					ifNull (
+						messageReport.getTheirCode (),
+						"—"));
 
-					printFormat (
-						"<td>%h</td>\n",
-						messageReport.getCode ());
-
-				} else if (messageReport.getMessageReportCode () != null) {
-
-					printFormat (
-						"<td>%h</td>\n",
-						messageReport.getMessageReportCode ().toString ());
-
-				} else {
-
-					printFormat (
-						"<td>-</td>\n");
-
-				}
+				printFormat (
+					"<td>%h</td>\n",
+					ifNull (
+						messageReport.getTheirDescription (),
+						"—"));
 
 				printFormat (
 					"</tr>\n");

@@ -244,11 +244,29 @@ class MessageConsoleLogicImplementation
 
 		switch (messageStatus) {
 
+		// pending status
+
+		case held:
+			return 'h';
+
 		case pending:
 			return ' ';
 
+		case sent:
+			return '-';
+
+		case submitted:
+			return '+';
+
+		// successful status
+
 		case processed:
 			return 'p';
+
+		case delivered:
+			return 'd';
+
+		// failure status
 
 		case cancelled:
 			return 'c';
@@ -256,11 +274,8 @@ class MessageConsoleLogicImplementation
 		case failed:
 			return 'f';
 
-		case sent:
-			return '-';
-
-		case delivered:
-			return 'd';
+		case rejected:
+			return 'r';
 
 		case undelivered:
 			return 'u';
@@ -276,14 +291,8 @@ class MessageConsoleLogicImplementation
 		case manuallyUndelivered:
 			return 'm';
 
-		case submitted:
-			return '+';
-
 		case reportTimedOut:
 			return '?';
-
-		case held:
-			return 'h';
 
 		case blacklisted:
 			return 'b';

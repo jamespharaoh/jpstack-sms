@@ -5,9 +5,9 @@ import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.TimeUtils.earliest;
 
 import java.util.Calendar;
@@ -30,7 +30,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageExpiryObjectHelper;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -67,7 +67,7 @@ class SmsOutboxLogicImplementation
 	MessageObjectHelper messageHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic messageLogic;
 
 	@Inject
 	OutboxDao outboxDao;
@@ -299,7 +299,7 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	OutboxRec claimNextMessage (
-			RouteRec route) {
+			@NonNull RouteRec route) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -329,7 +329,7 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	List<OutboxRec> claimNextMessages (
-			RouteRec route,
+			@NonNull RouteRec route,
 			int limit) {
 
 		Transaction transaction =

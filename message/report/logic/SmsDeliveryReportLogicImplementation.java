@@ -1,7 +1,6 @@
 package wbs.sms.message.report.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
@@ -15,28 +14,31 @@ import lombok.extern.log4j.Log4j;
 
 import org.joda.time.ReadableInstant;
 
+import com.google.common.base.Optional;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageDao;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
-import wbs.sms.message.report.model.MessageReportCodeRec;
 import wbs.sms.message.report.model.MessageReportObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @Log4j
-@SingletonComponent ("reportLogic")
+@SingletonComponent ("smsDeliveryReportLogic")
 public
-class ReportLogicImplementation
-	implements ReportLogic {
+class SmsDeliveryReportLogicImplementation
+	implements SmsDeliveryReportLogic {
+
+	// dependencies
 
 	@Inject
 	Database database;
@@ -48,7 +50,7 @@ class ReportLogicImplementation
 	MessageObjectHelper messageHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic messageLogic;
 
 	@Inject
 	MessageReportObjectHelper messageReportHelper;
@@ -59,13 +61,17 @@ class ReportLogicImplementation
 	@Inject
 	RouteObjectHelper routeHelper;
 
+	// implementation
+
 	@Override
 	public
 	void deliveryReport (
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newMessageStatus,
-			ReadableInstant timestamp,
-			MessageReportCodeRec messageReportCode)
+			@NonNull Optional<String> theirCode,
+			@NonNull Optional<String> theirDescription,
+			@NonNull Optional<String> extraInformation,
+			@NonNull Optional<ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
@@ -116,9 +122,6 @@ class ReportLogicImplementation
 
 			.setNewMessageStatus (
 				newMessageStatus)
-
-			.setMessageReportCode (
-				messageReportCode)
 
 		);
 
@@ -242,16 +245,11 @@ class ReportLogicImplementation
 
 		log.info (
 			stringFormat (
-				"DLV %s %s %s %s (%s)",
+				"DLV %s %s %s %s",
 				message.getId (),
 				message.getRoute ().getCode (),
 				message.getOtherId (),
-				message.getStatus (),
-				ifNull (
-					messageReportCode != null
-						? messageReportCode.getDescription ()
-						: "",
-					"")));
+				message.getStatus ()));
 
 	}
 
@@ -261,8 +259,10 @@ class ReportLogicImplementation
 			@NonNull RouteRec route,
 			@NonNull String otherId,
 			@NonNull MessageStatus newMessageStatus,
-			ReadableInstant timestamp,
-			MessageReportCodeRec messageReportCode)
+			@NonNull Optional<String> theirCode,
+			@NonNull Optional<String> theirDescription,
+			@NonNull Optional<String> extraInformation,
+			@NonNull Optional<ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
@@ -292,8 +292,10 @@ class ReportLogicImplementation
 		deliveryReport (
 			message,
 			newMessageStatus,
-			timestamp,
-			messageReportCode);
+			theirCode,
+			theirDescription,
+			extraInformation,
+			theirTimestamp);
 
 		return message;
 
@@ -304,8 +306,10 @@ class ReportLogicImplementation
 	void deliveryReport (
 			int messageId,
 			MessageStatus newMessageStatus,
-			ReadableInstant timestamp,
-			MessageReportCodeRec messageReportCode)
+			Optional<String> theirCode,
+			Optional<String> theirDescription,
+			Optional<String> extraInformation,
+			Optional<ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
@@ -324,8 +328,10 @@ class ReportLogicImplementation
 		deliveryReport (
 			message,
 			newMessageStatus,
-			timestamp,
-			messageReportCode);
+			theirCode,
+			theirDescription,
+			extraInformation,
+			theirTimestamp);
 
 	}
 

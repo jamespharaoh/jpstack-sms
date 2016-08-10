@@ -1,5 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -17,9 +18,8 @@ import com.google.common.base.Optional;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
@@ -61,31 +61,31 @@ class AbstractSmsSender1<MessageContainer>
 	// dependencies
 
 	@Inject
-	BlacklistObjectHelper blacklistHelper;
+	BlacklistObjectHelper smsBlacklistHelper;
 
 	@Inject
 	Database database;
 
 	@Inject
-	MessageObjectHelper messageHelper;
+	MessageObjectHelper smsMessageHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic smsMessageLogic;
 
 	@Inject
 	NumberLookupManager numberLookupManager;
 
 	@Inject
-	SmsOutboxLogic outboxLogic;
+	SmsOutboxLogic smsOutboxLogic;
 
 	@Inject
-	SmsOutboxMonitor outboxMonitor;
+	SmsOutboxMonitor smsOutboxMonitor;
 
 	@Inject
-	RouteObjectHelper routeHelper;
+	RouteObjectHelper smsRouteHelper;
 
 	@Inject
-	SenderObjectHelper senderHelper;
+	SenderObjectHelper smsSenderHelper;
 
 	// properties
 
@@ -97,12 +97,12 @@ class AbstractSmsSender1<MessageContainer>
 
 	protected abstract
 	MessageContainer getMessage (
-			OutboxRec outbox)
+			OutboxRec smsOutbox)
 		throws SendFailureException;
 
 	protected abstract
 	Optional<List<String>> sendMessage (
-			MessageContainer message)
+			MessageContainer messageContainer)
 		throws SendFailureException;
 
 	@Override
@@ -118,7 +118,7 @@ class AbstractSmsSender1<MessageContainer>
 		// get a list of routes
 
 		SenderRec sender =
-			senderHelper.findByCodeRequired (
+			smsSenderHelper.findByCodeRequired (
 				GlobalId.root,
 				getSenderCode ());
 
@@ -189,8 +189,11 @@ class AbstractSmsSender1<MessageContainer>
 			try {
 
 				while (true) {
+
 					waitForMessages ();
+
 					processMessages ();
+
 				}
 
 			} catch (InterruptedException exception) {
@@ -203,9 +206,11 @@ class AbstractSmsSender1<MessageContainer>
 		void waitForMessages ()
 			throws InterruptedException {
 
-			Thread.sleep (waitTimeMs);
+			Thread.sleep (
+				waitTimeMs);
 
-			outboxMonitor.waitForRoute (routeId);
+			smsOutboxMonitor.waitForRoute (
+				routeId);
 
 		}
 
@@ -232,13 +237,13 @@ class AbstractSmsSender1<MessageContainer>
 							this);
 
 					RouteRec route =
-						routeHelper.findRequired (
+						smsRouteHelper.findRequired (
 							routeId);
 
 					// get the next message
 
 					outbox =
-						outboxLogic.claimNextMessage (
+						smsOutboxLogic.claimNextMessage (
 							route);
 
 					if (outbox == null) {
@@ -272,7 +277,7 @@ class AbstractSmsSender1<MessageContainer>
 
 						outbox.setSending (null);
 
-						messageLogic.blackListMessage (
+						smsMessageLogic.blackListMessage (
 							outbox.getMessage ());
 
 						transaction.commit ();
@@ -284,7 +289,7 @@ class AbstractSmsSender1<MessageContainer>
 					// TODO aaargh
 
 					Optional<BlacklistRec> blacklistOptional =
-						blacklistHelper.findByCode (
+						smsBlacklistHelper.findByCode (
 							GlobalId.root,
 							number);
 
@@ -295,7 +300,7 @@ class AbstractSmsSender1<MessageContainer>
 
 						outbox.setSending (null);
 
-						messageLogic.blackListMessage (
+						smsMessageLogic.blackListMessage (
 							outbox.getMessage ());
 
 						transaction.commit ();
@@ -313,7 +318,7 @@ class AbstractSmsSender1<MessageContainer>
 
 					} catch (SendFailureException exception) {
 
-						outboxLogic.messageFailure (
+						smsOutboxLogic.messageFailure (
 							outbox.getMessage (),
 							exception.errorMessage,
 							exception.failureType);
@@ -379,10 +384,10 @@ class AbstractSmsSender1<MessageContainer>
 							this);
 
 					MessageRec message =
-						messageHelper.findRequired (
+						smsMessageHelper.findRequired (
 							messageId);
 
-					outboxLogic.messageSuccess (
+					smsOutboxLogic.messageSuccess (
 						message,
 						otherIds);
 
@@ -451,10 +456,10 @@ class AbstractSmsSender1<MessageContainer>
 							this);
 
 					MessageRec message =
-						messageHelper.findRequired (
+						smsMessageHelper.findRequired (
 							messageId);
 
-					outboxLogic.messageFailure (
+					smsOutboxLogic.messageFailure (
 						message,
 						sendException.errorMessage,
 						sendException.failureType);

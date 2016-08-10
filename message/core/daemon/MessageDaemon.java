@@ -27,7 +27,7 @@ import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.core.daemon.MessageRetrier;
 import wbs.sms.core.daemon.MessageRetrierFactory;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageExpiryObjectHelper;
 import wbs.sms.message.core.model.MessageExpiryRec;
 import wbs.sms.message.core.model.MessageRec;
@@ -53,7 +53,7 @@ class MessageDaemon
 	MessageExpiryObjectHelper messageExpiryHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic messageLogic;
 
 	@Inject
 	SmsOutboxLogic outboxLogic;

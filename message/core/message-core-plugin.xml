@@ -1,5 +1,5 @@
 <plugin
-	name="message-core"
+	name="sms-message-core"
 	package="wbs.sms.message.core">
 
 	<plugin-dependencies>
@@ -21,7 +21,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MessageLogicImplementation"/>
+		<bean class="logic.SmsMessageLogicImplementation"/>
 	</layer>
 
 	<layer name="console">

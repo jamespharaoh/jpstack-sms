@@ -25,8 +25,25 @@
 			name="newMessageStatus"
 			type="messageStatus"/>
 
-		<string-field
-			name="code"
+		<reference-field
+			name="theirCode"
+			type="text"
+			column="code"
+			nullable="yes"/>
+
+		<reference-field
+			name="theirDescription"
+			type="text"
+			nullable="yes"/>
+
+		<reference-field
+			name="extraInformation"
+			type="text"
+			nullable="yes"/>
+
+		<timestamp-field
+			name="theirTimestamp"
+			column-type="postgresql"
 			nullable="yes"/>
 
 		<reference-field

@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 import com.google.common.base.Optional;
 
 import static wbs.framework.utils.etc.OptionalUtils.optionalRequired;
-import static wbs.framework.utils.etc.StringUtils.split;
+import static wbs.framework.utils.etc.StringUtils.stringSplitRegexp;
 
 @Accessors (fluent = true)
 @Value
@@ -26,7 +26,7 @@ class LongLat {
 			@NonNull String string) {
 
 		List<String> parts =
-			split (
+			stringSplitRegexp (
 				string,
 				",");
 

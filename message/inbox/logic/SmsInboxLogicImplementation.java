@@ -35,7 +35,7 @@ import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
-import wbs.sms.message.core.logic.MessageLogic;
+import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -85,7 +85,7 @@ class SmsInboxLogicImplementation
 	MessageTypeObjectHelper messageTypeHelper;
 
 	@Inject
-	MessageLogic messageLogic;
+	SmsMessageLogic messageLogic;
 
 	@Inject
 	NetworkObjectHelper networkHelper;
