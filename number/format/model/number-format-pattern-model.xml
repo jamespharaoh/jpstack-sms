@@ -11,7 +11,8 @@
 		<!-- identity -->
 
 		<parent-field
-			type="numberFormat"/>
+			type="numberFormat"
+			cacheable="yes"/>
 
 		<index-field/>
 

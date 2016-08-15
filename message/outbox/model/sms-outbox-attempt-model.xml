@@ -11,9 +11,11 @@
 		<!-- identity -->
 
 		<parent-field
-			type="message"/>
+			type="message"
+			cacheable="yes"/>
 
-		<index-field/>
+		<index-field
+			cacheable="yes"/>
 
 		<timestamp-field
 			name="startTime"

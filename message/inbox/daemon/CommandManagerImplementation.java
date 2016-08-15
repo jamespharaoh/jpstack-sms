@@ -135,7 +135,7 @@ class CommandManagerImplementation
 			commandTypeHandlerBeanNamesByCommandType.get (key);
 
 		return (CommandHandler)
-			applicationContext.getBean (
+			applicationContext.getBeanRequired (
 				beanName,
 				CommandHandler.class);
 

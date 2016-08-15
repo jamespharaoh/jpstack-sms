@@ -12,9 +12,11 @@
 
 		<parent-field
 			name="customer"
-			type="smsCustomer"/>
+			type="smsCustomer"
+			cacheable="yes"/>
 
-		<index-field/>
+		<index-field
+			cacheable="yes"/>
 
 		<timestamp-field
 			name="startTime"

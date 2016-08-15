@@ -1,6 +1,9 @@
 package wbs.sms.message.status.console;
 
+import static wbs.framework.utils.etc.ConcurrentUtils.futureValue;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
+
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -56,7 +59,7 @@ class MessageStatusLine
 
 	@Override
 	public
-	String getUpdateScript () {
+	Future<String> getUpdateScript () {
 
 		int numInbox = 0;
 		int numOutbox = 0;
@@ -89,10 +92,11 @@ class MessageStatusLine
 
 		// return
 
-		return stringFormat (
-			"updateMessage (%d, %d);\n",
-			numInbox,
-			numOutbox);
+		return futureValue (
+			stringFormat (
+				"updateMessage (%d, %d);\n",
+				numInbox,
+				numOutbox));
 
 	}
 

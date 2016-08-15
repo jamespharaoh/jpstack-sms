@@ -29,10 +29,6 @@ class SmsSimpleTrackerNumberDaoHibernate
 				SmsSimpleTrackerNumberRec.class,
 				"_smsSimpleTrackerNumber")
 
-			.createAlias (
-				"_smsSimpleTrackerNumber.smsSimpleTracker",
-				"_smsSimpleTracker")
-
 			.add (
 				Restrictions.eq (
 					"_smsSimpleTrackerNumber.smsSimpleTracker",
@@ -40,7 +36,7 @@ class SmsSimpleTrackerNumberDaoHibernate
 
 			.add (
 				Restrictions.eq (
-					"_smsSimpleTracker.number",
+					"_smsSimpleTrackerNumber.number",
 					number))
 
 		);

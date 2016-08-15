@@ -2,6 +2,7 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringToBytes;
@@ -654,7 +655,8 @@ class AbstractSmsSender2
 
 					outboxLogic.messageFailure (
 						smsOutboxAttempt.getMessage (),
-						errorMessage,
+						emptyStringIfNull (
+							errorMessage),
 						failureType);
 
 					transaction.commit ();

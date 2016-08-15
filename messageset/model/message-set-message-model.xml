@@ -11,7 +11,8 @@
 		<!-- identity -->
 
 		<parent-field
-			type="messageSet"/>
+			type="messageSet"
+			cacheable="yes"/>
 
 		<index-field/>
 

@@ -11,9 +11,11 @@
 		<!-- identity -->
 
 		<parent-field
-			type="inbox"/>
+			type="inbox"
+			cacheable="yes"/>
 
-		<index-field/>
+		<index-field
+			cacheable="yes"/>
 
 		<timestamp-field
 			name="timestamp"
