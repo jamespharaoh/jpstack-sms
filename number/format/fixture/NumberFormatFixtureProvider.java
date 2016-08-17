@@ -3,6 +3,7 @@ package wbs.sms.number.format.fixture;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.database.Database;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -16,6 +17,9 @@ class NumberFormatFixtureProvider
 	implements FixtureProvider {
 
 	// dependencies
+
+	@Inject
+	Database database;
 
 	@Inject
 	MenuGroupObjectHelper menuGroupHelper;
@@ -48,6 +52,8 @@ class NumberFormatFixtureProvider
 				"United Kingdom")
 
 		);
+
+		database.flush ();
 
 		numberFormatPatternHelper.insert (
 			numberFormatPatternHelper.createInstance ()
