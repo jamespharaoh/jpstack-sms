@@ -1,17 +1,16 @@
 package wbs.sms.locator.model;
 
 import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.OptionalUtils.optionalRequired;
+import static wbs.framework.utils.etc.StringUtils.stringSplitComma;
 
 import java.util.List;
+
+import com.google.common.base.Optional;
 
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Accessors;
-
-import com.google.common.base.Optional;
-
-import static wbs.framework.utils.etc.OptionalUtils.optionalRequired;
-import static wbs.framework.utils.etc.StringUtils.stringSplitRegexp;
 
 @Accessors (fluent = true)
 @Value
@@ -22,13 +21,12 @@ class LongLat {
 	Double latitude;
 
 	public static
-	Optional<LongLat> parse (
+	Optional <LongLat> parse (
 			@NonNull String string) {
 
-		List<String> parts =
-			stringSplitRegexp (
-				string,
-				",");
+		List <String> parts =
+			stringSplitComma (
+				string);
 
 		if (
 			notEqual (

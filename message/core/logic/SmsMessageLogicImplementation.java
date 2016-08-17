@@ -5,7 +5,7 @@ import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.NumberUtils.parseLong;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.stringSplitSimple;
+import static wbs.framework.utils.etc.StringUtils.stringSplitHyphen;
 
 import java.util.List;
 
@@ -180,10 +180,9 @@ class SmsMessageLogicImplementation
 
 		} else {
 
-			List<String> parts =
-				stringSplitSimple (
-					mangledMessageId,
-					"-");
+			List <String> parts =
+				stringSplitHyphen (
+					mangledMessageId);
 
 			if (
 
