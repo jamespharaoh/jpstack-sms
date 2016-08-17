@@ -11,7 +11,6 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
 import wbs.console.context.ConsoleContext;
 import wbs.console.context.ConsoleContextStuff;
 import wbs.console.module.ConsoleManager;
@@ -98,11 +97,11 @@ class MessageMediaContext
 			PathSupply pathParts,
 			ConsoleContextStuff stuff) {
 
-		int messageId =
-			Integer.parseInt (
+		Long messageId =
+			Long.parseLong (
 				pathParts.next ());
 
-		int mediaIndex =
+		Integer mediaIndex =
 			Integer.parseInt (
 				pathParts.next ());
 

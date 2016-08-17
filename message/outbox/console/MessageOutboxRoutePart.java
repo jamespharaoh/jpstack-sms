@@ -52,10 +52,10 @@ class MessageOutboxRoutePart
 					"routeId"));
 
 		outboxes =
-			new TreeSet<OutboxRec> (
+			new TreeSet <> (
 				outboxHelper.findLimit (
 					route,
-					30));
+					30l));
 
 	}
 

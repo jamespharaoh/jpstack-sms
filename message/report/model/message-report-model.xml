@@ -46,11 +46,6 @@
 			column-type="postgresql"
 			nullable="yes"/>
 
-		<reference-field
-			type="messageReportCode"
-			column="report_code_id"
-			nullable="yes"/>
-
 	</fields>
 
 </model-meta>

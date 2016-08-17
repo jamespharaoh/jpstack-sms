@@ -12,22 +12,22 @@ import wbs.sms.message.stats.model.MessageStatsSearch;
 public
 interface SmsStatsConsoleLogic {
 
-	Map<SmsStatsCriteria,Set<Integer>> makeFilterMap ();
+	Map<SmsStatsCriteria,Set<Long>> makeFilterMap ();
 
 	String lookupGroupName (
 			SmsStatsCriteria crit,
-			int id);
+			Long id);
 
-	Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
-			List<Map<SmsStatsCriteria,Set<Integer>>> critMaps);
+	Map<SmsStatsCriteria,Set<Long>> criteriaMapIntersect (
+			List<Map<SmsStatsCriteria,Set<Long>>> critMaps);
 
 	MessageStatsSearch setSearchCriteria (
 			MessageStatsSearch messageStatsSearch,
 			SmsStatsCriteria statsCriteria,
-			Collection<Integer> value);
+			Collection<Long> value);
 
 	MessageStatsSearch critMapToMessageStatsSearch (
-			Map<SmsStatsCriteria,Set<Integer>> critMap,
-			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap);
+			Map<SmsStatsCriteria,Set<Long>> critMap,
+			Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap);
 
 }

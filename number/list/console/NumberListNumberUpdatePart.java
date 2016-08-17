@@ -3,7 +3,6 @@ package wbs.sms.number.list.console;
 import javax.inject.Inject;
 
 import lombok.experimental.Accessors;
-
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -35,7 +34,7 @@ class NumberListNumberUpdatePart
 
 		numberList =
 			numberListHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"numberListId"));
 
 	}

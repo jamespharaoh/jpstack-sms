@@ -4,12 +4,11 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.Cleanup;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -66,8 +65,8 @@ class RouteTestInAction
 				"RouteTestInAction.goReal ()",
 				this);
 
-		int routeId =
-			requestContext.stuffInt (
+		Long routeId =
+			requestContext.stuffInteger (
 				"routeId");
 
 		RouteRec route =

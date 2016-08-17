@@ -48,7 +48,7 @@ class BatchFixtureProvider
 				batchTypeHelper.createInstance ()
 
 			.setId (
-				0)
+				0l)
 
 			.setSubjectType (
 				rootType)
@@ -72,13 +72,13 @@ class BatchFixtureProvider
 				batchSubjectHelper.createInstance ()
 
 			.setId (
-				0)
+				0l)
 
 			.setParentType (
 				rootType)
 
 			.setParentId (
-				0)
+				0l)
 
 			.setCode (
 				"system")
@@ -92,13 +92,13 @@ class BatchFixtureProvider
 			batchHelper.createInstance ()
 
 			.setId (
-				0)
+				0l)
 
 			.setParentType (
 				rootType)
 
 			.setParentId (
-				0)
+				0l)
 
 			.setCode (
 				"system")

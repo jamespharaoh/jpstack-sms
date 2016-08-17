@@ -12,16 +12,15 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
@@ -49,7 +48,7 @@ class SmsStatsSourceImplementation
 	// state
 
 	@Getter @Setter
-	Map<SmsStatsCriteria,Set<Integer>> fixedCriteriaMap =
+	Map<SmsStatsCriteria,Set<Long>> fixedCriteriaMap =
 		Collections.emptyMap ();
 
 	// implementation
@@ -61,12 +60,12 @@ class SmsStatsSourceImplementation
 			@NonNull LocalDate endDate,
 			@NonNull SmsStatsTimeScheme timeScheme,
 			@NonNull Optional<SmsStatsCriteria> groupCriteria,
-			@NonNull Map<SmsStatsCriteria,Set<Integer>> dynamicCriteriaMap,
-			@NonNull Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap) {
+			@NonNull Map<SmsStatsCriteria,Set<Long>> dynamicCriteriaMap,
+			@NonNull Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap) {
 
-		Map<SmsStatsCriteria,Set<Integer>> intersectedCriteriaMap =
+		Map<SmsStatsCriteria,Set<Long>> intersectedCriteriaMap =
 			smsStatsConsoleLogic.criteriaMapIntersect (
-				ImmutableList.<Map<SmsStatsCriteria,Set<Integer>>>of (
+				ImmutableList.of (
 					fixedCriteriaMap,
 					dynamicCriteriaMap));
 
@@ -131,7 +130,7 @@ class SmsStatsSourceImplementation
 	public
 	RouteRec findRoute () {
 
-		Collection<Integer> routeIds =
+		Collection<Long> routeIds =
 			fixedCriteriaMap.get (
 				SmsStatsCriteria.route);
 

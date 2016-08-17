@@ -8,7 +8,7 @@ interface DeliveryHandler {
 	Collection<String> getDeliveryTypeCodes ();
 
 	void handle (
-			int deliveryNoticeQueueId,
+			Long deliveryNoticeQueueId,
 			Long ref);
 
 }

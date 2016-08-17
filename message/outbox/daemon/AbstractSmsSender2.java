@@ -2,9 +2,10 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringToBytes;
 import static wbs.framework.utils.etc.StringUtils.stringToUtf8;
 
@@ -14,17 +15,17 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import lombok.extern.log4j.Log4j;
-
 import org.json.simple.JSONObject;
 
 import com.google.common.base.Optional;
 
+import lombok.Cleanup;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
@@ -157,9 +158,13 @@ class AbstractSmsSender2
 				if (threadName != null)
 
 					thread.setName (
-						threadName +
-						route.getId () +
-						(char) ((int) 'a' + index));
+						joinWithoutSeparator (
+							threadName,
+							Long.toString (
+								route.getId ()),
+							new String (
+								Character.toChars (
+									'a' + index))));
 
 				thread.start ();
 
@@ -179,13 +184,12 @@ class AbstractSmsSender2
 	class Worker
 		implements Runnable {
 
-		int routeId;
-
+		Long routeId;
 		Object routeLock;
 
 		Worker (
-				int newRouteId,
-				Object newRouteLock) {
+				@NonNull Long newRouteId,
+				@NonNull Object newRouteLock) {
 
 			routeId =
 				newRouteId;
@@ -244,8 +248,8 @@ class AbstractSmsSender2
 		boolean processOneMessage () {
 
 			OutboxRec outbox;
-			int messageId;
-			int smsOutboxAttemptId;
+			Long messageId;
+			Long smsOutboxAttemptId;
 			SetupSendResult setupSendResult;
 
 			synchronized (routeLock) {
@@ -403,7 +407,6 @@ class AbstractSmsSender2
 						message)
 
 					.setIndex (
-						(int) (long)
 						message.getNumAttempts ())
 
 					.setState (
@@ -518,8 +521,8 @@ class AbstractSmsSender2
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxSuccess (
-				int messageId,
-				int smsOutboxAttemptId,
+				@NonNull Long messageId,
+				@NonNull Long smsOutboxAttemptId,
 				List<String> otherIds,
 				JSONObject responseTrace) {
 
@@ -607,10 +610,10 @@ class AbstractSmsSender2
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxFailure (
-				int messageId,
-				int smsOutboxAttemptId,
+				@NonNull Long messageId,
+				@NonNull Long smsOutboxAttemptId,
 				String errorMessage,
-				SmsOutboxLogic.FailureType failureType,
+				@NonNull SmsOutboxLogic.FailureType failureType,
 				JSONObject responseTrace,
 				JSONObject errorTrace) {
 

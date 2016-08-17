@@ -1,20 +1,20 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Optional;
+
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-
-import com.google.common.base.Optional;
-
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
@@ -148,13 +148,18 @@ class AbstractSmsSender1<MessageContainer>
 				if (threadName != null)
 
 					thread.setName (
-						threadName +
-						route.getId () +
-						(char) ((int) 'a' + i));
+						joinWithoutSeparator (
+							threadName,
+							Long.toString (
+								route.getId ()),
+							new String (
+								Character.toChars (
+									'a' + i))));
 
 				thread.start ();
 
-				registerThread (thread);
+				registerThread (
+					thread);
 
 			}
 
@@ -169,16 +174,19 @@ class AbstractSmsSender1<MessageContainer>
 	class Worker
 		implements Runnable {
 
-		int routeId;
+		Long routeId;
 
 		Object routeLock;
 
 		Worker (
-				int newRouteId,
-				Object newRouteLock) {
+				@NonNull Long newRouteId,
+				@NonNull Object newRouteLock) {
 
-			routeId = newRouteId;
-			routeLock = newRouteLock;
+			routeId =
+				newRouteId;
+
+			routeLock =
+				newRouteLock;
 
 		}
 

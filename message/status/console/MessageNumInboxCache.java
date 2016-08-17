@@ -9,7 +9,7 @@ import wbs.sms.message.inbox.model.InboxObjectHelper;
 @SingletonComponent ("messageNumInboxCache")
 public
 class MessageNumInboxCache
-	extends CachedGetter<Integer> {
+	extends CachedGetter <Long> {
 
 	@Inject
 	InboxObjectHelper inboxHelper;
@@ -23,7 +23,7 @@ class MessageNumInboxCache
 
 	@Override
 	public
-	Integer refresh () {
+	Long refresh () {
 
 		return inboxHelper.countPending ();
 

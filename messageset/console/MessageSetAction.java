@@ -1,9 +1,12 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
 
 import java.util.regex.Pattern;
 
@@ -15,15 +18,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -193,7 +193,7 @@ class MessageSetAction
 		// iterate over the input and do it
 
 		for (
-			int index = 0;
+			long index = 0;
 			index < numMessages;
 			index ++
 		) {
@@ -208,7 +208,8 @@ class MessageSetAction
 			MessageSetMessageRec messageSetMessage =
 				index < messageSet.getMessages ().size ()
 					? messageSet.getMessages ().get (
-						index)
+						toJavaIntegerRequired (
+							index))
 					: null;
 
 			log.debug (

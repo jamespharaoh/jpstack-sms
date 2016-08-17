@@ -10,13 +10,9 @@ import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.TimeUtils.earliest;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -25,6 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -328,14 +326,14 @@ class SmsOutboxLogicImplementation
 
 	@Override
 	public
-	List<OutboxRec> claimNextMessages (
+	List <OutboxRec> claimNextMessages (
 			@NonNull RouteRec route,
-			int limit) {
+			@NonNull Long limit) {
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		List<OutboxRec> outboxes =
+		List <OutboxRec> outboxes =
 			outboxDao.findNextLimit (
 				transaction.now (),
 				route,
@@ -596,14 +594,6 @@ class SmsOutboxLogicImplementation
 
 		} else {
 
-			Calendar calendar =
-				Calendar.getInstance ();
-
-			calendar.add (
-				Calendar.SECOND,
-				(int) (
-					outbox.getTries () * 10l));
-
 			outbox
 
 				.setRetryTime (
@@ -725,7 +715,6 @@ class SmsOutboxLogicImplementation
 				smsMessage)
 
 			.setIndex (
-				(int) (long)
 				smsMessage.getNumAttempts ())
 
 			.setState (

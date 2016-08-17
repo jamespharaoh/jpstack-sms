@@ -1,20 +1,20 @@
 package wbs.sms.route.tester.daemon;
 
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.google.common.base.Optional;
-
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -100,8 +100,9 @@ class RouteTesterCommand
 
 		}
 
-		int routeTestId =
-			Integer.parseInt (matcher.group (1));
+		Long routeTestId =
+			Long.parseLong (
+				matcher.group (1));
 
 		Optional<RouteTestRec> routeTestOptional =
 			routeTestHelper.find (

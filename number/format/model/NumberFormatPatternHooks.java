@@ -1,5 +1,6 @@
 package wbs.sms.number.format.model;
 
+import lombok.NonNull;
 import wbs.framework.object.ObjectHooks;
 
 public
@@ -9,13 +10,12 @@ class NumberFormatPatternHooks
 	@Override
 	public
 	void beforeInsert (
-			NumberFormatPatternRec numberFormatPattern) {
+			@NonNull NumberFormatPatternRec numberFormatPattern) {
 
 		NumberFormatRec numberFormat =
 			numberFormatPattern.getNumberFormat ();
 
 		numberFormatPattern.setIndex (
-			(int) (long)
 			numberFormat.getNumPatterns ());
 
 		numberFormat.setNumPatterns (

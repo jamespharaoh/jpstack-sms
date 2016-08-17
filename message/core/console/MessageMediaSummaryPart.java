@@ -38,7 +38,7 @@ class MessageMediaSummaryPart
 
 		MessageRec message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		mediaIndex =

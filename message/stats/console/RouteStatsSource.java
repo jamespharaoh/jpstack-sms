@@ -1,15 +1,13 @@
 package wbs.sms.message.stats.console;
 
 import java.util.Collections;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.NonNull;
-
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.Record;
@@ -44,7 +42,7 @@ class RouteStatsSource
 		return smsStatsSource.get ()
 
 			.fixedCriteriaMap (
-				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
+				ImmutableMap.of (
 					SmsStatsCriteria.route,
 					Collections.singleton (
 						parent.getId ())));

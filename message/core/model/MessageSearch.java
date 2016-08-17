@@ -6,7 +6,6 @@ import java.util.TreeSet;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-
 import wbs.framework.utils.TextualInterval;
 
 @Accessors (fluent = true)
@@ -15,29 +14,29 @@ public
 class MessageSearch
 	implements Serializable {
 
-	Integer messageId;
+	Long messageId;
 
 	String number;
-	Integer numberId;
+	Long numberId;
 
-	Integer userId;
+	Long userId;
 
-	Integer serviceSliceId;
-	Integer serviceParentTypeId;
-	Integer serviceId;
-	Collection<Integer> serviceIdIn;
+	Long serviceSliceId;
+	Long serviceParentTypeId;
+	Long serviceId;
+	Collection<Long> serviceIdIn;
 
-	Integer affiliateId;
-	Collection<Integer> affiliateIdIn;
+	Long affiliateId;
+	Collection<Long> affiliateIdIn;
 
-	Integer batchId;
-	Collection<Integer> batchIdIn;
+	Long batchId;
+	Collection<Long> batchIdIn;
 
-	Integer routeSliceId;
-	Integer routeId;
-	Collection<Integer> routeIdIn;
+	Long routeSliceId;
+	Long routeId;
+	Collection<Long> routeIdIn;
 
-	Integer networkId;
+	Long networkId;
 
 	TextualInterval createdTime;
 
@@ -55,13 +54,14 @@ class MessageSearch
 	String textLike;
 	String textILike;
 
-	Integer maxResults;
+	Long maxResults;
 	MessageSearchOrder orderBy;
 
 	boolean filter;
-	Collection<Integer> filterAffiliateIds;
-	Collection<Integer> filterRouteIds;
-	Collection<Integer> filterServiceIds;
+
+	Collection<Long> filterAffiliateIds;
+	Collection<Long> filterRouteIds;
+	Collection<Long> filterServiceIds;
 
 	public
 	MessageSearch () {
@@ -92,7 +92,7 @@ class MessageSearch
 		if (original.serviceIdIn != null) {
 
 			this.serviceIdIn =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.serviceIdIn);
 
 		}
@@ -103,7 +103,7 @@ class MessageSearch
 		if (original.affiliateIdIn != null) {
 
 			this.affiliateIdIn =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.affiliateIdIn);
 
 		}
@@ -114,7 +114,7 @@ class MessageSearch
 		if (original.batchIdIn != null) {
 
 			this.batchIdIn =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.batchIdIn);
 
 		}
@@ -128,7 +128,7 @@ class MessageSearch
 		if (original.routeIdIn != null) {
 
 			this.routeIdIn =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.routeIdIn);
 
 		}
@@ -148,7 +148,7 @@ class MessageSearch
 		if (original.statusIn != null) {
 
 			this.statusIn =
-				new TreeSet<MessageStatus> (
+				new TreeSet<> (
 					original.statusIn);
 
 		}
@@ -156,7 +156,7 @@ class MessageSearch
 		if (original.statusNotIn != null) {
 
 			this.statusNotIn =
-				new TreeSet<MessageStatus> (
+				new TreeSet<> (
 					original.statusNotIn);
 
 		}
@@ -179,7 +179,7 @@ class MessageSearch
 		if (original.filterAffiliateIds != null) {
 
 			this.filterAffiliateIds =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.filterAffiliateIds);
 
 		}
@@ -187,7 +187,7 @@ class MessageSearch
 		if (original.filterRouteIds != null) {
 
 			this.filterRouteIds =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.filterRouteIds);
 
 		}
@@ -195,7 +195,7 @@ class MessageSearch
 		if (original.filterServiceIds != null) {
 
 			this.filterServiceIds =
-				new TreeSet<Integer> (
+				new TreeSet<> (
 					original.filterServiceIds);
 
 		}

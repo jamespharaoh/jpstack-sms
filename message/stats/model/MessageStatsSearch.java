@@ -3,10 +3,10 @@ package wbs.sms.message.stats.model;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.joda.time.LocalDate;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import org.joda.time.LocalDate;
 
 @Accessors (fluent = true)
 @Data
@@ -17,17 +17,17 @@ class MessageStatsSearch
 	LocalDate dateAfter;
 	LocalDate dateBefore;
 
-	Collection<Integer> routeIdIn;
-	Collection<Integer> serviceIdIn;
-	Collection<Integer> affiliateIdIn;
-	Collection<Integer> batchIdIn;
-	Collection<Integer> networkIdIn;
+	Collection<Long> routeIdIn;
+	Collection<Long> serviceIdIn;
+	Collection<Long> affiliateIdIn;
+	Collection<Long> batchIdIn;
+	Collection<Long> networkIdIn;
 
 	Boolean filter = false;
 
-	Collection<Integer> filterServiceIds;
-	Collection<Integer> filterAffiliateIds;
-	Collection<Integer> filterRouteIds;
+	Collection<Long> filterServiceIds;
+	Collection<Long> filterAffiliateIds;
+	Collection<Long> filterRouteIds;
 
 	Boolean group = false;
 

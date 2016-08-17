@@ -19,12 +19,11 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.application.config.WbsConfig;
 import wbs.sms.message.core.model.MessageRec;
@@ -209,7 +208,7 @@ class HttpSender
 
 		NetworkRec defaultNetwork =
 			networkHelper.findRequired (
-				0);
+				0l);
 
 		httpRoute =
 			httpRouteHelper.find (
@@ -498,7 +497,7 @@ class HttpSender
 
 				stringBuilder.append (
 					URLEncoder.encode (
-						Integer.toString (
+						Long.toString (
 							httpOutbox.messageId),
 						paramEncoding));
 
@@ -506,13 +505,6 @@ class HttpSender
 
 				stringBuilder.append (
 					URLEncoder.encode (
-						httpOutbox.message.getText ().getText (),
-						paramEncoding));
-
-			} else if (paramName.equals ("hexmessage")) {
-
-				stringBuilder.append (
-					toHex (
 						httpOutbox.message.getText ().getText (),
 						paramEncoding));
 
@@ -537,32 +529,6 @@ class HttpSender
 					stringBuilder.append (
 						URLEncoder.encode (
 							httpOutbox.wapPushMessage.getTextText ().getText (),
-							paramEncoding));
-
-				}
-
-			} else if (paramName.equals ("url")) {
-
-				if (httpOutbox.wapPushMessage != null) {
-
-					String url =
-						httpOutbox.wapPushMessage.getUrlText ().getText ();
-
-					String prefix =
-						"http://";
-
-					if (url.startsWith (prefix)) {
-
-						url =
-							url.substring (
-								prefix.length (),
-								url.length ());
-
-					}
-
-					stringBuilder.append (
-						toHex (
-							url,
 							paramEncoding));
 
 				}
@@ -623,32 +589,6 @@ class HttpSender
 				stringBuilder.toString ()));
 
 		return stringBuilder.toString ();
-
-	}
-
-	StringBuilder toHex (
-			String url,
-			String paramEncoding) {
-
-		char[] chars =
-			url.toCharArray ();
-
-		StringBuilder stringBuilder =
-			new StringBuilder ();
-
-		for (
-			int index = 0;
-			index < chars.length;
-			index ++
-		) {
-
-			stringBuilder.append (
-				Integer.toHexString (
-					(int) chars [index]));
-
-		}
-
-		return stringBuilder;
 
 	}
 
@@ -759,7 +699,7 @@ class HttpSender
 	public static
 	class HttpOutbox {
 
-		int messageId;
+		Long messageId;
 		OutboxRec outbox;
 		MessageRec message;
 		NetworkRec network;

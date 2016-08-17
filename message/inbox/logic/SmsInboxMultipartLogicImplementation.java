@@ -1,17 +1,18 @@
 package wbs.sms.message.inbox.logic;
 
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -212,8 +213,8 @@ class SmsInboxMultipartLogicImplementation
 
 		InboxMultipartBufferRec[] bits =
 			new InboxMultipartBufferRec [
-				(int) (long)
-				inboxMultipartBuffer.getMultipartSegMax ()];
+				toJavaIntegerRequired (
+					inboxMultipartBuffer.getMultipartSegMax ())];
 
 		for (
 			InboxMultipartBufferRec recentInboxMultipartBuffer
@@ -224,8 +225,8 @@ class SmsInboxMultipartLogicImplementation
 				"MULTI: found " + recentInboxMultipartBuffer.getMultipartSeg ());
 
 			int bitIndex =
-				(int) (long)
-				recentInboxMultipartBuffer.getMultipartSeg () - 1;
+				toJavaIntegerRequired (
+					recentInboxMultipartBuffer.getMultipartSeg () - 1);
 
 			bits [bitIndex] =
 				recentInboxMultipartBuffer;

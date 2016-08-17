@@ -40,7 +40,7 @@ class MessageInboxSummaryPart
 
 		inboxes =
 			inboxHelper.findPendingLimit (
-				1000);
+				1000l);
 
 	}
 

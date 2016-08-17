@@ -14,20 +14,20 @@ interface MessageDaoMethods {
 			RouteRec route,
 			String otherId);
 
-	List<MessageRec> findByThreadId (
-			long threadId);
+	List <MessageRec> findByThreadId (
+			Long threadId);
 
-	List<MessageRec> findNotProcessed ();
+	List <MessageRec> findNotProcessed ();
 
-	List<MessageRec> findRecentLimit (
-			long maxResults);
+	List <MessageRec> findRecentLimit (
+			Long maxResults);
 
-	long countNotProcessed ();
+	Long countNotProcessed ();
 
-	List<ServiceRec> projectServices (
+	List <ServiceRec> projectServices (
 			NumberRec number);
 
-	List<Integer> searchIds (
+	List <Integer> searchIds (
 			MessageSearch search);
 
 }

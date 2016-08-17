@@ -1,18 +1,18 @@
 package wbs.sms.message.outbox.hibernate;
 
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import lombok.NonNull;
+import java.util.stream.Collectors;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
@@ -29,9 +29,9 @@ class OutboxDaoHibernate
 
 	@Override
 	public
-	int count () {
+	Long count () {
 
-		return (int) (long) findOne (
+		return findOne (
 			"count ()",
 			Long.class,
 
@@ -59,9 +59,9 @@ class OutboxDaoHibernate
 
 	@Override
 	public
-	List<OutboxRec> findLimit (
+	List <OutboxRec> findLimit (
 			@NonNull RouteRec route,
-			long maxResults) {
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findLimit (route, maxResults)",
@@ -80,7 +80,8 @@ class OutboxDaoHibernate
 					"id"))
 
 			.setMaxResults (
-				(int) maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 
@@ -158,7 +159,7 @@ class OutboxDaoHibernate
 	List<OutboxRec> findNextLimit (
 			@NonNull Instant now,
 			@NonNull RouteRec route,
-			long maxResults) {
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findNextLimit (now, route, maxResults)",
@@ -215,7 +216,8 @@ class OutboxDaoHibernate
 					"_outbox.retryTime"))
 
 			.setMaxResults (
-				(int) maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 
@@ -226,8 +228,7 @@ class OutboxDaoHibernate
 	Map<Long,Long> generateRouteSummary (
 			@NonNull Instant now) {
 
-		@SuppressWarnings ("unchecked")
-		List<Object[]> list =
+		List <Object> list =
 			createQuery (
 				stringFormat (
 					"SELECT ",
@@ -249,29 +250,27 @@ class OutboxDaoHibernate
 
 			.list ();
 
-		Map<Long,Long> map =
-			new HashMap<Long,Long> ();
+		return list.stream ()
 
-		for (
-			Object[] row
-				: list
-		) {
+			.map (
+				row ->
+					(Object[])
+					row)
 
-			map.put (
-				(long) (Integer) row [0],
-				(long) (Long) row [1]);
-
-		}
-
-		return map;
+			.collect (
+				Collectors.toMap (
+					row ->
+						(Long) row [0],
+					row ->
+						(Long) row [1]));
 
 	}
 
 	@Override
 	public
-	List<OutboxRec> findSendingBeforeLimit (
+	List <OutboxRec> findSendingBeforeLimit (
 			@NonNull Instant sendingBefore,
-			long maxResults) {
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findSendingBeforeLimit (sendingBefore, maxResults)",
@@ -295,7 +294,8 @@ class OutboxDaoHibernate
 					"_outbox.sending"))
 
 			.setMaxResults (
-				(int) maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 

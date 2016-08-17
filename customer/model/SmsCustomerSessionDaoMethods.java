@@ -7,9 +7,9 @@ import org.joda.time.Instant;
 public
 interface SmsCustomerSessionDaoMethods {
 
-	List<SmsCustomerSessionRec> findToTimeoutLimit (
+	List <SmsCustomerSessionRec> findToTimeoutLimit (
 			SmsCustomerManagerRec manager,
 			Instant startedBefore,
-			int batchSize);
+			Long batchSize);
 
 }

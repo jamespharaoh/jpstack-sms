@@ -44,7 +44,7 @@ class MessageNotProcessedSummaryPart
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 	}

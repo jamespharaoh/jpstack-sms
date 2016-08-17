@@ -7,13 +7,13 @@ import org.joda.time.Instant;
 public
 interface InboxDaoMethods {
 
-	int countPending ();
+	Long countPending ();
 
-	List<InboxRec> findPendingLimit (
+	List <InboxRec> findPendingLimit (
 			Instant now,
-			int maxResults);
+			Long maxResults);
 
-	List<InboxRec> findPendingLimit (
-			int maxResults);
+	List <InboxRec> findPendingLimit (
+			Long maxResults);
 
 }

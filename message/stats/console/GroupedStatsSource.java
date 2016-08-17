@@ -94,10 +94,10 @@ interface GroupedStatsSource {
 			SmsStatsSource statsSource);
 
 	GroupedStatsSource critMap (
-			Map<SmsStatsCriteria,Set<Integer>> critMap);
+			Map<SmsStatsCriteria,Set<Long>> critMap);
 
 	GroupedStatsSource filterMap (
-			Map<SmsStatsCriteria,Set<Integer>> filterMap);
+			Map<SmsStatsCriteria,Set<Long>> filterMap);
 
 	GroupedStatsSource url (
 			String url);

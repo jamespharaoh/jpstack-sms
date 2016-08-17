@@ -1,9 +1,12 @@
 package wbs.sms.message.delivery.hibernate;
 
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+
 import java.util.List;
 
 import org.hibernate.criterion.Order;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.delivery.model.DeliveryDao;
@@ -17,8 +20,8 @@ class DeliveryDaoHibernate
 
 	@Override
 	public
-	List<DeliveryRec> findAllLimit (
-			int maxResults) {
+	List <DeliveryRec> findAllLimit (
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findAllLimit (maxResults)",
@@ -29,7 +32,8 @@ class DeliveryDaoHibernate
 				"_delivery")
 
 			.setMaxResults (
-				maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 			.addOrder (
 				Order.asc (

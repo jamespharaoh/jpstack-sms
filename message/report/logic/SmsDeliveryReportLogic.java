@@ -37,7 +37,7 @@ interface SmsDeliveryReportLogic {
 			InvalidMessageStateException;
 
 	void deliveryReport (
-			int messageId,
+			Long messageId,
 			MessageStatus newMessageStatus,
 			Optional<String> theirCode,
 			Optional<String> theirDescription,

@@ -1,5 +1,11 @@
 package wbs.sms.gsm;
 
+import static wbs.framework.utils.etc.Misc.trim;
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.framework.utils.etc.StringUtils.substring;
+import static wbs.framework.utils.etc.StringUtils.substringFrom;
+import static wbs.framework.utils.etc.StringUtils.substringTo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -143,13 +149,15 @@ class MessageSplitter {
 
 		// find how much we can fit in
 
-		long maxSplit = spareLength;
+		long maxSplit =
+			spareLength;
 
 		while (
 			GsmUtils.length (
 				message.substring (
 					0,
-					(int) maxSplit)
+					toJavaIntegerRequired (
+						maxSplit))
 			) > spareLength
 		) {
 
@@ -162,15 +170,31 @@ class MessageSplitter {
 		long minSplit =
 			(maxSplit + 2) * 2 / 3;
 
-		for (long d = maxSplit; d >= minSplit; d--) {
+		for (
+			long position = maxSplit;
+			position >= minSplit;
+			position --
+		) {
 
-			if (message.charAt ((int) d) == ' ') {
+			char character =
+				message.charAt (
+					toJavaIntegerRequired (
+						position));
+
+			if (character == ' ') {
 
 				String part1 =
-					message.substring (0, (int) d).trim ();
+					trim (
+						substring (
+							message,
+							0,
+							position));
 
 				String part2 =
-					message.substring ((int) d).trim ();
+					trim (
+						substringFrom (
+							message,
+							position));
 
 				return new String [] {
 
@@ -190,10 +214,16 @@ class MessageSplitter {
 		// that didn't work, just split it anywhere
 
 		String part1 =
-			message.substring (0, (int) maxSplit);
+			trim (
+				substringTo (
+					message,
+					maxSplit));
 
 		String part2 =
-			message.substring ((int) maxSplit).trim ();
+			trim (
+				substringFrom (
+					message,
+					maxSplit));
 
 		return new String [] {
 

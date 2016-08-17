@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -68,9 +67,10 @@ class MessageInboxAction
 			if (! matcher.matches ())
 				continue;
 
-			int messageId =
-				Integer.parseInt (
-					matcher.group (1));
+			Long messageId =
+				Long.parseLong (
+					matcher.group (
+						1));
 
 			InboxRec inbox =
 				inboxHelper.findRequired (

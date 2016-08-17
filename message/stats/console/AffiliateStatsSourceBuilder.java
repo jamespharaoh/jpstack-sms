@@ -1,9 +1,9 @@
 package wbs.sms.message.stats.console;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -59,22 +59,19 @@ class AffiliateStatsSourceBuilder
 		if (affiliates.isEmpty ())
 			return null;
 
-		Set<Integer> affiliateIds =
-			new HashSet<Integer> ();
+		Set<Long> affiliateIds =
+			affiliates.stream ()
 
-		for (
-			AffiliateRec affiliate
-				: affiliates
-		) {
+			.map (
+				AffiliateRec::getId)
 
-			affiliateIds.add (
-				affiliate.getId ());
-
-		}
+			.collect (
+				Collectors.toSet ());
 
 		return smsStatsSource.get ()
+
 			.fixedCriteriaMap (
-				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
+				ImmutableMap.of (
 					SmsStatsCriteria.affiliate,
 					affiliateIds));
 

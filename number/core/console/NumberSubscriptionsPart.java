@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.application.annotations.PrototypeComponent;
@@ -52,7 +51,7 @@ class NumberSubscriptionsPart
 
 		NumberRec number =
 			numberHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"numberId"));
 
 		links =

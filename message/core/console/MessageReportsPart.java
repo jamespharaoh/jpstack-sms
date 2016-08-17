@@ -43,7 +43,7 @@ class MessageReportsPart
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		messageReports =
@@ -104,13 +104,13 @@ class MessageReportsPart
 					"<td>%h</td>\n",
 					ifNull (
 						messageReport.getTheirCode (),
-						"—"));
+						"���"));
 
 				printFormat (
 					"<td>%h</td>\n",
 					ifNull (
 						messageReport.getTheirDescription (),
-						"—"));
+						"���"));
 
 				printFormat (
 					"</tr>\n");

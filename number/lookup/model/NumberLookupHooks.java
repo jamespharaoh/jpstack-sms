@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectHelper;
@@ -64,12 +63,16 @@ class NumberLookupHooks
 
 			.collect (
 				Collectors.groupingBy (
-					numberLookupType -> (long)
-						numberLookupType.getParentType ().getId (),
-					Collectors.mapping (
-						numberLookupType -> (long)
-							numberLookupType.getId (),
-						Collectors.toList ())));
+
+				numberLookupType ->
+					numberLookupType.getParentType ().getId (),
+
+				Collectors.mapping (
+					numberLookupType ->
+						numberLookupType.getId (),
+					Collectors.toList ())
+
+			));
 
 	}
 
@@ -85,7 +88,7 @@ class NumberLookupHooks
 		if (
 			doesNotContain (
 				numberLookupTypeIdsByParentTypeId.keySet (),
-				(long) parentHelper.objectTypeId ())
+				parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -97,7 +100,7 @@ class NumberLookupHooks
 		for (
 			Long numberLookupTypeId
 				: numberLookupTypeIdsByParentTypeId.get (
-					(long) parentHelper.objectTypeId ())
+					parentHelper.objectTypeId ())
 		) {
 
 			NumberLookupTypeRec numberLookupType =

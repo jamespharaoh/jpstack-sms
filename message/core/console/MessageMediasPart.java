@@ -68,7 +68,7 @@ class MessageMediasPart
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		medias =

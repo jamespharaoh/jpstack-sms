@@ -35,7 +35,7 @@ class NetworkFixtureProvider
 			networkHelper.createInstance ()
 
 			.setId (
-				0)
+				0l)
 
 			.setCode (
 				"unknown")
@@ -52,7 +52,7 @@ class NetworkFixtureProvider
 			networkHelper.createInstance ()
 
 			.setId (
-				1)
+				1l)
 
 			.setCode (
 				"blue")
@@ -69,7 +69,7 @@ class NetworkFixtureProvider
 			networkHelper.createInstance ()
 
 			.setId (
-				2)
+				2l)
 
 			.setCode (
 				"red")

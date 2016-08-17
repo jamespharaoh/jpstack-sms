@@ -2,6 +2,7 @@ package wbs.sms.magicnumber.console;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -10,13 +11,11 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -81,7 +80,7 @@ class MagicNumberUpdateAction
 
 		MagicNumberSetRec magicNumberSet =
 			magicNumberSetHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"magicNumberSetId"));
 
 		// parse numbers

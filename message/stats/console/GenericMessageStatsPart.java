@@ -2,6 +2,8 @@ package wbs.sms.message.stats.console;
 
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.toEnum;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,20 +14,17 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.google.common.base.Optional;
-
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.utils.TimeFormatter;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import wbs.framework.web.UrlParams;
 
 @Accessors (fluent = true)
@@ -85,11 +84,11 @@ class GenericMessageStatsPart
 
 	TabList.Prepared splitTabsPrepared;
 
-	Map<SmsStatsCriteria,Set<Integer>> criteriaMap =
-		new HashMap<SmsStatsCriteria,Set<Integer>> ();
+	Map<SmsStatsCriteria,Set<Long>> criteriaMap =
+		new HashMap<> ();
 
 	Map<String,String> criteriaInfo =
-		new TreeMap<String,String> ();
+		new TreeMap<> ();
 
 	SmsStatsCriteria splitCriteria;
 
@@ -142,8 +141,8 @@ class GenericMessageStatsPart
 			String param =
 				paramOptional.get ();
 
-			int critId =
-				Integer.parseInt (
+			Long critId =
+				Long.parseLong (
 					param);
 
 			criteriaMap.put (
@@ -608,19 +607,20 @@ class GenericMessageStatsPart
 				new UrlParams ();
 
 			for (
-				Map.Entry<SmsStatsCriteria,Set<Integer>> entry
+				Map.Entry <SmsStatsCriteria, Set <Long>> entry
 					: criteriaMap.entrySet ()
 			) {
 
 				SmsStatsCriteria crit =
 					entry.getKey ();
 
-				int critId =
+				Long critId =
 					entry.getValue ().iterator ().next ();
 
 				urlParams.add (
 					crit.toString (),
-					Integer.toString (critId));
+					Long.toString (
+						critId));
 
 			}
 
@@ -671,14 +671,14 @@ class GenericMessageStatsPart
 				myCriteria.toString ());
 
 			for (
-				Map.Entry<SmsStatsCriteria,Set<Integer>> entry
+				Map.Entry <SmsStatsCriteria, Set <Long>> entry
 					: criteriaMap.entrySet ()
 			) {
 
 				SmsStatsCriteria crit =
 					entry.getKey ();
 
-				int critId =
+				Long critId =
 					entry.getValue ().iterator ().next ();
 
 				if (crit == myCriteria)
@@ -686,7 +686,8 @@ class GenericMessageStatsPart
 
 				urlParams.add (
 					crit.toString (),
-					Integer.toString (critId));
+					Long.toString (
+						critId));
 
 			}
 

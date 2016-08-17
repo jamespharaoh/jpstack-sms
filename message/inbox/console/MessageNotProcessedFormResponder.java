@@ -38,7 +38,7 @@ class MessageNotProcessedFormResponder
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 	}

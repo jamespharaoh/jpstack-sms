@@ -3,7 +3,6 @@ package wbs.sms.number.lookup.hibernate;
 import java.util.List;
 
 import lombok.NonNull;
-
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.number.lookup.model.NumberLookupTypeDao;
 import wbs.sms.number.lookup.model.NumberLookupTypeRec;
@@ -35,7 +34,7 @@ class NumberLookupTypeDaoHibernate
 
 		return get (
 			NumberLookupTypeRec.class,
-			(int) (long) numberLookupTypeId);
+			numberLookupTypeId);
 
 	}
 

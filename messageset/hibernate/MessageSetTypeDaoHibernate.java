@@ -3,7 +3,6 @@ package wbs.sms.messageset.hibernate;
 import java.util.List;
 
 import lombok.NonNull;
-
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.messageset.model.MessageSetTypeDao;
 import wbs.sms.messageset.model.MessageSetTypeRec;
@@ -35,7 +34,7 @@ class MessageSetTypeDaoHibernate
 
 		return get (
 			MessageSetTypeRec.class,
-			(int) (long) messageSetTypeId);
+			messageSetTypeId);
 
 	}
 

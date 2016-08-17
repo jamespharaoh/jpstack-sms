@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectHelper;
@@ -58,12 +57,16 @@ class RouterHooks
 
 			.collect (
 				Collectors.groupingBy (
-					routerType -> (long)
-						routerType.getParentType ().getId (),
-					Collectors.mapping (
-						routerType -> (long)
-							routerType.getId (),
-						Collectors.toList ())));
+
+				routerType ->
+					routerType.getParentType ().getId (),
+
+				Collectors.mapping (
+					routerType ->
+						routerType.getId (),
+					Collectors.toList ())
+
+			));
 
 	}
 
@@ -79,7 +82,7 @@ class RouterHooks
 		if (
 			doesNotContain (
 				routerTypeIdsByParentTypeId.keySet (),
-				(long) parentHelper.objectTypeId ())
+				parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -91,7 +94,7 @@ class RouterHooks
 		for (
 			Long routerTypeId
 				: routerTypeIdsByParentTypeId.get (
-					(long) parentHelper.objectTypeId ())
+					parentHelper.objectTypeId ())
 		) {
 
 			RouterTypeRec routerType =

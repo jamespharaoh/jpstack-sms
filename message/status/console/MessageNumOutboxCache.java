@@ -9,7 +9,7 @@ import wbs.sms.message.outbox.model.OutboxObjectHelper;
 @SingletonComponent ("messageNumOutboxCache")
 public
 class MessageNumOutboxCache
-	extends CachedGetter<Integer> {
+	extends CachedGetter <Long> {
 
 	@Inject
 	OutboxObjectHelper outboxHelper;
@@ -21,7 +21,7 @@ class MessageNumOutboxCache
 
 	@Override
 	public
-	Integer refresh () {
+	Long refresh () {
 
 		return outboxHelper.count ();
 

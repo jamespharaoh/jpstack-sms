@@ -5,7 +5,7 @@ import java.util.List;
 public
 interface DeliveryDaoMethods {
 
-	List<DeliveryRec> findAllLimit (
-			int maxResults);
+	List <DeliveryRec> findAllLimit (
+			Long maxResults);
 
 }

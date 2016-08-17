@@ -11,10 +11,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
-
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
@@ -141,7 +140,7 @@ class SmsMessageLogicImplementation
 
 		RootRec root =
 			rootHelper.findRequired (
-				0);
+				0l);
 
 		if (
 			isNull (
@@ -169,7 +168,7 @@ class SmsMessageLogicImplementation
 
 		RootRec root =
 			rootHelper.findRequired (
-				0);
+				0l);
 
 		if (
 			isNull (

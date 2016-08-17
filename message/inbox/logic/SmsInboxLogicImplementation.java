@@ -1,21 +1,20 @@
 package wbs.sms.message.inbox.logic;
 
 import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 
 import javax.inject.Inject;
-
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -131,17 +130,18 @@ class SmsInboxLogicImplementation
 
 		RootRec root =
 			rootHelper.findRequired (
-				0);
+				0l);
 
 		// lookup the number
 
 		NumberRec number =
-			numberLogic.objectToNumber (numFrom);
+			numberLogic.objectToNumber (
+				numFrom);
 
 		NetworkRec network =
 			optionalNetwork.or (
 				networkHelper.findRequired (
-					0));
+					0l));
 
 		if (! route.getCanReceive ()) {
 
@@ -259,7 +259,7 @@ class SmsInboxLogicImplementation
 
 			.setBatch (
 				batchHelper.findRequired (
-					0))
+					0l))
 
 			.setAdultVerified (
 				avStatus.orNull ())
@@ -353,7 +353,6 @@ class SmsInboxLogicImplementation
 				inbox)
 
 			.setIndex (
-				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (
@@ -440,7 +439,6 @@ class SmsInboxLogicImplementation
 				inbox)
 
 			.setIndex (
-				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (
@@ -637,7 +635,6 @@ class SmsInboxLogicImplementation
 				inbox)
 
 			.setIndex (
-				(int) (long)
 				inbox.getNumAttempts ())
 
 			.setTimestamp (

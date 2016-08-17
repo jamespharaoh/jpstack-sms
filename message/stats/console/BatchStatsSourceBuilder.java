@@ -45,8 +45,8 @@ class BatchStatsSourceBuilder
 		if (batches.isEmpty ())
 			return null;
 
-		Set<Integer> batchIds =
-			new HashSet<Integer> ();
+		Set<Long> batchIds =
+			new HashSet<> ();
 
 		for (
 			BatchRec batch
@@ -61,7 +61,7 @@ class BatchStatsSourceBuilder
 		return smsStatsSourceProvider.get ()
 
 			.fixedCriteriaMap (
-				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
+				ImmutableMap.of (
 					SmsStatsCriteria.batch,
 					batchIds));
 

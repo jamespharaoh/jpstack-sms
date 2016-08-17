@@ -5,13 +5,12 @@ import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
 import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import lombok.NonNull;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
@@ -20,6 +19,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.platform.service.model.ServiceRec;
@@ -42,7 +42,7 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<MessageRec> findNotProcessed () {
+	List <MessageRec> findNotProcessed () {
 
 		return findMany (
 			"findNotProcessed",
@@ -66,7 +66,7 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	long countNotProcessed () {
+	Long countNotProcessed () {
 
 		return findOne (
 			"countNotProcessed ()",
@@ -124,8 +124,8 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<MessageRec> findByThreadId (
-			long threadId) {
+	List <MessageRec> findByThreadId (
+			@NonNull Long threadId) {
 
 		return findMany (
 			"findByThreadId",
@@ -145,8 +145,8 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<MessageRec> findRecentLimit (
-			long maxResults) {
+	List <MessageRec> findRecentLimit (
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findRecentLimit",
@@ -159,7 +159,8 @@ class MessageDaoHibernate
 				Order.desc ("id"))
 
 			.setMaxResults (
-				(int) maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 
@@ -167,7 +168,7 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<ServiceRec> projectServices (
+	List <ServiceRec> projectServices (
 			@NonNull NumberRec number) {
 
 		return findMany (
@@ -538,7 +539,8 @@ class MessageDaoHibernate
 		) {
 
 			criteria.setMaxResults (
-				search.maxResults ());
+				toJavaIntegerRequired (
+					search.maxResults ()));
 
 		}
 

@@ -4,10 +4,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import lombok.experimental.Accessors;
-
 import com.google.common.collect.ImmutableList;
 
+import lombok.experimental.Accessors;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
@@ -47,7 +46,7 @@ class NumberListNumberCopyPart
 
 		thisNumberList =
 			numberListHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"numberListId"));
 
 		// browseable number lists

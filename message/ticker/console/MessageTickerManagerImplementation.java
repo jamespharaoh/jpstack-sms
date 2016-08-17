@@ -11,11 +11,11 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import lombok.Getter;
+import lombok.Setter;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.media.model.MediaRec;
@@ -42,20 +42,22 @@ class MessageTickerManagerImplementation
 	// properties
 
 	@Getter @Setter
-	int updateTimeMs = 1000;
+	Duration updateDuration =
+		Duration.millis (
+			1000);
 
 	// state
 
-	int generation = 0;
+	Long generation = 0l;
 
 	Instant lastUpdate =
 		millisToInstant (0);
 
-	int generations = 1000;
+	Long generations = 1000l;
 
 	private
-	Map<Integer,MessageTickerMessage> messageTickerMessages =
-		new TreeMap<Integer,MessageTickerMessage> ();
+	Map <Long, MessageTickerMessage> messageTickerMessages =
+		new TreeMap<> ();
 
 	// implementation
 
@@ -71,7 +73,7 @@ class MessageTickerManagerImplementation
 			earlierThan (
 				now,
 				lastUpdate.plus (
-					updateTimeMs))
+					updateDuration))
 		) {
 			return;
 		}
@@ -84,12 +86,12 @@ class MessageTickerManagerImplementation
 
 		// update the info
 
-		List<MessageRec> newMessages =
+		List <MessageRec> newMessages =
 			messageHelper.findRecentLimit (
-				1000);
+				1000l);
 
-		Map<Integer,MessageTickerMessage> newMessageTickerMessages =
-			new TreeMap<Integer,MessageTickerMessage> ();
+		Map <Long,MessageTickerMessage> newMessageTickerMessages =
+			new TreeMap<> ();
 
 		for (
 			MessageRec message

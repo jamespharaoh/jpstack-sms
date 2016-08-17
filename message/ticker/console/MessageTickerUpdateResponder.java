@@ -255,7 +255,7 @@ class MessageTickerUpdateResponder
 		boolean comma = false;
 
 		for (
-			Integer mediaId
+			Long mediaId
 				: messageTickerMessage.mediaIds ()
 		) {
 

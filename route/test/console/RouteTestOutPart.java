@@ -29,7 +29,7 @@ class RouteTestOutPart
 
 		route =
 			routeHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"routeId"));
 
 	}

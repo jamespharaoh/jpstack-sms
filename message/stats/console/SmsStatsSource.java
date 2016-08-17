@@ -28,8 +28,8 @@ interface SmsStatsSource {
 			LocalDate endDate,
 			SmsStatsTimeScheme timeScheme,
 			Optional<SmsStatsCriteria> groupCriteria,
-			Map<SmsStatsCriteria,Set<Integer>> criteriaMap,
-			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap);
+			Map<SmsStatsCriteria,Set<Long>> criteriaMap,
+			Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap);
 
 	/**
 	 * Finds the default route for this source. This returns null if there is no

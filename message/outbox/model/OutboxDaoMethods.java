@@ -11,29 +11,29 @@ import wbs.sms.route.core.model.RouteRec;
 public
 interface OutboxDaoMethods {
 
-	int count ();
+	Long count ();
 
 	OutboxRec find (
 			MessageRec message);
 
-	List<OutboxRec> findLimit (
+	List <OutboxRec> findLimit (
 			RouteRec route,
-			long maxResults);
+			Long maxResults);
 
 	OutboxRec findNext (
 			Instant now,
 			RouteRec route);
 
-	List<OutboxRec> findNextLimit (
+	List <OutboxRec> findNextLimit (
 			Instant now,
 			RouteRec route,
-			long maxResults);
+			Long maxResults);
 
-	List<OutboxRec> findSendingBeforeLimit (
+	List <OutboxRec> findSendingBeforeLimit (
 			Instant sendingBefore,
-			long maxResults);
+			Long maxResults);
 
-	Map<Long,Long> generateRouteSummary (
+	Map <Long, Long> generateRouteSummary (
 			Instant now);
 
 }

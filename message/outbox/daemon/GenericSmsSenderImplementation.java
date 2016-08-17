@@ -6,17 +6,22 @@ import static wbs.framework.utils.etc.Misc.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.Misc.todo;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.framework.utils.etc.OptionalUtils.optionalMapRequired;
 import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Map;
 import java.util.stream.LongStream;
 
 import javax.inject.Inject;
+
+import org.joda.time.Duration;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 
 import lombok.Cleanup;
 import lombok.Getter;
@@ -24,12 +29,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
-
-import org.joda.time.Duration;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -309,7 +308,7 @@ class GenericSmsSenderImplementation<StateType>
 					JsonUtils::jsonToBytes));
 
 		smsOutboxAttemptId =
-			(long) smsOutboxAttempt.getId ();
+			smsOutboxAttempt.getId ();
 
 		// commit and return
 

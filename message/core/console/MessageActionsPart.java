@@ -33,7 +33,7 @@ class MessageActionsPart
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 	}

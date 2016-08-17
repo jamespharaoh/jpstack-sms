@@ -1,12 +1,13 @@
 package wbs.sms.customer.hibernate;
 
-import java.util.List;
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 
-import lombok.NonNull;
+import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import lombok.NonNull;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerSessionDao;
@@ -19,10 +20,10 @@ class SmsCustomerSessionDaoHibernate
 
 	@Override
 	public
-	List<SmsCustomerSessionRec> findToTimeoutLimit (
+	List <SmsCustomerSessionRec> findToTimeoutLimit (
 			@NonNull SmsCustomerManagerRec manager,
 			@NonNull Instant startedBefore,
-			int maxResults) {
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findToTimeoutLimit (manager, startedBefore, maxResults)",
@@ -51,7 +52,8 @@ class SmsCustomerSessionDaoHibernate
 					startedBefore))
 
 			.setMaxResults (
-				maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 

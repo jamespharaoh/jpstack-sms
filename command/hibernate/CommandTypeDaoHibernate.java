@@ -3,7 +3,6 @@ package wbs.sms.command.hibernate;
 import java.util.List;
 
 import lombok.NonNull;
-
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.command.model.CommandTypeDao;
 import wbs.sms.command.model.CommandTypeRec;
@@ -35,7 +34,7 @@ class CommandTypeDaoHibernate
 
 		return get (
 			CommandTypeRec.class,
-			(int) (long) commandTypeId);
+			commandTypeId);
 
 	}
 

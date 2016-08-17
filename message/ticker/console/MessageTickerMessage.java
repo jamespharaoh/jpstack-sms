@@ -3,11 +3,10 @@ package wbs.sms.message.ticker.console;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
-
 import org.joda.time.Instant;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import wbs.framework.record.GlobalId;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageStatus;
@@ -17,13 +16,13 @@ public
 class MessageTickerMessage {
 
 	@Getter
-	long messageGeneration;
+	Long messageGeneration;
 
 	@Getter
-	long statusGeneration;
+	Long statusGeneration;
 
 	@Getter
-	int messageId;
+	Long messageId;
 
 	@Getter
 	GlobalId routeGlobalId;
@@ -56,8 +55,8 @@ class MessageTickerMessage {
 	long charge;
 
 	@Getter
-	List<Integer> mediaIds =
-		new ArrayList<Integer> ();
+	List<Long> mediaIds =
+		new ArrayList<> ();
 
 	MessageTickerMessage () {
 	}

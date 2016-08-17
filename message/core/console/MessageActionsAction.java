@@ -2,19 +2,18 @@ package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.notIn;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -86,7 +85,7 @@ class MessageActionsAction
 
 		message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		// hand off to appropriate method

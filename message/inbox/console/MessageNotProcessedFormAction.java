@@ -1,15 +1,15 @@
 package wbs.sms.message.inbox.console;
 
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+
 import javax.inject.Inject;
 
 import lombok.Cleanup;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.queue.logic.QueueLogic;
@@ -77,7 +77,7 @@ class MessageNotProcessedFormAction
 
 		MessageRec message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		// check the message status is correct

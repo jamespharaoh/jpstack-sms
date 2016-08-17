@@ -1,8 +1,8 @@
 package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.bytesToString;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Set;
@@ -49,11 +49,11 @@ class MessageThreadPart
 
 		MessageRec message =
 			messageHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"messageId"));
 
 		messages =
-			new TreeSet<MessageRec> (
+			new TreeSet<> (
 				messageHelper.findByThreadId (
 					message.getThreadId ()));
 

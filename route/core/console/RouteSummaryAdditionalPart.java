@@ -34,7 +34,7 @@ class RouteSummaryAdditionalPart
 
 		route =
 			routeHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"routeId"));
 
 		if (route.getSender () != null) {

@@ -7,13 +7,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import lombok.Cleanup;
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -32,11 +31,13 @@ class SmsCustomerSessionTimeoutDaemon
 
 	// constants
 
-	final
-	int delayInSeconds = 10;
+	public final static
+	Duration sleepDuration =
+		Duration.standardSeconds (
+			10);
 
-	final
-	int batchSize = 100;
+	public final static
+	long batchSize = 100;
 
 	// dependencies
 
@@ -62,8 +63,10 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@Override
 	protected
-	int getDelayMs () {
-		return 1000 * delayInSeconds;
+	Duration getSleepDuration () {
+
+		return sleepDuration;
+	
 	}
 
 	@Override
@@ -108,7 +111,7 @@ class SmsCustomerSessionTimeoutDaemon
 	}
 
 	void runOneManager (
-			@NonNull Integer managerId) {
+			@NonNull Long managerId) {
 
 		log.debug (
 			stringFormat (

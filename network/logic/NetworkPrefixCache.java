@@ -10,12 +10,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.joda.time.Instant;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-
-import org.joda.time.Instant;
-
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
@@ -45,7 +44,7 @@ class NetworkPrefixCache {
 	// state
 
 	private
-	Map<String, Integer> entries;
+	Map<String,Long> entries;
 
 	private
 	Instant lastReload =
@@ -57,20 +56,26 @@ class NetworkPrefixCache {
 	void reloadEntries () {
 
 		entries =
-			new HashMap<String,Integer> ();
+			new HashMap<> ();
 
 		List<NetworkPrefixRec> list =
 			networkPrefixHelper.findAll ();
 
-		for (NetworkPrefixRec networkPrefix : list)
+		for (
+			NetworkPrefixRec networkPrefix
+				: list
+		) {
+
 			entries.put (
 				networkPrefix.getPrefix (),
 				networkPrefix.getNetwork ().getId ());
 
+		}
+
 	}
 
 	private synchronized
-	Map<String,Integer> getEntries () {
+	Map<String,Long> getEntries () {
 
 		Instant now =
 			Instant.now ();
@@ -96,7 +101,7 @@ class NetworkPrefixCache {
 	NetworkRec lookupNetwork (
 			String number) {
 
-		Map<String,Integer> entries =
+		Map<String,Long> entries =
 			getEntries ();
 
 		for (
@@ -115,7 +120,7 @@ class NetworkPrefixCache {
 
 			log.debug ("Trying " + prefixToTry + " for " + number);
 
-			Integer networkId =
+			Long networkId =
 				entries.get (
 					prefixToTry);
 

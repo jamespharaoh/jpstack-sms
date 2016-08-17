@@ -1,5 +1,6 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -11,18 +12,16 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.record.GlobalId;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
@@ -66,17 +65,18 @@ class SmsStatsConsoleLogicImplementation
 
 	@Override
 	public
-	Map<SmsStatsCriteria,Set<Integer>> makeFilterMap () {
+	Map<SmsStatsCriteria,Set<Long>> makeFilterMap () {
 
 		if (privChecker.canRecursive (
 				GlobalId.root,
 				"stats"))
 			return null;
 
-		Set<Integer> serviceIds =
-			new HashSet<Integer> ();
+		Set<Long> serviceIds =
+			new HashSet<> ();
 
-		serviceIds.add (-1);
+		serviceIds.add (
+			-1l);
 
 		for (
 			ServiceRec service
@@ -107,10 +107,11 @@ class SmsStatsConsoleLogicImplementation
 
 		}
 
-		Set<Integer> affiliateIds =
-			new HashSet<Integer> ();
+		Set<Long> affiliateIds =
+			new HashSet<> ();
 
-		affiliateIds.add (-1);
+		affiliateIds.add (
+			-1l);
 
 		for (
 			AffiliateRec affiliate
@@ -141,10 +142,11 @@ class SmsStatsConsoleLogicImplementation
 
 		}
 
-		Set<Integer> routeIds =
-			new HashSet<Integer> ();
+		Set<Long> routeIds =
+			new HashSet<> ();
 
-		routeIds.add (-1);
+		routeIds.add (
+			-1l);
 
 		for (
 			RouteRec route
@@ -164,7 +166,7 @@ class SmsStatsConsoleLogicImplementation
 
 		}
 
-		return ImmutableMap.<SmsStatsCriteria,Set<Integer>>builder ()
+		return ImmutableMap.<SmsStatsCriteria,Set<Long>>builder ()
 
 			.put (
 				SmsStatsCriteria.service,
@@ -186,7 +188,7 @@ class SmsStatsConsoleLogicImplementation
 	public
 	String lookupGroupName (
 			@NonNull SmsStatsCriteria crit,
-			int id) {
+			@NonNull Long id) {
 
 		switch (crit) {
 
@@ -239,32 +241,32 @@ class SmsStatsConsoleLogicImplementation
 	 */
 	@Override
 	public
-	Map<SmsStatsCriteria,Set<Integer>> criteriaMapIntersect (
-			@NonNull List<Map<SmsStatsCriteria,Set<Integer>>> critMaps) {
+	Map<SmsStatsCriteria,Set<Long>> criteriaMapIntersect (
+			@NonNull List<Map<SmsStatsCriteria,Set<Long>>> critMaps) {
 
 		// start with an empty map (will return everything)
 
-		Map<SmsStatsCriteria,Set<Integer>> ret =
-			new HashMap<SmsStatsCriteria,Set<Integer>> ();
+		Map<SmsStatsCriteria,Set<Long>> ret =
+			new HashMap<> ();
 
 		// now intersect this with each map in turn
 
 		for (
-			Map<SmsStatsCriteria,Set<Integer>> critMap
+			Map<SmsStatsCriteria,Set<Long>> critMap
 				: critMaps
 		) {
 
 			// for each criterion to ids mapping...
 
 			for (
-				Map.Entry<SmsStatsCriteria,Set<Integer>> ent
+				Map.Entry<SmsStatsCriteria,Set<Long>> ent
 					: critMap.entrySet ()
 			) {
 
 				SmsStatsCriteria crit =
 					ent.getKey ();
 
-				Collection<Integer> ids =
+				Collection<Long> ids =
 					ent.getValue ();
 
 				// if this criterion is already listed...
@@ -282,7 +284,7 @@ class SmsStatsConsoleLogicImplementation
 
 					ret.put (
 						crit,
-						new HashSet<Integer> (ids));
+						new HashSet<> (ids));
 
 				}
 
@@ -301,14 +303,14 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	MessageStatsSearch critMapToMessageStatsSearch (
-			Map<SmsStatsCriteria,Set<Integer>> critMap,
-			Optional<Map<SmsStatsCriteria,Set<Integer>>> filterMap) {
+			Map<SmsStatsCriteria,Set<Long>> critMap,
+			Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap) {
 
 		MessageStatsSearch search =
 			new MessageStatsSearch ();
 
 		for (
-			Map.Entry<SmsStatsCriteria,Set<Integer>> ent
+			Map.Entry<SmsStatsCriteria,Set<Long>> ent
 				: critMap.entrySet ()
 		) {
 
@@ -352,7 +354,7 @@ class SmsStatsConsoleLogicImplementation
 	MessageStatsSearch setSearchCriteria (
 			MessageStatsSearch search,
 			SmsStatsCriteria statsCriteria,
-			Collection<Integer> value) {
+			Collection<Long> value) {
 
 		switch (statsCriteria) {
 

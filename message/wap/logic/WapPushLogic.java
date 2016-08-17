@@ -117,7 +117,7 @@ class WapPushLogic
 
 			service =
 				serviceHelper.findRequired (
-					0);
+					0l);
 
 		}
 
@@ -128,7 +128,7 @@ class WapPushLogic
 
 			affiliate =
 				affiliateHelper.findRequired (
-					0);
+					0l);
 
 		}
 
@@ -139,7 +139,7 @@ class WapPushLogic
 
 			batch =
 				batchHelper.findRequired (
-					0);
+					0l);
 
 		}
 

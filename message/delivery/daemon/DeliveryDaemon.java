@@ -11,12 +11,11 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import com.google.common.base.Optional;
+
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
-
-import com.google.common.base.Optional;
-
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -65,8 +64,8 @@ class DeliveryDaemon
 
 	// state
 
-	QueueBuffer<Integer,DeliveryRec> buffer;
-	Map<Integer,DeliveryHandler> handlersById;
+	QueueBuffer<Long,DeliveryRec> buffer;
+	Map<Long,DeliveryHandler> handlersById;
 
 	// implementation
 
@@ -75,11 +74,11 @@ class DeliveryDaemon
 	void init () {
 
 		buffer =
-			new QueueBuffer<Integer,DeliveryRec> (
+			new QueueBuffer<> (
 				bufferSize);
 
 		handlersById =
-			new HashMap<Integer,DeliveryHandler> ();
+			new HashMap<> ();
 
 		@Cleanup
 		Transaction transaction =
@@ -157,7 +156,7 @@ class DeliveryDaemon
 			try {
 				while (true) {
 
-					Set<Integer> activeIds =
+					Set<Long> activeIds =
 						buffer.getKeys ();
 
 					int numFound =
@@ -186,7 +185,7 @@ class DeliveryDaemon
 		}
 
 		int pollDatabase (
-				Set<Integer> activeIds) {
+				Set<Long> activeIds) {
 
 			int numFound = 0;
 
@@ -196,7 +195,7 @@ class DeliveryDaemon
 					"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
 					this);
 
-			List<DeliveryRec> deliveries =
+			List <DeliveryRec> deliveries =
 				deliveryHelper.findAllLimit (
 					buffer.getFullSize ());
 

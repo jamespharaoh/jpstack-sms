@@ -1,6 +1,7 @@
 package wbs.sms.messageset.console;
 
 import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.Misc.ifElse;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -12,12 +13,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableSet;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.google.common.collect.ImmutableSet;
-
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
@@ -100,7 +100,7 @@ class MessageSetPart
 
 				formData.put (
 					"route_" + index,
-					Integer.toString (
+					Long.toString (
 						messageSetMessage.getRoute ().getId ()));
 
 				formData.put (
@@ -229,11 +229,13 @@ class MessageSetPart
 				"<option",
 				" value=\"%h\"",
 				route.getId (),
-				equal (
-					Integer.toString (
-						route.getId ()),
-						routeStr)
-					? " selected" : "",
+				ifElse (
+					equal (
+						Long.toString (
+							route.getId ()),
+						routeStr),
+					() -> " selected",
+					() -> ""),
 				">%h.%h</option>\n",
 				route.getSlice ().getCode (),
 				route.getCode ());

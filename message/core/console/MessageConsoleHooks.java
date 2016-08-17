@@ -95,8 +95,8 @@ class MessageConsoleHooks
 
 		// services
 
-		ImmutableList.Builder<Integer> servicesBuilder =
-			ImmutableList.<Integer>builder ();
+		ImmutableList.Builder<Long> servicesBuilder =
+			ImmutableList.builder ();
 
 		for (
 			ServiceRec service
@@ -127,8 +127,8 @@ class MessageConsoleHooks
 
 		// affiliates
 
-		ImmutableList.Builder<Integer> affiliatesBuilder =
-			ImmutableList.<Integer>builder ();
+		ImmutableList.Builder<Long> affiliatesBuilder =
+			ImmutableList.builder ();
 
 		for (
 			AffiliateRec affiliate
@@ -159,8 +159,8 @@ class MessageConsoleHooks
 
 		// routes
 
-		ImmutableList.Builder<Integer> routesBuilder =
-			ImmutableList.<Integer>builder ();
+		ImmutableList.Builder<Long> routesBuilder =
+			ImmutableList.builder ();
 
 		for (
 			RouteRec route

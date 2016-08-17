@@ -18,16 +18,15 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.log4j.Log4j;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.Cleanup;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -66,7 +65,7 @@ class ModemPollDaemon
 	String deviceName;
 
 	@Getter @Setter
-	Integer routeId;
+	Long routeId;
 
 	@Getter @Setter
 	String destinationNumber;

@@ -1,12 +1,13 @@
 package wbs.sms.number.core.model;
 
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
 import wbs.framework.record.GlobalId;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 
@@ -52,7 +53,8 @@ class NumberObjectHelperImplementation
 		// create it
 
 		NetworkRec defaultNetwork =
-			networkHelper.findRequired (0);
+			networkHelper.findRequired (
+				0l);
 
 		return numberHelper.insert (
 			numberHelper.createInstance ()

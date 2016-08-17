@@ -8,15 +8,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.application.config.WbsConfig;
 import wbs.framework.database.Database;
@@ -242,7 +241,7 @@ class MessageSender {
 
 			batch =
 				batchHelper.findRequired (
-					0);
+					0l);
 
 		}
 

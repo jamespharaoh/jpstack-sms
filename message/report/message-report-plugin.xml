@@ -3,9 +3,7 @@
 	package="wbs.sms.message.report">
 
 	<models>
-		<custom-type name="messageReportCodeType"/>
 		<model name="messageReport"/>
-		<model name="messageReportCode"/>
 	</models>
 
 	<layer name="logic">

@@ -42,7 +42,7 @@ class NumberServicesPart
 
 		NumberRec number =
 			numberHelper.findRequired (
-				requestContext.stuffInt (
+				requestContext.stuffInteger (
 					"numberId"));
 
 		List<ServiceRec> allServices =

@@ -94,8 +94,8 @@ class ServiceStatsSourceBuilder
 
 		}
 
-		Set<Integer> serviceIds =
-			new HashSet<Integer> ();
+		Set<Long> serviceIds =
+			new HashSet<> ();
 
 		for (
 			ServiceRec service
@@ -110,7 +110,7 @@ class ServiceStatsSourceBuilder
 		return smsStatsSourceProvider.get ()
 
 			.fixedCriteriaMap (
-				ImmutableMap.<SmsStatsCriteria,Set<Integer>>of (
+				ImmutableMap.of (
 					SmsStatsCriteria.service,
 					serviceIds));
 

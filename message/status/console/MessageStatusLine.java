@@ -59,10 +59,10 @@ class MessageStatusLine
 
 	@Override
 	public
-	Future<String> getUpdateScript () {
+	Future <String> getUpdateScript () {
 
-		int numInbox = 0;
-		int numOutbox = 0;
+		Long numInbox = 0l;
+		Long numOutbox = 0l;
 
 		// count inboxes (if visible)
 

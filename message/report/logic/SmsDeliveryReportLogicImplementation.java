@@ -9,13 +9,12 @@ import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
-
 import org.joda.time.ReadableInstant;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -304,12 +303,12 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	void deliveryReport (
-			int messageId,
-			MessageStatus newMessageStatus,
-			Optional<String> theirCode,
-			Optional<String> theirDescription,
-			Optional<String> extraInformation,
-			Optional<ReadableInstant> theirTimestamp)
+			@NonNull Long messageId,
+			@NonNull MessageStatus newMessageStatus,
+			@NonNull Optional<String> theirCode,
+			@NonNull Optional<String> theirDescription,
+			@NonNull Optional<String> extraInformation,
+			@NonNull Optional<ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {

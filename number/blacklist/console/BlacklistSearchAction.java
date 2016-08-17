@@ -1,15 +1,16 @@
 package wbs.sms.number.blacklist.console;
 
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-
 import com.google.common.base.Optional;
 
+import lombok.Cleanup;
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.request.ConsoleRequestContext;
@@ -19,7 +20,6 @@ import wbs.framework.database.Transaction;
 import wbs.framework.record.GlobalId;
 import wbs.framework.record.Record;
 import wbs.framework.utils.etc.Html;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.framework.web.Responder;
 import wbs.platform.event.model.EventLinkObjectHelper;
 import wbs.platform.event.model.EventLinkRec;
@@ -191,7 +191,6 @@ class BlacklistSearchAction
 						objectManager.findObject (
 							new GlobalId (
 								eventLink.getTypeId (),
-								(int) (long)
 								eventLink.getRefId ()));
 
 					text =

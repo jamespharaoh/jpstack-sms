@@ -7,10 +7,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.Cleanup;
-
 import com.google.common.collect.ImmutableMap;
 
+import lombok.Cleanup;
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.param.ParamChecker;
@@ -86,13 +85,10 @@ class RouteTestOutAction
 				"RouteTestOutAction.goReal ()",
 				this);
 
-		int routeId =
-			requestContext.stuffInt (
-				"routeId");
-
 		RouteRec route =
 			routeHelper.findRequired (
-				routeId);
+				requestContext.stuffInteger (
+					"routeId"));
 
 		// check params
 

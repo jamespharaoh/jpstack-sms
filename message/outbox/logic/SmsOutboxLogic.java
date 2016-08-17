@@ -41,9 +41,9 @@ interface SmsOutboxLogic {
 	OutboxRec claimNextMessage (
 			RouteRec route);
 
-	List<OutboxRec> claimNextMessages (
+	List <OutboxRec> claimNextMessages (
 			RouteRec route,
-			int limit);
+			Long limit);
 
 	/**
 	 * Removes the given message from the outbox and marks it as sent
@@ -55,7 +55,7 @@ interface SmsOutboxLogic {
 	 */
 	void messageSuccess (
 			MessageRec message,
-			Optional<List<String>> otherIds);
+			Optional <List <String>> otherIds);
 
 	/**
 	 * Removes the given message from the outbox and marks it as failed. The
@@ -82,20 +82,20 @@ interface SmsOutboxLogic {
 
 	SmsOutboxAttemptRec beginSendAttempt (
 			OutboxRec smsOutbox,
-			Optional<byte[]> requestTrace);
+			Optional <byte[]> requestTrace);
 
 	void completeSendAttemptSuccess (
 			SmsOutboxAttemptRec smsOutboxAttempt,
-			Optional<List<String>> otherIds,
-			Optional<byte[]> requestTrace,
-			Optional<byte[]> responseTrace);
+			Optional <List <String>> otherIds,
+			Optional <byte[]> requestTrace,
+			Optional <byte[]> responseTrace);
 
 	void completeSendAttemptFailure (
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			FailureType failureType,
 			String errorMessage,
-			Optional<byte[]> requestTrace,
-			Optional<byte[]> responseTrace,
-			Optional<byte[]> errorTrace);
+			Optional <byte[]> requestTrace,
+			Optional <byte[]> responseTrace,
+			Optional <byte[]> errorTrace);
 
 }

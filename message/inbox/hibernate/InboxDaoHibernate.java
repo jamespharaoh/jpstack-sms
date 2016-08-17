@@ -1,14 +1,15 @@
 package wbs.sms.message.inbox.hibernate;
 
-import java.util.List;
+import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 
-import lombok.NonNull;
+import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.inbox.model.InboxDao;
@@ -23,9 +24,9 @@ class InboxDaoHibernate
 
 	@Override
 	public
-	int countPending () {
+	Long countPending () {
 
-		return (int) (long) findOne (
+		return findOne (
 			"countPending ()",
 			Long.class,
 
@@ -47,9 +48,9 @@ class InboxDaoHibernate
 
 	@Override
 	public
-	List<InboxRec> findPendingLimit (
+	List <InboxRec> findPendingLimit (
 			@NonNull Instant now,
-			int maxResults) {
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findPendingLimit (now, maxResults)",
@@ -78,7 +79,8 @@ class InboxDaoHibernate
 					"_inbox.id"))
 
 			.setMaxResults (
-				maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 
@@ -86,8 +88,8 @@ class InboxDaoHibernate
 
 	@Override
 	public
-	List<InboxRec> findPendingLimit (
-			int maxResults) {
+	List <InboxRec> findPendingLimit (
+			@NonNull Long maxResults) {
 
 		return findMany (
 			"findPendingLimit (maxResults)",
@@ -111,7 +113,8 @@ class InboxDaoHibernate
 					"_inbox.id"))
 
 			.setMaxResults (
-				maxResults)
+				toJavaIntegerRequired (
+					maxResults))
 
 		);
 

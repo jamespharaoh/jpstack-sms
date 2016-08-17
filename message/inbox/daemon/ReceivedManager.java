@@ -1,7 +1,7 @@
 package wbs.sms.message.inbox.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Set;
@@ -9,11 +9,11 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
-
 import com.google.common.base.Optional;
 
+import lombok.Cleanup;
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -89,8 +89,9 @@ class ReceivedManager
 
 	// state
 
-	QueueBuffer<Integer,Integer> buffer =
-		new QueueBuffer<Integer,Integer> (bufferSize);
+	QueueBuffer<Long,Long> buffer =
+		new QueueBuffer<> (
+			bufferSize);
 
 	/**
 	 * Runnable class for a worker thread. Loops until the exit flag is set in
@@ -123,7 +124,7 @@ class ReceivedManager
 		}
 
 		void doMessage (
-				int messageId) {
+				@NonNull Long messageId) {
 
 			@Cleanup
 			Transaction transaction =
@@ -174,8 +175,8 @@ class ReceivedManager
 		}
 
 		void doError (
-				int messageId,
-				Throwable exception) {
+				@NonNull Long messageId,
+				@NonNull Throwable exception) {
 
 			log.error (
 				stringFormat (
@@ -230,11 +231,14 @@ class ReceivedManager
 
 				// get the next message
 
-				int messageId;
+				Long messageId;
 
 				try {
-					messageId = buffer.next ();
-				} catch (InterruptedException e) {
+
+					messageId =
+						buffer.next ();
+
+				} catch (InterruptedException interruptedException) {
 					return;
 				}
 
@@ -267,7 +271,7 @@ class ReceivedManager
 	boolean doQuery () {
 
 		final
-		Set<Integer> activeMessageids =
+		Set <Long> activeMessageids =
 			buffer.getKeys ();
 
 		@Cleanup
@@ -276,7 +280,7 @@ class ReceivedManager
 				"ReceivedManager.doQuery ()",
 				this);
 
-		List<InboxRec> inboxes =
+		List <InboxRec> inboxes =
 			inboxHelper.findPendingLimit (
 				transaction.now (),
 				buffer.getFullSize ());

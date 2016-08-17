@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectHelper;
@@ -58,12 +57,16 @@ class MessageSetHooks
 
 			.collect (
 				Collectors.groupingBy (
-					messageSetType -> (long)
-						messageSetType.getParentType ().getId (),
-					Collectors.mapping (
-						messageSetType -> (long)
-							messageSetType.getId (),
-						Collectors.toList ())));
+
+				messageSetType ->
+					messageSetType.getParentType ().getId (),
+
+				Collectors.mapping (
+					messageSetType ->
+						messageSetType.getId (),
+					Collectors.toList ())
+
+			));
 
 	}
 
@@ -79,7 +82,7 @@ class MessageSetHooks
 		if (
 			doesNotContain (
 				messageSetTypeIdsByParentTypeId.keySet (),
-				(long) parentHelper.objectTypeId ())
+				parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -91,7 +94,7 @@ class MessageSetHooks
 		for (
 			Long messageSetTypeId
 				: messageSetTypeIdsByParentTypeId.get (
-					(long) parentHelper.objectTypeId ())
+					parentHelper.objectTypeId ())
 		) {
 
 			MessageSetTypeRec messageSetType =

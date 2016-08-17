@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectHelper;
@@ -58,12 +57,16 @@ class CommandHooks
 
 			.collect (
 				Collectors.groupingBy (
-					commandType -> (long)
-						commandType.getParentType ().getId (),
-					Collectors.mapping (
-						commandType -> (long)
-							commandType.getId (),
-						Collectors.toList ())));
+
+				commandType ->
+					commandType.getParentType ().getId (),
+
+				Collectors.mapping (
+					commandType ->
+						commandType.getId (),
+					Collectors.toList ())
+
+			));
 
 	}
 
@@ -79,7 +82,7 @@ class CommandHooks
 		if (
 			doesNotContain (
 				commandTypeIdsByParentTypeId.keySet (),
-				(long) parentHelper.objectTypeId ())
+				parentHelper.objectTypeId ())
 		) {
 			return;
 		}
@@ -91,7 +94,7 @@ class CommandHooks
 		for (
 			Long commandTypeId
 				: commandTypeIdsByParentTypeId.get (
-					(long) parentHelper.objectTypeId ())
+					parentHelper.objectTypeId ())
 		) {
 
 			CommandTypeRec commandType =

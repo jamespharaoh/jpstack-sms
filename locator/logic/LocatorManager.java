@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import lombok.Cleanup;
-
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -70,8 +70,8 @@ class LocatorManager {
 		Collections.emptyMap ();
 
 	private final
-	Map<Integer,Locator> locatorsByTypeId =
-		new HashMap<Integer,Locator> ();
+	Map<Long,Locator> locatorsByTypeId =
+		new HashMap<> ();
 
 	private final
 	ExecutorService executor =
@@ -146,8 +146,8 @@ class LocatorManager {
 
 	private
 	void logSuccess (
-			int locatorLogId,
-			LongLat longLat) {
+			@NonNull Long locatorLogId,
+			@NonNull LongLat longLat) {
 
 		@Cleanup
 		Transaction transaction =
@@ -176,9 +176,9 @@ class LocatorManager {
 
 	private
 	void logFailure (
-			int locatorLogId,
-			String error,
-			String errorCode) {
+			@NonNull Long locatorLogId,
+			@NonNull String error,
+			@NonNull String errorCode) {
 
 		@Cleanup
 		Transaction transaction =
@@ -208,13 +208,13 @@ class LocatorManager {
 
 	public
 	LongLat locate (
-			int locatorId,
-			int numberId,
-			int serviceId,
-			int affiliateId) {
+			@NonNull Long locatorId,
+			@NonNull Long numberId,
+			@NonNull Long serviceId,
+			@NonNull Long affiliateId) {
 
-		int locatorTypeId;
-		int locatorLogId;
+		Long locatorTypeId;
+		Long locatorLogId;
 
 		String numberString;
 
@@ -368,10 +368,10 @@ class LocatorManager {
 
 	public
 	void locate (
-			final int locatorId,
-			final int numberId,
-			final int serviceId,
-			final int affiliateId,
+			final @NonNull Long locatorId,
+			final @NonNull Long numberId,
+			final @NonNull Long serviceId,
+			final @NonNull Long affiliateId,
 			final Callback callback) {
 
 		executor.execute (

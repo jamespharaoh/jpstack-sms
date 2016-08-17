@@ -1,19 +1,18 @@
 package wbs.sms.object.messages;
 
-import static wbs.framework.utils.etc.StringUtils.capitalise;
 import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.StringUtils.capitalise;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
 import wbs.console.context.ResolvedConsoleContextExtensionPoint;
@@ -254,53 +253,61 @@ class ObjectSmsMessagesPageBuilder<
 
 				if (! affiliates.isEmpty ()) {
 
-					List<Integer> affiliateIds =
-						new ArrayList<Integer> ();
-
-					for (AffiliateRec affiliate : affiliates)
-						affiliateIds.add (affiliate.getId ());
-
 					search.affiliateIdIn (
-						affiliateIds);
+						affiliates.stream ()
+
+						.map (
+							AffiliateRec::getId)
+
+						.collect (
+							Collectors.toList ())
+
+					);
 
 				}
 
 				if (! services.isEmpty ()) {
 
-					List<Integer> serviceIds =
-						new ArrayList<Integer> ();
-
-					for (ServiceRec service : services)
-						serviceIds.add (service.getId ());
-
 					search.serviceIdIn (
-						serviceIds);
+						services.stream ()
 
+						.map (
+							ServiceRec::getId)
+
+						.collect (
+							Collectors.toList ())
+
+					);
+						
 				}
 
 				if (! batches.isEmpty ()) {
 
-					List<Integer> batchIds =
-						new ArrayList<Integer> ();
-
-					for (BatchRec batch : batches)
-						batchIds.add (batch.getId ());
-
 					search.batchIdIn (
-						batchIds);
+						batches.stream ()
+
+						.map (
+							BatchRec::getId)
+
+						.collect (
+							Collectors.toList ())
+
+					);
 
 				}
 
 				if (! routes.isEmpty ()) {
 
-					List<Integer> routeIds =
-						new ArrayList<Integer> ();
-
-					for (RouteRec route : routes)
-						routeIds.add (route.getId ());
-
 					search.routeIdIn (
-						routeIds);
+						routes.stream ()
+
+						.map (
+							RouteRec::getId)
+
+						.collect (
+							Collectors.toList ())
+
+					);
 
 				}
 

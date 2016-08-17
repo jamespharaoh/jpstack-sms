@@ -10,7 +10,7 @@ interface Locator {
 	List<String> getTypeCodes ();
 
 	LongLat lookup (
-			int locatorId,
+			Long locatorId,
 			String number);
 
 }

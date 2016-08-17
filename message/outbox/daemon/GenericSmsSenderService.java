@@ -3,8 +3,8 @@ package wbs.sms.message.outbox.daemon;
 import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isEmpty;
 import static wbs.framework.utils.etc.Misc.isZero;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.underscoreToHyphen;
 
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -308,7 +307,7 @@ class GenericSmsSenderService
 						transaction.now ());
 
 				messageIds.add (
-					(long) smsOutbox.getId ());
+					smsOutbox.getId ());
 
 			}
 

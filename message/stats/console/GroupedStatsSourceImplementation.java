@@ -7,15 +7,14 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Optional;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.record.Record;
@@ -52,10 +51,10 @@ class GroupedStatsSourceImplementation
 	SmsStatsSource statsSource;
 
 	@Getter @Setter
-	Map<SmsStatsCriteria,Set<Integer>> critMap;
+	Map<SmsStatsCriteria,Set<Long>> critMap;
 
 	@Getter @Setter
-	Map<SmsStatsCriteria,Set<Integer>> filterMap;
+	Map<SmsStatsCriteria,Set<Long>> filterMap;
 
 	@Getter @Setter
 	String url;
@@ -84,7 +83,7 @@ class GroupedStatsSourceImplementation
 				SmsStatsCriteria.route)
 		) {
 
-			Set<Integer> routeIds =
+			Set<Long> routeIds =
 				critMap.get (
 					SmsStatsCriteria.route);
 
@@ -226,7 +225,7 @@ class GroupedStatsSourceImplementation
 
 	}
 
-	Integer groupId (
+	Long groupId (
 			MessageStatsRec mse) {
 
 		if (groupCriteria == null)

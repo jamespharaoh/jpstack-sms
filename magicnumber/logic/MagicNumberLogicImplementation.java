@@ -1,5 +1,6 @@
 package wbs.sms.magicnumber.logic;
 
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -7,15 +8,13 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
-
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
 import wbs.platform.service.model.ServiceRec;
@@ -255,7 +254,6 @@ class MagicNumberLogicImplementation
 
 				threadId =
 					Optional.of (
-						(long)
 						message.getId ());
 
 			}

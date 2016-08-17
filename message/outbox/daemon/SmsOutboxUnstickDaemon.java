@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
-
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import lombok.Cleanup;
+import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -27,13 +27,17 @@ class SmsOutboxUnstickDaemon
 	// constants
 
 	final
-	int delayInSeconds = 10;
+	long batchSize = 100;
 
 	final
-	int batchSize = 100;
+	Duration sleepDuration =
+		Duration.standardSeconds (
+			10);
 
 	final
-	int timeoutMinutes = 5;
+	Duration timeoutDuration =
+		Duration.standardMinutes (
+			5);
 
 	// dependencies
 
@@ -53,8 +57,8 @@ class SmsOutboxUnstickDaemon
 
 	@Override
 	protected
-	int getDelayMs () {
-		return 1000 * delayInSeconds;
+	Duration getSleepDuration () {
+		return sleepDuration;
 	}
 
 	@Override
@@ -84,10 +88,8 @@ class SmsOutboxUnstickDaemon
 					this);
 
 			Instant sendingBefore =
-				transaction.now ()
-					.toDateTime ()
-					.minusMinutes (timeoutMinutes)
-					.toInstant ();
+				transaction.now ().minus (
+					timeoutDuration);
 
 			List<OutboxRec> outboxesToUnstick =
 				outboxHelper.findSendingBeforeLimit (
