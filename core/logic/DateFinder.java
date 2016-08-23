@@ -1,9 +1,11 @@
 package wbs.sms.core.logic;
 
 import static wbs.framework.utils.etc.Misc.contains;
+import static wbs.framework.utils.etc.Misc.stringTrim;
 import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
 import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 import static wbs.framework.utils.etc.StringUtils.stringInSafe;
+import static wbs.framework.utils.etc.StringUtils.substringTo;
 
 import java.util.Collection;
 import java.util.List;
@@ -98,8 +100,7 @@ class DateFinder {
 				dateStyle,
 				Pattern.compile (
 					joinWithoutSeparator (
-						newPatternStringParts),
-					Pattern.CASE_INSENSITIVE));
+						newPatternStringParts)));
 
 		}
 
@@ -252,13 +253,13 @@ class DateFinder {
 		joinWithoutSeparator (
 			"(",
 			joinWithPipe (
-				"[023]?1(?:st)?",
-				"[02]?2(?:nd)?",
-				"[02]?3(?:rd)?",
-				"[0]?[4-9](?:th)?",
-				"1[0123456789](?:th)?",
-				"2[0456789](?:th)?",
-				"30(?:th)?"),
+				"[023]?1(?:\\s?st)?",
+				"[02]?2(?:\\s?nd)?",
+				"[02]?3(?:\\s?rd)?",
+				"[0]?[4-9](?:\\s?th)?",
+				"1[0123456789](?:\\s?th)?",
+				"2[0456789](?:\\s?th)?",
+				"30(?:\\s?th)?"),
 			")");
 
 	static
@@ -266,13 +267,13 @@ class DateFinder {
 		joinWithoutSeparator (
 			"(",
 			joinWithPipe (
-				"[0oO23]?[1lI](?:st)?",
-				"[0oO2]?2(?:nd)?",
-				"[0oO2]?3(?:rd)?",
-				"[0oO]?[4-9](?:th)?",
-				"[1lI][0oO1lI23456789](?:th)?",
-				"2[0oO456789](?:th)?",
-				"3[0oO](?:th)?"),
+				"[0oO23]?[1lI](?:\\s?st)?",
+				"[0oO2]?2(?:\\s?nd)?",
+				"[0oO2]?3(?:\\s?rd)?",
+				"[0oO]?[4-9](?:\\s?th)?",
+				"[1lI][0oO1lI23456789](?:\\s?th)?",
+				"2[0oO456789](?:\\s?th)?",
+				"3[0oO](?:\\s?th)?"),
 			")");
 
 	static
@@ -350,13 +351,17 @@ class DateFinder {
 				"december"));
 
 	static
-	List<String> allMonthNames =
+	List <String> allMonthNames =
 		monthNames.stream ()
-			.flatMap (List::stream)
-			.collect (Collectors.toList ());
+
+		.flatMap (
+			List::stream)
+
+		.collect (
+			Collectors.toList ());
 
 	static
-	Map<String,Integer> monthsByName =
+	Map <String, Integer> monthsByName =
 		IntStream.range (0, monthNames.size ())
 			.mapToObj (index ->
 				monthNames.get (index).stream ()
@@ -368,10 +373,10 @@ class DateFinder {
 	static
 	String monthNameRegexp =
 		joinWithoutSeparator (
-			"(",
+			"(?i:(",
 			joinWithPipe (
 				allMonthNames),
-			")");
+			"))");
 
 	final static
 	String beforeDigitRegexp =
@@ -384,6 +389,24 @@ class DateFinder {
 
 	final static
 	String afterDigitRegexp =
+		joinWithoutSeparator (
+			"(?:",
+			joinWithPipe (
+				"\\b",
+				"\\D"),
+			")");
+
+	final static
+	String beforeRelaxedDigitRegexp =
+		joinWithoutSeparator (
+			"(?:",
+			joinWithPipe (
+				"\\b",
+				"\\D"),
+			")");
+
+	final static
+	String afterRelaxedDigitRegexp =
 		joinWithoutSeparator (
 			"(?:",
 			joinWithPipe (
@@ -493,71 +516,71 @@ class DateFinder {
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedDayOfMonthRegexp,
 			separatorRegexp,
 			relaxedNumericMonthRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedDayOfMonthRegexp,
 			separatorRegexp,
 			monthNameRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedDayOfMonthRegexp,
 			"\\P{Alnum}+of\\P{Alnum}+",
 			monthNameRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedDayOfMonthRegexp,
 			monthNameRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedNumericDayOfMonthRegexp,
 			"\\P{Alnum}*of\\P{Alnum}+",
 			monthNameRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.dmy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedFixedNumericDayOfMonthRegexp,
 			relaxedFixedNumericMonthRegexp,
 			relaxedFixedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		// american relaxed
 
 		new DateMatcher (
 			DateStyle.mdy,
-			beforeDigitRegexp,
+			beforeRelaxedDigitRegexp,
 			relaxedNumericMonthRegexp,
 			separatorRegexp,
 			relaxedDayOfMonthRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.mdy,
@@ -567,7 +590,7 @@ class DateFinder {
 			relaxedDayOfMonthRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp),
+			afterRelaxedDigitRegexp),
 
 		new DateMatcher (
 			DateStyle.mdy,
@@ -576,7 +599,7 @@ class DateFinder {
 			relaxedDayOfMonthRegexp,
 			separatorRegexp,
 			relaxedNumericYearRegexp,
-			afterDigitRegexp)
+			afterRelaxedDigitRegexp)
 
 	);
 
@@ -607,9 +630,10 @@ class DateFinder {
 				"th")
 		) {
 
-			return source.substring (
-				0,
-				len - 2);
+			return stringTrim (
+				substringTo (
+					source,
+					len - 2));
 
 		}
 

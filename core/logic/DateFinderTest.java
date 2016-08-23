@@ -49,6 +49,22 @@ class DateFinderTest
 				example.input (),
 				example.baseYear ());
 
+		// ok if both not present
+
+		if (
+
+			isNotPresent (
+				example.result ())
+
+			&& isNotPresent (
+				actual)
+
+		) {
+			return;
+		}
+
+		// fail if matched when should not have
+
 		if (
 
 			isNotPresent (
@@ -70,6 +86,8 @@ class DateFinderTest
 
 		}
 
+		// fail if did not match when should have
+
 		if (
 
 			isPresent (
@@ -90,6 +108,8 @@ class DateFinderTest
 					example.baseYear ()));
 
 		}
+
+		// fail when not equal
 
 		if (
 			localDateNotEqual (
@@ -286,6 +306,11 @@ class DateFinderTest
 				"Bonnie angell 10/12/1996",
 				1900,
 				date (1996, 12, 10)),
+
+			passingExample (
+				"9 th April 1992 Nancy Tallbottom",
+				1900,
+				date (1992, 4, 9)),
 
 			// ----- origin 1950
 
