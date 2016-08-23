@@ -1,6 +1,6 @@
 package wbs.sms.locator.build;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
 
 import javax.inject.Inject;

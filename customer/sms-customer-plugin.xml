@@ -24,12 +24,12 @@
 	</fixtures>
 
 	<layer name="logic">
-		<bean class="logic.SmsCustomerLogicImplementation"/>
+		<component class="logic.SmsCustomerLogicImplementation"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.SmsCustomerSessionTimeoutDaemon"/>
-		<bean class="daemon.SmsCustomerStopCommand"/>
+		<component class="daemon.SmsCustomerSessionTimeoutDaemon"/>
+		<component class="daemon.SmsCustomerStopCommand"/>
 	</layer>
 
 	<console-modules>

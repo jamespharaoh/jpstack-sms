@@ -3,9 +3,9 @@
 	package="wbs.sms.message.ticker">
 
 	<layer name="console">
-		<bean class="console.MessageTickerManagerImplementation"/>
-		<bean class="console.MessageTickerResponder"/>
-		<bean class="console.MessageTickerUpdateResponder"/>
+		<component class="console.MessageTickerManagerImplementation"/>
+		<component class="console.MessageTickerResponder"/>
+		<component class="console.MessageTickerUpdateResponder"/>
 	</layer>
 
 	<console-modules>

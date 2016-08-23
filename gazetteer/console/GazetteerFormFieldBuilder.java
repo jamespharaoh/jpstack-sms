@@ -1,6 +1,6 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 
 import java.util.ArrayList;
 import java.util.List;

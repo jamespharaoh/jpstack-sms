@@ -16,7 +16,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.NetworkPrefixCache"/>
+		<component class="logic.NetworkPrefixCache"/>
 	</layer>
 
 	<fixtures>

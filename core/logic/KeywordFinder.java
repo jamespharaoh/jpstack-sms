@@ -126,7 +126,7 @@ class KeywordFinder {
 	String stripKeyword (
 			String string) {
 
-		return GsmUtils.toSimpleAlpha (
+		return GsmUtils.gsmStringSimplify (
 			shitPattern
 				.matcher (string)
 				.replaceAll (""));

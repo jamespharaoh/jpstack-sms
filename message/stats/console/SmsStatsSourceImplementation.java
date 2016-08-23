@@ -1,8 +1,9 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveOneElement;
+import static wbs.framework.utils.etc.CollectionUtils.collectionFirstElementRequired;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.OptionalUtils.optionalValueEqualSafe;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -92,34 +93,29 @@ class SmsStatsSourceImplementation
 				timeScheme.groupByMonth ())
 
 			.groupByAffiliate (
-				equal (
+				optionalValueEqualSafe (
 					groupCriteria,
-					Optional.of (
-						SmsStatsCriteria.affiliate)))
+					SmsStatsCriteria.affiliate))
 
 			.groupByBatch (
-				equal (
+				optionalValueEqualSafe (
 					groupCriteria,
-					Optional.of (
-						SmsStatsCriteria.batch)))
+					SmsStatsCriteria.batch))
 
 			.groupByNetwork (
-				equal (
+				optionalValueEqualSafe (
 					groupCriteria,
-					Optional.of (
-						SmsStatsCriteria.network)))
+					SmsStatsCriteria.network))
 
 			.groupByRoute (
-				equal (
+				optionalValueEqualSafe (
 					groupCriteria,
-					Optional.of (
-						SmsStatsCriteria.route)))
+					SmsStatsCriteria.route))
 
 			.groupByService (
-				equal (
+				optionalValueEqualSafe (
 					groupCriteria,
-					Optional.of (
-						SmsStatsCriteria.service)));
+					SmsStatsCriteria.service));
 
 		return messageStatsHelper.search (
 			search);
@@ -130,7 +126,7 @@ class SmsStatsSourceImplementation
 	public
 	RouteRec findRoute () {
 
-		Collection<Long> routeIds =
+		Collection <Long> routeIds =
 			fixedCriteriaMap.get (
 				SmsStatsCriteria.route);
 
@@ -139,16 +135,16 @@ class SmsStatsSourceImplementation
 			isNull (
 				routeIds)
 
-			|| notEqual (
-				routeIds.size (),
-				1)
+			|| collectionDoesNotHaveOneElement (
+				routeIds)
 
 		) {
 			return null;
 		}
 
 		return routeHelper.findRequired (
-			routeIds.iterator ().next ());
+			collectionFirstElementRequired (
+				routeIds));
 
 	}
 

@@ -1,6 +1,6 @@
 package wbs.sms.message.core.daemon;
 
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -11,13 +11,12 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.google.common.base.Optional;
+
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-
-import com.google.common.base.Optional;
-
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -153,7 +152,8 @@ class MessageDaemon
 				message.getStatus ();
 
 			if (
-				in (oldMessageStatus,
+				enumInSafe (
+					oldMessageStatus,
 					MessageStatus.sent,
 					MessageStatus.submitted)
 			) {
@@ -171,7 +171,8 @@ class MessageDaemon
 						oldMessageStatus));
 
 			} else if (
-				in (oldMessageStatus,
+				enumInSafe (
+					oldMessageStatus,
 					MessageStatus.delivered,
 					MessageStatus.undelivered,
 					MessageStatus.manuallyUndelivered,

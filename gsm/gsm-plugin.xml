@@ -3,9 +3,9 @@
 	package="wbs.sms.gsm">
 
 	<layer name="console">
-		<bean class="console.GsmFormFieldBuilder"/>
-		<bean class="console.GsmFormFieldSpec"/>
-		<bean class="console.GsmFormFieldValueValidator"/>
+		<component class="console.GsmFormFieldBuilder"/>
+		<component class="console.GsmFormFieldSpec"/>
+		<component class="console.GsmFormFieldValueValidator"/>
 	</layer>
 
 </plugin>

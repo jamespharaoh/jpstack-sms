@@ -16,14 +16,14 @@
 	</fixtures>
 
 	<layer name="logic">
-		<bean class="logic.GazetteerLogicImplementation"/>
+		<component class="logic.GazetteerLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.GazetteerCodeFormFieldNativeMapping"/>
-		<bean class="console.GazetteerFormFieldBuilder"/>
-		<bean class="console.GazetteerFormFieldInterfaceMapping"/>
-		<bean class="console.GazetteerFormFieldSpec"/>
+		<component class="console.GazetteerCodeFormFieldNativeMapping"/>
+		<component class="console.GazetteerFormFieldBuilder"/>
+		<component class="console.GazetteerFormFieldInterfaceMapping"/>
+		<component class="console.GazetteerFormFieldSpec"/>
 	</layer>
 
 	<console-modules>

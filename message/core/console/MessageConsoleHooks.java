@@ -1,13 +1,14 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.NumberUtils.moreThanZero;
 
 import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
+import lombok.NonNull;
 import wbs.console.helper.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.application.annotations.SingletonComponent;
@@ -49,11 +50,11 @@ class MessageConsoleHooks
 
 	@Override
 	public
-	Optional<String> getListClass (
-			MessageRec message) {
+	Optional <String> getListClass (
+			@NonNull MessageRec message) {
 
 		if (
-			equal (
+			enumEqualSafe (
 				message.getDirection (),
 				MessageDirection.in)
 		) {
@@ -62,9 +63,8 @@ class MessageConsoleHooks
 				"message-in");
 
 		} else if (
-			moreThan (
-				message.getCharge (),
-				0)
+			moreThanZero (
+				message.getCharge ())
 		) {
 
 			return Optional.of (

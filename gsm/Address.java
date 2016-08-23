@@ -96,7 +96,7 @@ class Address {
 				typeOfNumber,
 				numberingPlanIdentification,
 				GsmUtils.decode (
-					GsmUtils.unpack7bit (
+					GsmUtils.gsmFrom7BitPacked (
 						buffer,
 						numchars)));
 

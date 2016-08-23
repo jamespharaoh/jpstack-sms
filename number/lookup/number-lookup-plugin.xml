@@ -8,18 +8,18 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.NumberLookupTypeBuilder"/>
-		<bean class="fixture.NumberLookupTypesBuilder"/>
+		<component class="fixture.NumberLookupTypeBuilder"/>
+		<component class="fixture.NumberLookupTypesBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.NumberLookupTypeSpec"/>
-		<bean class="metamodel.NumberLookupTypesSpec"/>
+		<component class="metamodel.NumberLookupTypeSpec"/>
+		<component class="metamodel.NumberLookupTypesSpec"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.NumberLookupHelperManager"/>
-		<bean class="logic.NumberLookupManagerImplementation"/>
+		<component class="logic.NumberLookupHelperManager"/>
+		<component class="logic.NumberLookupManagerImplementation"/>
 	</layer>
 
 	<console-modules>

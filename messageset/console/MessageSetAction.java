@@ -1,12 +1,13 @@
 package wbs.sms.messageset.console;
 
+import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
+import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
 
 import java.util.regex.Pattern;
 
@@ -120,7 +121,7 @@ class MessageSetAction
 		// iterate over the input and check them
 
 		long numMessages =
-			requestContext.parameterInteger (
+			requestContext.parameterIntegerRequired (
 				"num_messages");
 
 		for (
@@ -170,7 +171,7 @@ class MessageSetAction
 				requestContext.parameterRequired (
 					"message_" + index);
 
-			if (! GsmUtils.isValidGsm (message)) {
+			if (! GsmUtils.gsmStringIsValid (message)) {
 
 				requestContext.addError (
 					"Message " + (index + 1) + " has invalid characters");
@@ -179,7 +180,7 @@ class MessageSetAction
 
 			}
 
-			if (GsmUtils.length (message) > 160) {
+			if (GsmUtils.gsmStringLength (message) > 160) {
 
 				requestContext.addError (
 					"Message " + (index + 1) + " is too long");
@@ -244,7 +245,7 @@ class MessageSetAction
 
 				RouteRec newRoute =
 					routeHelper.findRequired (
-						requestContext.parameterInteger (
+						requestContext.parameterIntegerRequired (
 							"route_" + index));
 
 				String newNumber =
@@ -309,7 +310,7 @@ class MessageSetAction
 					// update existing message
 
 					if (
-						notEqual (
+						referenceNotEqualSafe (
 							messageSetMessage.getRoute (),
 							newRoute)
 					) {
@@ -329,7 +330,7 @@ class MessageSetAction
 					}
 
 					if (
-						notEqual (
+						stringNotEqualSafe (
 							messageSetMessage.getNumber (),
 							newNumber)
 					) {
@@ -349,7 +350,7 @@ class MessageSetAction
 					}
 
 					if (
-						notEqual (
+						referenceNotEqualSafe (
 							messageSetMessage.getMessage (),
 							newMessage)
 					) {

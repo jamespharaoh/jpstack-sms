@@ -1,6 +1,7 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.LogicUtils.equalSafe;
+
 import lombok.NonNull;
 
 /**
@@ -75,13 +76,10 @@ class SmsStatsGroup<T>
 	boolean equals (
 			Object otherObject) {
 
-		if (! (otherObject instanceof SmsStatsGroup))
-			return false;
+		SmsStatsGroup <?> other =
+			(SmsStatsGroup <?>) otherObject;
 
-		SmsStatsGroup<?> other =
-			(SmsStatsGroup<?>) otherObject;
-
-		return equal (
+		return equalSafe (
 			object,
 			other.object);
 

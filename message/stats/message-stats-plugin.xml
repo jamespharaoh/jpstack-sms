@@ -12,28 +12,28 @@
 
 	<models>
 		<model name="messageStats"/>
-		<component name="messageStatsData"/>
-		<component name="messageStatsId"/>
+		<component-type name="messageStatsData"/>
+		<component-type name="messageStatsId"/>
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MessageStatsLogicImplementation"/>
+		<component class="logic.MessageStatsLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.AffiliateStatsSourceBuilder"/>
-		<bean class="console.BatchStatsSourceBuilder"/>
-		<bean class="console.GenericMessageStatsPart"/>
-		<bean class="console.GroupedStatsSourceImplementation"/>
-		<bean class="console.MessageStatsPartConfig"/>
-		<bean class="console.RouteStatsSource"/>
-		<bean class="console.ServiceStatsSourceBuilder"/>
-		<bean class="console.SmsStatsConsoleLogicImplementation"/>
-		<bean class="console.SmsStatsFormatter"/>
-		<bean class="console.SmsStatsSourceImplementation"/>
-		<bean class="console.SmsStatsDailyTimeScheme"/>
-		<bean class="console.SmsStatsWeeklyTimeScheme"/>
-		<bean class="console.SmsStatsMonthlyTimeScheme"/>
+		<component class="console.AffiliateStatsSourceBuilder"/>
+		<component class="console.BatchStatsSourceBuilder"/>
+		<component class="console.GenericMessageStatsPart"/>
+		<component class="console.GroupedStatsSourceImplementation"/>
+		<component class="console.MessageStatsPartConfig"/>
+		<component class="console.RouteStatsSource"/>
+		<component class="console.ServiceStatsSourceBuilder"/>
+		<component class="console.SmsStatsConsoleLogicImplementation"/>
+		<component class="console.SmsStatsFormatter"/>
+		<component class="console.SmsStatsSourceImplementation"/>
+		<component class="console.SmsStatsDailyTimeScheme"/>
+		<component class="console.SmsStatsWeeklyTimeScheme"/>
+		<component class="console.SmsStatsMonthlyTimeScheme"/>
 	</layer>
 
 	<console-modules>

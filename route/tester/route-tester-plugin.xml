@@ -12,8 +12,8 @@
 	</models>
 
 	<layer name="daemon">
-		<bean class="daemon.RouteTesterCommand"/>
-		<bean class="daemon.RouteTesterDaemon"/>
+		<component class="daemon.RouteTesterCommand"/>
+		<component class="daemon.RouteTesterDaemon"/>
 	</layer>
 
 </plugin>

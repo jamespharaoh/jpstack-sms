@@ -1,8 +1,10 @@
 package wbs.sms.gsm;
 
+import lombok.NonNull;
+
 public
 class InvalidGsmCharsException
-	extends Exception {
+	extends IllegalArgumentException {
 
 	public
 	InvalidGsmCharsException () {
@@ -11,7 +13,7 @@ class InvalidGsmCharsException
 
 	public
 	InvalidGsmCharsException (
-			String message) {
+			@NonNull String message) {
 
 		super (
 			message);

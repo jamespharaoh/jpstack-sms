@@ -17,13 +17,13 @@
 	</models>
 
 	<layer name="console">
-		<bean class="console.NumberListNumberUpdateAction"/>
-		<bean class="console.NumberListNumberUpdatePart"/>
+		<component class="console.NumberListNumberUpdateAction"/>
+		<component class="console.NumberListNumberUpdatePart"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.NumberListLogicImplementation"/>
-		<bean class="logic.NumberListNumberLookupHelper"/>
+		<component class="logic.NumberListLogicImplementation"/>
+		<component class="logic.NumberListNumberLookupHelper"/>
 	</layer>
 
 	<fixtures>

@@ -1,6 +1,6 @@
 package wbs.sms.customer.logic;
 
-import static wbs.framework.utils.etc.Misc.ifElse;
+import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
@@ -361,17 +361,21 @@ class SmsCustomerLogicImplementation
 
 	@Override
 	public
-	Optional<AffiliateRec> customerAffiliate (
+	Optional <AffiliateRec> customerAffiliate (
 			@NonNull SmsCustomerRec customer) {
 
-		return ifElse (
+		return ifThenElse (
 			isNotNull (
 				customer.getSmsCustomerAffiliate ()),
+
 			() -> Optional.of (
 				affiliateHelper.findByCodeRequired (
 					customer.getSmsCustomerAffiliate (),
 					"default")),
-			() -> Optional.<AffiliateRec>absent ());
+
+			() -> Optional.absent ()
+
+		);
 
 	}
 

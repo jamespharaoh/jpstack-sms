@@ -1,7 +1,7 @@
 package wbs.sms.locator.model;
 
-import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.OptionalUtils.optionalRequired;
+import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveTwoElements;
+import static wbs.framework.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.framework.utils.etc.StringUtils.stringSplitComma;
 
 import java.util.List;
@@ -29,9 +29,8 @@ class LongLat {
 				string);
 
 		if (
-			notEqual (
-				parts.size (),
-				2)
+			collectionDoesNotHaveTwoElements (
+				parts)
 		) {
 			return Optional.absent ();
 		}
@@ -64,7 +63,7 @@ class LongLat {
 	LongLat parseRequired (
 			@NonNull String string) {
 
-		return optionalRequired (
+		return optionalGetRequired (
 			parse (
 				string));
 

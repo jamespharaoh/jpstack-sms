@@ -24,32 +24,17 @@ class GsmUtils {
 	}
 
 	/**
-	 * Pattern matching characters which take two bytes in GSM.
-	 */
-	private static final
-	Pattern gsmDoubleCharsPattern =
-		Pattern.compile (
-			joinWithPipe (
-				"\\u000c", // form feed
-				"\\[", // left square brace [
-				"\\\\", // backslash \
-				"\\]", // right square brace ]
-				"\\^", // hat ^
-				"\u20ac", // euro currency symbol
-				"[{|}~]")); // easy characters { | } ~
-
-	/**
 	 * Count the number of 7-bit gsm bytes required to store a string.
 	 *
 	 * @return the length
 	 */
 	public static
-	long length (
+	long gsmStringLength (
 			@NonNull String string) {
 
-		if (! isValidGsm (string)) {
+		if (! gsmStringIsValid (string)) {
 
-			throw new IllegalArgumentException (
+			throw new InvalidGsmCharsException (
 				"Provided string contains invalid GSM characters");
 
 		}
@@ -62,7 +47,7 @@ class GsmUtils {
 	}
 
 	public static
-	long parts (
+	long gsmCountMessageParts (
 			@NonNull Long gsmLength) {
 
 		if (gsmLength <= 0) {
@@ -83,38 +68,14 @@ class GsmUtils {
 	}
 
 	public static
-	long parts (
+	long gsmCountMessageParts (
 			@NonNull String string) {
 
-		return parts (
-			length (
+		return gsmCountMessageParts (
+			gsmStringLength (
 				string));
 
 	}
-
-	/**
-	 * Pattern which matches any number of gsm characters.
-	 */
-	private static final
-	Pattern gsmCharsPattern =
-		Pattern.compile (
-			"[" +
-			"@\u00a3$\u00a5\u00e8\u00e9\u00f9\u00ec\u00f2\u00e7\n\u00d8\u00f8\r\u00c5\u00e5" +
-			"\u0394_\u03a6\u0393\u039b\u03a9\u03a0\u03a8\u03a3\u0398\u039e\u00c6\u00e6\u00df\u00c9" +
-			" !\"#\u00a4%&'()*+,\\-\\./" +
-			"0123456789:;<=>?" +
-			"\u00a1ABCDEFGHIJKLMNO" +
-			"PQRSTUVWXYZ\u00c4\u00d6\u00d1\u00dc\u00a7" +
-			"\u00bfabcdefghijklmno" +
-			"pqrstuvwxyz\u00e4\u00f6\u00f1\u00fc\u00e0" +
-			"\u000c" + // form feed
-			"^{|}" +
-			"\\\\" + // backslash
-			"\\[" + // left square brace
-			"~" + // tilde
-			"\\]" + // right square brace
-			"\u20ac" + // euro currency symbol
-			"]*");
 
 	/**
 	 * Check if a string consists solely of valid gsm characters.
@@ -124,7 +85,7 @@ class GsmUtils {
 	 * @return true if s consists of gsm characters only
 	 */
 	public static
-	boolean isValidGsm (
+	boolean gsmStringIsValid (
 			@NonNull String string) {
 
 		return gsmCharsPattern
@@ -134,27 +95,40 @@ class GsmUtils {
 	}
 
 	public static
-	boolean isNotValidGsm (
+	boolean gsmStringIsNotValid (
 			@NonNull String string) {
 
-		return ! isValidGsm (
+		return ! gsmStringIsValid (
 			string);
 
 	}
 
 	/**
 	 * Convert all versions of alphabetic latin characters in the string to
-	 * their unaccented, lowercase form. Only works for gsm characters.
+	 * their unaccented, lowercase form. Only works for gsm characters. This is
+	 * typically used for keyword matching.
 	 *
 	 * @param string
-	 *            the string to convert
-	 * @return the resulting string
+	 *     The string to convert
+	 *
+	 * @return
+	 *     The resulting string
+	 *
 	 * @throws InvalidGsmCharsException
-	 *             if the string contains non-gsm characters
+	 *     If the string contains non-gsm characters
 	 */
 	public static
-	String toSimpleAlpha (
-			String string) {
+	String gsmStringSimplify (
+			@NonNull String string) {
+
+		// check for invalid characters
+
+		if (
+			gsmStringIsNotValid (
+				string)
+		) {
+			throw new InvalidGsmCharsException ();
+		}
 
 		// convert the string
 
@@ -178,66 +152,108 @@ class GsmUtils {
 			case '\u00e4':
 			case '\u00e5':
 			case '\u00e0':
-				stringBuilder.append ('a');
+
+				stringBuilder.append (
+					'a');
+
 				break;
 
 			case 'B':
-				stringBuilder.append ('b');
+
+				stringBuilder.append (
+					'b');
+
 				break;
 
 			case 'C':
 			case '\u00c7':
-				stringBuilder.append ('c');
+
+				stringBuilder.append (
+					'c');
+
 				break;
 
 			case 'D':
-				stringBuilder.append ('d');
+
+				stringBuilder.append (
+					'd');
+
 				break;
 
 			case 'E':
 			case '\u00c9':
 			case '\u00e8':
 			case '\u00e9':
-				stringBuilder.append ('e');
+
+				stringBuilder.append (
+					'e');
+
 				break;
 
 			case 'F':
-				stringBuilder.append ('f');
+
+				stringBuilder.append (
+					'f');
+
 				break;
 
 			case 'G':
-				stringBuilder.append ('g');
+
+				stringBuilder.append (
+					'g');
+
 				break;
 
 			case 'H':
-				stringBuilder.append ('h');
+
+				stringBuilder.append (
+					'h');
+
 				break;
 
 			case 'I':
 			case '\u00ec':
-				stringBuilder.append ('i');
+
+				stringBuilder.append (
+					'i');
+
 				break;
 
 			case 'J':
-				stringBuilder.append ('j');
+
+				stringBuilder.append (
+					'j');
+
 				break;
 
 			case 'K':
-				stringBuilder.append ('k');
+
+				stringBuilder.append (
+					'k');
+
 				break;
 
 			case 'L':
-				stringBuilder.append ('l');
+
+				stringBuilder.append (
+					'l');
+
 				break;
 
 			case 'M':
-				stringBuilder.append ('m');
+
+				stringBuilder.append (
+					'm');
+
 				break;
 
 			case 'N':
 			case '\u00d1':
 			case '\u00f1':
-				stringBuilder.append ('n');
+
+				stringBuilder.append (
+					'n');
+
 				break;
 
 			case 'O':
@@ -246,63 +262,105 @@ class GsmUtils {
 			case '\u00f2':
 			case '\u00f6':
 			case '\u00f8':
-				stringBuilder.append ('o');
+
+				stringBuilder.append (
+					'o');
+
 				break;
 
 			case 'P':
-				stringBuilder.append ('p');
+
+				stringBuilder.append (
+					'p');
+
 				break;
 
 			case 'Q':
-				stringBuilder.append ('q');
+
+				stringBuilder.append (
+					'q');
+
 				break;
 
 			case 'R':
-				stringBuilder.append ('r');
+
+				stringBuilder.append (
+					'r');
+
 				break;
 
 			case 'S':
-				stringBuilder.append ('s');
+
+				stringBuilder.append (
+					's');
+
 				break;
 
 			case 'T':
-				stringBuilder.append ('t');
+
+				stringBuilder.append (
+					't');
+
 				break;
 
 			case 'U':
 			case '\u00dc':
 			case '\u00fc':
 			case '\u00f9':
-				stringBuilder.append ('u');
+
+				stringBuilder.append (
+					'u');
+
 				break;
 
 			case 'V':
-				stringBuilder.append ('v');
+
+				stringBuilder.append (
+					'v');
+
 				break;
 
 			case 'W':
-				stringBuilder.append ('w');
+
+				stringBuilder.append (
+					'w');
+
 				break;
 
 			case 'X':
-				stringBuilder.append ('x');
+
+				stringBuilder.append (
+					'x');
+
 				break;
 
 			case 'Y':
-				stringBuilder.append ('y');
+
+				stringBuilder.append (
+					'y');
+
 				break;
 
 			case 'Z':
-				stringBuilder.append ('z');
+
+				stringBuilder.append (
+					'z');
+
 				break;
 
 			case '\u00c6':
 			case '\u00e6':
-				stringBuilder.append ("ae");
+
+				stringBuilder.append (
+					"ae");
+
 				break;
 
 			default:
-				stringBuilder.append (charValue);
+
+				stringBuilder.append (
+					charValue);
+
 				break;
 
 			}
@@ -323,8 +381,8 @@ class GsmUtils {
 	 * @return An array of bytes representing the 7bit data.
 	 */
 	public static
-	byte[] unpack7bit (
-			ByteBuffer byteBuffer,
+	byte[] gsmFrom7BitPacked (
+			@NonNull ByteBuffer byteBuffer,
 			int length) {
 
 		byte[] targetByteArray =
@@ -492,7 +550,49 @@ class GsmUtils {
 
 	}
 
-	private static final
+	/**
+	 * Pattern which matches any number of gsm characters.
+	 */
+	public static final
+	Pattern gsmCharsPattern =
+		Pattern.compile (
+			"[" +
+			"@\u00a3$\u00a5\u00e8\u00e9\u00f9\u00ec\u00f2\u00e7\n\u00d8\u00f8\r\u00c5\u00e5" +
+			"\u0394_\u03a6\u0393\u039b\u03a9\u03a0\u03a8\u03a3\u0398\u039e\u00c6\u00e6\u00df\u00c9" +
+			" !\"#\u00a4%&'()*+,\\-\\./" +
+			"0123456789:;<=>?" +
+			"\u00a1ABCDEFGHIJKLMNO" +
+			"PQRSTUVWXYZ\u00c4\u00d6\u00d1\u00dc\u00a7" +
+			"\u00bfabcdefghijklmno" +
+			"pqrstuvwxyz\u00e4\u00f6\u00f1\u00fc\u00e0" +
+			"\u000c" + // form feed
+			"^{|}" +
+			"\\\\" + // backslash
+			"\\[" + // left square brace
+			"~" + // tilde
+			"\\]" + // right square brace
+			"\u20ac" + // euro currency symbol
+			"]*");
+
+	/**
+	 * Pattern matching characters which take two bytes in GSM.
+	 */
+	public static final
+	Pattern gsmDoubleCharsPattern =
+		Pattern.compile (
+			joinWithPipe (
+				"\\u000c", // form feed
+				"\\[", // left square brace [
+				"\\\\", // backslash \
+				"\\]", // right square brace ]
+				"\\^", // hat ^
+				"\u20ac", // euro currency symbol
+				"[{|}~]")); // easy characters { | } ~
+
+	/**
+	 * Character map for GSM single-byte characters
+	 */
+	public static final
 	char [] gsmChars1 = {
 		'@',      '\u00a3', '$',      '\u00a5',
 		'\u00e8', '\u00e9', '\u00f9', '\u00ec',
@@ -528,7 +628,10 @@ class GsmUtils {
 		'\u00f6', '\u00f1', '\u00fc', '\u00e0'
 	};
 
-	private static final
+	/**
+	 * Character map for GSM double-byte (escaped) characters
+	 */
+	public static final
 	char[] gsmChars2 = {
 		0,        0,        0,        0,
 		0,        0,        0,        0,

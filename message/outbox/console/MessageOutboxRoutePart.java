@@ -48,7 +48,7 @@ class MessageOutboxRoutePart
 
 		route =
 			routeHelper.findRequired (
-				requestContext.parameterInteger (
+				requestContext.parameterIntegerRequired (
 					"routeId"));
 
 		outboxes =

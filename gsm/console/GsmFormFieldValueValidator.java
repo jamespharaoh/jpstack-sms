@@ -1,28 +1,29 @@
 package wbs.sms.gsm.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
-import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
+import static wbs.framework.utils.etc.NumberUtils.moreThan;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.sms.gsm.GsmUtils.gsmStringIsValid;
+import static wbs.sms.gsm.GsmUtils.gsmStringLength;
+
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.google.common.base.Optional;
-
 import wbs.console.forms.FormFieldValueValidator;
 import wbs.framework.application.annotations.PrototypeComponent;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import wbs.sms.gsm.GsmUtils;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("gsmFormFieldValueValidator")
 public
 class GsmFormFieldValueValidator
-	implements FormFieldValueValidator<String> {
+	implements FormFieldValueValidator <String> {
 
 	// properties
 
@@ -36,8 +37,8 @@ class GsmFormFieldValueValidator
 
 	@Override
 	public
-	Optional<String> validate (
-			@NonNull Optional<String> genericValue) {
+	Optional <String> validate (
+			@NonNull Optional <String> genericValue) {
 
 		// do nothing if not present
 
@@ -45,7 +46,7 @@ class GsmFormFieldValueValidator
 			isNotPresent (
 				genericValue)
 		) {
-			return Optional.<String>absent ();
+			return Optional.absent ();
 		}
 
 		String stringValue =
@@ -54,7 +55,7 @@ class GsmFormFieldValueValidator
 		// check validity
 
 		if (
-			! GsmUtils.isValidGsm (
+			! gsmStringIsValid (
 				stringValue)
 		) {
 
@@ -67,7 +68,7 @@ class GsmFormFieldValueValidator
 		// check length
 
 		long gsmLength =
-			GsmUtils.length (
+			gsmStringLength (
 				stringValue);
 
 		if (
@@ -121,7 +122,7 @@ class GsmFormFieldValueValidator
 						"GSM characters long"));
 
 			} else if (
-				equal (
+				integerEqualSafe (
 					minimumLength,
 					maximumLength)
 			) {

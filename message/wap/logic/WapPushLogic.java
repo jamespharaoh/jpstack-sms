@@ -1,6 +1,6 @@
 package wbs.sms.message.wap.logic;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 

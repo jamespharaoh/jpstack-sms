@@ -156,7 +156,7 @@ class SmsDeliverPdu
 
 		String message =
 			GsmUtils.decode (
-				GsmUtils.unpack7bit (
+				GsmUtils.gsmFrom7BitPacked (
 					byteBuffer,
 					messageLength));
 

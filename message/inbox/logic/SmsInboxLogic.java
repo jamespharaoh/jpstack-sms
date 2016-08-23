@@ -21,16 +21,16 @@ public
 interface SmsInboxLogic {
 
 	MessageRec inboxInsert (
-			Optional<String> otherId,
+			Optional <String> otherId,
 			TextRec text,
 			Object numFrom,
 			String numTo,
 			RouteRec route,
-			Optional<NetworkRec> network,
-			Optional<Instant> networkTime,
-			List<MediaRec> medias,
-			Optional<String> avStatus,
-			Optional<String> subject);
+			Optional <NetworkRec> network,
+			Optional <Instant> networkTime,
+			List <MediaRec> medias,
+			Optional <String> avStatus,
+			Optional <String> subject);
 
 	InboxAttemptRec inboxProcessed (
 			InboxRec inbox,

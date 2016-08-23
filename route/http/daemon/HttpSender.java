@@ -1,7 +1,7 @@
 package wbs.sms.route.http.daemon;
 
-import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.StringUtils.stringEqual;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.io.IOException;
@@ -105,7 +105,7 @@ class HttpSender
 		WapPushMessageRec wapPushMessage = null;
 
 		if (
-			equal (
+			stringEqual (
 				outbox.getMessage ().getMessageType ().getCode (),
 				"wap_push")
 		) {

@@ -1,7 +1,7 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.notIn;
+import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 
 import javax.inject.Inject;
@@ -139,7 +139,7 @@ class MessageActionsAction
 			@NonNull Transaction transaction) {
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 		) {
@@ -147,7 +147,7 @@ class MessageActionsAction
 		}
 
 		if (
-			notIn (
+			enumNotInSafe (
 				message.getStatus (),
 				MessageStatus.sent,
 				MessageStatus.submitted,
@@ -184,7 +184,7 @@ class MessageActionsAction
 			@NonNull Transaction transaction) {
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 		) {
@@ -192,7 +192,7 @@ class MessageActionsAction
 		}
 
 		if (
-			notIn (
+			enumNotInSafe (
 				message.getStatus (),
 				MessageStatus.undelivered,
 				MessageStatus.reportTimedOut,
@@ -229,7 +229,7 @@ class MessageActionsAction
 			@NonNull Transaction transaction) {
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				message.getStatus (),
 				MessageStatus.held)
 		) {
@@ -263,7 +263,7 @@ class MessageActionsAction
 			@NonNull Transaction transaction) {
 
 		if (
-			notIn (
+			enumNotInSafe (
 				message.getStatus (),
 				MessageStatus.failed,
 				MessageStatus.cancelled,

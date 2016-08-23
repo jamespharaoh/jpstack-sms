@@ -2,13 +2,12 @@ package wbs.sms.customer.hibernate;
 
 import java.util.List;
 
-import lombok.NonNull;
-
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.customer.model.SmsCustomerDao;
@@ -25,7 +24,7 @@ class SmsCustomerDaoHibernate
 
 	@Override
 	public
-	List<Integer> searchIds (
+	List <Long> searchIds (
 			@NonNull SmsCustomerSearch smsCustomerSearch) {
 
 		Criteria customerCriteria =
@@ -69,7 +68,7 @@ class SmsCustomerDaoHibernate
 
 		return findMany (
 			"searchIds (smsCustomerSearch)",
-			Integer.class,
+			Long.class,
 			customerCriteria);
 
 	}

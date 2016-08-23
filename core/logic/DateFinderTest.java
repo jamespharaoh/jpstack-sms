@@ -1,16 +1,14 @@
 package wbs.sms.core.logic;
 
-import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.framework.utils.etc.TimeUtils.localDateNotEqual;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import junit.framework.TestCase;
-import lombok.Value;
-import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -22,8 +20,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import junit.framework.TestCase;
+import lombok.Value;
+import lombok.experimental.Accessors;
 
 @RunWith (Parameterized.class)
 public
@@ -45,7 +44,7 @@ class DateFinderTest
 	public
 	void test () {
 
-		Optional<LocalDate> actual =
+		Optional <LocalDate> actual =
 			DateFinder.find (
 				example.input (),
 				example.baseYear ());
@@ -93,9 +92,9 @@ class DateFinderTest
 		}
 
 		if (
-			notEqual (
-				example.result (),
-				actual)
+			localDateNotEqual (
+				example.result ().get (),
+				actual.get ())
 		) {
 
 			fail (

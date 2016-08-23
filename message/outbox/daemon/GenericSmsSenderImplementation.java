@@ -1,11 +1,11 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.ifElse;
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notEqual;
 import static wbs.framework.utils.etc.Misc.todo;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
@@ -147,7 +147,7 @@ class GenericSmsSenderImplementation<StateType>
 		setupSend ();
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				setupRequestResult.status (),
 				SetupRequestStatus.success)
 		) {
@@ -164,7 +164,7 @@ class GenericSmsSenderImplementation<StateType>
 		performSend ();
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				performSendResult.status (),
 				PerformSendStatus.success)
 		) {
@@ -281,7 +281,7 @@ class GenericSmsSenderImplementation<StateType>
 		// handle error
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				setupRequestResult.status (),
 				SetupRequestStatus.success)
 		) {
@@ -352,7 +352,7 @@ class GenericSmsSenderImplementation<StateType>
 		}
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				performSendResult.status (),
 				PerformSendStatus.success)
 		) {
@@ -373,7 +373,7 @@ class GenericSmsSenderImplementation<StateType>
 					performSendResult.exception ();
 
 				performSendResult.statusMessage (
-					ifElse (
+					ifThenElse (
 						isNotNull (
 							exception.getMessage ()),
 
@@ -609,7 +609,7 @@ class GenericSmsSenderImplementation<StateType>
 		// store result
 
 		if (
-			equal (
+			enumEqualSafe (
 				processResponseResult.status (),
 				ProcessResponseStatus.success)
 		) {

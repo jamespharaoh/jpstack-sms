@@ -8,17 +8,17 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.DeliveryTypeBuilder"/>
-		<bean class="fixture.DeliveryTypesBuilder"/>
+		<component class="fixture.DeliveryTypeBuilder"/>
+		<component class="fixture.DeliveryTypesBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.DeliveryTypeSpec"/>
-		<bean class="metamodel.DeliveryTypesSpec"/>
+		<component class="metamodel.DeliveryTypeSpec"/>
+		<component class="metamodel.DeliveryTypesSpec"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.DeliveryDaemon"/>
+		<component class="daemon.DeliveryDaemon"/>
 	</layer>
 
 </plugin>

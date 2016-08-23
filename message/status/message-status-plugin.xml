@@ -3,10 +3,10 @@
 	package="wbs.sms.message.status">
 
 	<layer name="console">
-		<bean class="console.MessageNumInboxCache"/>
-		<bean class="console.MessageNumOutboxCache"/>
-		<bean class="console.MessageStatusLine"/>
-		<bean class="console.MessageStatusLinePart"/>
+		<component class="console.MessageNumInboxCache"/>
+		<component class="console.MessageNumOutboxCache"/>
+		<component class="console.MessageStatusLine"/>
+		<component class="console.MessageStatusLinePart"/>
 	</layer>
 
 </plugin>

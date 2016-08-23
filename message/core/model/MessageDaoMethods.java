@@ -27,7 +27,7 @@ interface MessageDaoMethods {
 	List <ServiceRec> projectServices (
 			NumberRec number);
 
-	List <Integer> searchIds (
+	List <Long> searchIds (
 			MessageSearch search);
 
 }

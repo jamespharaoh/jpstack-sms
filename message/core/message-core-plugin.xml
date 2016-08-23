@@ -21,32 +21,32 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.SmsMessageLogicImplementation"/>
+		<component class="logic.SmsMessageLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MessageActionsAction"/>
-		<bean class="console.MessageActionsPart"/>
-		<bean class="console.MessageConsoleHooks"/>
-		<bean class="console.MessageConsoleLogicImplementation"/>
-		<bean class="console.MessageConsolePluginManager"/>
-		<bean class="console.MessageContentCsvFormFieldInterfaceMapping"/>
-		<bean class="console.MessageContentFormFieldBuilder"/>
-		<bean class="console.MessageContentFormFieldSpec"/>
-		<bean class="console.MessageContentHtmlFormFieldInterfaceMapping"/>
-		<bean class="console.MessageDirectionConsoleHelper"/>
-		<bean class="console.MessageMediaContext"/>
-		<bean class="console.MessageMediasPart"/>
-		<bean class="console.MessageMediaSummaryPart"/>
-		<bean class="console.MessageReportsPart"/>
-		<bean class="console.MessageStatusConsoleHelper"/>
-		<bean class="console.MessageSourceImplementation"/>
-		<bean class="console.MessageSummaryPart"/>
-		<bean class="console.MessageThreadPart"/>
+		<component class="console.MessageActionsAction"/>
+		<component class="console.MessageActionsPart"/>
+		<component class="console.MessageConsoleHooks"/>
+		<component class="console.MessageConsoleLogicImplementation"/>
+		<component class="console.MessageConsolePluginManager"/>
+		<component class="console.MessageContentCsvFormFieldInterfaceMapping"/>
+		<component class="console.MessageContentFormFieldBuilder"/>
+		<component class="console.MessageContentFormFieldSpec"/>
+		<component class="console.MessageContentHtmlFormFieldInterfaceMapping"/>
+		<component class="console.MessageDirectionConsoleHelper"/>
+		<component class="console.MessageMediaContext"/>
+		<component class="console.MessageMediasPart"/>
+		<component class="console.MessageMediaSummaryPart"/>
+		<component class="console.MessageReportsPart"/>
+		<component class="console.MessageStatusConsoleHelper"/>
+		<component class="console.MessageSourceImplementation"/>
+		<component class="console.MessageSummaryPart"/>
+		<component class="console.MessageThreadPart"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.MessageDaemon"/>
+		<component class="daemon.MessageDaemon"/>
 	</layer>
 
 	<fixtures>

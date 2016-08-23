@@ -1,7 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.StringUtils.stringEqual;
+import static wbs.framework.utils.etc.StringUtils.stringInSafe;
 
 import java.util.Collection;
 import java.util.Set;
@@ -265,7 +265,8 @@ class MessageSender {
 		// TODO remove big hacky route mapping
 
 		if (
-			in (network.getCode (),
+			stringInSafe (
+				network.getCode (),
 				"uk_o2",
 				"uk_three",
 				"uk_tmobile",
@@ -274,7 +275,7 @@ class MessageSender {
 		) {
 
 			if (
-				equal (
+				stringEqual (
 					route.getCode (),
 					"cutemedia_84232_100")
 			) {
@@ -291,7 +292,8 @@ class MessageSender {
 
 			}
 
-			if (equal (
+			if (
+				stringEqual (
 					route.getCode (),
 					"dialogue_89505_500")
 			) {
@@ -308,9 +310,11 @@ class MessageSender {
 
 			}
 
-			if (equal (
+			if (
+				stringEqual (
 					route.getCode (),
-					"dialogue_88211_500")) {
+					"dialogue_88211_500")
+			) {
 
 				throw new RuntimeException (
 					"Hack to update route to oxygen8_88211_500 removed");
@@ -324,9 +328,11 @@ class MessageSender {
 
 			}
 
-			if (equal (
+			if (
+				stringEqual (
 					route.getCode (),
-					"dialogue_85722_500")) {
+					"dialogue_85722_500")
+			) {
 
 				throw new RuntimeException (
 					"Hack to update route to oxygen8_85722_500 removed");

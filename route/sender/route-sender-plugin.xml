@@ -11,13 +11,13 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.SenderBuilder"/>
-		<bean class="fixture.SendersBuilder"/>
+		<component class="fixture.SenderBuilder"/>
+		<component class="fixture.SendersBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.SenderSpec"/>
-		<bean class="metamodel.SendersSpec"/>
+		<component class="metamodel.SenderSpec"/>
+		<component class="metamodel.SendersSpec"/>
 	</layer>
 
 	<fixtures>

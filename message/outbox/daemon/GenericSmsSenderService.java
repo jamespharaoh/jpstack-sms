@@ -1,8 +1,8 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.equal;
 import static wbs.framework.utils.etc.Misc.isEmpty;
-import static wbs.framework.utils.etc.Misc.isZero;
+import static wbs.framework.utils.etc.NumberUtils.equalToZero;
+import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.underscoreToHyphen;
@@ -227,7 +227,7 @@ class GenericSmsSenderService
 				}
 
 				if (
-					isZero (
+					equalToZero (
 						numClaimed)
 				) {
 					return;
@@ -242,7 +242,7 @@ class GenericSmsSenderService
 			throws InterruptedException {
 
 			while (
-				equal (
+				integerEqualSafe (
 					claimedMessages,
 					threadsPerRoute)
 			) {

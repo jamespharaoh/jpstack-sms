@@ -13,17 +13,17 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.BatchTypeBuilder"/>
-		<bean class="fixture.BatchTypesBuilder"/>
+		<component class="fixture.BatchTypeBuilder"/>
+		<component class="fixture.BatchTypesBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.BatchTypeSpec"/>
-		<bean class="metamodel.BatchTypesSpec"/>
+		<component class="metamodel.BatchTypeSpec"/>
+		<component class="metamodel.BatchTypesSpec"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.BatchLogicImplementation"/>
+		<component class="logic.BatchLogicImplementation"/>
 	</layer>
 
 	<console-modules>

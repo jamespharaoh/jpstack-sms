@@ -1,10 +1,14 @@
 package wbs.sms.message.core.logic;
 
+import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveThreeElements;
+import static wbs.framework.utils.etc.CollectionUtils.listFirstElementRequired;
+import static wbs.framework.utils.etc.CollectionUtils.listSecondElementRequired;
+import static wbs.framework.utils.etc.CollectionUtils.listThirdElementRequired;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.NumberUtils.parseLong;
+import static wbs.framework.utils.etc.NumberUtils.parseInteger;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.stringSplitHyphen;
 
 import java.util.List;
@@ -175,7 +179,7 @@ class SmsMessageLogicImplementation
 				root.getFixturesSeed ())
 		) {
 
-			return parseLong (
+			return parseInteger (
 					mangledMessageId);
 
 		} else {
@@ -186,24 +190,26 @@ class SmsMessageLogicImplementation
 
 			if (
 
-				notEqual (
-					parts.size (),
-					3)
+				collectionDoesNotHaveThreeElements (
+					parts)
 
-				|| notEqual (
-					parts.get (0),
+				|| stringNotEqualSafe (
+					listFirstElementRequired (
+						parts),
 					"test")
 
-				|| notEqual (
-					parts.get (1),
+				|| stringNotEqualSafe (
+					listSecondElementRequired (
+						parts),
 					root.getFixturesSeed ())
 
 			) {
 				return Optional.absent ();
 			}
 
-			return parseLong (
-				parts.get (2));
+			return parseInteger (
+				listThirdElementRequired (
+					parts));
 
 		}
 

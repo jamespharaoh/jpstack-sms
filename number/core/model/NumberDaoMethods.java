@@ -5,7 +5,7 @@ import java.util.List;
 public
 interface NumberDaoMethods {
 
-	List<Integer> searchIds (
+	List <Long> searchIds (
 			NumberSearch numberSearch);
 
 }

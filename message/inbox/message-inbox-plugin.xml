@@ -15,23 +15,23 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.SmsInboxLogicImplementation"/>
-		<bean class="logic.SmsInboxMultipartLogicImplementation"/>
+		<component class="logic.SmsInboxLogicImplementation"/>
+		<component class="logic.SmsInboxMultipartLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MessageInboxAction"/>
-		<bean class="console.MessageInboxSummaryPart"/>
-		<bean class="console.MessageNotProcessedFormAction"/>
-		<bean class="console.MessageNotProcessedFormResponder"/>
-		<bean class="console.MessageNotProcessedQueueConsolePlugin"/>
-		<bean class="console.MessageNotProcessedSummaryPart"/>
+		<component class="console.MessageInboxAction"/>
+		<component class="console.MessageInboxSummaryPart"/>
+		<component class="console.MessageNotProcessedFormAction"/>
+		<component class="console.MessageNotProcessedFormResponder"/>
+		<component class="console.MessageNotProcessedQueueConsolePlugin"/>
+		<component class="console.MessageNotProcessedSummaryPart"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.ReceivedManager"/>
-		<bean class="daemon.CommandManagerImplementation"/>
-		<bean class="daemon.NullCommandTypeHandler"/>
+		<component class="daemon.ReceivedManager"/>
+		<component class="daemon.CommandManagerImplementation"/>
+		<component class="daemon.NullCommandTypeHandler"/>
 	</layer>
 
 	<console-modules>

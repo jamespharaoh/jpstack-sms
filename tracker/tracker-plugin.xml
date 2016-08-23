@@ -16,9 +16,9 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.SmsSimpleTrackerHandler"/>
-		<bean class="logic.SmsTrackerLogicImplementation"/>
-		<bean class="logic.SmsTrackerManagerImplementation"/>
+		<component class="logic.SmsSimpleTrackerHandler"/>
+		<component class="logic.SmsTrackerLogicImplementation"/>
+		<component class="logic.SmsTrackerManagerImplementation"/>
 	</layer>
 
 </plugin>

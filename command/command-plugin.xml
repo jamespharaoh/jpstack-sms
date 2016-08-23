@@ -8,17 +8,17 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.CommandTypeBuilder"/>
-		<bean class="fixture.CommandTypesBuilder"/>
+		<component class="fixture.CommandTypeBuilder"/>
+		<component class="fixture.CommandTypesBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.CommandTypeSpec"/>
-		<bean class="metamodel.CommandTypesSpec"/>
+		<component class="metamodel.CommandTypeSpec"/>
+		<component class="metamodel.CommandTypesSpec"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.CommandLogicImplementation"/>
+		<component class="logic.CommandLogicImplementation"/>
 	</layer>
 
 	<console-modules>

@@ -7,7 +7,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.SmsDeliveryReportLogicImplementation"/>
+		<component class="logic.SmsDeliveryReportLogicImplementation"/>
 	</layer>
 
 </plugin>

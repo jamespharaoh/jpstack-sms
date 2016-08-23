@@ -57,8 +57,7 @@
 		<description-field/>
 
 		<enum-field
-			name="type"
-			helper="keywordSetTypeConsoleHelper"/>
+			name="type"/>
 
 	</field-set>
 
@@ -71,8 +70,7 @@
 		<description-field/>
 
 		<enum-field
-			name="type"
-			helper="keywordSetTypeConsoleHelper"/>
+			name="type"/>
 
 	</field-set>
 
@@ -88,8 +86,7 @@
 		<deleted-field/>
 
 		<enum-field
-			name="type"
-			helper="keywordSetTypeConsoleHelper"/>
+			name="type"/>
 
 		<object-field
 			name="fallbackCommand"
@@ -111,8 +108,7 @@
 		<deleted-field/>
 
 		<enum-field
-			name="type"
-			helper="keywordSetTypeConsoleHelper"/>
+			name="type"/>
 
 		<object-field
 			name="fallbackCommand"

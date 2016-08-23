@@ -12,8 +12,8 @@
 	</models>
 
 	<layer name="console">
-		<bean class="console.RouteSummaryAdditionalPartManager"/>
-		<bean class="console.RouteSummaryAdditionalPart"/>
+		<component class="console.RouteSummaryAdditionalPartManager"/>
+		<component class="console.RouteSummaryAdditionalPart"/>
 	</layer>
 
 	<fixtures>

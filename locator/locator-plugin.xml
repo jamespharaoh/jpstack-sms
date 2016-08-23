@@ -12,21 +12,21 @@
 	</models>
 
 	<layer name="model-meta">
-		<bean class="metamodel.LongitudeLatitudeFieldSpec"/>
+		<component class="metamodel.LongitudeLatitudeFieldSpec"/>
 	</layer>
 
 	<layer name="model-generate">
-		<bean class="generate.LongitudeLatitudeFieldWriter"/>
+		<component class="generate.LongitudeLatitudeFieldWriter"/>
 	</layer>
 
 	<layer name="entity">
-		<bean class="build.LongitudeLatitudeModelFieldBuilder"/>
+		<component class="build.LongitudeLatitudeModelFieldBuilder"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.LocatorLogicImplementation"/>
-		<bean class="logic.LocatorManager"/>
-		<bean class="logic.MercatorProjectionConfig"/>
+		<component class="logic.LocatorLogicImplementation"/>
+		<component class="logic.LocatorManager"/>
+		<component class="logic.MercatorProjectionConfig"/>
 	</layer>
 
 	<console-modules>

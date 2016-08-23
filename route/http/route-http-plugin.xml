@@ -7,7 +7,7 @@
 	</models>
 
 	<layer name="daemon">
-		<bean class="daemon.HttpSender"/>
+		<component class="daemon.HttpSender"/>
 	</layer>
 
 </plugin>

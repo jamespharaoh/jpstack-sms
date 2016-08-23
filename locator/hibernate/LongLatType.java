@@ -1,13 +1,12 @@
 package wbs.sms.locator.hibernate;
 
-import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.OptionalUtils.optionalEqualOrNotPresentSafe;
+import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import lombok.NonNull;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -15,6 +14,7 @@ import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.hibernate.usertype.CompositeUserType;
 
+import lombok.NonNull;
 import wbs.sms.locator.model.LongLat;
 
 public
@@ -94,9 +94,11 @@ class LongLatType
 			Object rightObject)
 		throws HibernateException {
 
-		return equal (
-			leftObject,
-			rightObject);
+		return optionalEqualOrNotPresentSafe (
+			optionalFromNullable (
+				leftObject),
+			optionalFromNullable (
+				rightObject));
 
 	}
 

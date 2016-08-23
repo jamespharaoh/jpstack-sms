@@ -1,6 +1,7 @@
 package wbs.sms.core.hibernate;
 
-import static wbs.framework.utils.etc.Misc.equal;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.StringUtils.stringEqual;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -105,13 +106,17 @@ class SmsOrigHibernateType
 		SmsOrig smsOriginatorRight =
 			(SmsOrig) right;
 
-		return
-			equal (
+		return (
+
+			enumEqualSafe (
 				smsOriginatorLeft.type (),
 				smsOriginatorRight.type ())
-			&& equal (
+
+			&& stringEqual (
 				smsOriginatorLeft.value (),
-				smsOriginatorRight.value ());
+				smsOriginatorRight.value ())
+
+		);
 
 	}
 

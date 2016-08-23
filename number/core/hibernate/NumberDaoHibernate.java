@@ -2,13 +2,12 @@ package wbs.sms.number.core.hibernate;
 
 import java.util.List;
 
-import lombok.NonNull;
-
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import lombok.NonNull;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.number.core.model.NumberDao;
 import wbs.sms.number.core.model.NumberRec;
@@ -21,7 +20,7 @@ class NumberDaoHibernate
 
 	@Override
 	public
-	List<Integer> searchIds (
+	List <Long> searchIds (
 			@NonNull NumberSearch numberSearch) {
 
 		Criteria criteria =
@@ -55,7 +54,7 @@ class NumberDaoHibernate
 
 		return findMany (
 			"searchIds (numberSearch)",
-			Integer.class,
+			Long.class,
 			criteria);
 
 	}

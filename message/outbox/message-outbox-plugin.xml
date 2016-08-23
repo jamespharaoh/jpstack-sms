@@ -15,21 +15,21 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MessageSender"/>
-		<bean class="logic.SmsOutboxLogicImplementation"/>
+		<component class="logic.MessageSender"/>
+		<component class="logic.SmsOutboxLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MessageOutboxRouteAction"/>
-		<bean class="console.MessageOutboxRoutePart"/>
-		<bean class="console.MessageOutboxSummaryPart"/>
+		<component class="console.MessageOutboxRouteAction"/>
+		<component class="console.MessageOutboxRoutePart"/>
+		<component class="console.MessageOutboxSummaryPart"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.GenericSmsSenderImplementation"/>
-		<bean class="daemon.GenericSmsSenderService"/>
-		<bean class="daemon.SmsOutboxMonitorImplementation"/>
-		<bean class="daemon.SmsOutboxUnstickDaemon"/>
+		<component class="daemon.GenericSmsSenderImplementation"/>
+		<component class="daemon.GenericSmsSenderService"/>
+		<component class="daemon.SmsOutboxMonitorImplementation"/>
+		<component class="daemon.SmsOutboxUnstickDaemon"/>
 	</layer>
 
 	<console-modules>

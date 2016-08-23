@@ -12,7 +12,7 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.NumberFormatLogicImplementation"/>
+		<component class="logic.NumberFormatLogicImplementation"/>
 	</layer>
 
 	<fixtures>

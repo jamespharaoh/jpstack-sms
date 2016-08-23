@@ -1,6 +1,6 @@
 package wbs.sms.gsm;
 
-import static wbs.framework.utils.etc.Misc.trim;
+import static wbs.framework.utils.etc.Misc.stringTrim;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.StringUtils.substring;
 import static wbs.framework.utils.etc.StringUtils.substringFrom;
@@ -26,28 +26,28 @@ class MessageSplitter {
 				String newMiddle,
 				String newLast) {
 
-			if (! GsmUtils.isValidGsm (newSingle)) {
+			if (! GsmUtils.gsmStringIsValid (newSingle)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in single template: " + newSingle);
 
 			}
 
-			if (! GsmUtils.isValidGsm (newFirst)) {
+			if (! GsmUtils.gsmStringIsValid (newFirst)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in first template: " + newFirst);
 
 			}
 
-			if (! GsmUtils.isValidGsm (newMiddle)) {
+			if (! GsmUtils.gsmStringIsValid (newMiddle)) {
 
 				throw new IllegalArgumentException (
 					"Non-GSM characters in middle template: " + newMiddle);
 
 			}
 
-			if (! GsmUtils.isValidGsm (newLast)) {
+			if (! GsmUtils.gsmStringIsValid (newLast)) {
 
 				throw new IllegalArgumentException(
 					"Non-GSM characters in last template: " + newLast);
@@ -119,7 +119,7 @@ class MessageSplitter {
 						pages)));
 
 		long spareLength =
-			160 - GsmUtils.length (
+			160 - GsmUtils.gsmStringLength (
 				template.replaceFirst (
 					"\\{message}",
 					""));
@@ -133,7 +133,7 @@ class MessageSplitter {
 
 		// if the message will fit as is then that's cool
 
-		if (GsmUtils.length (message) <= spareLength) {
+		if (GsmUtils.gsmStringLength (message) <= spareLength) {
 
 			return new String [] {
 
@@ -153,7 +153,7 @@ class MessageSplitter {
 			spareLength;
 
 		while (
-			GsmUtils.length (
+			GsmUtils.gsmStringLength (
 				message.substring (
 					0,
 					toJavaIntegerRequired (
@@ -184,14 +184,14 @@ class MessageSplitter {
 			if (character == ' ') {
 
 				String part1 =
-					trim (
+					stringTrim (
 						substring (
 							message,
 							0,
 							position));
 
 				String part2 =
-					trim (
+					stringTrim (
 						substringFrom (
 							message,
 							position));
@@ -214,13 +214,13 @@ class MessageSplitter {
 		// that didn't work, just split it anywhere
 
 		String part1 =
-			trim (
+			stringTrim (
 				substringTo (
 					message,
 					maxSplit));
 
 		String part2 =
-			trim (
+			stringTrim (
 				substringFrom (
 					message,
 					maxSplit));
@@ -263,7 +263,7 @@ class MessageSplitter {
 			String message,
 			Templates templates) {
 
-		if (! GsmUtils.isValidGsm (
+		if (! GsmUtils.gsmStringIsValid (
 				message)) {
 
 			throw new IllegalArgumentException (
@@ -289,7 +289,7 @@ class MessageSplitter {
 				Matcher.quoteReplacement (
 					message.trim ()));
 
-		if (GsmUtils.length (singleMessage) <= 160) {
+		if (GsmUtils.gsmStringLength (singleMessage) <= 160) {
 
 			List<String> result =
 				new ArrayList<String> ();

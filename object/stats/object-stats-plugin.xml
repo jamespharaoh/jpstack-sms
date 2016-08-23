@@ -3,9 +3,9 @@
 	package="wbs.sms.object.stats">
 
 	<layer name="console">
-		<bean class="ObjectSmsStatsPageBuilder"/>
-		<bean class="ObjectSmsStatsPageSpec"/>
-		<bean class="ObjectStatsPartFactory"/>
+		<component class="ObjectSmsStatsPageBuilder"/>
+		<component class="ObjectSmsStatsPageSpec"/>
+		<component class="ObjectStatsPartFactory"/>
 	</layer>
 
 </plugin>

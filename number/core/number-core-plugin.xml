@@ -16,14 +16,14 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.NumberLogicImplementation"/>
+		<component class="logic.NumberLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.NumberConsoleConfig"/>
-		<bean class="console.NumberLinkManager"/>
-		<bean class="console.NumberServicesPart"/>
-		<bean class="console.NumberSubscriptionsPart"/>
+		<component class="console.NumberConsoleConfig"/>
+		<component class="console.NumberLinkManager"/>
+		<component class="console.NumberServicesPart"/>
+		<component class="console.NumberSubscriptionsPart"/>
 	</layer>
 
 	<fixtures>

@@ -7,7 +7,7 @@ import wbs.sms.number.core.model.NumberRec;
 public
 interface SmsCustomerDaoMethods {
 
-	List<Integer> searchIds (
+	List <Long> searchIds (
 			SmsCustomerSearch search);
 
 	SmsCustomerRec find (

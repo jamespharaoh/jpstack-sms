@@ -15,7 +15,7 @@ public
 class SmsCustomerSearch
 	implements Serializable {
 
-	Integer smsCustomerManagerId;
+	Long smsCustomerManagerId;
 
 	String numberLike;
 

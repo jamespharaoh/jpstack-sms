@@ -9,25 +9,25 @@
 	</models>
 
 	<layer name="fixture">
-		<bean class="fixture.MessageSetTypeBuilder"/>
-		<bean class="fixture.MessageSetTypesBuilder"/>
+		<component class="fixture.MessageSetTypeBuilder"/>
+		<component class="fixture.MessageSetTypesBuilder"/>
 	</layer>
 
 	<layer name="model-meta">
-		<bean class="metamodel.MessageSetTypeSpec"/>
-		<bean class="metamodel.MessageSetTypesSpec"/>
+		<component class="metamodel.MessageSetTypeSpec"/>
+		<component class="metamodel.MessageSetTypesSpec"/>
 	</layer>
 
 	<layer name="logic">
-		<bean class="logic.MessageSetLogicImplementation"/>
+		<component class="logic.MessageSetLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MessageSetAction"/>
-		<bean class="console.MessageSetPart"/>
-		<bean class="console.ObjectSmsMessageSetPageBuilder"/>
-		<bean class="console.ObjectSmsMessageSetPageSpec"/>
-		<bean class="console.SimpleMessageSetFinder"/>
+		<component class="console.MessageSetAction"/>
+		<component class="console.MessageSetPart"/>
+		<component class="console.ObjectSmsMessageSetPageBuilder"/>
+		<component class="console.ObjectSmsMessageSetPageSpec"/>
+		<component class="console.SimpleMessageSetFinder"/>
 	</layer>
 
 </plugin>

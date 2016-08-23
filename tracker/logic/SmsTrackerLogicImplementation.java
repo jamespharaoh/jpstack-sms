@@ -1,7 +1,7 @@
 package wbs.sms.tracker.logic;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
+import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.framework.utils.etc.TimeUtils.earlierThan;
 
 import java.util.ArrayList;
@@ -11,13 +11,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import lombok.NonNull;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -238,9 +237,9 @@ class SmsTrackerLogicImplementation
 
 				// if its the first one we always pick it up
 
-				equal (
+				integerEqualSafe (
 					lastTime.getMillis (),
-					0)
+					0l)
 
 			) {
 
@@ -304,7 +303,7 @@ class SmsTrackerLogicImplementation
 	boolean simpleTrackerStatusIsPositive (
 			@NonNull MessageStatus status) {
 
-		return in (
+		return enumInSafe (
 			status,
 			MessageStatus.delivered);
 
@@ -315,7 +314,7 @@ class SmsTrackerLogicImplementation
 	boolean simpleTrackerStatusIsNegative (
 			@NonNull MessageStatus status) {
 
-		return in (
+		return enumInSafe (
 			status,
 			MessageStatus.reportTimedOut,
 			MessageStatus.undelivered);

@@ -141,8 +141,7 @@
 			name="maxTries"/>
 
 		<enum-field
-			name="networkBehaviour"
-			helper="routeNetworkBehaviourConsoleHelper"/>
+			name="networkBehaviour"/>
 
 		<object-field
 			name="currency"
@@ -210,7 +209,6 @@
 
 		<enum-field
 			name="networkBehaviour"
-			helper="routeNetworkBehaviourConsoleHelper"
 			nullable="yes"/>
 
 		<object-field

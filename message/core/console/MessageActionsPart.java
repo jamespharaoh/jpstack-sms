@@ -1,7 +1,7 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
 
 import javax.inject.Inject;
 
@@ -52,11 +52,11 @@ class MessageActionsPart
 
 		if (
 
-			equal (
+			enumEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 
-			&& in (
+			&& enumInSafe (
 				message.getStatus (),
 				MessageStatus.sent,
 				MessageStatus.submitted,
@@ -79,11 +79,11 @@ class MessageActionsPart
 
 		} else if (
 
-			equal (
+			enumEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 
-			&& in (
+			&& enumInSafe (
 				message.getStatus (),
 				MessageStatus.undelivered,
 				MessageStatus.manuallyUndelivered,
@@ -105,11 +105,11 @@ class MessageActionsPart
 
 		} else if (
 
-			equal (
+			enumEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 
-			&& equal (
+			&& enumEqualSafe (
 				message.getStatus (),
 				MessageStatus.held)
 
@@ -129,11 +129,11 @@ class MessageActionsPart
 
 		} else if (
 
-			equal (
+			enumEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 
-			&& in (
+			&& enumInSafe (
 				message.getStatus (),
 				MessageStatus.failed,
 				MessageStatus.cancelled,

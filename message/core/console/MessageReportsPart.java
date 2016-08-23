@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 
 import java.util.Set;
 import java.util.TreeSet;

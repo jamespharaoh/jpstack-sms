@@ -1,10 +1,12 @@
 package wbs.sms.message.core.hibernate;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
-import static wbs.framework.utils.etc.Misc.moreThan;
+import static wbs.framework.utils.etc.NumberUtils.maximumInteger;
+import static wbs.framework.utils.etc.NumberUtils.minimumInteger;
+import static wbs.framework.utils.etc.NumberUtils.moreThan;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
@@ -201,7 +203,7 @@ class MessageDaoHibernate
 
 	@Override
 	public
-	List<Integer> searchIds (
+	List <Long> searchIds (
 			MessageSearch search) {
 
 		Criteria criteria =
@@ -421,7 +423,7 @@ class MessageDaoHibernate
 			if (
 				moreThan (
 					search.createdTime ().start ().getMillis (),
-					Long.MIN_VALUE)
+					minimumInteger)
 			) {
 
 				criteria.add (
@@ -434,7 +436,7 @@ class MessageDaoHibernate
 			if (
 				lessThan (
 					search.createdTime ().end ().getMillis (),
-					Long.MAX_VALUE)
+					maximumInteger)
 			) {
 
 				criteria.add (
@@ -626,7 +628,7 @@ class MessageDaoHibernate
 
 		return findMany (
 			"searchIds",
-			Integer.class,
+			Long.class,
 			criteria);
 
 	}

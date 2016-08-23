@@ -1,9 +1,9 @@
 package wbs.sms.core.logic;
 
 import static wbs.framework.utils.etc.Misc.contains;
-import static wbs.framework.utils.etc.Misc.in;
 import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
 import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
+import static wbs.framework.utils.etc.StringUtils.stringInSafe;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import lombok.NonNull;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+
+import lombok.NonNull;
 
 /**
  * Contains utility function to search a string for a date, in various formats.
@@ -587,13 +587,34 @@ class DateFinder {
 	}
 
 	/** Takes off the 'st' or whatever from a number. */
-	private static String stripSuffix(String source) {
-		int len = source.length();
-		if (len < 2)
+	private static
+	String stripSuffix (
+			@NonNull String source) {
+
+		int len =
+			source.length ();
+
+		if (len < 2) {
 			return source;
-		if (in(source.substring(len - 2).toLowerCase(), "st", "nd", "rd", "th"))
-			return source.substring(0, len - 2);
+		}
+
+		if (
+			stringInSafe (
+				source.substring (len - 2).toLowerCase (),
+				"st",
+				"nd",
+				"rd",
+				"th")
+		) {
+
+			return source.substring (
+				0,
+				len - 2);
+
+		}
+
 		return source;
+
 	}
 
 	// ====================================================== utility functions

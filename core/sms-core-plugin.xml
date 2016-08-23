@@ -7,7 +7,7 @@
 	</plugin-dependencies>
 
 	<layer name="logic">
-		<bean class="logic.KeywordFinder"/>
+		<component class="logic.KeywordFinder"/>
 	</layer>
 
 	<fixtures>

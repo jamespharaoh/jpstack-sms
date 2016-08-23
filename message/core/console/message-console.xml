@@ -112,12 +112,10 @@
 
 		<enum-field
 			name="status"
-			helper="messageStatusConsoleHelper"
 			nullable="yes"/>
 
 		<enum-field
 			name="direction"
-			helper="messageDirectionConsoleHelper"
 			nullable="yes"/>
 
 		<object-field
@@ -185,8 +183,7 @@
 			object-type="route"/>
 
 		<enum-field
-			name="status"
-			helper="messageStatusConsoleHelper"/>
+			name="status"/>
 
 		<object-field
 			name="service"

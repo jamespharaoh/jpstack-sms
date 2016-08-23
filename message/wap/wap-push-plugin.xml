@@ -7,11 +7,11 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.WapPushLogic"/>
+		<component class="logic.WapPushLogic"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.WapPushConsolePlugin"/>
+		<component class="console.WapPushConsolePlugin"/>
 	</layer>
 
 </plugin>

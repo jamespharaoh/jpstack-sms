@@ -1,10 +1,10 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.in;
-import static wbs.framework.utils.etc.Misc.notEqual;
-import static wbs.framework.utils.etc.Misc.notIn;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumNotInSafe;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
@@ -242,7 +242,7 @@ class SmsOutboxLogicImplementation
 		// check message state
 
 		if (
-			equal (
+			enumEqualSafe (
 				message.getStatus (),
 				MessageStatus.pending)
 		) {
@@ -274,7 +274,7 @@ class SmsOutboxLogicImplementation
 				outbox);
 
 		} else if (
-			equal (
+			enumEqualSafe (
 				message.getStatus (),
 				MessageStatus.held)
 		) {
@@ -381,11 +381,11 @@ class SmsOutboxLogicImplementation
 
 		if (
 
-			notEqual (
+			enumNotEqualSafe (
 				message.getStatus (),
 				MessageStatus.pending)
 
-			&& notEqual (
+			&& enumNotEqualSafe (
 				message.getStatus (),
 				MessageStatus.cancelled)
 
@@ -549,7 +549,7 @@ class SmsOutboxLogicImplementation
 				message.getId ());
 
 		if (
-			notIn (
+			enumNotInSafe (
 				message.getStatus (),
 				MessageStatus.pending,
 				MessageStatus.cancelled)
@@ -626,7 +626,7 @@ class SmsOutboxLogicImplementation
 			database.currentTransaction ();
 
 		if (
-			notEqual (
+			enumNotEqualSafe (
 				message.getDirection (),
 				MessageDirection.out)
 		) {
@@ -634,7 +634,8 @@ class SmsOutboxLogicImplementation
 			throw new RuntimeException ();
 
 		} else if (
-			in (message.getStatus (),
+			enumInSafe (
+				message.getStatus (),
 				MessageStatus.failed,
 				MessageStatus.cancelled,
 				MessageStatus.blacklisted)
@@ -665,7 +666,8 @@ class SmsOutboxLogicImplementation
 				MessageStatus.pending);
 
 		} else if (
-			in (message.getStatus (),
+			enumInSafe (
+				message.getStatus (),
 				MessageStatus.pending)
 		) {
 

@@ -17,16 +17,16 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.MagicNumberLogicImplementation"/>
+		<component class="logic.MagicNumberLogicImplementation"/>
 	</layer>
 
 	<layer name="console">
-		<bean class="console.MagicNumberUpdateAction"/>
-		<bean class="console.MagicNumberUpdatePart"/>
+		<component class="console.MagicNumberUpdateAction"/>
+		<component class="console.MagicNumberUpdatePart"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.MagicNumberCommandTypeHandler"/>
+		<component class="daemon.MagicNumberCommandTypeHandler"/>
 	</layer>
 
 	<fixtures>

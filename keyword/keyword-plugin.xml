@@ -18,11 +18,11 @@
 	</models>
 
 	<layer name="logic">
-		<bean class="logic.KeywordLogicImplementation"/>
+		<component class="logic.KeywordLogicImplementation"/>
 	</layer>
 
 	<layer name="daemon">
-		<bean class="daemon.KeywordCommand"/>
+		<component class="daemon.KeywordCommand"/>
 	</layer>
 
 	<fixtures>

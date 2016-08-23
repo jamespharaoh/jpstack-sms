@@ -1,7 +1,7 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.ifNull;
-import static wbs.framework.utils.etc.Misc.notEqual;
+import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.OptionalUtils.isPresent;
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
@@ -378,7 +378,7 @@ class AbstractSmsSender2
 				// handle error
 
 				if (
-					notEqual (
+					enumNotEqualSafe (
 						setupSendResult.status (),
 						SetupSendStatus.success)
 				) {
@@ -470,7 +470,7 @@ class AbstractSmsSender2
 			}
 
 			if (
-				notEqual (
+				enumNotEqualSafe (
 					performSendResult.status (),
 					PerformSendStatus.success)
 			) {

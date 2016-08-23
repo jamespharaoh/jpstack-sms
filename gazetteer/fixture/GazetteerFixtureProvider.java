@@ -4,10 +4,9 @@ import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 
 import javax.inject.Inject;
 
-import com.google.common.collect.ImmutableList;
-
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.data.tools.DataFromXml;
+import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.record.GlobalId;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -82,16 +81,17 @@ class GazetteerFixtureProvider
 		);
 
 		DataFromXml gazetteerReader =
-			new DataFromXml ()
+			new DataFromXmlBuilder ()
 
 			.registerBuilderClasses (
 				GazetteerData.class,
-				GazetteerEntryData.class);
+				GazetteerEntryData.class)
+
+			.build ();
 
 		GazetteerData gazetteerData =
 			(GazetteerData)
 			gazetteerReader.readClasspath (
-				ImmutableList.of (),
 				"/wbs/sms/gazetteer/fixture/gazetteer-test-data.xml");
 
 		GazetteerRec testGazetteer =

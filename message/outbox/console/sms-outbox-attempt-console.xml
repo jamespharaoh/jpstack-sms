@@ -51,8 +51,7 @@
 		<index-field/>
 
 		<enum-field
-			name="state"
-			helper="smsOutboxAttemptStateConsoleHelper"/>
+			name="state"/>
 
 		<timestamp-field
 			name="startTime"/>
@@ -71,8 +70,7 @@
 		<index-field/>
 
 		<enum-field
-			name="state"
-			helper="smsOutboxAttemptStateConsoleHelper"/>
+			name="state"/>
 
 		<timestamp-field
 			name="startTime"/>

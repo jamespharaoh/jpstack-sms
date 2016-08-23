@@ -1,10 +1,10 @@
 package wbs.sms.message.report.logic;
 
-import static wbs.framework.utils.etc.Misc.equal;
-import static wbs.framework.utils.etc.Misc.in;
+import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
+import static wbs.framework.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.notIn;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import javax.inject.Inject;
@@ -67,10 +67,10 @@ class SmsDeliveryReportLogicImplementation
 	void deliveryReport (
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newMessageStatus,
-			@NonNull Optional<String> theirCode,
-			@NonNull Optional<String> theirDescription,
-			@NonNull Optional<String> extraInformation,
-			@NonNull Optional<ReadableInstant> theirTimestamp)
+			@NonNull Optional <String> theirCode,
+			@NonNull Optional <String> theirDescription,
+			@NonNull Optional <String> extraInformation,
+			@NonNull Optional <ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
@@ -81,7 +81,7 @@ class SmsDeliveryReportLogicImplementation
 		// check arguments
 
 		if (
-			notIn (
+			enumNotInSafe (
 				newMessageStatus,
 				MessageStatus.sent,
 				MessageStatus.submitted,
@@ -128,7 +128,7 @@ class SmsDeliveryReportLogicImplementation
 
 		if (
 
-			equal (
+			enumEqualSafe (
 				newMessageStatus,
 				MessageStatus.delivered)
 
@@ -156,7 +156,7 @@ class SmsDeliveryReportLogicImplementation
 			case sent:
 
 				if (
-					in (
+					enumInSafe (
 						newMessageStatus,
 						MessageStatus.sent,
 						MessageStatus.submitted,
@@ -175,7 +175,7 @@ class SmsDeliveryReportLogicImplementation
 			case submitted:
 
 				if (
-					in (
+					enumInSafe (
 						newMessageStatus,
 						MessageStatus.submitted,
 						MessageStatus.delivered,
@@ -193,7 +193,7 @@ class SmsDeliveryReportLogicImplementation
 			case reportTimedOut:
 
 				if (
-					in (
+					enumInSafe (
 						newMessageStatus,
 						MessageStatus.delivered,
 						MessageStatus.undelivered)
@@ -210,7 +210,7 @@ class SmsDeliveryReportLogicImplementation
 			case undelivered:
 
 				if (
-					in (
+					enumInSafe (
 						newMessageStatus,
 						MessageStatus.delivered)
 				) {
