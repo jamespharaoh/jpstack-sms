@@ -9,7 +9,7 @@ import lombok.NonNull;
 import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import wbs.sms.message.core.console.MessageConsolePlugin;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;
@@ -45,7 +45,7 @@ class WapPushConsolePlugin
 				message.getId ());
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				wapPushMessageOptional)
 		) {
 			return "";

@@ -2,7 +2,7 @@ package wbs.sms.customer.logic;
 
 import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
@@ -148,7 +148,7 @@ class SmsCustomerLogicImplementation
 				"welcome");
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				templateOptional)
 		) {
 			return;
@@ -213,7 +213,7 @@ class SmsCustomerLogicImplementation
 				"warning");
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				templateOptional)
 		) {
 			return;

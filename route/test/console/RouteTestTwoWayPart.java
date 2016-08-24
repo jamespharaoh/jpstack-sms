@@ -1,6 +1,6 @@
 package wbs.sms.route.test.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import java.util.Collection;
 
@@ -53,7 +53,7 @@ class RouteTestTwoWayPart
 				"num_from");
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				numberOptional)
 		) {
 			return;

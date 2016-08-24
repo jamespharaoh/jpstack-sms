@@ -5,7 +5,7 @@ import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
 import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.framework.utils.etc.NumberUtils.moreThan;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.sms.gsm.GsmUtils.gsmStringIsValid;
 import static wbs.sms.gsm.GsmUtils.gsmStringLength;
@@ -43,7 +43,7 @@ class GsmFormFieldValueValidator
 		// do nothing if not present
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				genericValue)
 		) {
 			return Optional.absent ();

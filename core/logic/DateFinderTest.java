@@ -1,6 +1,6 @@
 package wbs.sms.core.logic;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.TimeUtils.localDateNotEqual;
@@ -53,10 +53,10 @@ class DateFinderTest
 
 		if (
 
-			isNotPresent (
+			optionalIsNotPresent (
 				example.result ())
 
-			&& isNotPresent (
+			&& optionalIsNotPresent (
 				actual)
 
 		) {
@@ -67,7 +67,7 @@ class DateFinderTest
 
 		if (
 
-			isNotPresent (
+			optionalIsNotPresent (
 				example.result ())
 
 			&& optionalIsPresent (
@@ -93,7 +93,7 @@ class DateFinderTest
 			optionalIsPresent (
 				example.result ())
 
-			&& isNotPresent (
+			&& optionalIsNotPresent (
 				actual)
 
 		) {

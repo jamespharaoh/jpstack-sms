@@ -6,7 +6,7 @@ import static wbs.framework.utils.etc.CollectionUtils.listSecondElementRequired;
 import static wbs.framework.utils.etc.CollectionUtils.listThirdElementRequired;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.NumberUtils.parseInteger;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.stringSplitHyphen;
@@ -229,7 +229,7 @@ System.out.println ("=== A " + mangledMessageId);
 System.out.println ("=== B " + messageIdOptional);
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				messageIdOptional)
 		) {
 System.out.println ("=== C");

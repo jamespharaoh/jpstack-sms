@@ -2,7 +2,7 @@ package wbs.sms.message.stats.console;
 
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.toEnum;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 
 import java.util.Collections;
@@ -132,7 +132,7 @@ class GenericMessageStatsPart
 					crit.toString ());
 
 			if (
-				isNotPresent (
+				optionalIsNotPresent (
 					paramOptional)
 			) {
 				continue;

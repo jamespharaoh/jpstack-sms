@@ -1,6 +1,6 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,7 +109,7 @@ class RouteTesterCommand
 				routeTestId);
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				routeTestOptional)
 		) {
 

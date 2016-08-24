@@ -1,6 +1,6 @@
 package wbs.sms.magicnumber.logic;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -248,7 +248,7 @@ class MagicNumberLogicImplementation
 				.send ();
 
 			if (
-				isNotPresent (
+				optionalIsNotPresent (
 					threadId)
 			) {
 

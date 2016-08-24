@@ -3,7 +3,7 @@ package wbs.sms.messageset.console;
 import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
@@ -131,7 +131,7 @@ class MessageSetAction
 		) {
 
 			if (
-				isNotPresent (
+				optionalIsNotPresent (
 					requestContext.parameter (
 						"enabled_" + index))
 			) {

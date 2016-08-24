@@ -13,7 +13,7 @@ import com.google.common.base.Optional;
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 
@@ -44,7 +44,7 @@ class GazetteerCodeFormFieldNativeMapping<Container>
 			@NonNull Optional<GazetteerEntryRec> genericValue) {
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				genericValue)
 		) {
 			return Optional.<String>absent ();
@@ -62,7 +62,7 @@ class GazetteerCodeFormFieldNativeMapping<Container>
 			@NonNull Optional<String> nativeValue) {
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				nativeValue)
 		) {
 			return Optional.<GazetteerEntryRec>absent ();

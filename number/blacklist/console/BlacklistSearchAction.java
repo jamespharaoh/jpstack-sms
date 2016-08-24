@@ -1,6 +1,6 @@
 package wbs.sms.number.blacklist.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import java.util.Collection;
 import java.util.Set;
@@ -113,7 +113,7 @@ class BlacklistSearchAction
 				number);
 
 		if (
-			isNotPresent (
+			optionalIsNotPresent (
 				blacklistOptional)
 		) {
 
