@@ -1,6 +1,6 @@
 package wbs.sms.command.logic;
 
-import wbs.framework.record.Record;
+import wbs.framework.entity.record.Record;
 import wbs.sms.command.model.CommandRec;
 
 public

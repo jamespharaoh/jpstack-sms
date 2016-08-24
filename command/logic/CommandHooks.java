@@ -1,4 +1,4 @@
-package wbs.sms.number.lookup.model;
+package wbs.sms.command.logic;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
@@ -14,17 +14,23 @@ import lombok.Cleanup;
 import lombok.NonNull;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
-import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.command.model.CommandRec;
+import wbs.sms.command.model.CommandTypeDao;
+import wbs.sms.command.model.CommandTypeRec;
 
 public
-class NumberLookupHooks
-	implements ObjectHooks<NumberLookupRec> {
+class CommandHooks
+	implements ObjectHooks<CommandRec> {
 
 	// dependencies
+
+	@Inject
+	CommandTypeDao commandTypeDao;
 
 	@Inject
 	Database database;
@@ -32,12 +38,9 @@ class NumberLookupHooks
 	@Inject
 	ObjectTypeDao objectTypeDao;
 
-	@Inject
-	NumberLookupTypeDao numberLookupTypeDao;
-
 	// state
 
-	Map<Long,List<Long>> numberLookupTypeIdsByParentTypeId =
+	Map<Long,List<Long>> commandTypeIdsByParentTypeId =
 		new HashMap<> ();
 
 	// lifecycle
@@ -49,27 +52,21 @@ class NumberLookupHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
-				"numberLookupHooks.init ()",
+				"commandHooks.init ()",
 				this);
 
-		// preload object types
-
-		objectTypeDao.findAll ();
-
-		// load number lookup types and construct index
-
-		numberLookupTypeIdsByParentTypeId =
-			numberLookupTypeDao.findAll ().stream ()
+		commandTypeIdsByParentTypeId =
+			commandTypeDao.findAll ().stream ()
 
 			.collect (
 				Collectors.groupingBy (
 
-				numberLookupType ->
-					numberLookupType.getParentType ().getId (),
+				commandType ->
+					commandType.getParentType ().getId (),
 
 				Collectors.mapping (
-					numberLookupType ->
-						numberLookupType.getId (),
+					commandType ->
+						commandType.getId (),
 					Collectors.toList ())
 
 			));
@@ -81,13 +78,13 @@ class NumberLookupHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull ObjectHelper<NumberLookupRec> numberLookupHelper,
+			@NonNull ObjectHelper<CommandRec> commandHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				numberLookupTypeIdsByParentTypeId.keySet (),
+				commandTypeIdsByParentTypeId.keySet (),
 				parentHelper.objectTypeId ())
 		) {
 			return;
@@ -98,29 +95,29 @@ class NumberLookupHooks
 				parentHelper.objectTypeId ());
 
 		for (
-			Long numberLookupTypeId
-				: numberLookupTypeIdsByParentTypeId.get (
+			Long commandTypeId
+				: commandTypeIdsByParentTypeId.get (
 					parentHelper.objectTypeId ())
 		) {
 
-			NumberLookupTypeRec numberLookupType =
-				numberLookupTypeDao.findRequired (
-					numberLookupTypeId);
+			CommandTypeRec commandType =
+				commandTypeDao.findRequired (
+					commandTypeId);
 
-			numberLookupHelper.insert (
-				numberLookupHelper.createInstance ()
+			commandHelper.insert (
+				commandHelper.createInstance ()
+
+				.setCommandType (
+					commandType)
+
+				.setCode (
+					commandType.getCode ())
 
 				.setParentType (
 					parentType)
 
 				.setParentId (
 					parent.getId ())
-
-				.setCode (
-					numberLookupType.getCode ())
-
-				.setNumberLookupType (
-					numberLookupType)
 
 			);
 

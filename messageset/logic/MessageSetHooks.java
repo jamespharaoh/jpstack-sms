@@ -1,4 +1,4 @@
-package wbs.sms.command.model;
+package wbs.sms.messageset.logic;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
@@ -14,30 +14,33 @@ import lombok.Cleanup;
 import lombok.NonNull;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
-import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.messageset.model.MessageSetRec;
+import wbs.sms.messageset.model.MessageSetTypeDao;
+import wbs.sms.messageset.model.MessageSetTypeRec;
 
 public
-class CommandHooks
-	implements ObjectHooks<CommandRec> {
+class MessageSetHooks
+	implements ObjectHooks<MessageSetRec> {
 
 	// dependencies
 
 	@Inject
-	CommandTypeDao commandTypeDao;
+	Database database;
 
 	@Inject
-	Database database;
+	MessageSetTypeDao messageSetTypeDao;
 
 	@Inject
 	ObjectTypeDao objectTypeDao;
 
 	// state
 
-	Map<Long,List<Long>> commandTypeIdsByParentTypeId =
+	Map<Long,List<Long>> messageSetTypeIdsByParentTypeId =
 		new HashMap<> ();
 
 	// lifecycle
@@ -49,21 +52,21 @@ class CommandHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
-				"commandHooks.init ()",
+				"privHooks.init ()",
 				this);
 
-		commandTypeIdsByParentTypeId =
-			commandTypeDao.findAll ().stream ()
+		messageSetTypeIdsByParentTypeId =
+			messageSetTypeDao.findAll ().stream ()
 
 			.collect (
 				Collectors.groupingBy (
 
-				commandType ->
-					commandType.getParentType ().getId (),
+				messageSetType ->
+					messageSetType.getParentType ().getId (),
 
 				Collectors.mapping (
-					commandType ->
-						commandType.getId (),
+					messageSetType ->
+						messageSetType.getId (),
 					Collectors.toList ())
 
 			));
@@ -75,13 +78,13 @@ class CommandHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull ObjectHelper<CommandRec> commandHelper,
+			@NonNull ObjectHelper<MessageSetRec> messageSetHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				commandTypeIdsByParentTypeId.keySet (),
+				messageSetTypeIdsByParentTypeId.keySet (),
 				parentHelper.objectTypeId ())
 		) {
 			return;
@@ -92,23 +95,23 @@ class CommandHooks
 				parentHelper.objectTypeId ());
 
 		for (
-			Long commandTypeId
-				: commandTypeIdsByParentTypeId.get (
+			Long messageSetTypeId
+				: messageSetTypeIdsByParentTypeId.get (
 					parentHelper.objectTypeId ())
 		) {
 
-			CommandTypeRec commandType =
-				commandTypeDao.findRequired (
-					commandTypeId);
+			MessageSetTypeRec messageSetType =
+				messageSetTypeDao.findRequired (
+					messageSetTypeId);
 
-			commandHelper.insert (
-				commandHelper.createInstance ()
+			messageSetHelper.insert (
+				messageSetHelper.createInstance ()
 
-				.setCommandType (
-					commandType)
+				.setMessageSetType (
+					messageSetType)
 
 				.setCode (
-					commandType.getCode ())
+					messageSetType.getCode ())
 
 				.setParentType (
 					parentType)

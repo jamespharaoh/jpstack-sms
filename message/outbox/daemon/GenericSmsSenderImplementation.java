@@ -7,7 +7,7 @@ import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.Misc.todo;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.framework.utils.etc.OptionalUtils.optionalMapRequired;
 import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
@@ -32,10 +32,10 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
 import wbs.framework.exception.GenericExceptionResolution;
-import wbs.framework.record.GlobalId;
 import wbs.framework.utils.etc.JsonUtils;
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
@@ -708,7 +708,7 @@ class GenericSmsSenderImplementation<StateType>
 		// TODO aaargh
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				smsBlacklistHelper.findByCode (
 					GlobalId.root,
 					numberString))

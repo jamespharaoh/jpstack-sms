@@ -39,7 +39,7 @@ import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.utils.etc.BeanLogic;
 
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
 import static wbs.framework.utils.etc.StringUtils.capitalise;
 
@@ -212,7 +212,7 @@ class GazetteerFormFieldBuilder {
 				propertyClass);
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				gazetteerNativeMappingOptional)
 		) {
 

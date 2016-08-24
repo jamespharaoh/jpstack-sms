@@ -1,4 +1,4 @@
-package wbs.sms.number.list.model;
+package wbs.sms.number.list.logic;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -6,9 +6,13 @@ import javax.inject.Provider;
 import lombok.NonNull;
 
 import wbs.sms.number.core.model.NumberRec;
+import wbs.sms.number.list.model.NumberListNumberObjectHelper;
+import wbs.sms.number.list.model.NumberListNumberObjectHelperMethods;
+import wbs.sms.number.list.model.NumberListNumberRec;
+import wbs.sms.number.list.model.NumberListRec;
 
 public
-class NumberListNumberObjectHelperImplementation
+class NumberListNumberObjectHelperMethodsImplementation
 	implements NumberListNumberObjectHelperMethods {
 
 	@Inject

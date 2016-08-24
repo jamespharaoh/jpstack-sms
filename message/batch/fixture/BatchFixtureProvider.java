@@ -3,8 +3,8 @@ package wbs.sms.message.batch.fixture;
 import javax.inject.Inject;
 
 import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
-import wbs.framework.record.GlobalId;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;

@@ -2,6 +2,7 @@ package wbs.sms.locator.build;
 
 import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
+import static wbs.framework.utils.etc.TypeUtils.classForNameRequired;
 
 import javax.inject.Inject;
 
@@ -19,7 +20,6 @@ import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;
 import wbs.framework.entity.model.ModelField;
 import wbs.framework.entity.model.ModelFieldType;
-import wbs.sms.locator.hibernate.LongLatType;
 import wbs.sms.locator.metamodel.LongitudeLatitudeFieldSpec;
 import wbs.sms.locator.model.LongLat;
 
@@ -98,12 +98,13 @@ class LongitudeLatitudeModelFieldBuilder {
 					false))
 
 			.columnNames (
-				ImmutableList.<String>of (
+				ImmutableList.of (
 					longitudeColumnName,
 					latitudeColumnName))
 
 			.hibernateTypeHelper (
-				LongLatType.class);
+				classForNameRequired (
+					"wbs.sms.locator.hibernate.LongLatType"));
 
 		// store field
 

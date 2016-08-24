@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.record.GlobalId;
+import wbs.framework.entity.record.GlobalId;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -302,7 +302,7 @@ class AbstractSmsSender1<MessageContainer>
 							number);
 
 					if (
-						isPresent (
+						optionalIsPresent (
 							blacklistOptional)
 					) {
 

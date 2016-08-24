@@ -5,7 +5,7 @@ import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
 import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.framework.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.TimeUtils.earliest;
@@ -411,7 +411,7 @@ class SmsOutboxLogicImplementation
 			MessageStatus.sent);
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				otherIds)
 		) {
 
@@ -457,7 +457,7 @@ class SmsOutboxLogicImplementation
 		// create multipart companions if appropriate
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				otherIds)
 		) {
 

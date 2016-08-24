@@ -4,7 +4,7 @@ import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
 import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
@@ -202,7 +202,7 @@ class MessageSetAction
 			log.debug (index);
 
 			boolean enabled =
-				isPresent (
+				optionalIsPresent (
 					requestContext.parameter (
 						"enabled_" + index));
 

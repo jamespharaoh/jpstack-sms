@@ -2,7 +2,7 @@ package wbs.sms.message.outbox.console;
 
 import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 
 import java.util.Collection;
 
@@ -146,7 +146,7 @@ class MessageOutboxRouteAction
 		}
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"cancel"))
 		) {
@@ -167,7 +167,7 @@ class MessageOutboxRouteAction
 				"Message cancelled");
 
 		} else if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"retry"))
 		) {

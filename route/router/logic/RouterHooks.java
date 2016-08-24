@@ -1,4 +1,4 @@
-package wbs.sms.route.router.model;
+package wbs.sms.route.router.logic;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
@@ -14,11 +14,14 @@ import lombok.Cleanup;
 import lombok.NonNull;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
-import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.route.router.model.RouterRec;
+import wbs.sms.route.router.model.RouterTypeDao;
+import wbs.sms.route.router.model.RouterTypeRec;
 
 public
 class RouterHooks

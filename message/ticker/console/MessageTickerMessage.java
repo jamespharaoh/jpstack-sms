@@ -7,7 +7,7 @@ import org.joda.time.Instant;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import wbs.framework.record.GlobalId;
+import wbs.framework.entity.record.GlobalId;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageStatus;
 

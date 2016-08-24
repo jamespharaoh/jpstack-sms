@@ -21,7 +21,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.record.Record;
+import wbs.framework.entity.record.Record;
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
 import wbs.sms.message.stats.console.SmsStatsSource;

@@ -1,4 +1,4 @@
-package wbs.sms.messageset.model;
+package wbs.sms.number.lookup.logic;
 
 import static wbs.framework.utils.etc.Misc.doesNotContain;
 
@@ -14,15 +14,18 @@ import lombok.Cleanup;
 import lombok.NonNull;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
-import wbs.framework.record.Record;
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.sms.number.lookup.model.NumberLookupRec;
+import wbs.sms.number.lookup.model.NumberLookupTypeDao;
+import wbs.sms.number.lookup.model.NumberLookupTypeRec;
 
 public
-class MessageSetHooks
-	implements ObjectHooks<MessageSetRec> {
+class NumberLookupHooks
+	implements ObjectHooks<NumberLookupRec> {
 
 	// dependencies
 
@@ -30,14 +33,14 @@ class MessageSetHooks
 	Database database;
 
 	@Inject
-	MessageSetTypeDao messageSetTypeDao;
+	ObjectTypeDao objectTypeDao;
 
 	@Inject
-	ObjectTypeDao objectTypeDao;
+	NumberLookupTypeDao numberLookupTypeDao;
 
 	// state
 
-	Map<Long,List<Long>> messageSetTypeIdsByParentTypeId =
+	Map<Long,List<Long>> numberLookupTypeIdsByParentTypeId =
 		new HashMap<> ();
 
 	// lifecycle
@@ -49,21 +52,27 @@ class MessageSetHooks
 		@Cleanup
 		Transaction transaction =
 			database.beginReadOnly (
-				"privHooks.init ()",
+				"numberLookupHooks.init ()",
 				this);
 
-		messageSetTypeIdsByParentTypeId =
-			messageSetTypeDao.findAll ().stream ()
+		// preload object types
+
+		objectTypeDao.findAll ();
+
+		// load number lookup types and construct index
+
+		numberLookupTypeIdsByParentTypeId =
+			numberLookupTypeDao.findAll ().stream ()
 
 			.collect (
 				Collectors.groupingBy (
 
-				messageSetType ->
-					messageSetType.getParentType ().getId (),
+				numberLookupType ->
+					numberLookupType.getParentType ().getId (),
 
 				Collectors.mapping (
-					messageSetType ->
-						messageSetType.getId (),
+					numberLookupType ->
+						numberLookupType.getId (),
 					Collectors.toList ())
 
 			));
@@ -75,13 +84,13 @@ class MessageSetHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull ObjectHelper<MessageSetRec> messageSetHelper,
+			@NonNull ObjectHelper<NumberLookupRec> numberLookupHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
 
 		if (
 			doesNotContain (
-				messageSetTypeIdsByParentTypeId.keySet (),
+				numberLookupTypeIdsByParentTypeId.keySet (),
 				parentHelper.objectTypeId ())
 		) {
 			return;
@@ -92,29 +101,29 @@ class MessageSetHooks
 				parentHelper.objectTypeId ());
 
 		for (
-			Long messageSetTypeId
-				: messageSetTypeIdsByParentTypeId.get (
+			Long numberLookupTypeId
+				: numberLookupTypeIdsByParentTypeId.get (
 					parentHelper.objectTypeId ())
 		) {
 
-			MessageSetTypeRec messageSetType =
-				messageSetTypeDao.findRequired (
-					messageSetTypeId);
+			NumberLookupTypeRec numberLookupType =
+				numberLookupTypeDao.findRequired (
+					numberLookupTypeId);
 
-			messageSetHelper.insert (
-				messageSetHelper.createInstance ()
-
-				.setMessageSetType (
-					messageSetType)
-
-				.setCode (
-					messageSetType.getCode ())
+			numberLookupHelper.insert (
+				numberLookupHelper.createInstance ()
 
 				.setParentType (
 					parentType)
 
 				.setParentId (
 					parent.getId ())
+
+				.setCode (
+					numberLookupType.getCode ())
+
+				.setNumberLookupType (
+					numberLookupType)
 
 			);
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-import wbs.framework.record.Record;
+import wbs.framework.entity.record.Record;
 import wbs.sms.number.core.model.NumberRec;
 
 public

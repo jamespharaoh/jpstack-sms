@@ -34,7 +34,6 @@
 		<component class="console.MessageContentFormFieldBuilder"/>
 		<component class="console.MessageContentFormFieldSpec"/>
 		<component class="console.MessageContentHtmlFormFieldInterfaceMapping"/>
-		<component class="console.MessageDirectionConsoleHelper"/>
 		<component class="console.MessageMediaContext"/>
 		<component class="console.MessageMediasPart"/>
 		<component class="console.MessageMediaSummaryPart"/>

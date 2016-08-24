@@ -27,7 +27,7 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
-import wbs.framework.record.Record;
+import wbs.framework.entity.record.Record;
 
 @PrototypeComponent ("objectSmsStatsPageBuilder")
 @ConsoleModuleBuilderHandler

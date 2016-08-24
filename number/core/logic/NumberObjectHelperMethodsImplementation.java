@@ -1,18 +1,21 @@
-package wbs.sms.number.core.model;
+package wbs.sms.number.core.logic;
 
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.record.GlobalId;
+import wbs.framework.entity.record.GlobalId;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
+import wbs.sms.number.core.model.NumberObjectHelper;
+import wbs.sms.number.core.model.NumberObjectHelperMethods;
+import wbs.sms.number.core.model.NumberRec;
 
 public
-class NumberObjectHelperImplementation
+class NumberObjectHelperMethodsImplementation
 	implements NumberObjectHelperMethods {
 
 	// indirect dependencies
@@ -44,7 +47,7 @@ class NumberObjectHelperImplementation
 				numberString);
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				numberRecordOptional)
 		) {
 			return numberRecordOptional.get ();

@@ -1,10 +1,11 @@
-package wbs.sms.message.core.model;
+package wbs.sms.message.core.logic;
 
 import lombok.NonNull;
 
 import org.joda.time.DateTime;
 
 import wbs.framework.object.ObjectHooks;
+import wbs.sms.message.core.model.MessageRec;
 
 public
 class MessageHooks

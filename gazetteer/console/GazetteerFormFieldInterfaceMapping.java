@@ -24,7 +24,7 @@ import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.application.annotations.PrototypeComponent;
 import static wbs.framework.utils.etc.OptionalUtils.isNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 
@@ -136,7 +136,7 @@ class GazetteerFormFieldInterfaceMapping<Container>
 			@NonNull Optional<GazetteerEntryRec> genericValue) {
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				genericValue)
 		) {
 

@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 
 import javax.inject.Inject;
 
@@ -93,7 +93,7 @@ class MessageNotProcessedFormAction
 		}
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"process_again"))
 		) {
@@ -135,7 +135,7 @@ class MessageNotProcessedFormAction
 		}
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"ignore"))
 		) {
@@ -169,7 +169,7 @@ class MessageNotProcessedFormAction
 		}
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"processed_manually"))
 		) {

@@ -1,4 +1,4 @@
-package wbs.sms.customer.model;
+package wbs.sms.customer.logic;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -6,10 +6,14 @@ import javax.inject.Provider;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.utils.RandomLogic;
+import wbs.sms.customer.model.SmsCustomerManagerRec;
+import wbs.sms.customer.model.SmsCustomerObjectHelper;
+import wbs.sms.customer.model.SmsCustomerObjectHelperMethods;
+import wbs.sms.customer.model.SmsCustomerRec;
 import wbs.sms.number.core.model.NumberRec;
 
 public
-class SmsCustomerObjectHelperImplementation
+class SmsCustomerObjectHelperMethodsImplementation
 	implements SmsCustomerObjectHelperMethods {
 
 	// dependencies

@@ -1,6 +1,6 @@
 package wbs.sms.message.batch.logic;
 
-import wbs.framework.record.Record;
+import wbs.framework.entity.record.Record;
 import wbs.sms.message.batch.model.BatchSubjectRec;
 
 public

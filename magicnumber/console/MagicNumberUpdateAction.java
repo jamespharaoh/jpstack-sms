@@ -2,7 +2,7 @@ package wbs.sms.magicnumber.console;
 
 import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
 import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -105,7 +105,7 @@ class MagicNumberUpdateAction
 		}
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"create"))
 		) {
@@ -204,7 +204,7 @@ class MagicNumberUpdateAction
 			}
 
 		} else if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"delete"))
 		) {

@@ -5,9 +5,10 @@ import javax.inject.Inject;
 import com.google.common.base.Optional;
 
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
-import wbs.framework.record.Record;
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.command.model.CommandObjectHelper;
@@ -51,7 +52,7 @@ class CommandLogicImplementation
 				code);
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				existingCommandOptional)
 		) {
 			return existingCommandOptional.get ();

@@ -1,6 +1,6 @@
 package wbs.sms.number.list.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.isPresent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -136,7 +136,7 @@ class NumberListNumberUpdateAction
 		int numAlreadyAdded = 0;
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"add"))
 		) {
@@ -201,7 +201,7 @@ class NumberListNumberUpdateAction
 		int numAlreadyRemoved = 0;
 
 		if (
-			isPresent (
+			optionalIsPresent (
 				requestContext.parameter (
 					"remove"))
 		) {
