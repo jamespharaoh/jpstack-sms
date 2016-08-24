@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.logic;
 
-import static wbs.framework.utils.etc.LogicUtils.referenceEqualSafe;
+import static wbs.framework.utils.etc.LogicUtils.referenceEqualWithClass;
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
@@ -552,7 +552,8 @@ class SmsInboxLogicImplementation
 		// ignore if no change
 
 		if (
-			referenceEqualSafe (
+			referenceEqualWithClass (
+				NetworkRec.class,
 				oldNetwork,
 				newNetwork)
 		) {
@@ -577,7 +578,8 @@ class SmsInboxLogicImplementation
 		case updateKeepingVirtual:
 
 			if (
-				referenceEqualSafe (
+				referenceEqualWithClass (
+					NetworkRec.class,
 					oldNetwork.getVirtualNetworkOfNetwork (),
 					newNetwork)
 			) {

@@ -1,6 +1,6 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
+import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualWithClass;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
@@ -29,6 +29,7 @@ import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.gsm.GsmUtils;
+import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.messageset.model.MessageSetMessageObjectHelper;
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
@@ -310,7 +311,8 @@ class MessageSetAction
 					// update existing message
 
 					if (
-						referenceNotEqualSafe (
+						referenceNotEqualWithClass (
+							RouteRec.class,
 							messageSetMessage.getRoute (),
 							newRoute)
 					) {
@@ -350,7 +352,8 @@ class MessageSetAction
 					}
 
 					if (
-						referenceNotEqualSafe (
+						referenceNotEqualWithClass (
+							MessageRec.class,
 							messageSetMessage.getMessage (),
 							newMessage)
 					) {

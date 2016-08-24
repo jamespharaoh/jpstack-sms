@@ -1,6 +1,7 @@
 package wbs.sms.magicnumber.console;
 
 import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
+import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualWithClass;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
@@ -129,7 +130,8 @@ class MagicNumberUpdateAction
 				) {
 
 					if (
-						referenceNotEqualSafe (
+						referenceNotEqualWithClass (
+							MagicNumberSetRec.class,
 							existingMagicNumber.getMagicNumberSet (),
 							magicNumberSet)
 					) {
@@ -223,7 +225,8 @@ class MagicNumberUpdateAction
 						number);
 
 				if (
-					referenceNotEqualSafe (
+					referenceNotEqualWithClass (
+						MagicNumberSetRec.class,
 						magicNumber.getMagicNumberSet (),
 						magicNumberSet)
 				) {
