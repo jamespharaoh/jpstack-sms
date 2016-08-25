@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.Misc.isEmpty;
+import static wbs.framework.utils.etc.CollectionUtils.collectionIsEmpty;
 import static wbs.framework.utils.etc.NumberUtils.equalToZero;
 import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
@@ -285,7 +285,7 @@ class GenericSmsSenderService
 					numToGet);
 
 			if (
-				isEmpty (
+				collectionIsEmpty (
 					outboxes)
 			) {
 				return 0l;
@@ -349,7 +349,7 @@ class GenericSmsSenderService
 			throws InterruptedException {
 
 			while (
-				isEmpty (
+				collectionIsEmpty (
 					messageQueue)
 			) {
 				wait ();

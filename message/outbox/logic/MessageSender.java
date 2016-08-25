@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.StringUtils.stringEqual;
+import static wbs.framework.utils.etc.StringUtils.stringEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.stringInSafe;
 
 import java.util.Collection;
@@ -275,7 +275,7 @@ class MessageSender {
 		) {
 
 			if (
-				stringEqual (
+				stringEqualSafe (
 					route.getCode (),
 					"cutemedia_84232_100")
 			) {
@@ -293,7 +293,7 @@ class MessageSender {
 			}
 
 			if (
-				stringEqual (
+				stringEqualSafe (
 					route.getCode (),
 					"dialogue_89505_500")
 			) {
@@ -311,7 +311,7 @@ class MessageSender {
 			}
 
 			if (
-				stringEqual (
+				stringEqualSafe (
 					route.getCode (),
 					"dialogue_88211_500")
 			) {
@@ -329,7 +329,7 @@ class MessageSender {
 			}
 
 			if (
-				stringEqual (
+				stringEqualSafe (
 					route.getCode (),
 					"dialogue_85722_500")
 			) {

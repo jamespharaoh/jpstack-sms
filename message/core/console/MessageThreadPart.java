@@ -1,7 +1,7 @@
 package wbs.sms.message.core.console;
 
 import static wbs.framework.utils.etc.StringUtils.bytesToString;
-import static wbs.framework.utils.etc.StringUtils.stringEqual;
+import static wbs.framework.utils.etc.StringUtils.stringEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -131,7 +131,7 @@ class MessageThreadPart
 					medias.get (index);
 
 				if (
-					stringEqual (
+					stringEqualSafe (
 						media.getMediaType ().getMimeType (),
 						"text/plain")
 				) {

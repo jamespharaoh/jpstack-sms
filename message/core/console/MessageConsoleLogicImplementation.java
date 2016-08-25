@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.isNotEmpty;
+import static wbs.framework.utils.etc.CollectionUtils.collectionIsNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.StringUtils.stringIsNotEmpty;
@@ -88,7 +88,7 @@ class MessageConsoleLogicImplementation
 				stringWriter);
 
 		if (
-			isNotEmpty (
+			collectionIsNotEmpty (
 				message.getMedias ())
 		) {
 

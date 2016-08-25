@@ -1,7 +1,7 @@
 package wbs.sms.messageset.console;
 
 import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
-import static wbs.framework.utils.etc.StringUtils.stringEqual;
+import static wbs.framework.utils.etc.StringUtils.stringEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.Collection;
@@ -230,7 +230,7 @@ class MessageSetPart
 				" value=\"%h\"",
 				route.getId (),
 				ifThenElse (
-					stringEqual (
+					stringEqualSafe (
 						Long.toString (
 							route.getId ()),
 						routeStr),

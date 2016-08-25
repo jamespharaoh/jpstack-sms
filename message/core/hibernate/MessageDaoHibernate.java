@@ -1,9 +1,9 @@
 package wbs.sms.message.core.hibernate;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.Misc.isNotEmpty;
+import static wbs.framework.utils.etc.CollectionUtils.collectionIsNotEmpty;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.lessThan;
+import static wbs.framework.utils.etc.NullUtils.ifNull;
 import static wbs.framework.utils.etc.NumberUtils.maximumInteger;
 import static wbs.framework.utils.etc.NumberUtils.minimumInteger;
 import static wbs.framework.utils.etc.NumberUtils.moreThan;
@@ -577,11 +577,11 @@ class MessageDaoHibernate
 
 		if (search.filter ()) {
 
-			List<Criterion> filterCriteria =
-				new ArrayList<Criterion> ();
+			List <Criterion> filterCriteria =
+				new ArrayList<> ();
 
 			if (
-				isNotEmpty (
+				collectionIsNotEmpty (
 					search.filterServiceIds ())
 			) {
 
@@ -593,7 +593,7 @@ class MessageDaoHibernate
 			}
 
 			if (
-				isNotEmpty (
+				collectionIsNotEmpty (
 					search.filterAffiliateIds ())
 			) {
 
@@ -605,7 +605,7 @@ class MessageDaoHibernate
 			}
 
 			if (
-				isNotEmpty (
+				collectionIsNotEmpty (
 					search.filterRouteIds ())
 			) {
 

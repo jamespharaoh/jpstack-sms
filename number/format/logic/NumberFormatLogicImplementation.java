@@ -2,7 +2,7 @@ package wbs.sms.number.format.logic;
 
 import static wbs.framework.utils.etc.Misc.lessThan;
 import static wbs.framework.utils.etc.NumberUtils.moreThan;
-import static wbs.framework.utils.etc.StringUtils.doesNotStartWith;
+import static wbs.framework.utils.etc.StringUtils.doesNotStartWithSimple;
 import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ class NumberFormatLogicImplementation
 			}
 
 			if (
-				doesNotStartWith (
+				doesNotStartWithSimple (
 					number,
 					numberFormatPattern.getInputPrefix ())
 			) {
