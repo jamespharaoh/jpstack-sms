@@ -1,7 +1,7 @@
 package wbs.sms.message.stats.console;
 
 import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveOneElement;
-import static wbs.framework.utils.etc.CollectionUtils.collectionFirstElementRequired;
+import static wbs.framework.utils.etc.CollectionUtils.iterableFirstElementRequired;
 import static wbs.framework.utils.etc.Misc.isNull;
 import static wbs.framework.utils.etc.OptionalUtils.optionalValueEqualSafe;
 
@@ -143,7 +143,7 @@ class SmsStatsSourceImplementation
 		}
 
 		return routeHelper.findRequired (
-			collectionFirstElementRequired (
+			iterableFirstElementRequired (
 				routeIds));
 
 	}

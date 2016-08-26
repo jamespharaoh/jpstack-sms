@@ -14,8 +14,8 @@ import org.apache.commons.io.output.StringBuilderWriter;
 
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.framework.utils.etc.FormatWriter;
-import wbs.framework.utils.etc.FormatWriterWriter;
+import wbs.framework.utils.formatwriter.FormatWriter;
+import wbs.framework.utils.formatwriter.WriterFormatWriter;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
@@ -84,7 +84,7 @@ class MessageConsoleLogicImplementation
 			new StringBuilderWriter ();
 
 		FormatWriter formatWriter =
-			new FormatWriterWriter (
+			new WriterFormatWriter (
 				stringWriter);
 
 		if (
