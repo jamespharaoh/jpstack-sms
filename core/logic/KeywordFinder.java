@@ -1,5 +1,7 @@
 package wbs.sms.core.logic;
 
+import static wbs.sms.gsm.GsmUtils.gsmStringSimplifyAllowNonGsm;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -7,9 +9,7 @@ import java.util.regex.Pattern;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-
 import wbs.framework.application.annotations.SingletonComponent;
-import wbs.sms.gsm.GsmUtils;
 
 @SingletonComponent ("keywordFinder")
 public
@@ -60,11 +60,11 @@ class KeywordFinder {
 	 * Produces a collection of possible keyword matches from the given string.
 	 */
 	public
-	List<Match> find (
+	List <Match> find (
 			String string) {
 
-		List<Match> ret =
-			new ArrayList<Match> ();
+		List <Match> ret =
+			new ArrayList<> ();
 
 		// try first pattern
 
@@ -126,7 +126,7 @@ class KeywordFinder {
 	String stripKeyword (
 			String string) {
 
-		return GsmUtils.gsmStringSimplify (
+		return gsmStringSimplifyAllowNonGsm (
 			shitPattern
 				.matcher (string)
 				.replaceAll (""));

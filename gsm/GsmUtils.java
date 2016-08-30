@@ -103,20 +103,6 @@ class GsmUtils {
 
 	}
 
-	/**
-	 * Convert all versions of alphabetic latin characters in the string to
-	 * their unaccented, lowercase form. Only works for gsm characters. This is
-	 * typically used for keyword matching.
-	 *
-	 * @param string
-	 *     The string to convert
-	 *
-	 * @return
-	 *     The resulting string
-	 *
-	 * @throws InvalidGsmCharsException
-	 *     If the string contains non-gsm characters
-	 */
 	public static
 	String gsmStringSimplify (
 			@NonNull String string) {
@@ -129,6 +115,17 @@ class GsmUtils {
 		) {
 			throw new InvalidGsmCharsException ();
 		}
+
+		// convert the string
+
+		return gsmStringSimplifyAllowNonGsm (
+			string);
+
+	}
+
+	public static
+	String gsmStringSimplifyAllowNonGsm (
+			@NonNull String string) {
 
 		// convert the string
 

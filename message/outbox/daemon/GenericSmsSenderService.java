@@ -85,7 +85,7 @@ class GenericSmsSenderService
 
 	// state
 
-	List<RouteSenderService> routeSenderServices =
+	List <RouteSenderService> routeSenderServices =
 		new ArrayList<> ();
 
 	// implementation
@@ -109,7 +109,7 @@ class GenericSmsSenderService
 				GlobalId.root,
 				smsSenderHelper.senderCode ());
 
-		Set<RouteRec> smsRoutes =
+		Set <RouteRec> smsRoutes =
 			sender.getRoutes ();
 
 		// and for each one...
@@ -142,7 +142,7 @@ class GenericSmsSenderService
 
 		long claimedMessages = 0;
 
-		Queue<Long> messageQueue =
+		Queue <Long> messageQueue =
 			new LinkedList<> ();
 
 		RouteSenderService start () {
@@ -339,6 +339,14 @@ class GenericSmsSenderService
 
 				sendOneMessage (
 					smsMessageId);
+
+				synchronized (this) {
+
+					claimedMessages --;
+
+					notifyAll ();
+
+				}
 
 			}
 

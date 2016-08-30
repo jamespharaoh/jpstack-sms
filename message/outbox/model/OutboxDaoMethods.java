@@ -13,6 +13,9 @@ interface OutboxDaoMethods {
 
 	Long count ();
 
+	Long countOlderThan (
+			Instant intant);
+
 	OutboxRec find (
 			MessageRec message);
 

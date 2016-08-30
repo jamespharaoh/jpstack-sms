@@ -48,6 +48,36 @@ class InboxDaoHibernate
 
 	@Override
 	public
+	Long countPendingOlderThan (
+			@NonNull Instant instant) {
+
+		return findOne (
+			"countPending ()",
+			Long.class,
+
+			createCriteria (
+				InboxRec.class,
+				"_inbox")
+
+			.add (
+				Restrictions.eq (
+					"_inbox.state",
+					InboxState.pending))
+
+			.add (
+				Restrictions.lt (
+					"_inbox.createdTime",
+					instant))
+
+			.setProjection (
+				Projections.rowCount ())
+
+		);
+
+	}
+
+	@Override
+	public
 	List <InboxRec> findPendingLimit (
 			@NonNull Instant now,
 			@NonNull Long maxResults) {

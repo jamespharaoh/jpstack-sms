@@ -9,6 +9,9 @@ interface InboxDaoMethods {
 
 	Long countPending ();
 
+	Long countPendingOlderThan (
+			Instant instant);
+
 	List <InboxRec> findPendingLimit (
 			Instant now,
 			Long maxResults);

@@ -47,6 +47,31 @@ class OutboxDaoHibernate
 	}
 
 	@Override
+	public 
+	Long countOlderThan (
+			@NonNull Instant instant) {
+
+		return findOne (
+			"count ()",
+			Long.class,
+
+			createCriteria (
+				OutboxRec.class,
+				"_outbox")
+
+			.add (
+				Restrictions.lt (
+					"_outbox.createdTime",
+					instant))
+
+			.setProjection (
+				Projections.rowCount ())
+
+		);
+
+	}
+
+	@Override
 	public
 	OutboxRec find (
 			@NonNull MessageRec message) {

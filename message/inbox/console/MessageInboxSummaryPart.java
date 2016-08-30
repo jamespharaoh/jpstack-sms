@@ -61,6 +61,7 @@ class MessageInboxSummaryPart
 			"<th>To</th>\n",
 			"<th>Created</th>\n",
 			"<th>Tries</th>\n",
+			"<th>Next try</th>\n",
 			"<th>Route</th>\n",
 			"<th>Actions</th>\n",
 			"</tr>\n");
@@ -96,12 +97,17 @@ class MessageInboxSummaryPart
 
 			printFormat (
 				"<td>%h</td>\n",
-				userConsoleLogic.timestampWithTimezoneString (
+				userConsoleLogic.timestampWithoutTimezoneString (
 					message.getCreatedTime ()));
 
 			printFormat (
 				"<td>%h</td>\n",
 				inbox.getNumAttempts ());
+
+			printFormat (
+				"<td>%h</td>\n",
+				userConsoleLogic.timestampWithoutTimezoneString (
+					inbox.getNextAttempt ()));
 
 			printFormat (
 				"%s\n",
@@ -128,7 +134,7 @@ class MessageInboxSummaryPart
 				"<tr>\n");
 
 			printFormat (
-				"<td colspan=\"6\">%h</td>\n",
+				"<td colspan=\"7\">%h</td>\n",
 				message.getText ().getText ());
 
 			printFormat (
@@ -142,7 +148,7 @@ class MessageInboxSummaryPart
 					"<tr>\n");
 
 				printFormat (
-					"<td colspan=\"6\">%h</td>\n",
+					"<td colspan=\"7\">%h</td>\n",
 					inbox.getStatusMessage ());
 
 				printFormat (
