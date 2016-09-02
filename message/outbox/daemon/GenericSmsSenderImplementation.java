@@ -60,7 +60,7 @@ import wbs.sms.route.core.model.RouteRec;
 @Accessors (fluent = true)
 @PrototypeComponent ("genericSmsSender")
 public
-class GenericSmsSenderImplementation<StateType>
+class GenericSmsSenderImplementation <StateType>
 	implements GenericSmsSender {
 
 	// constants
@@ -104,16 +104,16 @@ class GenericSmsSenderImplementation<StateType>
 	// properties
 
 	@Getter
-	SmsSenderHelper<StateType> smsSenderHelper;
+	SmsSenderHelper <StateType> smsSenderHelper;
 
 	@Override
 	public
-	GenericSmsSenderImplementation<StateType> smsSenderHelper (
-			@NonNull SmsSenderHelper<?> smsSenderHelper) {
+	GenericSmsSenderImplementation <StateType> smsSenderHelper (
+			@NonNull SmsSenderHelper <?> smsSenderHelper) {
 
 		@SuppressWarnings ("unchecked")
-		SmsSenderHelper<StateType> smsSenderHelperTemp =
-			(SmsSenderHelper<StateType>)
+		SmsSenderHelper <StateType> smsSenderHelperTemp =
+			(SmsSenderHelper <StateType>)
 			smsSenderHelper;
 
 		this.smsSenderHelper =
@@ -132,7 +132,7 @@ class GenericSmsSenderImplementation<StateType>
 
 	Long smsOutboxAttemptId;
 
-	SetupRequestResult<StateType> setupRequestResult;
+	SetupRequestResult <StateType> setupRequestResult;
 	PerformSendResult performSendResult;
 	ProcessResponseResult processResponseResult;
 

@@ -63,7 +63,7 @@ class GenericSmsSenderService
 	// prototype dependencies
 
 	@Inject
-	Provider<GenericSmsSender> genericSmsSenderProvider;
+	Provider <GenericSmsSender> genericSmsSenderProvider;
 
 	// properties
 

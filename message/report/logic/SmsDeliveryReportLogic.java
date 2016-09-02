@@ -16,10 +16,10 @@ interface SmsDeliveryReportLogic {
 	void deliveryReport (
 			MessageRec message,
 			MessageStatus newMessageStatus,
-			Optional<String> theirCode,
-			Optional<String> theirDescription,
-			Optional<String> extraInformation,
-			Optional<ReadableInstant> theirTimestamp)
+			Optional <String> theirCode,
+			Optional <String> theirDescription,
+			Optional <String> extraInformation,
+			Optional <ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException;
@@ -28,10 +28,10 @@ interface SmsDeliveryReportLogic {
 			RouteRec route,
 			String otherId,
 			MessageStatus newMessageStatus,
-			Optional<String> theirCode,
-			Optional<String> theirDescription,
-			Optional<String> extraInformation,
-			Optional<ReadableInstant> timestamp)
+			Optional <String> theirCode,
+			Optional <String> theirDescription,
+			Optional <String> extraInformation,
+			Optional <ReadableInstant> timestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException;
@@ -39,10 +39,10 @@ interface SmsDeliveryReportLogic {
 	void deliveryReport (
 			Long messageId,
 			MessageStatus newMessageStatus,
-			Optional<String> theirCode,
-			Optional<String> theirDescription,
-			Optional<String> extraInformation,
-			Optional<ReadableInstant> timestamp)
+			Optional <String> theirCode,
+			Optional <String> theirDescription,
+			Optional <String> extraInformation,
+			Optional <ReadableInstant> timestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException;

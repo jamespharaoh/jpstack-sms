@@ -1,17 +1,16 @@
 package wbs.sms.message.inbox.daemon;
 
-import javax.inject.Inject;
+import static wbs.framework.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOf;
+
+import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.google.common.base.Optional;
-
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.application.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.platform.affiliate.model.AffiliateRec;
-import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -25,18 +24,18 @@ public
 class NullCommandTypeHandler
 	implements CommandHandler {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	CommandObjectHelper commandHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
 	// properties
@@ -48,7 +47,7 @@ class NullCommandTypeHandler
 	CommandRec command;
 
 	@Getter @Setter
-	Optional<Long> commandRef;
+	Optional <Long> commandRef;
 
 	@Getter @Setter
 	String rest;
@@ -73,9 +72,10 @@ class NullCommandTypeHandler
 
 		return smsInboxLogic.inboxNotProcessed (
 			inbox,
-			Optional.<ServiceRec>absent (),
-			Optional.<AffiliateRec>absent (),
-			Optional.of (command),
+			optionalAbsent (),
+			optionalAbsent (),
+			optionalOf (
+				command),
 			"Null command handler");
 
 	}

@@ -5,9 +5,8 @@ import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
 import static wbs.framework.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
-
-import javax.inject.Inject;
 
 import org.joda.time.ReadableInstant;
 
@@ -16,9 +15,11 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.application.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.object.ObjectManager;
+import wbs.platform.text.model.TextObjectHelper;
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
 import wbs.sms.message.core.logic.SmsMessageLogic;
@@ -39,26 +40,29 @@ class SmsDeliveryReportLogicImplementation
 
 	// dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MessageDao messageDao;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsMessageLogic messageLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageReportObjectHelper messageReportHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
+
+	@SingletonDependency
+	TextObjectHelper textHelper;
 
 	// implementation
 
@@ -121,6 +125,20 @@ class SmsDeliveryReportLogicImplementation
 
 			.setNewMessageStatus (
 				newMessageStatus)
+
+			.setTheirCode (
+				textHelper.findOrCreateMapNull (
+					optionalOrNull (
+						theirCode)))
+
+			.setTheirDescription (
+				textHelper.findOrCreateMapNull (
+					optionalOrNull (
+						theirDescription)))
+
+			.setTheirTimestamp (
+				optionalOrNull (
+					theirTimestamp))
 
 		);
 
@@ -305,10 +323,10 @@ class SmsDeliveryReportLogicImplementation
 	void deliveryReport (
 			@NonNull Long messageId,
 			@NonNull MessageStatus newMessageStatus,
-			@NonNull Optional<String> theirCode,
-			@NonNull Optional<String> theirDescription,
-			@NonNull Optional<String> extraInformation,
-			@NonNull Optional<ReadableInstant> theirTimestamp)
+			@NonNull Optional <String> theirCode,
+			@NonNull Optional <String> theirDescription,
+			@NonNull Optional <String> extraInformation,
+			@NonNull Optional <ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {

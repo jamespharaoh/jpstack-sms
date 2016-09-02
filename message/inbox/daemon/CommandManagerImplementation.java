@@ -10,10 +10,9 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import lombok.NonNull;
-
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.application.context.ApplicationContext;
 import wbs.framework.database.Database;
@@ -46,12 +45,12 @@ class CommandManagerImplementation
 	// collection dependencies
 
 	@Inject
-	Map<String,Provider<CommandHandler>> commandTypeHandlersByBeanName =
+	Map <String, Provider <CommandHandler>> commandTypeHandlersByBeanName =
 		Collections.emptyMap ();
 
 	// state
 
-	Map<String,String> commandTypeHandlerBeanNamesByCommandType;
+	Map <String, String> commandTypeHandlerBeanNamesByCommandType;
 
 	// life cycle
 
@@ -61,10 +60,10 @@ class CommandManagerImplementation
 		throws Exception {
 
 		commandTypeHandlerBeanNamesByCommandType =
-			new HashMap<String,String> ();
+			new HashMap <String, String> ();
 
 		for (
-			Map.Entry<String,Provider<CommandHandler>> entry
+			Map.Entry <String, Provider <CommandHandler>> entry
 				: commandTypeHandlersByBeanName.entrySet ()
 		) {
 

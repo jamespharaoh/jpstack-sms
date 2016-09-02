@@ -92,8 +92,8 @@ class MessageReportsPart
 				printFormat (
 					"<td>%h</td>\n",
 					userConsoleLogic.prettyDuration (
-						messageReport.getReceivedTime (),
-						message.getProcessedTime ()));
+						message.getProcessedTime (),
+						messageReport.getReceivedTime ()));
 
 				printFormat (
 					"%s\n",
@@ -104,13 +104,13 @@ class MessageReportsPart
 					"<td>%h</td>\n",
 					ifNull (
 						messageReport.getTheirCode (),
-						"���"));
+						"—"));
 
 				printFormat (
 					"<td>%h</td>\n",
 					ifNull (
 						messageReport.getTheirDescription (),
-						"���"));
+						"—"));
 
 				printFormat (
 					"</tr>\n");
