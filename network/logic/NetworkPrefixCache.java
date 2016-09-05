@@ -1,6 +1,7 @@
 package wbs.sms.network.logic;
 
 import static wbs.framework.utils.etc.Misc.isNotNull;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 import static wbs.framework.utils.etc.TimeUtils.laterThan;
 import static wbs.framework.utils.etc.TimeUtils.millisToInstant;
 
@@ -10,11 +11,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.joda.time.Instant;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
@@ -101,7 +103,7 @@ class NetworkPrefixCache {
 	NetworkRec lookupNetwork (
 			String number) {
 
-		Map<String,Long> entries =
+		Map <String, Long> entries =
 			getEntries ();
 
 		for (
@@ -130,7 +132,11 @@ class NetworkPrefixCache {
 			) {
 
 				log.debug (
-					"Found " + prefixToTry + ", networkId = " + networkId + " for " + number);
+					stringFormat (
+						"Found %s, networkId = %s for %s",
+						prefixToTry,
+						networkId,
+						number));
 
 				return networkHelper.findRequired (
 					networkId);

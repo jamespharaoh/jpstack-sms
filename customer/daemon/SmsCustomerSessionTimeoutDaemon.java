@@ -66,7 +66,7 @@ class SmsCustomerSessionTimeoutDaemon
 	Duration getSleepDuration () {
 
 		return sleepDuration;
-	
+
 	}
 
 	@Override

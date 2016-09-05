@@ -278,7 +278,7 @@ class ObjectSmsMessagesPageBuilder<
 							Collectors.toList ())
 
 					);
-						
+
 				}
 
 				if (! batches.isEmpty ()) {

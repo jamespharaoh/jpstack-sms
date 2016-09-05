@@ -1,8 +1,8 @@
 package wbs.sms.messageset.console;
 
+import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
 import static wbs.framework.utils.etc.StringUtils.capitalise;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
 
 import java.util.Collections;
 
@@ -151,7 +151,8 @@ class ObjectSmsMessageSetPageBuilder<
 	}
 
 	void buildTab (
-			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint
+				resolvedExtensionPoint) {
 
 		consoleModule.addContextTab (
 			"end",
@@ -165,10 +166,11 @@ class ObjectSmsMessageSetPageBuilder<
 	}
 
 	void buildFile (
-			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint
+				resolvedExtensionPoint) {
 
-		Provider<PagePart> partFactory =
-			new Provider<PagePart> () {
+		Provider <PagePart> partFactory =
+			new Provider <PagePart> () {
 
 			@Override
 			public
@@ -183,7 +185,7 @@ class ObjectSmsMessageSetPageBuilder<
 
 		};
 
-		final Provider<Responder> responder =
+		final Provider <Responder> responder =
 			tabContextResponderProvider.get ()
 				.tab (tabName)
 				.title (tabLabel)

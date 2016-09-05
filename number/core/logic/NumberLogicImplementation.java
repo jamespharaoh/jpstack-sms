@@ -1,6 +1,8 @@
 package wbs.sms.number.core.logic;
 
 import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.framework.utils.etc.OptionalUtils.optionalOrElse;
+import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import javax.inject.Inject;
 
@@ -9,7 +11,6 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrElse;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.network.model.NetworkObjectHelper;
@@ -174,7 +175,11 @@ class NumberLogicImplementation
 
 		database.flush ();
 
-		log.warn ("Archived number " + currentNumber + " as " + oldNumber.getNumber ());
+		log.warn (
+			stringFormat (
+				"Archived number %s as %s",
+				currentNumber,
+				oldNumber.getNumber ()));
 
 		return newNumber;
 

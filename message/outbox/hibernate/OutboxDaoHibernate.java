@@ -47,7 +47,7 @@ class OutboxDaoHibernate
 	}
 
 	@Override
-	public 
+	public
 	Long countOlderThan (
 			@NonNull Instant instant) {
 

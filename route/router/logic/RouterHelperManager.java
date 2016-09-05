@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import lombok.extern.log4j.Log4j;
-
 import com.google.common.collect.ImmutableMap;
+
+import lombok.extern.log4j.Log4j;
 
 import wbs.framework.application.annotations.SingletonComponent;
 
@@ -36,14 +36,17 @@ class RouterHelperManager {
 
 		int errorCount = 0;
 
-		Map<String,String> beanNamesByTypeCode =
-			new HashMap<String,String> ();
+		Map <String, String> beanNamesByTypeCode =
+			new HashMap<> ();
 
-		ImmutableMap.Builder<String,RouterHelper> byParentObjectTypeCodeBuilder =
-			ImmutableMap.<String,RouterHelper>builder ();
+		ImmutableMap.Builder <String, RouterHelper>
+		byParentObjectTypeCodeBuilder =
+			ImmutableMap.builder ();
 
-		for (Map.Entry<String,RouterHelper> routerHelperEntry
-				: routerHelpersByBeanName.entrySet ()) {
+		for (
+			Map.Entry <String, RouterHelper> routerHelperEntry
+				: routerHelpersByBeanName.entrySet ()
+		) {
 
 			String beanName =
 				routerHelperEntry.getKey ();

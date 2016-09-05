@@ -138,7 +138,7 @@ class SmsMessageLogicImplementation
 	}
 
 	@Override
-	public 
+	public
 	String mangleMessageId (
 			@NonNull Long messageId) {
 
@@ -216,7 +216,7 @@ class SmsMessageLogicImplementation
 	}
 
 	@Override
-	public 
+	public
 	Optional<MessageRec> findMessageByMangledId (
 			@NonNull String mangledMessageId) {
 
