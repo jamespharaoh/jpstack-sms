@@ -1,6 +1,5 @@
 package wbs.sms.magicnumber.console;
 
-import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualSafe;
 import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualWithClass;
 import static wbs.framework.utils.etc.Misc.isNotNull;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
@@ -12,6 +11,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.application.annotations.PrototypeComponent;
