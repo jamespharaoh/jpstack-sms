@@ -11,13 +11,13 @@ import wbs.sms.message.outbox.logic.SmsOutboxLogic.FailureType;
 import wbs.sms.message.outbox.model.OutboxRec;
 
 public
-interface SmsSenderHelper<StateType> {
+interface SmsSenderHelper <StateType> {
 
 	// methods
 
 	String senderCode ();
 
-	SetupRequestResult<StateType> setupRequest (
+	SetupRequestResult <StateType> setupRequest (
 			OutboxRec outbox);
 
 	PerformSendResult performSend (
@@ -31,7 +31,7 @@ interface SmsSenderHelper<StateType> {
 	@Accessors (fluent = true)
 	@Data
 	public static
-	class SetupRequestResult<StateType> {
+	class SetupRequestResult <StateType> {
 
 		SetupRequestStatus status;
 		String statusMessage;

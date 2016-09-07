@@ -14,15 +14,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.joda.time.Duration;
-import org.joda.time.Instant;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
 import wbs.framework.application.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -522,6 +523,9 @@ class SmsOutboxLogicImplementation
 
 				.setNetworkTime (
 					null)
+
+				.setUser (
+					message.getUser ())
 
 			));
 

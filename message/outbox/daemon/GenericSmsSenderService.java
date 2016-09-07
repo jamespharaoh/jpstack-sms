@@ -1,6 +1,7 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.framework.utils.etc.CollectionUtils.collectionIsEmpty;
+import static wbs.framework.utils.etc.IterableUtils.iterableMapToList;
 import static wbs.framework.utils.etc.NumberUtils.equalToZero;
 import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
@@ -21,6 +22,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -278,38 +280,39 @@ class GenericSmsSenderService
 				smsRouteHelper.findRequired (
 					smsRouteId);
 
-			List<OutboxRec> outboxes =
+			List <OutboxRec> smsOutboxes =
 				smsOutboxHelper.findNextLimit (
 					transaction.now (),
 					route,
 					numToGet);
 
+			// return if empty
+
 			if (
 				collectionIsEmpty (
-					outboxes)
+					smsOutboxes)
 			) {
 				return 0l;
 			}
 
 			// mark them as sending
 
-			List<Long> messageIds =
-				new ArrayList<Long> ();
-
-			for (
-				OutboxRec smsOutbox
-					: outboxes
-			) {
+			smsOutboxes.forEach (
+				smsOutbox -> {
 
 				smsOutbox
 
 					.setSending (
 						transaction.now ());
 
-				messageIds.add (
-					smsOutbox.getId ());
+			});
 
-			}
+			// store their ids
+
+			List <Long> messageIds =
+				iterableMapToList (
+					OutboxRec::getId,
+					smsOutboxes);
 
 			// commit and add them to the queue
 
