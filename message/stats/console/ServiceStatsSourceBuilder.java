@@ -11,7 +11,7 @@ import javax.inject.Provider;
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.platform.service.model.ServiceRec;

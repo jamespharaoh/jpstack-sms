@@ -8,7 +8,7 @@ import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerObjectHelper;
 import wbs.sms.tracker.model.SmsSimpleTrackerRec;

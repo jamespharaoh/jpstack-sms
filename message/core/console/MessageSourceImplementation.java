@@ -13,7 +13,7 @@ import org.joda.time.Interval;
 
 import com.google.common.collect.ImmutableSet;
 
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.utils.TextualInterval;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;

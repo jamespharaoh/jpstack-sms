@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.number.core.model.NumberRec;
 
 @SingletonComponent ("numberLinkManager")

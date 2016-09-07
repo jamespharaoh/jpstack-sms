@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.sms.command.model.CommandRec;

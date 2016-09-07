@@ -23,7 +23,7 @@ import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.utils.TimeFormatter;
 import wbs.framework.web.UrlParams;
 

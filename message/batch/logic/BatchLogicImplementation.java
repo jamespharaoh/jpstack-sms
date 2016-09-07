@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
 

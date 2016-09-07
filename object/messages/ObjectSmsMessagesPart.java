@@ -21,7 +21,7 @@ import wbs.console.html.ObsoleteDateLinks;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;

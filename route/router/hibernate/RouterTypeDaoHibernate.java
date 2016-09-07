@@ -3,7 +3,8 @@ package wbs.sms.route.router.hibernate;
 import java.util.List;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.route.router.model.RouterTypeDao;
 import wbs.sms.route.router.model.RouterTypeRec;

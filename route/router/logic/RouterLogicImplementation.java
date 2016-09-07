@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import lombok.NonNull;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.model.RouterRec;
 import wbs.sms.route.router.model.RouterTypeRec;

@@ -16,7 +16,8 @@ import org.joda.time.Instant;
 
 import lombok.Getter;
 import lombok.Setter;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.console.MessageConsoleLogic;

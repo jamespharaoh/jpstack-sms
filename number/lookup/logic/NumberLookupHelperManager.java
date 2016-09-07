@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 
 @SingletonComponent ("numberLookupHelperManager")
 public

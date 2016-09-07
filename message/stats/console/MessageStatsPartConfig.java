@@ -4,8 +4,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import wbs.console.part.PagePart;
-import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 
 @SingletonComponent ("messageStatsPartConfig")
 public

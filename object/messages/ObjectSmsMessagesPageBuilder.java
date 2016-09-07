@@ -13,6 +13,7 @@ import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.NonNull;
+
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
 import wbs.console.context.ResolvedConsoleContextExtensionPoint;
@@ -25,12 +26,12 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleFile;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.TabContextResponder;
-import wbs.framework.application.annotations.PrototypeComponent;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -130,7 +131,8 @@ class ObjectSmsMessagesPageBuilder<
 	}
 
 	void buildContextTab (
-			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint
+				resolvedExtensionPoint) {
 
 		consoleModule.addContextTab (
 			"end",
@@ -326,7 +328,8 @@ class ObjectSmsMessagesPageBuilder<
 	}
 
 	void buildContextFile (
-			@NonNull ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint
+				resolvedExtensionPoint) {
 
 		consoleModule.addContextFile (
 			fileName,

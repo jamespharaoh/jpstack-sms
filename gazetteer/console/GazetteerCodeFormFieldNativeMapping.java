@@ -12,7 +12,8 @@ import com.google.common.base.Optional;
 
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
+
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;

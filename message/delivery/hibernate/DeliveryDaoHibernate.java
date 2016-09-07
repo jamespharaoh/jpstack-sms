@@ -7,7 +7,8 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.delivery.model.DeliveryDao;
 import wbs.sms.message.delivery.model.DeliveryRec;

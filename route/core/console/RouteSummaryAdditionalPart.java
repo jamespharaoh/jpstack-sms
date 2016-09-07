@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.console.part.PagePart;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")

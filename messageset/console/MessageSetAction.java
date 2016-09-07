@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j;
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;

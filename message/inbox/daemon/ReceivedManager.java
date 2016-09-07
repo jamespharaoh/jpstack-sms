@@ -1,6 +1,8 @@
 package wbs.sms.message.inbox.daemon;
 
 import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
+import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
+import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
 import java.util.List;
@@ -14,7 +16,8 @@ import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
@@ -187,7 +190,19 @@ class ReceivedManager
 			@Cleanup
 			Transaction transaction =
 				database.beginReadWrite (
-					"ReceivedManager.ReceivedThread.doError (messageId, exception)",
+					stringFormat (
+						"%s (%s)",
+						joinWithFullStop (
+							"ReceivedManager",
+							"ReceivedThread",
+							"doError"),
+						joinWithCommaAndSpace (
+							stringFormat (
+								"messageId = %s",
+								messageId),
+							stringFormat (
+								"exception = %s",
+								exception.getClass ().getSimpleName ()))),
 					this);
 
 			InboxRec inbox =

@@ -13,8 +13,9 @@ import javax.inject.Provider;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
-import wbs.framework.application.context.ApplicationContext;
+
+import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.manager.ComponentManager;
 import wbs.framework.database.Database;
 import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.sms.command.model.CommandObjectHelper;
@@ -31,7 +32,7 @@ class CommandManagerImplementation
 	// dependencies
 
 	@Inject
-	ApplicationContext applicationContext;
+	ComponentManager applicationContext;
 
 	@Inject
 	CommandObjectHelper commandHelper;

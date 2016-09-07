@@ -11,7 +11,7 @@ import javax.inject.Provider;
 import wbs.console.part.PagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.entity.record.GlobalId;
 import wbs.platform.status.console.StatusLine;
 

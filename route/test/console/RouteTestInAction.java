@@ -11,7 +11,7 @@ import com.google.common.base.Optional;
 import lombok.Cleanup;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;

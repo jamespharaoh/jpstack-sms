@@ -13,7 +13,7 @@ import com.google.common.base.Optional;
 import fj.data.Either;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.sms.message.core.model.MessageRec;
 
 @PrototypeComponent ("messageContentHtmlFormFieldInterfaceMapping")

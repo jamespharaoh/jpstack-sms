@@ -13,7 +13,7 @@ import lombok.NonNull;
 import org.apache.commons.io.output.StringBuilderWriter;
 
 import wbs.console.request.ConsoleRequestContext;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.utils.formatwriter.FormatWriter;
 import wbs.framework.utils.formatwriter.WriterFormatWriter;
 import wbs.platform.media.console.MediaConsoleLogic;

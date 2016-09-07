@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;

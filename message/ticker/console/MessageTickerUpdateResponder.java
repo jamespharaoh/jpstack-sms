@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;

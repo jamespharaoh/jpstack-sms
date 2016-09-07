@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import org.joda.time.LocalDate;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;

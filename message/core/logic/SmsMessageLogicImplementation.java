@@ -18,7 +18,8 @@ import javax.inject.Inject;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
 import wbs.sms.message.core.model.MessageObjectHelper;

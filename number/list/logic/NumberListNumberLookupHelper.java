@@ -2,7 +2,7 @@ package wbs.sms.number.list.logic;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListRec;

@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableMap;
 
 import lombok.extern.log4j.Log4j;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 
 @Log4j
 @SingletonComponent ("routerHelperManager")

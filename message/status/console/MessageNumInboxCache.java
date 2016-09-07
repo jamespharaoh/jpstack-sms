@@ -2,8 +2,8 @@ package wbs.sms.message.status.console;
 
 import org.joda.time.Duration;
 
-import wbs.framework.application.annotations.SingletonComponent;
-import wbs.framework.application.annotations.SingletonDependency;
+import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.misc.CachedGetter;

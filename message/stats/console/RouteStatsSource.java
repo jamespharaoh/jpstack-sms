@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.entity.record.Record;
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
 import wbs.sms.route.core.model.RouteRec;

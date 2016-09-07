@@ -22,7 +22,8 @@ import fj.data.Either;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.console.helper.ConsoleObjectManager;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
+
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;

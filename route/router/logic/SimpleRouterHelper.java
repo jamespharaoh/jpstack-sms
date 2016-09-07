@@ -2,7 +2,7 @@ package wbs.sms.route.router.logic;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.model.RouterRec;

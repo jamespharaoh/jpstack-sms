@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.joda.time.LocalDate;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.utils.etc.Html;
 import wbs.sms.message.stats.model.MessageStatsData;
 

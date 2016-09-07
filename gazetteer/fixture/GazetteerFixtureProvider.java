@@ -4,7 +4,7 @@ import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.entity.record.GlobalId;

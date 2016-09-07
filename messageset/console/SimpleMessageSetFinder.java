@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.request.ConsoleRequestContext;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.messageset.model.MessageSetRec;

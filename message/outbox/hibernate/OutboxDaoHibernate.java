@@ -13,7 +13,8 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.sms.message.core.model.MessageRec;

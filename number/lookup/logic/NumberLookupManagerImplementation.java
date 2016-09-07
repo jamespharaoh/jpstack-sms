@@ -2,7 +2,7 @@ package wbs.sms.number.lookup.logic;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.model.NumberLookupRec;
 

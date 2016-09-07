@@ -16,7 +16,8 @@ import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;

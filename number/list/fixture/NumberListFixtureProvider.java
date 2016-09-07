@@ -2,7 +2,7 @@ package wbs.sms.number.list.fixture;
 
 import javax.inject.Inject;
 
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.platform.menu.model.MenuGroupObjectHelper;

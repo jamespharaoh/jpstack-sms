@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.NonNull;
 import wbs.console.helper.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
-import wbs.framework.application.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;

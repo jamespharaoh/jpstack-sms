@@ -8,13 +8,13 @@ import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
 
-import wbs.framework.application.annotations.PrototypeComponent;
-import wbs.framework.application.scaffold.PluginManager;
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.scaffold.PluginManager;
 import wbs.framework.entity.build.ModelBuilder;
 import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;

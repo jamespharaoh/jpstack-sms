@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
-import wbs.framework.application.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.entity.record.Record;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageObjectHelper;

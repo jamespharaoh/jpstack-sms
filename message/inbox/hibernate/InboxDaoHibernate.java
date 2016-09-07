@@ -10,7 +10,8 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
 import lombok.NonNull;
-import wbs.framework.application.annotations.SingletonComponent;
+
+import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.sms.message.inbox.model.InboxDao;
 import wbs.sms.message.inbox.model.InboxRec;
