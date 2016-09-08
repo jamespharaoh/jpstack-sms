@@ -2,12 +2,10 @@ package wbs.sms.message.inbox.daemon;
 
 import static wbs.framework.utils.etc.StringUtils.stringFormat;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
@@ -15,6 +13,7 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.manager.ComponentManager;
 import wbs.framework.database.Database;
 import wbs.platform.exception.logic.ExceptionLogLogic;
@@ -29,25 +28,22 @@ public
 class CommandManagerImplementation
 	implements CommandManager {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
-	ComponentManager applicationContext;
+	@SingletonDependency
+	ComponentManager componentManager;
 
-	@Inject
+	@SingletonDependency
 	CommandObjectHelper commandHelper;
 
-	@Inject
+	@SingletonDependency
+	Map <String, Provider <CommandHandler>> commandTypeHandlersByBeanName;
+
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogLogic exceptionLogic;
-
-	// collection dependencies
-
-	@Inject
-	Map <String, Provider <CommandHandler>> commandTypeHandlersByBeanName =
-		Collections.emptyMap ();
 
 	// state
 
@@ -135,7 +131,7 @@ class CommandManagerImplementation
 			commandTypeHandlerBeanNamesByCommandType.get (key);
 
 		return (CommandHandler)
-			applicationContext.getComponentRequired (
+			componentManager.getComponentRequired (
 				beanName,
 				CommandHandler.class);
 
