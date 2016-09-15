@@ -1,29 +1,27 @@
 package wbs.sms.message.wap.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-
-import javax.inject.Inject;
-
-import lombok.NonNull;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import com.google.common.base.Optional;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
+import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.core.console.MessageConsolePlugin;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.wap.model.WapPushMessageObjectHelper;
 import wbs.sms.message.wap.model.WapPushMessageRec;
+import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("wapPushConsolePlugin")
 public
 class WapPushConsolePlugin
 	implements MessageConsolePlugin {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	WapPushMessageObjectHelper wapPushMessageHelper;
 
 	// details
@@ -38,10 +36,11 @@ class WapPushConsolePlugin
 
 	@Override
 	public
-	String messageSummaryText (
+	void writeMessageSummaryText (
+			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
-		Optional<WapPushMessageRec> wapPushMessageOptional =
+		Optional <WapPushMessageRec> wapPushMessageOptional =
 			wapPushMessageHelper.find (
 				message.getId ());
 
@@ -49,13 +48,13 @@ class WapPushConsolePlugin
 			optionalIsNotPresent (
 				wapPushMessageOptional)
 		) {
-			return "";
+			return;
 		}
 
 		WapPushMessageRec wapPushMessage =
 			wapPushMessageOptional.get ();
 
-		return stringFormat (
+		formatWriter.writeFormat (
 			"%s (%s)",
 			wapPushMessage.getTextText ().getText (),
 			wapPushMessage.getUrlText ().getText ());
@@ -64,14 +63,15 @@ class WapPushConsolePlugin
 
 	@Override
 	public
-	String messageSummaryHtml (
+	void writeMessageSummaryHtml (
+			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
 		WapPushMessageRec wapPushMessage =
 			wapPushMessageHelper.findRequired (
 				message.getId ());
 
-		return stringFormat (
+		formatWriter.writeFormat (
 			"%h (%h)",
 			wapPushMessage.getTextText ().getText (),
 			wapPushMessage.getUrlText ().getText ());

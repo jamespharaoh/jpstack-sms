@@ -1,11 +1,14 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.camelToSpaces;
+import static wbs.utils.string.StringUtils.capitalise;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
@@ -36,14 +39,10 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.BeanLogic;
-
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
-import static wbs.framework.utils.etc.StringUtils.capitalise;
-
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
+import wbs.utils.etc.PropertyUtils;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("gazetteerFormFieldBuilder")
@@ -51,50 +50,50 @@ import wbs.sms.gazetteer.model.GazetteerEntryRec;
 public
 class GazetteerFormFieldBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	FormFieldPluginManagerImplementation formFieldPluginManager;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<ChainedFormFieldNativeMapping>
+	@PrototypeDependency
+	Provider <ChainedFormFieldNativeMapping>
 	chainedFormFieldNativeMappingProvider;
 
-	@Inject
-	Provider<DereferenceFormFieldAccessor> dereferenceFormFieldAccessorProvider;
+	@PrototypeDependency
+	Provider <DereferenceFormFieldAccessor> dereferenceFormFieldAccessorProvider;
 
-	@Inject
-	Provider<DynamicFormFieldAccessor> dynamicFormFieldAccessorProvider;
+	@PrototypeDependency
+	Provider <DynamicFormFieldAccessor> dynamicFormFieldAccessorProvider;
 
-	@Inject
-	Provider<GazetteerCodeFormFieldNativeMapping>
+	@PrototypeDependency
+	Provider <GazetteerCodeFormFieldNativeMapping>
 	gazetteerCodeFormFieldNativeMappingProvider;
 
-	@Inject
-	Provider<GazetteerFormFieldInterfaceMapping>
+	@PrototypeDependency
+	Provider <GazetteerFormFieldInterfaceMapping>
 	gazetteerFormFieldInterfaceMappingProvider;
 
-	@Inject
-	Provider<NullFormFieldConstraintValidator>
+	@PrototypeDependency
+	Provider <NullFormFieldConstraintValidator>
 	nullFormFieldValueConstraintValidatorProvider;
 
-	@Inject
-	Provider<ReadOnlyFormField> readOnlyFormFieldProvider;
+	@PrototypeDependency
+	Provider <ReadOnlyFormField> readOnlyFormFieldProvider;
 
-	@Inject
-	Provider<RequiredFormFieldValueValidator>
+	@PrototypeDependency
+	Provider <RequiredFormFieldValueValidator>
 	requiredFormFieldValueValidatorProvider;
 
-	@Inject
-	Provider<SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
+	@PrototypeDependency
+	Provider <SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
 
-	@Inject
-	Provider<TextFormFieldRenderer> textFormFieldRendererProvider;
+	@PrototypeDependency
+	Provider <TextFormFieldRenderer> textFormFieldRendererProvider;
 
-	@Inject
-	Provider<UpdatableFormField> updatableFormFieldProvider;
+	@PrototypeDependency
+	Provider <UpdatableFormField> updatableFormFieldProvider;
 
 	// builder
 
@@ -151,7 +150,7 @@ class GazetteerFormFieldBuilder {
 		if (! dynamic) {
 
 			propertyClass =
-				BeanLogic.propertyClassForClass (
+				PropertyUtils.propertyClassForClass (
 					context.containerClass (),
 					nativeFieldName);
 

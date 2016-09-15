@@ -1,15 +1,14 @@
 package wbs.sms.route.test.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import java.util.Collection;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -23,19 +22,19 @@ public
 class RouteTestTwoWayPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
 	// state
 
 	RouteRec route;
 
-	Collection<MessageRec> messages;
+	Collection <MessageRec> messages;
 
 	// implementation
 

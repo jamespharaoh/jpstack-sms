@@ -1,12 +1,12 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionIsEmpty;
-import static wbs.framework.utils.etc.IterableUtils.iterableMapToList;
-import static wbs.framework.utils.etc.NumberUtils.equalToZero;
-import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
-import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.underscoreToHyphen;
+import static wbs.utils.collection.CollectionUtils.collectionIsEmpty;
+import static wbs.utils.collection.IterableUtils.iterableMapToList;
+import static wbs.utils.etc.NumberUtils.equalToZero;
+import static wbs.utils.etc.NumberUtils.integerEqualSafe;
+import static wbs.utils.string.StringUtils.joinWithFullStop;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.underscoreToHyphen;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,7 +15,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.LongStream;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
@@ -24,6 +23,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -42,29 +43,29 @@ public
 class GenericSmsSenderService
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxMonitor outboxMonitor;
 
-	@Inject
+	@SingletonDependency
 	SenderObjectHelper senderHelper;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper smsOutboxHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxLogic smsOutboxLogic;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper smsRouteHelper;
 
 	// prototype dependencies
 
-	@Inject
+	@PrototypeDependency
 	Provider <GenericSmsSender> genericSmsSenderProvider;
 
 	// properties

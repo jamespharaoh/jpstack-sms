@@ -1,14 +1,13 @@
 package wbs.sms.number.core.logic;
 
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrElse;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-
-import javax.inject.Inject;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.OptionalUtils.optionalOrElse;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import lombok.extern.log4j.Log4j;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.sms.message.core.model.MessageRec;
@@ -25,18 +24,18 @@ public
 class NumberLogicImplementation
 	implements NumberLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	NetworkObjectHelper networkHelper;
 
-	@Inject
+	@SingletonDependency
 	ChatUserNumberReportObjectHelper chatUserNumberReportHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
 	// implementation

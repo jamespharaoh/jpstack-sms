@@ -1,14 +1,13 @@
 package wbs.sms.message.batch.logic;
 
-import javax.inject.Inject;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import com.google.common.base.Optional;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
-
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.message.batch.model.BatchSubjectObjectHelper;
@@ -21,18 +20,18 @@ public
 class BatchLogicImplementation
 	implements BatchLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	BatchSubjectObjectHelper batchSubjectHelper;
 
-	@Inject
+	@SingletonDependency
 	BatchTypeObjectHelper batchTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
 
 	// implementation

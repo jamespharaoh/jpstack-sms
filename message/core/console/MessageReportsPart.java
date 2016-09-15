@@ -1,14 +1,20 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.LogicUtils.ifNotNullThenElseEmDash;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
-
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -19,21 +25,21 @@ public
 class MessageReportsPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
 
 	MessageRec message;
-	Set<MessageReportRec> messageReports;
+	Set <MessageReportRec> messageReports;
 
 	// implementation
 
@@ -56,23 +62,24 @@ class MessageReportsPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th colspan=\"2\">Time</th>\n",
-			"<th>Status</th>\n",
-			"<th>Their code</th>\n",
-			"<th>Their description</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"Time",
+			null,
+			"Status",
+			"Their code",
+			"Their description");
 
 		if (messageReports.isEmpty ()) {
 
-			printFormat (
-				"<tr>\n",
-				"<td colspan=\"4\">No reports</td>\n",
-				"</tr>\n");
+			htmlTableRowOpen ();
+
+			htmlTableCellWrite (
+				"No reports",
+				htmlColumnSpanAttribute (4l));
+
+			htmlTableRowClose ();
 
 		} else {
 
@@ -81,46 +88,38 @@ class MessageReportsPart
 					: messageReports
 			) {
 
-				printFormat (
-					"<tr>\n");
+				htmlTableRowOpen ();
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					userConsoleLogic.timestampWithTimezoneString (
 						messageReport.getReceivedTime ()));
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					userConsoleLogic.prettyDuration (
 						message.getProcessedTime (),
 						messageReport.getReceivedTime ()));
 
-				printFormat (
-					"%s\n",
-					messageConsoleLogic.tdForMessageStatus (
-						messageReport.getNewMessageStatus ()));
+				messageConsoleLogic.writeTdForMessageStatus (
+					formatWriter,
+					messageReport.getNewMessageStatus ());
 
-				printFormat (
-					"<td>%h</td>\n",
-					ifNull (
+				htmlTableCellWrite (
+					ifNotNullThenElseEmDash (
 						messageReport.getTheirCode (),
-						"—"));
+						() -> messageReport.getTheirCode ().getText ()));
 
-				printFormat (
-					"<td>%h</td>\n",
-					ifNull (
+				htmlTableCellWrite (
+					ifNotNullThenElseEmDash (
 						messageReport.getTheirDescription (),
-						"—"));
+						() -> messageReport.getTheirDescription ().getText ()));
 
-				printFormat (
-					"</tr>\n");
+				htmlTableRowClose ();
 
 			}
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

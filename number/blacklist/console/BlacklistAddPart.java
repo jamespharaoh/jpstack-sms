@@ -1,5 +1,14 @@
 package wbs.sms.number.blacklist.console;
 
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlUtils.htmlFormClose;
+import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
+import static wbs.utils.web.HtmlUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlUtils.htmlParagraphOpen;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 
@@ -18,50 +27,46 @@ class BlacklistAddPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<form",
-			" method=\"post\"",
-			" action=\"%h\"",
+		htmlFormOpenMethodAction (
+			"post",
 			requestContext.resolveLocalUrl (
-				"/blacklist.add"),
-			">\n");
+				"/blacklist.add"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Number</th>\n",
+		htmlTableDetailsRowWriteHtml (
+			"Number",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"number\"",
+				">"));
 
-			"<td><input",
-			" type=\"text\"",
-			" name=\"number\"",
-			"></td>\n",
+		htmlTableDetailsRowWriteHtml (
+			"Reason",
+			stringFormat (
+				"<textarea",
+				" name=\"reason\"",
+				" rows=\"4\"",
+				" cols=\"48\"",
+				"></textarea>"));
 
-			"</tr>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Reason</th>\n",
+		htmlParagraphOpen ();
 
-			"<td><textarea",
-			" name=\"reason\"",
-			" rows=\"4\"",
-			" cols=\"48\"",
-			"></textarea></td>");
-
-		printFormat (
-			"</table>\n");
-
-		printFormat (
-			"<p><input",
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"submit\"",
 			" name=\"Blacklist\"",
 			" value=\"Blacklist\"",
-			"></p>");
+			">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphClose ();
+
+		htmlFormClose ();
+
+		htmlTableClose ();
 
 	}
 

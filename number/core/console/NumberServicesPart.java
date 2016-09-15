@@ -1,15 +1,17 @@
 package wbs.sms.number.core.console;
 
+import static wbs.utils.collection.IterableUtils.iterableFilter;
+import static wbs.utils.collection.MapUtils.mapIsEmpty;
+import static wbs.utils.collection.MapUtils.mapWithDerivedKey;
+
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-
-import javax.inject.Inject;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -21,20 +23,23 @@ public
 class NumberServicesPart
 	extends AbstractPagePart {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
-	Map<String,ServiceRec> services =
-		new TreeMap<String,ServiceRec> ();
+	// properties
+
+	Map <String, ServiceRec> services;
 
 	@Override
 	public
@@ -45,24 +50,16 @@ class NumberServicesPart
 				requestContext.stuffInteger (
 					"numberId"));
 
-		List<ServiceRec> allServices =
+		List <ServiceRec> allServices =
 			messageHelper.projectServices (
 				number);
 
-		for (
-			ServiceRec service
-				: allServices
-		) {
-
-			if (! objectManager.canView (service))
-				continue;
-
-			services.put (
-				objectManager.objectPathMini (
-					service),
-				service);
-
-		}
+		services =
+			mapWithDerivedKey (
+				iterableFilter (
+					objectManager::canView,
+					allServices),
+				objectManager::objectPathMini);
 
 	}
 
@@ -70,51 +67,99 @@ class NumberServicesPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
+		// open table
+
+		formatWriter.writeLineFormat (
 			"<table class=\"list\">\n");
 
-		printFormat (
-			"<tr>\n",
-			"<th>Subject</th>\n",
-			"<th>Service</th>\n",
-			"</tr>\n");
+		formatWriter.increaseIndent ();
 
-		if (services.size () == 0) {
+		// write header
 
-			printFormat (
-				"<tr>\n",
-				"<td colspan=\"2\">Nothing to show</td>\n",
-				"</tr>\n");
+		formatWriter.writeLineFormat (
+			"<tr>");
+
+		formatWriter.increaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"<th>Subject</th>");
+
+		formatWriter.writeLineFormat (
+			"<th>Service</th>");
+
+		formatWriter.decreaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"</tr>");
+
+		// write empty contents
+
+		if (
+			mapIsEmpty (
+				services)
+		) {
+
+			formatWriter.writeLineFormat (
+				"<tr>");
+
+			formatWriter.increaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"<td colspan=\"2\">Nothing to show</td>");
+
+			formatWriter.decreaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"</tr>");
 
 		}
+
+		// write table contents
 
 		for (
 			ServiceRec service
 				: services.values ()
 		) {
 
-			Record<?> parent =
+			Record <?> parent =
 				objectManager.getParent (
 					service);
 
-			printFormat (
-				"<tr>\n",
+			// open table row
 
-				"%s\n",
-				objectManager.tdForObjectLink (
-					parent),
+			formatWriter.writeLineFormat (
+				"<tr>");
 
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					service,
-					parent),
+			formatWriter.increaseIndent ();
 
-				"</tr>\n");
+			// write parent table cell
+
+			objectManager.writeTdForObjectLink (
+				formatWriter,
+				parent);
+
+			// write service table cell
+
+			objectManager.writeTdForObjectMiniLink (
+				formatWriter,
+				service,
+				parent);
+
+			// close table row
+
+			formatWriter.decreaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"</tr>");
 
 		}
 
-		printFormat (
-			"</table>\n");
+		// close table
+
+		formatWriter.decreaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"</table>");
 
 	}
 

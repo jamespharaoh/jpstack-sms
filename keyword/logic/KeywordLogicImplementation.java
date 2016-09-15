@@ -2,9 +2,8 @@ package wbs.sms.keyword.logic;
 
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.sms.command.model.CommandRec;
@@ -18,12 +17,12 @@ public
 class KeywordLogicImplementation
 	implements KeywordLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	KeywordSetFallbackObjectHelper keywordSetFallbackHelper;
 
 	// implementation

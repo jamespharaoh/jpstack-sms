@@ -1,23 +1,30 @@
 package wbs.sms.number.core.console;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import wbs.console.part.PagePart;
 import wbs.console.request.Cryptor;
 import wbs.console.request.CryptorFactory;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 
-@SingletonComponent ("numberConsoleConfig")
+@SingletonComponent ("numberConsoleComponents")
 public
-class NumberConsoleConfig {
+class NumberConsoleComponents {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	CryptorFactory cryptorFactory;
 
-	@Inject
-	Provider<NumberSubscriptionsPart> numberSubscriptionsPart;
+	// prototype dependencies
+
+	@PrototypeDependency
+	Provider <NumberSubscriptionsPart> numberSubscriptionsPartProvider;
+
+	// components
 
 	@SingletonComponent ("numberCryptor")
 	public
@@ -32,7 +39,7 @@ class NumberConsoleConfig {
 	public
 	PagePart numberSubscriptionsActivePart () {
 
-		return numberSubscriptionsPart.get ()
+		return numberSubscriptionsPartProvider.get ()
 
 			.activeOnly (
 				true);

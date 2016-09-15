@@ -6,23 +6,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
+import wbs.utils.web.HtmlUtils;
 
 @SingletonComponent ("smsStatsMonthlyTimeScheme")
 public
 class SmsStatsMonthlyTimeScheme
 	implements SmsStatsTimeScheme {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageStatsLogic messageStatsLogic;
 
 	// constants
@@ -138,7 +137,7 @@ class SmsStatsMonthlyTimeScheme
 				+ (calendar.getTime ().equals (thisMonth)
 					? "<th class=\"hilite\">"
 					: "<th>")
-				+ Html.encode (
+				+ HtmlUtils.htmlEncode (
 					monthNameShortFormat.format (
 						calendar.getTime ()))
 				+ "</th>");

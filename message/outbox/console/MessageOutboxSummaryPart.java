@@ -1,11 +1,9 @@
 package wbs.sms.message.outbox.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -14,27 +12,28 @@ import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.utils.TimeFormatter;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.utils.time.TimeFormatter;
 
 @PrototypeComponent ("messageOutboxSummaryPart")
 public
 class MessageOutboxSummaryPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	RouteOutboxSummaryObjectHelper routeOutboxSummaryHelper;
 
-	@Inject
+	@SingletonDependency
 	TimeFormatter timeFormatter;
 
 	// state

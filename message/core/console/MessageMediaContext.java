@@ -1,21 +1,21 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.context.ConsoleContext;
 import wbs.console.context.ConsoleContextStuff;
 import wbs.console.module.ConsoleManager;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.WebFile;
@@ -29,14 +29,18 @@ public
 class MessageMediaContext
 	extends ConsoleContext {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	ConsoleManager consoleManager;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
+
+	// properties
 
 	@Getter @Setter
 	String name;

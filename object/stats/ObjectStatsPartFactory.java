@@ -1,12 +1,10 @@
 package wbs.sms.object.stats;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
@@ -19,6 +17,8 @@ import wbs.console.lookup.ObjectLookup;
 import wbs.console.part.PagePart;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -31,32 +31,29 @@ import wbs.sms.message.stats.console.SmsStatsSourceImplementation;
 @PrototypeComponent ("objectStatsPartFactory")
 public
 class ObjectStatsPartFactory
-	implements Provider<PagePart> {
+	implements Provider <PagePart> {
 
-	// dependencies
+	// singelton dependencies
 
-	@Inject
-	ConsoleObjectManager objectManager;
-
-	@Inject
-	ConsoleRequestContext requestContext;
-
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	// collection dependencies
+	@SingletonDependency
+	ConsoleObjectManager objectManager;
 
-	@Inject
-	List<ObjectStatsSourceBuilder> objectStatsSourceBuilders =
-		Collections.emptyList ();
+	@SingletonDependency
+	List <ObjectStatsSourceBuilder> objectStatsSourceBuilders;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<GenericMessageStatsPart> smsStatsPartProvider;
+	@PrototypeDependency
+	Provider <GenericMessageStatsPart> smsStatsPartProvider;
 
-	@Inject
-	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
+	@PrototypeDependency
+	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// properties
 

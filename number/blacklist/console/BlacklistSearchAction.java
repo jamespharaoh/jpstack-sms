@@ -1,25 +1,25 @@
 package wbs.sms.number.blacklist.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
-
 import com.google.common.base.Optional;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
-import wbs.framework.utils.etc.Html;
 import wbs.framework.web.Responder;
 import wbs.platform.event.model.EventLinkObjectHelper;
 import wbs.platform.event.model.EventLinkRec;
@@ -31,33 +31,34 @@ import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatRec;
+import wbs.utils.web.HtmlUtils;
 
 @PrototypeComponent ("blacklistSearchAction")
 public
 class BlacklistSearchAction
 	extends ConsoleAction {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	BlacklistObjectHelper blacklistHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EventLinkObjectHelper eventLinkHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberFormatObjectHelper numberFormatHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberFormatLogic numberFormatLogic;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
 	// details
@@ -161,7 +162,7 @@ class BlacklistSearchAction
 				event.getEventType ();
 
 			String text =
-				Html.encode (
+				HtmlUtils.htmlEncode (
 					eventType.getDescription ());
 
 			for (
@@ -174,7 +175,7 @@ class BlacklistSearchAction
 					text =
 						text.replaceAll (
 							"%" + eventLink.getIndex (),
-							Html.encode (eventLink.getRefId ().toString ()));
+							HtmlUtils.htmlEncode (eventLink.getRefId ().toString ()));
 
 				} else if (eventLink.getTypeId () == -2) {
 
@@ -187,7 +188,7 @@ class BlacklistSearchAction
 
 				} else {
 
-					Record<?> object =
+					Record <?> object =
 						objectManager.findObject (
 							new GlobalId (
 								eventLink.getTypeId (),
@@ -196,9 +197,9 @@ class BlacklistSearchAction
 					text =
 						text.replaceAll (
 							"%" + eventLink.getIndex (),
-							objectManager.objectToSimpleHtml (
+							objectManager.htmlForObject (
 								object,
-								null,
+								optionalAbsent (),
 								false));
 
 				}

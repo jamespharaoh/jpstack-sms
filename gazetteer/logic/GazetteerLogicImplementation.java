@@ -2,9 +2,8 @@ package wbs.sms.gazetteer.logic;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 import wbs.sms.locator.logic.LocatorLogic;
@@ -15,9 +14,9 @@ public
 class GazetteerLogicImplementation
 	implements GazetteerLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	LocatorLogic locatorLogic;
 
 	// implementation

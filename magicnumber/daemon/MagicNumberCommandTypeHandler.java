@@ -1,17 +1,18 @@
 package wbs.sms.magicnumber.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import com.google.common.base.Optional;
-
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
@@ -34,27 +35,25 @@ public
 class MagicNumberCommandTypeHandler
 	implements CommandHandler {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@WeakSingletonDependency
+	CommandManager commandManager;
+
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
-	@Inject
+	@SingletonDependency
 	MagicNumberObjectHelper magicNumberHelper;
 
-	@Inject
+	@SingletonDependency
 	MagicNumberUseObjectHelper magicNumberUseHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
-
-	// indirect dependencies
-
-	@Inject
-	Provider<CommandManager> commandManagerProvider;
 
 	// properties
 
@@ -121,16 +120,17 @@ class MagicNumberCommandTypeHandler
 
 			return smsInboxLogic.inboxNotProcessed (
 				inbox,
-				Optional.<ServiceRec>absent (),
-				Optional.<AffiliateRec>absent (),
-				Optional.of (command),
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
 				"Magic number has not been used");
 
 		}
 
 		// and delegate
 
-		return commandManagerProvider.get ().handle (
+		return commandManager.handle (
 			inbox,
 			magicNumberUse.getCommand (),
 			Optional.of (

@@ -1,50 +1,46 @@
 package wbs.sms.message.core.console;
 
-import java.util.Collections;
-import java.util.HashMap;
+import static wbs.utils.collection.MapUtils.mapWithDerivedKey;
+
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import lombok.NonNull;
 
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 
 @SingletonComponent ("messageConsolePluginManager")
 public
 class MessageConsolePluginManager {
 
-	@Inject
-	Map<String,MessageConsolePlugin> plugins =
-		Collections.emptyMap ();
+	// singleton dependencies
 
-	Map<String,MessageConsolePlugin> pluginsByCode =
-		new HashMap<String,MessageConsolePlugin> ();
+	@SingletonDependency
+	Map <String, MessageConsolePlugin> plugins;
 
-	@PostConstruct
+	// state
+
+	Map <String, MessageConsolePlugin> pluginsByCode;
+
+	// life cycle
+
+	@NormalLifecycleSetup
 	public
 	void init () {
 
-		// add their plugins to our map
-
-		for (Map.Entry<String,MessageConsolePlugin> pluginEntry
-				: plugins.entrySet ()) {
-
-			//String beanName = ent.getKey ();
-
-			MessageConsolePlugin messageConsolePlugin =
-				pluginEntry.getValue ();
-
-			pluginsByCode.put (
-				messageConsolePlugin.getCode (),
-				messageConsolePlugin);
-
-		}
+		pluginsByCode =
+			mapWithDerivedKey (
+				plugins.values (),
+				MessageConsolePlugin::getCode);
 
 	}
 
+	// implementation
+
 	public
 	MessageConsolePlugin getPlugin (
-			String code) {
+			@NonNull String code) {
 
 		return pluginsByCode.get (
 			code);

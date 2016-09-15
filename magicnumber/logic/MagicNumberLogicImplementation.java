@@ -1,11 +1,10 @@
 package wbs.sms.magicnumber.logic;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
@@ -13,7 +12,9 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -29,7 +30,7 @@ import wbs.sms.magicnumber.model.MagicNumberUseObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberUseRec;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.logic.MessageSender;
+import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.router.model.RouterRec;
 
@@ -39,24 +40,24 @@ public
 class MagicNumberLogicImplementation
 	implements MagicNumberLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	LockLogic coreLogic;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MagicNumberObjectHelper magicNumberHelper;
 
-	@Inject
+	@SingletonDependency
 	MagicNumberUseObjectHelper magicNumberUseHelper;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<MessageSender> messageSender;
+	@PrototypeDependency
+	Provider <SmsMessageSender> messageSender;
 
 	// implementation
 

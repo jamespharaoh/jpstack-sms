@@ -1,7 +1,7 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,17 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -39,29 +39,33 @@ public
 class SmsStatsConsoleLogicImplementation
 	implements SmsStatsConsoleLogic {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@SingletonDependency
 	BatchObjectHelper batchHelper;
 
-	@Inject
+	@SingletonDependency
 	NetworkConsoleHelper networkHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
+
+	// implementation
 
 	@Override
 	public

@@ -1,6 +1,6 @@
 package wbs.sms.gsm;
 
-import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
+import static wbs.utils.string.StringUtils.joinWithPipe;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;

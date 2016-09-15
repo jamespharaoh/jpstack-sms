@@ -1,7 +1,5 @@
 package wbs.sms.messageset.console;
 
-import javax.inject.Inject;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -9,6 +7,7 @@ import lombok.experimental.Accessors;
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.messageset.model.MessageSetRec;
@@ -19,17 +18,23 @@ public
 class SimpleMessageSetFinder
 	implements MessageSetFinder {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	MessageSetConsoleHelper messageSetHelper;
+
+	// properties
 
 	@Getter @Setter
 	ObjectLookup<?> objectLookup;
 
 	@Getter @Setter
 	String code;
+
+	// implementation
 
 	@Override
 	public

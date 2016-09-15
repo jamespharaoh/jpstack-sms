@@ -1,15 +1,11 @@
 package wbs.sms.message.core.daemon;
 
-import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.EnumUtils.enumInSafe;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
@@ -18,7 +14,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
@@ -41,46 +39,33 @@ public
 class MessageDaemon
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	@Inject
+	@SingletonDependency
 	MessageExpiryObjectHelper messageExpiryHelper;
 
-	@Inject
+	@SingletonDependency
+	Map <String, MessageRetrierFactory> messageRetrierFactories;
+
+	@SingletonDependency
 	SmsMessageLogic messageLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxLogic outboxLogic;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	TextObjectHelper textHelper;
 
 	// properties
-
-	@Getter
-	Map<String,MessageRetrierFactory> messageRetrierFactories =
-		Collections.emptyMap ();
-
-	// implementation
-
-	@Inject
-	public
-	void setMessageRetrierFactories (
-			Map<String,MessageRetrierFactory> messageRetrierFactories) {
-
-		this.messageRetrierFactories =
-			messageRetrierFactories;
-
-	}
 
 	@Getter @Setter
 	int sleepSecs = 60;
@@ -216,15 +201,15 @@ class MessageDaemon
 	}
 
 	private
-	Map<String,MessageRetrier> messageRetriers =
-		new HashMap<String,MessageRetrier> ();
+	Map <String, MessageRetrier> messageRetriers =
+		new HashMap<> ();
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void afterPropertiesSet () {
 
 		for (
-			Map.Entry<String,MessageRetrierFactory> entry
+			Map.Entry <String, MessageRetrierFactory> entry
 				: messageRetrierFactories.entrySet ()
 		) {
 

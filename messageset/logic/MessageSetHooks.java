@@ -1,17 +1,17 @@
 package wbs.sms.messageset.logic;
 
-import static wbs.framework.utils.etc.Misc.doesNotContain;
+import static wbs.utils.etc.Misc.doesNotContain;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import lombok.Cleanup;
 import lombok.NonNull;
+
+import wbs.framework.component.annotations.NormalLifecycleSetup;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -25,27 +25,27 @@ import wbs.sms.messageset.model.MessageSetTypeRec;
 
 public
 class MessageSetHooks
-	implements ObjectHooks<MessageSetRec> {
+	implements ObjectHooks <MessageSetRec> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MessageSetTypeDao messageSetTypeDao;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeDao objectTypeDao;
 
 	// state
 
-	Map<Long,List<Long>> messageSetTypeIdsByParentTypeId =
+	Map <Long, List <Long>> messageSetTypeIdsByParentTypeId =
 		new HashMap<> ();
 
 	// lifecycle
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void init () {
 

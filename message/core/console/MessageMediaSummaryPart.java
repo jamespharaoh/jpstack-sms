@@ -1,13 +1,19 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.prettySize;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.Misc.prettySize;
+import static wbs.utils.etc.NumberUtils.fromJavaInteger;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
 
 import java.awt.image.BufferedImage;
 
-import javax.inject.Inject;
-
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
@@ -19,18 +25,24 @@ public
 class MessageMediaSummaryPart
 	extends AbstractPagePart {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MediaLogic mediaLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
+
+	// state
 
 	MediaRec media;
 	BufferedImage image;
 	int mediaIndex;
+
+	// implementation
 
 	@Override
 	public
@@ -60,61 +72,48 @@ class MessageMediaSummaryPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Filename</th>\n",
-			"<td>%h</td>\n",
-			media.getFilename (),
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"Filename",
+			media.getFilename ());
 
-		printFormat (
-			"<tr>\n",
-			"<th>Type</th>\n",
-			"<td>%h</td>\n",
-			media.getMediaType ().getMimeType (),
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"Type",
+			media.getMediaType ().getMimeType ());
 
-		printFormat (
-			"<tr>\n",
-			"<th>Size</th>\n",
-			"<td>%h</td>\n",
+		htmlTableDetailsRowWrite (
+			"Size",
 			prettySize (
-				media.getContent ().getData ().length),
-			"</tr>\n");
+				media.getContent ().getData ().length));
 
-		if (image != null) {
+		if (
+			isNotNull (
+				image)
+		) {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Width</th>\n",
-				"<td>%h</td>\n",
-				image.getWidth (),
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Width",
+				integerToDecimalString (
+					fromJavaInteger (
+						image.getWidth ())));
 
-			printFormat (
-				"<tr>\n",
-				"<th>Height</th>\n",
-				"<td>%h</td>\n",
-				image.getHeight (),
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Height",
+				integerToDecimalString (
+					fromJavaInteger (
+						image.getHeight ())));
 
 		}
 
-		printFormat (
-			"<tr>\n",
-			"<th>Content</th>\n",
-			"<td>%s</td>\n",
-			mediaConsoleLogic.mediaContentScaled (
+		htmlTableDetailsRowWriteHtml (
+			"Content",
+			() -> mediaConsoleLogic.writeMediaContentScaled (
 				media,
 				600,
-				600),
-			"</tr>\n");
+				600));
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

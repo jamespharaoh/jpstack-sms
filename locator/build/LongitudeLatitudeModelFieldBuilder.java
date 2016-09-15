@@ -1,10 +1,8 @@
 package wbs.sms.locator.build;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
-import static wbs.framework.utils.etc.TypeUtils.classForNameRequired;
-
-import javax.inject.Inject;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.TypeUtils.classForNameRequired;
+import static wbs.utils.string.StringUtils.camelToSpaces;
 
 import com.google.common.collect.ImmutableList;
 
@@ -14,6 +12,7 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.scaffold.PluginManager;
 import wbs.framework.entity.build.ModelBuilder;
 import wbs.framework.entity.build.ModelFieldBuilderContext;
@@ -28,9 +27,9 @@ import wbs.sms.locator.model.LongLat;
 public
 class LongitudeLatitudeModelFieldBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	PluginManager pluginManager;
 
 	// builder

@@ -1,18 +1,17 @@
 package wbs.sms.route.router.logic;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableMap;
 
 import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 
 @Log4j
 @SingletonComponent ("routerHelperManager")
@@ -21,16 +20,16 @@ class RouterHelperManager {
 
 	// collection dependencies
 
-	@Inject
-	Map<String,RouterHelper> routerHelpersByBeanName;
+	@SingletonDependency
+	Map <String, RouterHelper> routerHelpersByBeanName;
 
 	// state
 
-	Map<String,RouterHelper> byParentObjectTypeCode;
+	Map <String, RouterHelper> byParentObjectTypeCode;
 
 	// implementation
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void init () {
 

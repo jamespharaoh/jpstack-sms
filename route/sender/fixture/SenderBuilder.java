@@ -1,11 +1,9 @@
 package wbs.sms.route.sender.fixture;
 
-import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
-
-import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
@@ -17,6 +15,7 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
@@ -32,15 +31,15 @@ import wbs.sms.route.sender.model.SenderObjectHelper;
 public
 class SenderBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EntityHelper entityHelper;
 
-	@Inject
+	@SingletonDependency
 	SenderObjectHelper senderHelper;
 
 	// builder

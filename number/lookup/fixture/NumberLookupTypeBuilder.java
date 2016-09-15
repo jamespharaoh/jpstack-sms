@@ -1,13 +1,11 @@
 package wbs.sms.number.lookup.fixture;
 
-import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.camelToUnderscore;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
+import static wbs.utils.string.StringUtils.camelToUnderscore;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
-
-import javax.inject.Inject;
 
 import lombok.Cleanup;
 import lombok.NonNull;
@@ -19,6 +17,7 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
@@ -37,18 +36,18 @@ import wbs.sms.number.lookup.model.NumberLookupTypeObjectHelper;
 public
 class NumberLookupTypeBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EntityHelper entityHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberLookupTypeObjectHelper numberLookupTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
 
 	// builder

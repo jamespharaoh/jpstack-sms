@@ -1,8 +1,7 @@
 package wbs.sms.number.list.logic;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListRec;
@@ -14,12 +13,12 @@ public
 class NumberListNumberLookupHelper
 	implements NumberLookupHelper {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberListLogic numberListLogic;
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
 	// details

@@ -1,15 +1,30 @@
 package wbs.sms.object.messages;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.TimeUtils.instantToDateNullSafe;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.time.TimeUtils.instantToDateNullSafe;
+import static wbs.utils.web.HtmlAttributeUtils.htmlAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
+import static wbs.utils.web.HtmlUtils.htmlFormClose;
+import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,13 +37,14 @@ import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
+import wbs.utils.web.HtmlTableCellWriter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("objectSmsMessagesPart")
@@ -36,18 +52,18 @@ public
 class ObjectSmsMessagesPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager consoleObjectManager;
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// properties
@@ -65,7 +81,7 @@ class ObjectSmsMessagesPart
 	ViewMode viewMode;
 	ObsoleteDateField dateField;
 
-	List<MessageRec> messages;
+	List <MessageRec> messages;
 
 	// implementation
 
@@ -81,7 +97,8 @@ class ObjectSmsMessagesPart
 
 		viewMode =
 			viewModesByName.get (
-				requestContext.parameterOrNull ("view"));
+				requestContext.parameterOrNull (
+					"view"));
 
 		if (viewMode == null)
 			viewMode = defaultViewMode;
@@ -94,7 +111,8 @@ class ObjectSmsMessagesPart
 
 		dateField =
 			ObsoleteDateField.parse (
-				requestContext.parameterOrNull ("date"));
+				requestContext.parameterOrNull (
+					"date"));
 
 		if (dateField.date == null) {
 			requestContext.addError ("Invalid date");
@@ -129,55 +147,65 @@ class ObjectSmsMessagesPart
 			requestContext.resolveLocalUrl (
 				localName);
 
-		printFormat (
-			"<form",
-			" method=\"get\"",
-			" action=\"%h\"",
-			localUrl,
-			">\n");
+		htmlFormOpenMethodAction (
+			"get",
+			localUrl);
 
-		printFormat (
+		formatWriter.writeLineFormat (
 			"<p",
 			" class=\"links\"",
-			">Date\n",
+			">");
 
+		formatWriter.increaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"Date");
+
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"text\"",
 			" name=\"date\"",
 			" value=\"%h\"",
 			dateField.text,
-			">\n",
+			">");
 
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"ok\"",
-			">\n",
+			">");
 
-			"%s</p>\n",
+		formatWriter.writeLineFormat (
+			"%s",
 			ObsoleteDateLinks.dailyBrowserLinks (
 				localUrl,
 				requestContext.getFormData (),
 				dateField.date));
 
-		printFormat (
-			"</form>\n");
+		formatWriter.decreaseIndent ();
 
-		if (messages == null)
+		formatWriter.writeLineFormat (
+			"</p>");
+
+		htmlFormClose ();
+
+		if (
+			isNull (
+				messages)
+		) {
 			return;
+		}
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Time</th>\n",
-			"<th>From</th>\n",
-			"<th>To</th>\n",
-			"<th>Route</th>\n",
-			"<th>Id</th>\n",
-			"<th>Status</th>\n",
-			"<th>Media</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"Time",
+			"From",
+			"To",
+			"Route",
+			"Id",
+			"Status",
+			"Media");
 
 		Calendar calendar =
 			Calendar.getInstance ();
@@ -199,16 +227,19 @@ class ObjectSmsMessagesPart
 
 			if (newDayNumber != dayNumber) {
 
-				printFormat (
-					"<tr class=\"sep\">\n",
+				htmlTableRowSeparatorWrite ();
 
-					"<tr style=\"font-weight: bold\">\n",
+				htmlTableRowOpen (
+					htmlAttribute (
+						"style",
+						"font-weight: bold"));
 
-					"<td colspan=\"7\">%h</td>\n",
+				htmlTableCellWrite (
 					userConsoleLogic.dateStringLong (
 						message.getCreatedTime ()),
+					htmlColumnSpanAttribute (7l));
 
-					"</tr>\n");
+				htmlTableRowClose ();
 
 				dayNumber =
 					newDayNumber;
@@ -219,44 +250,38 @@ class ObjectSmsMessagesPart
 				messageConsoleLogic.classForMessage (
 					message);
 
-			printFormat (
-				"<tr class=\"sep\">\n");
+			htmlTableRowSeparatorWrite ();
 
-			printFormat (
-				"<tr class=\"%h\">\n",
-				rowClass);
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					rowClass));
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				userConsoleLogic.timeString (
 					message.getCreatedTime ()));
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				message.getNumFrom ());
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				message.getNumTo ());
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				message.getRoute ().getCode ());
 
-			printFormat (
-				"<td>%h</td>\n",
-				message.getId ());
+			htmlTableCellWrite (
+				integerToDecimalString (
+					message.getId ()));
 
-			printFormat (
-				"%s\n",
-				messageConsoleLogic.tdForMessageStatus (
-					message.getStatus ()));
+			messageConsoleLogic.writeTdForMessageStatus (
+				formatWriter,
+				message.getStatus ());
 
-			List<MediaRec> medias =
+			List <MediaRec> medias =
 				message.getMedias ();
 
-			printFormat (
-				"<td rowspan=\"2\">");
+			htmlTableCellOpen (
+				htmlRowSpanAttribute (2l));
 
 			for (
 				MediaRec media
@@ -266,36 +291,43 @@ class ObjectSmsMessagesPart
 				if (media.getThumb32Content () == null)
 					continue;
 
-				printFormat (
-					"%s\n",
-					mediaConsoleLogic.mediaThumb32 (
-						media));
+				mediaConsoleLogic.writeMediaThumb32 (
+					formatWriter,
+					media);
 
 			}
 
-			printFormat (
-				"</td>\n");
+			htmlTableCellClose ();
 
-			printFormat (
-				"</tr>\n");
+			htmlTableRowClose ();
 
-			printFormat (
-				"<tr class=\"%h\">\n",
-				rowClass,
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					rowClass));
 
-				"%s%h</td>\n",
-				Html.magicTd (
-					consoleObjectManager.localLink (message),
-					null,
-					6),
-				message.getText (),
+			new HtmlTableCellWriter ()
 
-				"</tr>\n");
+				.href (
+					consoleObjectManager.localLink (
+						message))
+
+				.columnSpan (
+					6l)
+
+				.write (
+					formatWriter);
+
+			formatWriter.writeFormat (
+				"%h",
+				message.getText ());
+
+			htmlTableCellClose ();
+
+			htmlTableRowClose ();
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

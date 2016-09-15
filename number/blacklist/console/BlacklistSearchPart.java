@@ -1,5 +1,13 @@
 package wbs.sms.number.blacklist.console;
 
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlUtils.htmlFormClose;
+import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
+import static wbs.utils.web.HtmlUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlUtils.htmlParagraphOpen;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 
@@ -18,40 +26,44 @@ class BlacklistSearchPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"details\">");
-
-		printFormat (
-			"<form",
-			" method=\"post\"",
-			" action=\"%h\"",
+		htmlFormOpenMethodAction (
+			"post",
 			requestContext.resolveLocalUrl (
-				"/blacklist.search"),
-			">\n");
+				"/blacklist.search"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Number</th>\n",
+		htmlTableOpenDetails ();
 
-			"<td><input",
-			" type=\"text\"",
-			" name=\"number\"",
-			"></td>\n",
+		htmlTableDetailsRowHtml (
+			"Number",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"number\"",
+				">"));
 
-			"</tr>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"</table>\n");
+		htmlParagraphOpen ();
 
-		printFormat (
-			"<p><input",
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"submit\"",
 			" name=\"Search\"",
 			" value=\"Search\">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphClose ();
 
+		htmlFormClose ();
+
+	}
+
+	private
+	void htmlTableDetailsRowHtml (
+			String string,
+			String stringFormat) {
+
+		// TODO Auto-generated method stub
+		
 	}
 
 }

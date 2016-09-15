@@ -2,9 +2,8 @@ package wbs.sms.number.list.logic;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.service.model.ServiceRec;
@@ -21,18 +20,18 @@ public
 class NumberListLogicImplementation
 	implements NumberListLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	NumberListObjectHelper numberListHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberListNumberObjectHelper numberListNumberHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberListUpdateObjectHelper numberListUpdateHelper;
 
 	// implementation

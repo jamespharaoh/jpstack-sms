@@ -1,24 +1,23 @@
 package wbs.sms.tracker.logic;
 
-import static wbs.framework.utils.etc.EnumUtils.enumInSafe;
-import static wbs.framework.utils.etc.NumberUtils.integerEqualSafe;
-import static wbs.framework.utils.etc.TimeUtils.earlierThan;
+import static wbs.utils.etc.EnumUtils.enumInSafe;
+import static wbs.utils.etc.NumberUtils.integerEqualSafe;
+import static wbs.utils.time.TimeUtils.earlierThan;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import org.joda.time.Duration;
-import org.joda.time.Instant;
-
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.sms.message.core.model.MessageRec;
@@ -34,15 +33,15 @@ public
 class SmsTrackerLogicImplementation
 	implements SmsTrackerLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsSimpleTrackerObjectHelper smsSimpleTrackerHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsSimpleTrackerNumberObjectHelper smsSimpleTrackerNumberHelper;
 
 	// implementation

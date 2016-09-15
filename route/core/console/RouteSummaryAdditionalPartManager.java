@@ -1,33 +1,35 @@
 package wbs.sms.route.core.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableMap;
 
 import lombok.extern.log4j.Log4j;
 
 import wbs.console.part.PagePart;
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 
 @Log4j
 @SingletonComponent ("routeSummaryAdditionalPartManager")
 public
 class RouteSummaryAdditionalPartManager {
 
-	@Inject
-	Map<String,RouteSummaryAdditionalPartFactory> factories =
-		Collections.emptyMap ();
+	// singleton dependencies
 
-	Map<String,RouteSummaryAdditionalPartFactory> factoriesBySenderCode =
-		new LinkedHashMap<String,RouteSummaryAdditionalPartFactory> ();
+	@SingletonDependency
+	Map <String, RouteSummaryAdditionalPartFactory> factories;
 
-	@PostConstruct
+	// state
+
+	Map <String, RouteSummaryAdditionalPartFactory> factoriesBySenderCode;
+
+	// life cycle
+
+	@NormalLifecycleSetup
 	public
 	void afterPropertiesSet () {
 
@@ -35,11 +37,14 @@ class RouteSummaryAdditionalPartManager {
 			stringFormat (
 				"searching for factories"));
 
-		factoriesBySenderCode =
-			new HashMap<String,RouteSummaryAdditionalPartFactory> ();
+		ImmutableMap.Builder <String, RouteSummaryAdditionalPartFactory>
+		factoriesBySenderCodeBuilder =
+			ImmutableMap.builder ();
 
-		for (Map.Entry<String,RouteSummaryAdditionalPartFactory> entry
-				: factories.entrySet ()) {
+		for (
+			Map.Entry <String, RouteSummaryAdditionalPartFactory> entry
+				: factories.entrySet ()
+		) {
 
 			String factoryName =
 				entry.getKey ();
@@ -52,21 +57,26 @@ class RouteSummaryAdditionalPartManager {
 					"got factory \"%s\"",
 					factoryName));
 
-			for (String senderCode
-					: factory.getSenderCodes ()) {
+			for (
+				String senderCode
+					: factory.getSenderCodes ()
+			) {
 
 				log.debug (
 					stringFormat (
 						"sender code \"%s\"",
 						senderCode));
 
-				factoriesBySenderCode.put (
+				factoriesBySenderCodeBuilder.put (
 					senderCode,
 					factory);
 
 			}
 
 		}
+
+		factoriesBySenderCode =
+			factoriesBySenderCodeBuilder.build ();
 
 		log.debug (
 			stringFormat (

@@ -1,9 +1,9 @@
 package wbs.sms.number.format.logic;
 
-import static wbs.framework.utils.etc.Misc.lessThan;
-import static wbs.framework.utils.etc.NumberUtils.moreThan;
-import static wbs.framework.utils.etc.StringUtils.doesNotStartWithSimple;
-import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
+import static wbs.utils.etc.Misc.lessThan;
+import static wbs.utils.etc.NumberUtils.moreThan;
+import static wbs.utils.string.StringUtils.doesNotStartWithSimple;
+import static wbs.utils.string.StringUtils.joinWithoutSeparator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,23 +1,24 @@
 package wbs.sms.customer.logic;
 
-import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
-import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
-
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -31,7 +32,7 @@ import wbs.sms.customer.model.SmsCustomerSessionRec;
 import wbs.sms.customer.model.SmsCustomerTemplateObjectHelper;
 import wbs.sms.customer.model.SmsCustomerTemplateRec;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.logic.MessageSender;
+import wbs.sms.message.outbox.logic.SmsMessageSender;
 
 @Log4j
 @SingletonComponent ("smsCustomerLogic")
@@ -39,27 +40,27 @@ public
 class SmsCustomerLogicImplementation
 	implements SmsCustomerLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EventLogic eventLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsCustomerTemplateObjectHelper smsCustomerTemplateHelper;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<MessageSender> messageSenderProvider;
+	@PrototypeDependency
+	Provider <SmsMessageSender> messageSenderProvider;
 
 	// implementation
 

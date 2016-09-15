@@ -1,12 +1,11 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.StringUtils.camelToSpaces;
-import static wbs.framework.utils.etc.StringUtils.capitalise;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.camelToSpaces;
+import static wbs.utils.string.StringUtils.capitalise;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.NonNull;
@@ -30,6 +29,8 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.web.Action;
 import wbs.framework.web.Responder;
@@ -38,40 +39,40 @@ import wbs.platform.core.console.CoreAuthAction;
 @PrototypeComponent ("objectSmsMessageSetPageBuilder")
 @ConsoleModuleBuilderHandler
 public
-class ObjectSmsMessageSetPageBuilder<
-	ObjectType extends Record<ObjectType>
+class ObjectSmsMessageSetPageBuilder <
+	ObjectType extends Record <ObjectType>
 > {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleMetaManager consoleMetaManager;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<CoreAuthAction> authActionProvider;
+	@PrototypeDependency
+	Provider <CoreAuthAction> authActionProvider;
 
-	@Inject
-	Provider<ConsoleFile> consoleFile;
+	@PrototypeDependency
+	Provider <ConsoleFile> consoleFile;
 
-	@Inject
-	Provider<ConsoleContextPrivLookup> contextPrivLookupProvider;
+	@PrototypeDependency
+	Provider <ConsoleContextPrivLookup> contextPrivLookupProvider;
 
-	@Inject
-	Provider<ConsoleContextTab> contextTab;
+	@PrototypeDependency
+	Provider <ConsoleContextTab> contextTab;
 
-	@Inject
-	Provider<MessageSetAction> messageSetActionProvider;
+	@PrototypeDependency
+	Provider <MessageSetAction> messageSetActionProvider;
 
-	@Inject
-	Provider<MessageSetPart> messageSetPartProvider;
+	@PrototypeDependency
+	Provider <MessageSetPart> messageSetPartProvider;
 
-	@Inject
-	Provider<SimpleMessageSetFinder> simpleMessageSetFinderProvider;
+	@PrototypeDependency
+	Provider <SimpleMessageSetFinder> simpleMessageSetFinderProvider;
 
-	@Inject
-	Provider<TabContextResponder> tabContextResponderProvider;
+	@PrototypeDependency
+	Provider <TabContextResponder> tabContextResponderProvider;
 
 	// builder
 

@@ -1,12 +1,10 @@
 package wbs.sms.number.core.logic;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import com.google.common.base.Optional;
 
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
@@ -18,13 +16,13 @@ public
 class NumberObjectHelperMethodsImplementation
 	implements NumberObjectHelperMethods {
 
-	// indirect dependencies
+	// singleton dependencies
 
-	@Inject
-	Provider<NetworkObjectHelper> networkHelperProvider;
+	@WeakSingletonDependency
+	NetworkObjectHelper networkHelper;
 
-	@Inject
-	Provider<NumberObjectHelper> numberHelperProvider;
+	@WeakSingletonDependency
+	NumberObjectHelper numberHelper;
 
 	// implementation
 
@@ -33,15 +31,9 @@ class NumberObjectHelperMethodsImplementation
 	NumberRec findOrCreate (
 			String numberString) {
 
-		NetworkObjectHelper networkHelper =
-			networkHelperProvider.get ();
-
-		NumberObjectHelper numberHelper =
-			numberHelperProvider.get ();
-
 		// find existing
 
-		Optional<NumberRec> numberRecordOptional =
+		Optional <NumberRec> numberRecordOptional =
 			numberHelper.findByCode (
 				GlobalId.root,
 				numberString);

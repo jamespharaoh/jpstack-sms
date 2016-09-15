@@ -1,15 +1,12 @@
 package wbs.sms.message.inbox.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
-import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
-import static wbs.framework.utils.etc.StringUtils.joinWithFullStop;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.emptyStringIfNull;
+import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
+import static wbs.utils.string.StringUtils.joinWithFullStop;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
@@ -18,11 +15,12 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
-import wbs.framework.utils.ThreadManager;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -38,6 +36,7 @@ import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.utils.thread.ThreadManager;
 
 @Log4j
 @SingletonComponent ("receivedManager")
@@ -45,39 +44,37 @@ public
 class ReceivedManager
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@WeakSingletonDependency
+	CommandManager commandManager;
+
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	@Inject
+	@SingletonDependency
 	InboxAttemptObjectHelper inboxAttemptHelper;
 
-	@Inject
+	@SingletonDependency
 	InboxObjectHelper inboxHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
 
-	@Inject
+	@SingletonDependency
 	ThreadManager threadManager;
-
-	// indirect dependencies
-
-	@Inject
-	Provider<CommandManager> commandManagerProvider;
 
 	// configuration
 
@@ -152,7 +149,7 @@ class ReceivedManager
 			if (route.getCommand () != null) {
 
 				InboxAttemptRec inboxAttempt =
-					commandManagerProvider.get ().handle (
+					commandManager.handle (
 						inbox,
 						route.getCommand (),
 						Optional.fromNullable (

@@ -1,13 +1,13 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-
-import javax.inject.Inject;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import lombok.Cleanup;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
@@ -24,30 +24,30 @@ public
 class MessageNotProcessedFormAction
 	extends ConsoleAction {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EventLogic eventLogic;
 
-	@Inject
+	@SingletonDependency
 	InboxConsoleHelper inboxHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsMessageLogic messageLogic;
 
-	@Inject
+	@SingletonDependency
 	QueueLogic queueLogic;
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// details

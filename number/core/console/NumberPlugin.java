@@ -12,10 +12,11 @@ interface NumberPlugin {
 
 	String getName ();
 
-	List<Link> findLinks (
+	List <Link> findLinks (
 			NumberRec number,
 			boolean active);
 
+	public
 	interface Link {
 
 		NumberPlugin getProvider ();
@@ -23,8 +24,8 @@ interface NumberPlugin {
 		Boolean getActive ();
 		Instant getStartTime ();
 		Instant getEndTime ();
-		Record<?> getParentObject ();
-		Record<?> getSubscriptionObject ();
+		Record <?> getParentObject ();
+		Record <?> getSubscriptionObject ();
 		String getType ();
 
 		boolean canView ();

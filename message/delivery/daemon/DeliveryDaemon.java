@@ -1,14 +1,12 @@
 package wbs.sms.message.delivery.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
@@ -18,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -35,25 +34,22 @@ public
 class DeliveryDaemon
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	DeliveryObjectHelper deliveryHelper;
 
-	@Inject
+	@SingletonDependency
 	DeliveryTypeObjectHelper deliveryTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	// collection dependencies
-
-	@Inject
-	Map<String,Provider<DeliveryHandler>> handlersByBeanName =
-		Collections.emptyMap ();
+	@SingletonDependency
+	Map <String, Provider <DeliveryHandler>> handlersByBeanName;
 
 	// properties
 

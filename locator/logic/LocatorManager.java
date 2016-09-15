@@ -1,20 +1,18 @@
 package wbs.sms.locator.logic;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import lombok.Cleanup;
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -39,46 +37,49 @@ import wbs.sms.number.core.model.NumberRec;
 public
 class LocatorManager {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
+	Map <String,Locator> locatorFactoriesByBeanName;
+
+	@SingletonDependency
 	LocatorObjectHelper locatorHelper;
 
-	@Inject
+	@SingletonDependency
 	LocatorLogObjectHelper locatorLogHelper;
 
-	@Inject
+	@SingletonDependency
 	LocatorTypeObjectHelper locatorTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
 
-	@Inject
+	@SingletonDependency
 	TextObjectHelper textHelper;
 
-	@Inject
-	Map<String,Locator> locatorFactoriesByBeanName =
-		Collections.emptyMap ();
+	// state
 
 	private final
-	Map<Long,Locator> locatorsByTypeId =
+	Map <Long, Locator> locatorsByTypeId =
 		new HashMap<> ();
 
 	private final
 	ExecutorService executor =
 		Executors.newCachedThreadPool ();
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void afterPropertiesSet () {
 

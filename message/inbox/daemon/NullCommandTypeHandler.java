@@ -1,7 +1,7 @@
 package wbs.sms.message.inbox.daemon;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalAbsent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOf;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 
 import com.google.common.base.Optional;
 

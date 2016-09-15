@@ -1,13 +1,11 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,12 +15,13 @@ import org.joda.time.LocalDate;
 
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.BeanLogic;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.sms.message.stats.console.GroupedStatsSource.GroupStats;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.utils.etc.PropertyUtils;
+import wbs.utils.web.HtmlUtils;
 
 /**
  * Responsible for outputing standardised tables of message statistics. Requires
@@ -36,12 +35,12 @@ import wbs.sms.route.core.model.RouteRec;
 public
 class SmsStatsFormatter {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	CurrencyLogic currencyLogic;
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
 	// properties
@@ -128,7 +127,7 @@ class SmsStatsFormatter {
 				MessageStatsData messageStats) {
 
 			return (Long)
-				BeanLogic.getProperty (
+				PropertyUtils.getProperty (
 					messageStats,
 					fieldName);
 
@@ -264,17 +263,17 @@ class SmsStatsFormatter {
 			out.print(" style=\"cursor: pointer;\"");
 			out.print(" onmouseover=\"this.className='group-name-hover'\"");
 			out.print(" onmouseout=\"this.className='group-name'\"");
-			out.print(" onclick=\"window.location='" + Html.jsqe(url) + "'\"");
+			out.print(" onclick=\"window.location='" + HtmlUtils.htmlJavascriptEncode(url) + "'\"");
 			out.println(">");
 
-			out.println(Html.encode(group));
+			out.println(HtmlUtils.htmlEncode(group));
 
 			out.println("</td>");
 
 			out.println("</tr>");
 		} else {
 			out.println("<tr> <td class=\"group-name\" colspan=\"" + colSpan
-					+ "\">" + Html.encode(group) + "</td> </tr>");
+					+ "\">" + HtmlUtils.htmlEncode(group) + "</td> </tr>");
 		}
 
 	}

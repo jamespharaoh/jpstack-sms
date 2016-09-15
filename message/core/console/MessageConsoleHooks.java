@@ -1,17 +1,17 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
-import static wbs.framework.utils.etc.NumberUtils.moreThanZero;
-
-import javax.inject.Inject;
+import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.NumberUtils.moreThanZero;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
+
 import wbs.console.helper.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -27,23 +27,23 @@ import wbs.sms.route.core.model.RouteRec;
 @SingletonComponent ("messageConsoleHooks")
 public
 class MessageConsoleHooks
-	implements ConsoleHooks<MessageRec> {
+	implements ConsoleHooks <MessageRec> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
 
 	// implementation

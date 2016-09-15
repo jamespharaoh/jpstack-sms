@@ -1,25 +1,29 @@
 package wbs.sms.locator.misc;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
-import junit.framework.TestCase;
-
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.locator.logic.LocatorLogic;
 import wbs.sms.locator.model.EastNorth;
 import wbs.sms.locator.model.LongLat;
 import wbs.sms.locator.model.MercatorProjection;
 
+import junit.framework.TestCase;
+
 public
 class LocatorLogicTest
 	extends TestCase {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	LocatorLogic locatorLogic;
 
-	@Inject
+	@SingletonDependency
 	@Named
 	MercatorProjection ukNationalGrid;
+
+	// tests
 
 	public
 	void testLongLatToEastNorth () {

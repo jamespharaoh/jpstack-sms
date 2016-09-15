@@ -1,24 +1,20 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.EnumUtils.enumEqualSafe;
-import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
-import static wbs.framework.utils.etc.LogicUtils.ifThenElse;
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.todo;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalFromNullable;
-import static wbs.framework.utils.etc.OptionalUtils.optionalMapRequired;
-import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.Misc.todo;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
+import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Map;
 import java.util.stream.LongStream;
-
-import javax.inject.Inject;
-
-import org.joda.time.Duration;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -30,14 +26,16 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
+
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
 import wbs.framework.exception.GenericExceptionResolution;
-import wbs.framework.utils.etc.JsonUtils;
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.daemon.SmsSenderHelper.PerformSendResult;
@@ -56,6 +54,7 @@ import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.logic.NumberLookupManager;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.utils.web.JsonUtils;
 
 @Log4j
 @Accessors (fluent = true)
@@ -73,33 +72,33 @@ class GenericSmsSenderImplementation <StateType>
 	Duration databaseRetryWaitMax =
 		Duration.standardSeconds (1);
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	@Inject
+	@SingletonDependency
 	ExceptionUtils exceptionUtils;
 
-	@Inject
+	@SingletonDependency
 	NumberLookupManager numberLookupManager;
 
-	@Inject
+	@SingletonDependency
 	BlacklistObjectHelper smsBlacklistHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsMessageLogic smsMessageLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxAttemptObjectHelper smsOutboxAttemptHelper;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper smsOutboxHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxLogic smsOutboxLogic;
 
 	// properties

@@ -1,11 +1,11 @@
 package wbs.sms.number.list.console;
 
-import javax.inject.Inject;
-
 import lombok.experimental.Accessors;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (fluent = true)
@@ -14,12 +14,12 @@ public
 class NumberListNumberUpdatePart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberListConsoleHelper numberListHelper;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
 	// state

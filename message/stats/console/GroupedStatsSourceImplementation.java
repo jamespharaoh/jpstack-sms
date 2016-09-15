@@ -5,18 +5,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.inject.Inject;
-
-import org.joda.time.LocalDate;
-
 import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import org.joda.time.LocalDate;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.web.UrlParams;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
@@ -31,15 +31,15 @@ public
 class GroupedStatsSourceImplementation
 	implements GroupedStatsSource {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageStatsLogic messageStatsLogic;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
 	// properties

@@ -1,17 +1,17 @@
 package wbs.sms.route.router.logic;
 
-import static wbs.framework.utils.etc.Misc.doesNotContain;
+import static wbs.utils.etc.Misc.doesNotContain;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import lombok.Cleanup;
 import lombok.NonNull;
+
+import wbs.framework.component.annotations.NormalLifecycleSetup;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -25,27 +25,27 @@ import wbs.sms.route.router.model.RouterTypeRec;
 
 public
 class RouterHooks
-	implements ObjectHooks<RouterRec> {
+	implements ObjectHooks <RouterRec> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeDao objectTypeDao;
 
-	@Inject
+	@SingletonDependency
 	RouterTypeDao routerTypeDao;
 
 	// state
 
-	Map<Long,List<Long>> routerTypeIdsByParentTypeId =
+	Map <Long, List <Long>> routerTypeIdsByParentTypeId =
 		new HashMap<> ();
 
 	// lifecycle
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void init () {
 

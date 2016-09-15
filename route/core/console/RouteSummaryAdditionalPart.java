@@ -2,11 +2,10 @@ package wbs.sms.route.core.console;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
-
 import wbs.console.part.AbstractPagePart;
 import wbs.console.part.PagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")
@@ -14,12 +13,12 @@ public
 class RouteSummaryAdditionalPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteSummaryAdditionalPartManager routeSummaryAdditionalPartManager;
 
 	// state

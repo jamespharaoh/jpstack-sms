@@ -1,12 +1,11 @@
 package wbs.sms.object.stats;
 
-import static wbs.framework.utils.etc.StringUtils.capitalise;
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.string.StringUtils.capitalise;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.NonNull;
@@ -27,38 +26,40 @@ import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 
 @PrototypeComponent ("objectSmsStatsPageBuilder")
 @ConsoleModuleBuilderHandler
 public
-class ObjectSmsStatsPageBuilder<
-	ObjectType extends Record<ObjectType>
+class ObjectSmsStatsPageBuilder <
+	ObjectType extends Record <ObjectType>
 > {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleMetaManager consoleMetaManager;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<ConsoleFile> consoleFileProvider;
+	@PrototypeDependency
+	Provider <ConsoleFile> consoleFileProvider;
 
-	@Inject
-	Provider<ConsoleContextTab> contextTabProvider;
+	@PrototypeDependency
+	Provider <ConsoleContextTab> contextTabProvider;
 
-	@Inject
-	Provider<TabContextResponder> tabContextResponderProvider;
+	@PrototypeDependency
+	Provider <TabContextResponder> tabContextResponderProvider;
 
-	@Inject
-	Provider<ObjectStatsPartFactory> objectStatsPartFactoryProvider;
+	@PrototypeDependency
+	Provider <ObjectStatsPartFactory> objectStatsPartFactoryProvider;
 
 	// builder
 
 	@BuilderParent
-	ConsoleContextBuilderContainer<ObjectType> container;
+	ConsoleContextBuilderContainer <ObjectType> container;
 
 	@BuilderSource
 	ObjectSmsStatsPageSpec spec;
@@ -68,7 +69,7 @@ class ObjectSmsStatsPageBuilder<
 
 	// state
 
-	ConsoleHelper<ObjectType> consoleHelper;
+	ConsoleHelper <ObjectType> consoleHelper;
 	String privKey;
 
 	// build

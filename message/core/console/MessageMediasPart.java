@@ -1,13 +1,22 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.Misc.prettySize;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.LogicUtils.ifNullThenEmDash;
+import static wbs.utils.etc.Misc.prettySize;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlDataAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -16,6 +25,7 @@ import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -26,12 +36,12 @@ public
 class MessageMediasPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
 	// state
@@ -80,22 +90,23 @@ class MessageMediasPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Thumbnail</th>\n",
-			"<th>Type</th>\n",
-			"<th>Filename</th>\n",
-			"<th>Size</th>\n");
+		htmlTableHeaderRowWrite (
+			"Thumbnail",
+			"Type",
+			"Filename",
+			"Size");
 
 		if (medias.size () == 0) {
 
-			printFormat (
-				"<tr>\n",
-				"<td colspan=\"4\">no media</td>\n",
-				"</tr>\n");
+			htmlTableRowOpen ();
+
+			htmlTableCellWrite (
+				"(no media)",
+				htmlColumnSpanAttribute (4l));
+
+			htmlTableRowClose ();
 
 		} else {
 
@@ -108,47 +119,42 @@ class MessageMediasPart
 				MediaRec media =
 					medias.get (index);
 
-				printFormat (
-					"<tr",
-					" class=\"magic-table-row\"",
+				htmlTableRowOpen (
+					htmlClassAttribute (
+						"magic-table-row"),
+					htmlDataAttribute (
+						"target-href",
+						requestContext.resolveLocalUrl (
+							stringFormat (
+								"/message.mediaSummary",
+								"?index=%u",
+								index))));
 
-					" data-target-href=\"%h\"",
-					requestContext.resolveLocalUrl (
-						stringFormat (
-							"/message.mediaSummary",
-							"?index=%u",
-							index)),
+				htmlTableCellOpen ();
 
-					">\n");
+				mediaConsoleLogic.writeMediaThumb100 (
+					media);
 
-				printFormat (
-					"<td>%s</td>\n",
-					mediaConsoleLogic.mediaThumb100 (
-						media));
+				htmlTableCellClose ();
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					media.getMediaType ().getMimeType ());
 
-				printFormat (
-					"<td>%h</td>\n",
-					ifNull (
-						media.getFilename (), "-"));
+				htmlTableCellWrite (
+					ifNullThenEmDash (
+						media.getFilename ()));
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					prettySize (
 						media.getContent().getData ().length));
 
-				printFormat (
-					"</tr>\n");
+				htmlTableRowClose ();
 
 			}
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

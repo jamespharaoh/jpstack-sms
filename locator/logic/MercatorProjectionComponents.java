@@ -1,18 +1,21 @@
 package wbs.sms.locator.logic;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.locator.model.BiaxialEllipsoid;
 import wbs.sms.locator.model.MercatorProjectionImplementation;
 
 // TODO should this be somewhere else?
-@SingletonComponent ("mercatorProjectionConfig")
+@SingletonComponent ("mercatorProjectionComponents")
 public
-class MercatorProjectionConfig {
+class MercatorProjectionComponents {
 
-	@Inject
+	// dependencies
+
+	@SingletonDependency
 	LocatorLogic locatorLogic;
+
+	// components
 
 	@SingletonComponent ("ukNationalGrid")
 	public

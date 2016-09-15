@@ -1,8 +1,7 @@
 package wbs.sms.number.format.fixture;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
@@ -16,21 +15,21 @@ public
 class NumberFormatFixtureProvider
 	implements FixtureProvider {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MenuGroupObjectHelper menuGroupHelper;
 
-	@Inject
+	@SingletonDependency
 	MenuItemObjectHelper menuItemHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberFormatObjectHelper numberFormatHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberFormatPatternObjectHelper numberFormatPatternHelper;
 
 	// implementation

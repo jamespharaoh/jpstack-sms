@@ -1,34 +1,32 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.Misc.isNull;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 
-import javax.inject.Inject;
+import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import com.google.common.base.Optional;
-
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
-
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 
 @PrototypeComponent ("gazetteerCodeFormFieldNativeMapping")
 public
-class GazetteerCodeFormFieldNativeMapping<Container>
-	implements FormFieldNativeMapping<Container,GazetteerEntryRec,String> {
+class GazetteerCodeFormFieldNativeMapping <Container>
+	implements FormFieldNativeMapping <Container, GazetteerEntryRec, String> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	GazetteerEntryConsoleHelper gazetteerEntryHelper;
 
 	// properties

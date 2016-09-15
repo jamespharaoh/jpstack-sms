@@ -1,12 +1,10 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.joinWithoutSeparator;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
@@ -15,6 +13,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -46,7 +46,7 @@ import wbs.sms.route.sender.model.SenderRec;
 @Deprecated
 @Log4j
 public abstract
-class AbstractSmsSender1<MessageContainer>
+class AbstractSmsSender1 <MessageContainer>
 	extends AbstractDaemonService {
 
 	private final static
@@ -58,33 +58,33 @@ class AbstractSmsSender1<MessageContainer>
 	private final static
 	int waitTimeMs = 1000;
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	BlacklistObjectHelper smsBlacklistHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper smsMessageHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsMessageLogic smsMessageLogic;
 
-	@Inject
+	@SingletonDependency
 	NumberLookupManager numberLookupManager;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxLogic smsOutboxLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxMonitor smsOutboxMonitor;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper smsRouteHelper;
 
-	@Inject
+	@SingletonDependency
 	SenderObjectHelper smsSenderHelper;
 
 	// properties

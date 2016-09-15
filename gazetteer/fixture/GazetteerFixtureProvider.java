@@ -1,10 +1,9 @@
 package wbs.sms.gazetteer.fixture;
 
-import static wbs.framework.utils.etc.CodeUtils.simplifyToCodeRequired;
-
-import javax.inject.Inject;
+import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.entity.record.GlobalId;
@@ -25,21 +24,21 @@ public
 class GazetteerFixtureProvider
 	implements FixtureProvider {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	GazetteerEntryObjectHelper gazetteerEntryHelper;
 
-	@Inject
+	@SingletonDependency
 	GazetteerObjectHelper gazetteerHelper;
 
-	@Inject
+	@SingletonDependency
 	MenuGroupObjectHelper menuGroupHelper;
 
-	@Inject
+	@SingletonDependency
 	MenuItemObjectHelper menuItemHelper;
 
-	@Inject
+	@SingletonDependency
 	SliceObjectHelper sliceHelper;
 
 	// implementation

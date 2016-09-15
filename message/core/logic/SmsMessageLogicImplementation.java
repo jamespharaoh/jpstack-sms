@@ -1,25 +1,24 @@
 package wbs.sms.message.core.logic;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveThreeElements;
-import static wbs.framework.utils.etc.CollectionUtils.listFirstElementRequired;
-import static wbs.framework.utils.etc.CollectionUtils.listSecondElementRequired;
-import static wbs.framework.utils.etc.CollectionUtils.listThirdElementRequired;
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.NumberUtils.parseInteger;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
-import static wbs.framework.utils.etc.StringUtils.stringSplitHyphen;
+import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveThreeElements;
+import static wbs.utils.collection.CollectionUtils.listFirstElementRequired;
+import static wbs.utils.collection.CollectionUtils.listSecondElementRequired;
+import static wbs.utils.collection.CollectionUtils.listThirdElementRequired;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NumberUtils.parseInteger;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringNotEqualSafe;
+import static wbs.utils.string.StringUtils.stringSplitHyphen;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -34,18 +33,18 @@ public
 class SmsMessageLogicImplementation
 	implements SmsMessageLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberLogic numberLogic;
 
-	@Inject
+	@SingletonDependency
 	RootObjectHelper rootHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper smsMessageHelper;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper smsOutboxHelper;
 
 	// implementation

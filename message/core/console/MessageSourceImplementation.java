@@ -2,7 +2,7 @@ package wbs.sms.message.core.console;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,15 +11,14 @@ import lombok.experimental.Accessors;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 
-import com.google.common.collect.ImmutableSet;
-
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.TextualInterval;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
+import wbs.utils.time.TextualInterval;
 import wbs.sms.message.core.model.MessageStatus;
 
 @Accessors (fluent = true)
@@ -28,10 +27,12 @@ public
 class MessageSourceImplementation
 	implements MessageSource {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
+
+	// properties
 
 	@Getter @Setter
 	MessageSearch searchTemplate;

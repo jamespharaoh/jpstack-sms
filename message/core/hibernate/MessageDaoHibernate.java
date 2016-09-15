@@ -1,14 +1,14 @@
 package wbs.sms.message.core.hibernate;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionIsNotEmpty;
-import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.Misc.lessThan;
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.NumberUtils.maximumInteger;
-import static wbs.framework.utils.etc.NumberUtils.minimumInteger;
-import static wbs.framework.utils.etc.NumberUtils.moreThan;
-import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.Misc.lessThan;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.maximumInteger;
+import static wbs.utils.etc.NumberUtils.minimumInteger;
+import static wbs.utils.etc.NumberUtils.moreThan;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;

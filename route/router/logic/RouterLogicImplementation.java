@@ -1,10 +1,9 @@
 package wbs.sms.route.router.logic;
 
-import javax.inject.Inject;
-
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.model.RouterRec;
 import wbs.sms.route.router.model.RouterTypeRec;
@@ -14,9 +13,9 @@ public
 class RouterLogicImplementation
 	implements RouterLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	RouterHelperManager routerHelperManager;
 
 	// implementation

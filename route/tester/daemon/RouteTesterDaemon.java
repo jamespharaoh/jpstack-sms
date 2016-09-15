@@ -1,10 +1,9 @@
 package wbs.sms.route.tester.daemon;
 
-import static wbs.framework.utils.etc.TimeUtils.laterThan;
+import static wbs.utils.time.TimeUtils.laterThan;
 
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
@@ -12,7 +11,9 @@ import lombok.Cleanup;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -20,7 +21,7 @@ import wbs.framework.object.ObjectManager;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.logic.MessageSender;
+import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.tester.model.RouteTestObjectHelper;
 import wbs.sms.route.tester.model.RouteTestRec;
@@ -32,30 +33,30 @@ public
 final class RouteTesterDaemon
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	RouteTestObjectHelper routeTestHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteTesterObjectHelper routeTesterHelper;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<MessageSender> messageSender;
+	@PrototypeDependency
+	Provider <SmsMessageSender> messageSender;
 
 	// details
 

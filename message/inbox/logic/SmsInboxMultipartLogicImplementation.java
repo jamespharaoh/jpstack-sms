@@ -1,20 +1,19 @@
 package wbs.sms.message.inbox.logic;
 
-import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 
 import java.util.Collections;
 import java.util.List;
-
-import javax.inject.Inject;
-
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.media.model.MediaRec;
@@ -34,27 +33,27 @@ public
 class SmsInboxMultipartLogicImplementation
 	implements SmsInboxMultipartLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
-	@Inject
+	@SingletonDependency
 	InboxMultipartBufferObjectHelper inboxMultipartBufferHelper;
 
-	@Inject
+	@SingletonDependency
 	InboxMultipartLogObjectHelper inboxMultipartLogHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	TextObjectHelper textHelper;
 
 	// implementation

@@ -1,7 +1,5 @@
 package wbs.sms.message.status.console;
 
-import javax.inject.Inject;
-
 import org.joda.time.Duration;
 
 import wbs.framework.component.annotations.SingletonComponent;
@@ -21,7 +19,7 @@ class MessageNumOutboxCache
 	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
 
 	// constructors

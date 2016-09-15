@@ -1,17 +1,16 @@
 package wbs.sms.messageset.console;
 
-import static wbs.framework.utils.etc.LogicUtils.referenceNotEqualWithClass;
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
-import static wbs.framework.utils.etc.StringUtils.stringNotEqualSafe;
+import static wbs.utils.etc.LogicUtils.referenceNotEqualWithClass;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringIsEmpty;
+import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
@@ -19,10 +18,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
+
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.web.Responder;
@@ -43,20 +44,30 @@ public
 class MessageSetAction
 	extends ConsoleAction {
 
-	@Inject
-	Provider<ConsoleManager> consoleManagerProvider;
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
+	ConsoleManager consoleManager;
+
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	EventLogic eventLogic;
+
+	@SingletonDependency
+	MessageSetMessageObjectHelper messageSetMessageHelper;
+
+	@SingletonDependency
+	RouteObjectHelper routeHelper;
+
+	@SingletonDependency
+	UserConsoleLogic userConsoleLogic;
+
+	// properties
 
 	@Getter @Setter
 	MessageSetFinder messageSetFinder;
-
-	@Inject
-	MessageSetMessageObjectHelper messageSetMessageHelper;
 
 	@Getter @Setter
 	BooleanLookup privLookup;
@@ -64,11 +75,7 @@ class MessageSetAction
 	@Getter @Setter
 	Provider<Responder> responder;
 
-	@Inject
-	RouteObjectHelper routeHelper;
-
-	@Inject
-	UserConsoleLogic userConsoleLogic;
+	// details
 
 	@Override
 	public
@@ -81,7 +88,7 @@ class MessageSetAction
 			String responderName) {
 
 		return responder (
-			consoleManagerProvider.get ().responder (
+			consoleManager.responder (
 				responderName,
 				true));
 

@@ -1,21 +1,17 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.EnumUtils.enumNotEqualSafe;
-import static wbs.framework.utils.etc.NullUtils.ifNull;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
-import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.stringToBytes;
-import static wbs.framework.utils.etc.StringUtils.stringToUtf8;
+import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.emptyStringIfNull;
+import static wbs.utils.string.StringUtils.joinWithoutSeparator;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringToBytes;
+import static wbs.utils.string.StringUtils.stringToUtf8;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
-import javax.inject.Inject;
-
-import org.json.simple.JSONObject;
 
 import com.google.common.base.Optional;
 
@@ -26,6 +22,10 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
+
+import org.json.simple.JSONObject;
+
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -53,36 +53,36 @@ public abstract
 class AbstractSmsSender2
 	extends AbstractDaemonService {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	BlacklistObjectHelper blacklistHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	@Inject
+	@SingletonDependency
 	SmsMessageLogic messageLogic;
 
-	@Inject
+	@SingletonDependency
 	NumberLookupManager numberLookupManager;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxLogic outboxLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxMonitor outboxMonitor;
 
-	@Inject
+	@SingletonDependency
 	SmsOutboxAttemptObjectHelper smsOutboxAttemptHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	SenderObjectHelper senderHelper;
 
 	// properties

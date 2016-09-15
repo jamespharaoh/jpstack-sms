@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
@@ -21,15 +22,15 @@ public
 class AffiliateStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<SmsStatsSourceImplementation> smsStatsSource;
+	@PrototypeDependency
+	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// implementation
 
@@ -68,7 +69,7 @@ class AffiliateStatsSourceBuilder
 			.collect (
 				Collectors.toSet ());
 
-		return smsStatsSource.get ()
+		return smsStatsSourceProvider.get ()
 
 			.fixedCriteriaMap (
 				ImmutableMap.of (

@@ -1,46 +1,48 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.framework.utils.etc.CodeUtils.simplifyToCode;
-import static wbs.framework.utils.etc.Misc.errorResult;
-import static wbs.framework.utils.etc.StringUtils.stringIsEmpty;
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.Misc.successResult;
+import static wbs.utils.etc.Misc.errorResult;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.Misc.successResult;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.CodeUtils.simplifyToCode;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringIsEmpty;
 
 import java.util.Map;
 
-import javax.inject.Inject;
+import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import com.google.common.base.Optional;
-
-import fj.data.Either;
-
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
-
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
+
+import fj.data.Either;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("gazetteerFormFieldInterfaceMapping")
 public
-class GazetteerFormFieldInterfaceMapping<Container>
-	implements FormFieldInterfaceMapping<Container,GazetteerEntryRec,String> {
+class GazetteerFormFieldInterfaceMapping <Container>
+	implements FormFieldInterfaceMapping <
+		Container,
+		GazetteerEntryRec,
+		String
+	> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	GazetteerEntryConsoleHelper gazetteerEntryHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
 	// properties
@@ -52,7 +54,7 @@ class GazetteerFormFieldInterfaceMapping<Container>
 
 	@Override
 	public
-	Either<Optional<GazetteerEntryRec>,String> interfaceToGeneric (
+	Either <Optional <GazetteerEntryRec>, String> interfaceToGeneric (
 			@NonNull Container container,
 			@NonNull Map<String,Object> hints,
 			@NonNull Optional<String> interfaceValue) {

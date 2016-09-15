@@ -1,6 +1,6 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.LogicUtils.equalSafe;
+import static wbs.utils.etc.LogicUtils.equalSafe;
 
 import lombok.NonNull;
 

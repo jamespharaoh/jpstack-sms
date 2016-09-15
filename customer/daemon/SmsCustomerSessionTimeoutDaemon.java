@@ -1,20 +1,19 @@
 package wbs.sms.customer.daemon;
 
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
-
-import javax.inject.Inject;
-
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 
 import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.daemon.SleepingDaemonService;
@@ -40,18 +39,18 @@ class SmsCustomerSessionTimeoutDaemon
 	public final static
 	long batchSize = 100;
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	SmsCustomerLogic smsCustomerLogic;
 
-	@Inject
+	@SingletonDependency
 	SmsCustomerManagerObjectHelper smsCustomerManagerHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
 
 	// details

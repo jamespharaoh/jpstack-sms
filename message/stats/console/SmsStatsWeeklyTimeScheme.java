@@ -6,23 +6,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
+import wbs.utils.web.HtmlUtils;
 
 @SingletonComponent ("smsStatsWeeklyTimeScheme")
 public
 class SmsStatsWeeklyTimeScheme
 	implements SmsStatsTimeScheme {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageStatsLogic messageStatsLogic;
 
 	// constants
@@ -146,7 +145,7 @@ class SmsStatsWeeklyTimeScheme
 					out.println("<th colspan=\""
 							+ cols
 							+ "\">"
-							+ Html.encode(cols > 1 ? lastMonthNameLong
+							+ HtmlUtils.htmlEncode(cols > 1 ? lastMonthNameLong
 									: lastMonthNameShort) + "</th>");
 
 				}
@@ -170,8 +169,8 @@ class SmsStatsWeeklyTimeScheme
 		out.println("<th colspan=\""
 				+ cols
 				+ "\">"
-				+ Html
-						.encode(cols > 1 ? lastMonthNameLong
+				+ HtmlUtils
+						.htmlEncode(cols > 1 ? lastMonthNameLong
 								: lastMonthNameShort) + "</th>");
 
 		out.println("<tr>");
@@ -185,7 +184,7 @@ class SmsStatsWeeklyTimeScheme
 				(calendar.getTime ().equals (thisWeek)
 					? "<th class=\"hilite\">"
 					: "<th>")
-				+ Html.encode (weekDateFormat.format (calendar.getTime ()))
+				+ HtmlUtils.htmlEncode (weekDateFormat.format (calendar.getTime ()))
 				+ "</th>");
 
 		}
@@ -199,7 +198,7 @@ class SmsStatsWeeklyTimeScheme
 			calendar.add(Calendar.DATE, week * 7 + 6);
 
 			out.println("<th>"
-					+ Html.encode(weekDateFormat.format(calendar.getTime()))
+					+ HtmlUtils.htmlEncode(weekDateFormat.format(calendar.getTime()))
 					+ "</th>");
 
 		}

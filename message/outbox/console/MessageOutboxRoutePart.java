@@ -1,15 +1,30 @@
 package wbs.sms.message.outbox.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
+import static wbs.utils.web.HtmlUtils.htmlFormClose;
+import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
 
 import java.util.Collection;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
-
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -22,18 +37,18 @@ public
 class MessageOutboxRoutePart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	OutboxConsoleHelper outboxHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
@@ -65,145 +80,164 @@ class MessageOutboxRoutePart
 
 		if (outboxes.size () == 30) {
 
-			printFormat (
-				"<p>Only showing first 30 results.</p>\n");
+			formatWriter.writeLineFormat (
+				"<p>Only showing first 30 results.</p>");
 
 		}
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Id</th>\n",
-			"<th>Created</th>\n",
-			"<th>Tries</th>\n",
-			"<th>From</th>\n",
-			"<th>To</th>\n",
-			"<th>Actions</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"Id",
+			"Created",
+			"Tries",
+			"From",
+			"To",
+			"Actions");
 
 		if (outboxes.size () == 0) {
 
-			printFormat (
-				"<tr>\n",
-				"<td colspan=\"6\">Nothing to display</td>\n",
-				"</tr>");
+			htmlTableRowOpen ();
+
+			htmlTableCellWrite (
+				"Nothing to display",
+				htmlColumnSpanAttribute (6l));
+
+			htmlTableCellClose ();
 
 		}
 
-		for (OutboxRec outbox
-				: outboxes) {
+		for (
+			OutboxRec outbox
+				: outboxes
+		) {
 
 			MessageRec message =
 				outbox.getMessage ();
 
-			printFormat (
-				"<tr class=\"sep\">\n");
+			htmlTableRowSeparatorWrite ();
 
-			printFormat (
-				"<tr>\n",
+			htmlTableRowOpen ();
 
-				"<td>%h</td>\n",
-				outbox.getId (),
+			htmlTableCellWrite (
+				integerToDecimalString (
+					outbox.getId ()));
 
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()),
+					message.getCreatedTime ()));
 
-				"<td>%h</td>\n",
-				outbox.getTries ());
+			htmlTableCellWrite (
+				integerToDecimalString (
+					outbox.getTries ()));
 
-			if (message.getDirection () == MessageDirection.in) {
+			if (
+				enumEqualSafe (
+					message.getDirection (),
+					MessageDirection.in)
+			) {
 
-				printFormat (
-					"%s\n",
-					objectManager.tdForObjectMiniLink (
-						message.getNumber ()));
+				objectManager.writeTdForObjectMiniLink (
+					message.getNumber ());
 
 			} else {
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					message.getNumFrom ());
 
 			}
 
-			if (message.getDirection () == MessageDirection.out) {
+			if (
+				enumEqualSafe (
+					message.getDirection (),
+					MessageDirection.out)
+			) {
 
-				printFormat (
-					"%s\n",
-					objectManager.tdForObjectMiniLink (
-						message.getNumber ()));
+				objectManager.writeTdForObjectMiniLink (
+					message.getNumber ());
 
 			} else {
 
-				printFormat (
-					"<td>%h</td>\n",
+				htmlTableCellWrite (
 					message.getNumTo ());
 
 			}
 
-			int rowSpan =
-				outbox.getError () != null ? 3 : 2;
+			long rowSpan =
+				outbox.getError () != null
+					? 3
+					: 2;
 
-			printFormat (
-				"<td rowspan=\"%h\">",
-				rowSpan,
+			htmlTableCellOpen (
+				htmlRowSpanAttribute (
+					rowSpan));
 
-				"<form",
-				" method=\"post\"",
-				" action=\"%h\">\n",
+			htmlFormOpenMethodAction (
+				"post",
 				requestContext.resolveLocalUrl (
 					stringFormat (
 						"/outbox.route",
 						"?routeId=%u",
-						route.getId ())),
+						route.getId ())));
 
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"hidden\"",
 				" name=\"messageId\"",
-				" value=\"%h\">\n",
+				" value=\"%h\"",
 				outbox.getId (),
+				">");
 
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"cancel\"",
-				" value=\"cancel\">\n",
+				" value=\"cancel\"",
+				">");
 
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"retry\"",
-				" value=\"retry\">\n",
+				" value=\"retry\"",
+				">");
 
-				"</form>",
+			htmlFormClose ();
 
-				"</td>\n",
+			htmlTableCellClose ();
 
-				"</tr>\n");
+			htmlTableRowClose ();
 
-			printFormat (
-				"<tr>",
+			// row 3 - message text
 
-				"<td colspan=\"5\">%h</td>\n",
-				message.getText (),
+			htmlTableRowOpen ();
 
-				"</tr>\n");
+			htmlTableCellWrite (
+				message.getText ().getText (),
+				htmlColumnSpanAttribute (5l));
 
-			if (outbox.getError() != null) {
+			htmlTableRowClose ();
 
-				printFormat (
-					"<tr>\n",
-					"<td colspan=\"5\">%h</td>\n",
+			// row 4 - error
+
+			if (
+				isNotNull (
+					outbox.getError ())
+			) {
+
+				htmlTableRowOpen ();
+	
+				htmlTableCellWrite (
 					outbox.getError (),
-					"</tr>\n");
+					htmlColumnSpanAttribute (5l));
+	
+				htmlTableRowClose ();
 
 			}
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

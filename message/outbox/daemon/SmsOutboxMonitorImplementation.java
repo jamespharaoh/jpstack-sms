@@ -1,19 +1,18 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import javax.inject.Inject;
+import com.google.common.base.Optional;
 
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j;
 
-import com.google.common.base.Optional;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
@@ -34,15 +33,15 @@ class SmsOutboxMonitorImplementation
 	extends AbstractDaemonService
 	implements SmsOutboxMonitor {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	ExceptionLogger exceptionLogger;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
 
 	// details

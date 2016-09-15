@@ -1,15 +1,19 @@
 package wbs.sms.number.core.console;
 
-import java.util.Collection;
+import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
+import static wbs.utils.etc.Misc.booleanToYesNo;
+import static wbs.utils.etc.Misc.isNotNull;
 
-import javax.inject.Inject;
+import java.util.Collection;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
@@ -20,18 +24,18 @@ public
 class NumberSubscriptionsPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
-	@Inject
+	@SingletonDependency
 	NumberLinkManager numberLinkManager;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// properties
@@ -41,7 +45,7 @@ class NumberSubscriptionsPart
 
 	// state
 
-	Collection<NumberPlugin.Link> links;
+	Collection <NumberPlugin.Link> links;
 
 	// implementation
 
@@ -65,36 +69,68 @@ class NumberSubscriptionsPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"list\">\n");
+		// open table
 
-		printFormat (
-			"<tr>\n",
-			"<th>Subject</th>\n",
-			"<th>Subscription</th>\n",
-			"<th>Started</th>\n");
+		formatWriter.writeLineFormat (
+			"<table class=\"list\">");
+
+		formatWriter.increaseIndent ();
+
+		// write table header
+
+		formatWriter.writeLineFormat (
+			"<tr>");
+
+		formatWriter.increaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"<th>Subject</th>");
+
+		formatWriter.writeLineFormat (
+			"<th>Subscription</th>");
+
+		formatWriter.writeLineFormat (
+			"<th>Started</th>");
 
 		if (! activeOnly) {
 
-			printFormat (
-				"<th>Ended</th>\n",
-				"<th>Active</th>\n");
+			formatWriter.writeLineFormat (
+				"<th>Ended</th>");
+
+			formatWriter.writeLineFormat (
+				"<th>Active</th>");
 
 		}
 
-		printFormat (
-			"<th>Type</th>\n",
-			"</tr>\n");
+		formatWriter.writeLineFormat (
+			"<th>Type</th>");
+
+		formatWriter.decreaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"</tr>");
+
+		// write empty table contents
 
 		if (links.isEmpty ()) {
 
-			printFormat (
-				"<tr>\n",
-				"<td colspan=\"%h\">No data to display</td>\n",
-				activeOnly ? 4 : 6,
+			formatWriter.writeLineFormat (
+				"<tr>");
+
+			formatWriter.increaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"<td colspan=\"%h\">No data to display</td>",
+				activeOnly ? 4 : 6);
+
+			formatWriter.decreaseIndent ();
+
+			formatWriter.writeLineFormat (
 				"</tr>\n");
 
 		}
+
+		// write table contents
 
 		for (
 			NumberPlugin.Link link
@@ -105,57 +141,82 @@ class NumberSubscriptionsPart
 				continue;
 			}
 
-			printFormat (
-				"<tr>\n");
+			// open table row
 
-			printFormat (
-				"%s\n",
-				objectManager.tdForObjectLink (
-					link.getParentObject ()));
+			formatWriter.writeLineFormat (
+				"<tr>");
 
-			printFormat (
-				"%s\n",
-				link.getSubscriptionObject () != null
-					? objectManager.tdForObjectLink (
-						link.getSubscriptionObject (),
-						link.getParentObject ())
-					: "-");
+			formatWriter.increaseIndent ();
 
-			printFormat (
-				"<td>%h</td>\n",
-				link.getStartTime () != null
-					? userConsoleLogic.timestampWithTimezoneString (
-						link.getStartTime ())
-					: "-");
+			// write parent object cell
 
-			if (! activeOnly) {
+			objectManager.writeTdForObjectLink (
+				formatWriter,
+				link.getParentObject ());
 
-				printFormat (
-					"<td>%h</td>\n",
-					link.getEndTime () != null
-						? userConsoleLogic.timestampWithTimezoneString (
-							link.getEndTime ())
-						: "-");
+			// write subjectiption object cell
 
-				printFormat (
-					"<td>%h</td>\n",
-					link.getActive ()
-						? "yes"
-						: "no");
+			if (
+				isNotNull (
+					link.getSubscriptionObject ())
+			) {
+
+				objectManager.writeTdForObjectLink (
+					formatWriter,
+					link.getSubscriptionObject (),
+					link.getParentObject ());
+
+			} else {
+
+				formatWriter.writeLineFormat (
+					"<td>—</td>");
 
 			}
 
-			printFormat (
-				"<td>%h</td>\n",
+			formatWriter.writeLineFormat (
+				"<td>%h</td>",
+				ifNotNullThenElse (
+					link.getStartTime (),
+					() -> userConsoleLogic.timestampWithTimezoneString (
+						link.getStartTime ()),
+					() -> "—"));
+
+			if (! activeOnly) {
+
+				formatWriter.writeLineFormat (
+					"<td>%h</td>",
+					ifNotNullThenElse (
+						link.getEndTime (),
+						() -> userConsoleLogic.timestampWithTimezoneString (
+							link.getEndTime ()),
+						() -> "—"));
+
+				formatWriter.writeLineFormat (
+					"<td>%h</td>",
+					booleanToYesNo (
+						link.getActive ()));
+
+			}
+
+			formatWriter.writeLineFormat (
+				"<td>%h</td>",
 				link.getType ());
 
-			printFormat (
-				"</tr>\n");
+			// close table row
+
+			formatWriter.decreaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"</tr>");
 
 		}
 
-		printFormat (
-			"</table>\n");
+		// close table
+
+		formatWriter.decreaseIndent ();
+
+		formatWriter.writeLineFormat (
+			"</table>");
 
 	}
 

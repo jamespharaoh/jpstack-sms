@@ -26,7 +26,7 @@
 	<layer name="logic">
 		<component class="logic.LocatorLogicImplementation"/>
 		<component class="logic.LocatorManager"/>
-		<component class="logic.MercatorProjectionConfig"/>
+		<component class="logic.MercatorProjectionComponents"/>
 	</layer>
 
 	<console-modules>

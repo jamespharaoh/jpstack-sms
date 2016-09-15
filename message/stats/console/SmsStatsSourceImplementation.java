@@ -1,19 +1,15 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveOneElement;
-import static wbs.framework.utils.etc.CollectionUtils.iterableFirstElementRequired;
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.OptionalUtils.optionalValueEqualSafe;
+import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveOneElement;
+import static wbs.utils.collection.CollectionUtils.iterableFirstElementRequired;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.OptionalUtils.optionalValueEqualSafe;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.joda.time.LocalDate;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -23,7 +19,10 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import org.joda.time.LocalDate;
+
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.message.stats.model.MessageStatsSearch;
@@ -36,21 +35,21 @@ public
 class SmsStatsSourceImplementation
 	implements SmsStatsSource {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageStatsObjectHelper messageStatsHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsStatsConsoleLogic smsStatsConsoleLogic;
 
 	// state
 
 	@Getter @Setter
-	Map<SmsStatsCriteria,Set<Long>> fixedCriteriaMap =
+	Map <SmsStatsCriteria, Set <Long>> fixedCriteriaMap =
 		Collections.emptyMap ();
 
 	// implementation

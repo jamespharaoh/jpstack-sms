@@ -1,12 +1,26 @@
 package wbs.sms.message.inbox.console;
 
-import java.util.List;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
+import static wbs.utils.web.HtmlUtils.htmlFormClose;
+import static wbs.utils.web.HtmlUtils.htmlFormOpenMethod;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
@@ -17,20 +31,20 @@ public
 class MessageInboxSummaryPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	InboxObjectHelper inboxHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
 
-	List<InboxRec> inboxes;
+	List <InboxRec> inboxes;
 
 	// implementation
 
@@ -48,121 +62,102 @@ class MessageInboxSummaryPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<form method=\"post\">\n");
+		htmlFormOpenMethod (
+			"post");
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Message</th>\n",
-			"<th>From</th>\n",
-			"<th>To</th>\n",
-			"<th>Created</th>\n",
-			"<th>Tries</th>\n",
-			"<th>Next try</th>\n",
-			"<th>Route</th>\n",
-			"<th>Actions</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"Message",
+			"From",
+			"To",
+			"Created",
+			"Tries",
+			"Next try",
+			"Route",
+			"Actions");
 
 		for (
 			InboxRec inbox
 				: inboxes
 		) {
 
-			printFormat (
-				"<tr class=\"sep\">\n",
-				"</tr>\n");
+			htmlTableRowSeparatorWrite ();
+
+			// message
 
 			MessageRec message =
 				inbox.getMessage ();
 
-			printFormat (
-				"<tr>\n");
+			htmlTableRowOpen ();
 
-			printFormat (
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message));
+			objectManager.writeTdForObjectMiniLink (
+				message);
 
-			printFormat (
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message.getNumber ()));
+			objectManager.writeTdForObjectMiniLink (
+				message.getNumber ());
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				message.getNumTo ());
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				userConsoleLogic.timestampWithoutTimezoneString (
 					message.getCreatedTime ()));
 
-			printFormat (
-				"<td>%h</td>\n",
-				inbox.getNumAttempts ());
+			htmlTableCellWrite (
+				integerToDecimalString (
+					inbox.getNumAttempts ()));
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				userConsoleLogic.timestampWithoutTimezoneString (
 					inbox.getNextAttempt ()));
 
-			printFormat (
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message.getRoute ()));
+			objectManager.writeTdForObjectMiniLink (
+				message.getRoute ());
 
-			printFormat (
-				"<td",
-				" rowspan=\"%h\"",
-				inbox.getStatusMessage () != null ? 3 : 2,
-				"><input",
-				" type=\"submit\"",
-				" name=\"ignore_%h\"",
-				message.getId (),
-				" value=\"cancel\"",
-				"></td>\n");
+			htmlTableCellWriteHtml (
+				stringFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"ignore_%h\"",
+					message.getId (),
+					" value=\"cancel\"",
+					">"));
 
-			printFormat (
-				"</tr>\n");
+			htmlTableRowClose ();
 
 			// message text
 
-			printFormat (
-				"<tr>\n");
+			htmlTableRowOpen ();
 
-			printFormat (
-				"<td colspan=\"7\">%h</td>\n",
-				message.getText ().getText ());
+			htmlTableCellWrite (
+				message.getText ().getText (),
+				htmlColumnSpanAttribute (7l));
 
-			printFormat (
-				"</tr>\n");
+			htmlTableRowClose ();
 
 			// status message
 
-			if (inbox.getStatusMessage () != null) {
+			if (
+				isNotNull (
+					inbox.getStatusMessage ())
+			) {
 
-				printFormat (
-					"<tr>\n");
+				htmlTableRowOpen ();
 
-				printFormat (
-					"<td colspan=\"7\">%h</td>\n",
-					inbox.getStatusMessage ());
+				htmlTableCellWrite (
+					inbox.getStatusMessage (),
+					htmlColumnSpanAttribute (7l));
 
-				printFormat (
-					"</tr>\n");
+				htmlTableRowClose ();
 
 			}
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"</form>\n");
+		htmlFormClose ();
 
 	}
 

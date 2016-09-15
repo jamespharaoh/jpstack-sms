@@ -1,6 +1,6 @@
 package wbs.sms.message.inbox.hibernate;
 
-import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 
 import java.util.List;
 

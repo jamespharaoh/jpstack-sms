@@ -1,19 +1,19 @@
 package wbs.sms.message.ticker.console;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlUtils.htmlColourFromObject;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -26,27 +26,27 @@ public
 class MessageTickerUpdateResponder
 	extends ConsoleResponder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleHelper mediaHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageTickerManager messageTickerManager;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
@@ -214,7 +214,7 @@ class MessageTickerUpdateResponder
 				: messageTickerMessage.numTo ();
 
 		String color =
-			Html.genHtmlColor (
+			htmlColourFromObject (
 				number);
 
 		StringBuilder stringBuilder =
@@ -272,7 +272,11 @@ class MessageTickerUpdateResponder
 			stringBuilder.append (
 				stringFormat (
 					"'%j'",
-					mediaConsoleLogic.mediaThumb32OrText (media)));
+					formatWriterConsumerToString (
+						formatWriter ->
+							mediaConsoleLogic.writeMediaThumb32OrText (
+								formatWriter,
+								media))));
 
 		}
 

@@ -5,6 +5,6 @@ import java.util.Map;
 public
 interface MessageRetrierFactory {
 
-	Map<String,MessageRetrier> getMessageRetriersByMessageTypeCode ();
+	Map <String, MessageRetrier> getMessageRetriersByMessageTypeCode ();
 
 }

@@ -1,11 +1,11 @@
 package wbs.sms.core.logic;
 
-import static wbs.framework.utils.etc.Misc.contains;
-import static wbs.framework.utils.etc.Misc.stringTrim;
-import static wbs.framework.utils.etc.StringUtils.joinWithPipe;
-import static wbs.framework.utils.etc.StringUtils.joinWithoutSeparator;
-import static wbs.framework.utils.etc.StringUtils.stringInSafe;
-import static wbs.framework.utils.etc.StringUtils.substringTo;
+import static wbs.utils.etc.Misc.contains;
+import static wbs.utils.etc.Misc.stringTrim;
+import static wbs.utils.string.StringUtils.joinWithPipe;
+import static wbs.utils.string.StringUtils.joinWithoutSeparator;
+import static wbs.utils.string.StringUtils.stringInSafe;
+import static wbs.utils.string.StringUtils.substringTo;
 
 import java.util.Collection;
 import java.util.List;

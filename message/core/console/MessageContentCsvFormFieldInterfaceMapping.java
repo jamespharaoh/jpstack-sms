@@ -1,39 +1,39 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.Misc.successResult;
+import static wbs.utils.etc.Misc.successResult;
 
 import java.util.Map;
 
-import javax.inject.Inject;
+import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
-import com.google.common.base.Optional;
-
-import fj.data.Either;
-
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.core.model.MessageRec;
+import wbs.utils.string.StringFormatWriter;
+
+import fj.data.Either;
 
 @PrototypeComponent ("messageContentCsvFormFieldInterfaceMapping")
 public
 class MessageContentCsvFormFieldInterfaceMapping
-	implements FormFieldInterfaceMapping<MessageRec,MessageRec,String> {
+	implements FormFieldInterfaceMapping <MessageRec, MessageRec, String> {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
 	// implementation
 
 	@Override
 	public
-	Either<Optional<MessageRec>,String> interfaceToGeneric (
+	Either <Optional <MessageRec>, String> interfaceToGeneric (
 			@NonNull MessageRec container,
-			@NonNull Map<String,Object> hints,
-			@NonNull Optional<String> interfaceValue) {
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <String> interfaceValue) {
 
 		throw new UnsupportedOperationException ();
 
@@ -41,15 +41,21 @@ class MessageContentCsvFormFieldInterfaceMapping
 
 	@Override
 	public
-	Either<Optional<String>,String> genericToInterface (
+	Either <Optional <String>, String> genericToInterface (
 			@NonNull MessageRec container,
-			@NonNull Map<String,Object> hints,
-			@NonNull Optional<MessageRec> genericValue) {
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <MessageRec> genericValue) {
+
+		StringFormatWriter formatWriter =
+			new StringFormatWriter ();
+
+		messageConsoleLogic.writeMessageContentText (
+			formatWriter,
+			container);
 
 		return successResult (
 			Optional.of (
-				messageConsoleLogic.messageContentText (
-					container)));
+				formatWriter.toString ()));
 
 	}
 

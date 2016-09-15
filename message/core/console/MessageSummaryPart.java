@@ -1,19 +1,28 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
-import static wbs.framework.utils.etc.StringUtils.joinWithCommaAndSpace;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
+import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.LogicUtils.ifNotNullThenElseEmDash;
+import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteRaw;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlUtils.htmlLinkWriteHtml;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import com.google.common.base.Optional;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -28,30 +37,33 @@ public
 class MessageSummaryPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
+	CurrencyLogic currencyLogic;
+
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	FailedMessageObjectHelper failedMessageHelper;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
 
 	MessageRec message;
-	Optional<FailedMessageRec> failedMessage;
+	Optional <FailedMessageRec> failedMessageOptional;
 	MessageConsolePlugin plug;
 	String summaryHtml;
 
@@ -66,7 +78,7 @@ class MessageSummaryPart
 				requestContext.stuffInteger (
 					"messageId"));
 
-		failedMessage =
+		failedMessageOptional =
 			failedMessageHelper.find (
 				message.getId ());
 
@@ -76,271 +88,236 @@ class MessageSummaryPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"details\">\n");
+		// open table
 
-		printFormat (
-			"<tr> <th>ID</th> <td>%h</td> </tr>\n",
-			message.getId ());
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Thread ID</th>\n",
-			"<td>%h</td>\n",
-			message.getThreadId (),
-			"</tr>\n");
+		// write id
 
-		printFormat (
-			"<tr>\n",
-			"<th>Other ID</th>\n",
-			"<td>%h</td>\n",
-			emptyStringIfNull (
-				message.getOtherId ()),
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"ID",
+			integerToDecimalString (
+				message.getId ()));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Message</th>\n",
+		htmlTableDetailsRowWrite (
+			"Thread ID",
+			integerToDecimalString (
+				message.getThreadId ()));
 
-			"<td>%s</td>\n",
-			messageConsoleLogic.messageContentHtml (
-				message),
+		htmlTableDetailsRowWrite (
+			"Other ID",
+			ifNull (
+				message.getOtherId (),
+				"—"));
 
-			"</tr>\n");
+		htmlTableDetailsRowWriteRaw (
+			"Message",
+			() -> messageConsoleLogic.writeMessageContentHtml (
+				formatWriter,
+				message));
 
-		if (message.getDirection () == MessageDirection.in) {
+		if (
+			enumEqualSafe (
+				message.getDirection (),
+				MessageDirection.in)
+		) {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Number from</th>\n",
+			htmlTableDetailsRowWriteRaw (
+				"Number from",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						message.getNumber ()));
 
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message.getNumber ()),
-
-				"</tr>\n");
-
-			printFormat (
-				"<tr>\n",
-				"<th>Number to</th>\n",
-
-				"<td>%h</td>\n",
-				message.getNumTo (),
-
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Number to",
+				message.getNumTo ());
 
 		} else {
 
-			printFormat (
-				"<tr> <th>Number from</th> <td>%h</td> </tr>\n",
-				message.getNumFrom());
+			htmlTableDetailsRowWrite (
+				"Number from",
+				message.getNumFrom ());
 
-			printFormat (
-				"<tr>\n",
-				"<th>Number to</th>\n",
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message.getNumber ()),
-				"</tr>\n");
+			htmlTableDetailsRowWriteRaw (
+				"Number to",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						message.getNumber ()));
 
 		}
 
-		printFormat (
-			"<tr> <th>Status</th> <td>%h</td> </tr>\n",
+		htmlTableDetailsRowWrite (
+			"Status",
 			message.getStatus ().getDescription ());
 
-		printFormat (
-			"<tr> <th>Direction</th> <td>%h</td> </tr>\n",
-			message.getDirection ());
+		htmlTableDetailsRowWrite (
+			"Direction",
+			message.getDirection ().name ());
 
-		printFormat (
-			"<tr>\n",
-			"<th>Route</th>\n",
-			"%s\n",
-			objectManager.tdForObjectMiniLink (
-				message.getRoute ()),
-			"</tr>\n");
+		htmlTableDetailsRowWriteRaw (
+			"Route",
+			() ->
+				objectManager.writeTdForObjectMiniLink (
+					message.getRoute ()));
 
-		printFormat (
-			"<tr> <th>Network</th> <td>%h</td> </tr>\n",
+		htmlTableDetailsRowWrite (
+			"Network",
 			message.getNetwork ().getDescription ());
 
-		printFormat (
-			"<tr> <th>Service</th> %s </tr>\n",
-			objectManager.tdForObjectMiniLink (
-				message.getService ()));
+		htmlTableDetailsRowWriteRaw (
+			"Service",
+			() ->
+				objectManager.writeTdForObjectMiniLink (
+					message.getService ()));
 
-		printFormat (
-			"<tr> <th>Affiliate</th> %s </tr>\n",
-			objectManager.tdForObjectMiniLink (
-				message.getAffiliate ()));
+		htmlTableDetailsRowWriteRaw (
+			"Affiliate",
+			() -> 
+				objectManager.writeTdForObjectMiniLink (
+					message.getAffiliate ()));
 
-		if (message.getDirection () == MessageDirection.in) {
+		if (
+			enumEqualSafe (
+				message.getDirection (),
+				MessageDirection.in)
+		) {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Time sent</th>\n",
-				"<td>%h</td>\n",
-				message.getNetworkTime () != null
-					? userConsoleLogic.timestampWithTimezoneString (
-						message.getNetworkTime ())
-					: "-",
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Time sent",
+				ifNotNullThenElseEmDash (
+					message.getNetworkTime (),
+					() ->
+						userConsoleLogic.timestampWithTimezoneString (
+							message.getNetworkTime ())));
 
-			printFormat (
-				"<tr>\n",
-				"<th>Time received</th>\n",
-				"<td>%h</td>\n",
+			htmlTableDetailsRowWrite (
+				"Time received",
 				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()),
-				"</tr>\n");
+					message.getCreatedTime ()));
 
-			printFormat (
-				"<tr>\n",
-				"<th>Time processed</th>\n",
-				"<td>%h</td>\n",
-				message.getProcessedTime () != null
-					? userConsoleLogic.timestampWithTimezoneString (
-						message.getProcessedTime ())
-					: "-",
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Time processed",
+				ifNotNullThenElseEmDash (
+					message.getProcessedTime (),
+					() ->
+						userConsoleLogic.timestampWithTimezoneString (
+							message.getProcessedTime ())));
 
-			printFormat (
-				"<tr>\n",
-
-				"<th>Command</th>\n",
-
-				"%s\n",
-				objectManager.tdForObjectMiniLink (
-					message.getCommand ()),
-
-				"</tr>\n");
+			htmlTableDetailsRowWriteRaw (
+				"Command",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						message.getCommand ()));
 
 		} else {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Time created</th>\n",
-				"<td>%h</td>\n",
+			htmlTableDetailsRowWrite (
+				"Time created",
 				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()),
+					message.getCreatedTime ()));
 
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Time sent",
+				ifNotNullThenElseEmDash (
+					message.getProcessedTime (),
+					() ->
+						userConsoleLogic.timestampWithTimezoneString (
+							message.getProcessedTime ())));
 
-			printFormat (
-				"<tr>\n",
-				"<th>Time sent</th>\n",
-				"<td>%h</td>\n",
-				message.getProcessedTime () != null
-					? userConsoleLogic.timestampWithTimezoneString (
-						message.getProcessedTime ())
-					: "-",
-				"</tr>\n");
-
-			printFormat (
-				"<tr>\n",
-				"<th>Time received</th>\n",
-
-				"<td>%h</td>\n",
-				message.getNetworkTime () != null
-					? userConsoleLogic.timestampWithTimezoneString (
-						message.getNetworkTime ())
-					: "-",
-
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Time received",
+				ifNotNullThenElseEmDash (
+					message.getNetworkTime (),
+					() ->
+						userConsoleLogic.timestampWithTimezoneString (
+							message.getNetworkTime ())));
 
 		}
 
-		printFormat (
-			"<tr>\n",
-			"<th>Charge</th>\n",
+		htmlTableDetailsRowWriteRaw (
+			"Charge",
+			currencyLogic.formatHtmlTd (
+				message.getRoute ().getCurrency (),
+				message.getCharge ()));
 
-			"<td>%h</td>\n",
-			message.getCharge (),
-
-			"</tr>\n");
-
-		List<MediaRec> medias =
+		List <MediaRec> medias =
 			message.getMedias ();
 
-		if (medias.size () > 0) {
+		if (
+			collectionIsNotEmpty (
+				medias)
+		) {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Media</th>\n",
-				"<td>\n");
+			htmlTableDetailsRowWriteRaw (
+				"Media",
+				() -> {
 
-			for (
-				int index = 0;
-				index < medias.size ();
-				index ++
-			) {
+				formatWriter.writeLineFormat (
+					"<td>");
 
-				MediaRec media =
-					medias.get (index);
+				formatWriter.increaseIndent ();
 
-				printFormat (
-					"<a href=\"%h\">%s</a>\n",
+				for (
+					int index = 0;
+					index < medias.size ();
+					index ++
+				) {
 
-					requestContext.resolveContextUrl (
-						stringFormat (
-							"/message_media",
-							"/%d",
-							message.getId (),
-							"/%d",
-							index,
-							"/message_media_summary")),
+					MediaRec media =
+						medias.get (index);
 
-					mediaConsoleLogic.mediaThumb100 (
-						media));
+					htmlLinkWriteHtml (
+						requestContext.resolveContextUrl (
+							stringFormat (
+								"/message_media",
+								"/%d",
+								message.getId (),
+								"/%d",
+								index,
+								"/message_media_summary")),
+						() -> mediaConsoleLogic.writeMediaThumb100 (
+							media));
 
-			}
+				}
 
-			printFormat (
-				"</td> </tr>\n");
+				formatWriter.decreaseIndent ();
+
+				formatWriter.writeLineFormat (
+					"</td>");
+
+			});
 
 		}
 
-		printFormat (
-			"<tr>\n",
-			"<th>Tags</th>\n",
-			"<td>%h</td>\n",
+		htmlTableDetailsRowWrite (
+			"Tags",
 			joinWithCommaAndSpace (
-				message.getTags ()),
-			"</tr>\n");
+				message.getTags ()));
 
 		if (
 			optionalIsPresent (
-				failedMessage)
+				failedMessageOptional)
 		) {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Failure reason</th>\n",
-				"<td>%h</td>",
-				failedMessage.get ().getError (),
-				"</tr>\n");
+			htmlTableDetailsRowWrite (
+				"Failure reason",
+				failedMessageOptional.get ().getError ());
 
 		}
 
-		printFormat (
-			"<tr>\n",
-			"<th>User</th>\n",
-			"%s\n",
-			objectManager.tdForObjectMiniLink (
-				message.getUser ()),
-			"</tr>\n");
+		htmlTableDetailsRowWriteRaw (
+			"User",
+			() ->
+				objectManager.writeTdForObjectMiniLink (
+					message.getUser ()));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Delivery type</th>",
-			"%s\n",
-			objectManager.tdForObjectMiniLink (
-				message.getDeliveryType ()),
-			"</tr>\n");
+		htmlTableDetailsRowWriteRaw (
+			"Delivery type",
+			() ->
+				objectManager.writeTdForObjectMiniLink (
+					message.getDeliveryType ()));
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

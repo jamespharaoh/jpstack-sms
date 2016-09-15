@@ -1,8 +1,9 @@
 package wbs.sms.number.lookup.logic;
 
-import javax.inject.Inject;
+import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.model.NumberLookupRec;
 
@@ -11,9 +12,9 @@ public
 class NumberLookupManagerImplementation
 	implements NumberLookupManager {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberLookupHelperManager numberLookupHelperManager;
 
 	// implementation
@@ -21,8 +22,8 @@ class NumberLookupManagerImplementation
 	@Override
 	public
 	boolean lookupNumber (
-			NumberLookupRec numberLookup,
-			NumberRec number) {
+			@NonNull NumberLookupRec numberLookup,
+			@NonNull NumberRec number) {
 
 		NumberLookupHelper helper =
 			numberLookupHelperManager.forParentObjectTypeCode (

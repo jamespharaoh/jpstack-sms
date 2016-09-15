@@ -5,13 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.collect.ImmutableMap;
 
 import wbs.console.helper.ConsoleObjectManager;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 import wbs.platform.service.model.ServiceRec;
@@ -22,15 +23,15 @@ public
 class ServiceStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<SmsStatsSourceImplementation> smsStatsSourceProvider;
+	@PrototypeDependency
+	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// implementation
 

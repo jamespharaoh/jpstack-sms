@@ -1,10 +1,10 @@
 package wbs.sms.gsm;
 
-import static wbs.framework.utils.etc.Misc.stringTrim;
-import static wbs.framework.utils.etc.NumberUtils.toJavaIntegerRequired;
-import static wbs.framework.utils.etc.StringUtils.substring;
-import static wbs.framework.utils.etc.StringUtils.substringFrom;
-import static wbs.framework.utils.etc.StringUtils.substringTo;
+import static wbs.utils.etc.Misc.stringTrim;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.string.StringUtils.substring;
+import static wbs.utils.string.StringUtils.substringFrom;
+import static wbs.utils.string.StringUtils.substringTo;
 
 import java.util.ArrayList;
 import java.util.List;

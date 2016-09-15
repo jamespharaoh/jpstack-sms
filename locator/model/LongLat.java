@@ -1,8 +1,8 @@
 package wbs.sms.locator.model;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionDoesNotHaveTwoElements;
-import static wbs.framework.utils.etc.OptionalUtils.optionalGetRequired;
-import static wbs.framework.utils.etc.StringUtils.stringSplitComma;
+import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveTwoElements;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
+import static wbs.utils.string.StringUtils.stringSplitComma;
 
 import java.util.List;
 

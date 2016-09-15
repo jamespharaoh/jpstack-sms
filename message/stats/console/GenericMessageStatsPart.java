@@ -1,9 +1,9 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.framework.utils.etc.Misc.isNull;
-import static wbs.framework.utils.etc.Misc.toEnum;
-import static wbs.framework.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.framework.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.Misc.toEnum;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
@@ -19,13 +18,16 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.TimeFormatter;
+import wbs.framework.component.annotations.PrototypeDependency;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.web.UrlParams;
+import wbs.utils.time.TimeFormatter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("genericMessageStatsPart")
@@ -33,30 +35,30 @@ public
 class GenericMessageStatsPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	SmsStatsDailyTimeScheme smsStatsDailyTimeScheme;
 
-	@Inject
+	@SingletonDependency
 	SmsStatsMonthlyTimeScheme smsStatsMonthlyTimeScheme;
 
-	@Inject
+	@SingletonDependency
 	SmsStatsWeeklyTimeScheme smsStatsWeeklyTimeScheme;
 
-	@Inject
+	@SingletonDependency
 	SmsStatsConsoleLogic statsConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	TimeFormatter timeFormatter;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<GroupedStatsSource> groupedStatsSourceProvider;
+	@PrototypeDependency
+	Provider <GroupedStatsSource> groupedStatsSourceProvider;
 
-	@Inject
-	Provider<SmsStatsFormatter> statsFormatterProvider;
+	@PrototypeDependency
+	Provider <SmsStatsFormatter> statsFormatterProvider;
 
 	// properties
 
@@ -360,7 +362,7 @@ class GenericMessageStatsPart
 			"date");
 
 		urlParams.printHidden (
-			printWriter);
+			formatWriter);
 
 		printFormat (
 			"<p>Date<br>\n",

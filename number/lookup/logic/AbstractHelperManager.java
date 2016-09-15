@@ -1,24 +1,24 @@
 package wbs.sms.number.lookup.logic;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.capitalise;
+import static wbs.utils.string.StringUtils.capitalise;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import com.google.common.collect.ImmutableMap;
 
 import lombok.extern.log4j.Log4j;
 
-import com.google.common.collect.ImmutableMap;
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 
 @Log4j
 public abstract
-class AbstractHelperManager<HelperType extends Helper> {
+class AbstractHelperManager <HelperType extends Helper> {
 
 	// state
 
-	Map<String,HelperType> byParentObjectTypeCode;
+	Map <String, HelperType> byParentObjectTypeCode;
 
 	// extension points
 
@@ -26,25 +26,27 @@ class AbstractHelperManager<HelperType extends Helper> {
 	String friendlyName ();
 
 	public abstract
-	Map<String,HelperType> helpersByBeanName ();
+	Map <String, HelperType> helpersByBeanName ();
 
 	// implementation
 
-	@PostConstruct
+	@NormalLifecycleSetup
 	public
 	void init () {
 
 		int errorCount = 0;
 
-		Map<String,String> beanNamesByParentTypeCode =
-			new HashMap<String,String> ();
+		Map <String, String> beanNamesByParentTypeCode =
+			new HashMap<> ();
 
-		ImmutableMap.Builder<String,HelperType>
+		ImmutableMap.Builder <String, HelperType>
 		byParentObjectTypeCodeBuilder =
-			ImmutableMap.<String,HelperType>builder ();
+			ImmutableMap.builder ();
 
-		for (Map.Entry<String,HelperType> helperEntry
-				: helpersByBeanName ().entrySet ()) {
+		for (
+			Map.Entry <String, HelperType> helperEntry
+				: helpersByBeanName ().entrySet ()
+		) {
 
 			String beanName =
 				helperEntry.getKey ();

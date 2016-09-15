@@ -1,10 +1,8 @@
 package wbs.sms.number.list.logic;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListNumberObjectHelper;
 import wbs.sms.number.list.model.NumberListNumberObjectHelperMethods;
@@ -15,8 +13,12 @@ public
 class NumberListNumberObjectHelperMethodsImplementation
 	implements NumberListNumberObjectHelperMethods {
 
-	@Inject
-	Provider<NumberListNumberObjectHelper> numberListNumberHelper;
+	// singleton dependencies
+
+	@WeakSingletonDependency
+	NumberListNumberObjectHelper numberListNumberHelper;
+
+	// implementation
 
 	@Override
 	public
@@ -27,7 +29,7 @@ class NumberListNumberObjectHelperMethodsImplementation
 		// find existing
 
 		NumberListNumberRec numberListNumber =
-			numberListNumberHelper.get ().find (
+			numberListNumberHelper.find (
 				numberList,
 				number);
 
@@ -37,8 +39,8 @@ class NumberListNumberObjectHelperMethodsImplementation
 		// create new
 
 		numberListNumber =
-			numberListNumberHelper.get ().insert (
-				numberListNumberHelper.get ().createInstance ()
+			numberListNumberHelper.insert (
+				numberListNumberHelper.createInstance ()
 
 			.setNumberList (
 				numberList)

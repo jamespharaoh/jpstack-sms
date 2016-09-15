@@ -2,25 +2,24 @@ package wbs.sms.number.lookup.logic;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 
 @SingletonComponent ("numberLookupHelperManager")
 public
 class NumberLookupHelperManager
-	extends AbstractHelperManager<NumberLookupHelper> {
+	extends AbstractHelperManager <NumberLookupHelper> {
 
-	// collection dependencies
+	// singleton dependencies
 
-	@Inject
-	Map<String,NumberLookupHelper> numberLookupHelpersByBeanName;
+	@SingletonDependency
+	Map <String, NumberLookupHelper> numberLookupHelpersByBeanName;
 
 	// details
 
 	@Override
 	public
-	Map<String,NumberLookupHelper> helpersByBeanName () {
+	Map <String, NumberLookupHelper> helpersByBeanName () {
 		return numberLookupHelpersByBeanName;
 	}
 

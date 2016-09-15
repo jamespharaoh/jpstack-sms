@@ -1,72 +1,78 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.CollectionUtils.collectionIsNotEmpty;
-import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.StringUtils.stringIsNotEmpty;
-import static wbs.framework.utils.etc.StringUtils.spacify;
-
-import javax.inject.Inject;
+import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.string.StringUtils.spacify;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringIsNotEmpty;
+import static wbs.utils.web.HtmlUtils.htmlLinkWriteHtml;
 
 import lombok.NonNull;
 
-import org.apache.commons.io.output.StringBuilderWriter;
-
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.SingletonComponent;
-import wbs.framework.utils.formatwriter.FormatWriter;
-import wbs.framework.utils.formatwriter.WriterFormatWriter;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("messageConsoleLogic")
 public
 class MessageConsoleLogicImplementation
 	implements MessageConsoleLogic {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MediaLogic mediaLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageConsolePluginManager messageConsolePluginManager;
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
 	// implementation
 
 	@Override
 	public
-	String messageContentText (
+	void writeMessageContentText (
+			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
 		MessageConsolePlugin messageConsolePlugin =
 			messageConsolePluginManager.getPlugin (
 				message.getMessageType ().getCode ());
 
-		if (messageConsolePlugin != null) {
+		if (
+			isNotNull (
+				messageConsolePlugin)
+		) {
 
-			return messageConsolePlugin.messageSummaryText (
+			messageConsolePlugin.writeMessageSummaryText (
+				formatWriter,
 				message);
 
-		}
+		} else {
 
-		return message.getText ().getText ();
+			formatWriter.writeString (
+				message.getText ().getText ());
+
+		}
 
 	}
 
 	@Override
 	public
-	String messageContentHtml (
+	void writeMessageContentHtml (
+			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
 		MessageConsolePlugin messageConsolePlugin =
@@ -75,17 +81,13 @@ class MessageConsoleLogicImplementation
 
 		if (messageConsolePlugin != null) {
 
-			return messageConsolePlugin.messageSummaryHtml (
+			messageConsolePlugin.writeMessageSummaryHtml (
+				formatWriter,
 				message);
 
+			return;
+
 		}
-
-		StringBuilderWriter stringWriter =
-			new StringBuilderWriter ();
-
-		FormatWriter formatWriter =
-			new WriterFormatWriter (
-				stringWriter);
 
 		if (
 			collectionIsNotEmpty (
@@ -120,16 +122,14 @@ class MessageConsoleLogicImplementation
 						media.getMediaType ().getMimeType ())
 				) {
 
-					formatWriter.writeFormat (
-						"%s\n",
-						mediaConsoleLogic.mediaThumb32OrText (
-							media));
+					mediaConsoleLogic.writeMediaThumb32OrText (
+						formatWriter,
+						media);
 
 				} else {
 
-					formatWriter.writeFormat (
-						"<a href=\"%h\">%s</a>\n",
-
+					htmlLinkWriteHtml (
+						formatWriter,
 						requestContext.resolveContextUrl (
 							stringFormat (
 								"/message",
@@ -138,8 +138,8 @@ class MessageConsoleLogicImplementation
 								"/message_mediaSummary",
 								"?index=%u",
 								index ++)),
-
-						mediaConsoleLogic.mediaThumb32OrText (
+						() -> mediaConsoleLogic.writeMediaThumb32OrText (
+							formatWriter,
 							media));
 
 				}
@@ -155,16 +155,15 @@ class MessageConsoleLogicImplementation
 
 		}
 
-		return stringWriter.toString ();
-
 	}
 
 	@Override
 	public
-	String tdForMessageStatus (
+	void writeTdForMessageStatus (
+			@NonNull FormatWriter formatWriter,
 			@NonNull MessageStatus messageStatus) {
 
-		return stringFormat (
+		formatWriter.writeLineFormat (
 			"<td class=\"%h\">%h</td>",
 			classForMessageStatus (
 				messageStatus),

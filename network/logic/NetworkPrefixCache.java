@@ -1,15 +1,13 @@
 package wbs.sms.network.logic;
 
-import static wbs.framework.utils.etc.Misc.isNotNull;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
-import static wbs.framework.utils.etc.TimeUtils.laterThan;
-import static wbs.framework.utils.etc.TimeUtils.millisToInstant;
+import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.time.TimeUtils.laterThan;
+import static wbs.utils.time.TimeUtils.millisToInstant;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +16,7 @@ import lombok.extern.log4j.Log4j;
 import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
 import wbs.sms.network.model.NetworkPrefixRec;
@@ -30,12 +29,12 @@ import wbs.sms.network.model.NetworkRec;
 public
 class NetworkPrefixCache {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NetworkObjectHelper networkHelper;
 
-	@Inject
+	@SingletonDependency
 	NetworkPrefixObjectHelper networkPrefixHelper;
 
 	// properties
@@ -46,7 +45,7 @@ class NetworkPrefixCache {
 	// state
 
 	private
-	Map<String,Long> entries;
+	Map <String, Long> entries;
 
 	private
 	Instant lastReload =

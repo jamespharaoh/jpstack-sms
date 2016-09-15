@@ -1,9 +1,9 @@
 package wbs.sms.keyword.daemon;
 
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.string.StringUtils.stringFormat;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,12 +11,13 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j;
 
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import com.google.common.base.Optional;
-
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -45,36 +46,34 @@ public
 class KeywordCommand
 	implements CommandHandler {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	CommandObjectHelper commandHelper;
 
-	@Inject
+	@WeakSingletonDependency
+	CommandManager commandManager;
+
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	KeywordFinder keywordFinder;
 
-	@Inject
+	@SingletonDependency
 	KeywordLogic keywordLogic;
 
-	@Inject
+	@SingletonDependency
 	KeywordSetFallbackObjectHelper keywordSetFallbackHelper;
 
-	@Inject
+	@SingletonDependency
 	KeywordSetObjectHelper keywordSetHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
-
-	// indirect dependencies
-
-	@Inject
-	Provider<CommandManager> commandManagerProvider;
 
 	// properties
 
@@ -192,7 +191,7 @@ class KeywordCommand
 
 			// hand off
 
-			return commandManagerProvider.get ().handle (
+			return commandManager.handle (
 				inbox,
 				nextCommand,
 				Optional.<Long>absent (),
@@ -224,10 +223,10 @@ class KeywordCommand
 			CommandRec nextCommand =
 				keywordSet.getFallbackCommand ();
 
-			return commandManagerProvider.get ().handle (
+			return commandManager.handle (
 				inbox,
 				nextCommand,
-				Optional.<Long>absent (),
+				optionalAbsent (),
 				rest);
 
 		}
@@ -370,10 +369,10 @@ class KeywordCommand
 			keywordSetFallback.getCommand ();
 
 		return Optional.of (
-			commandManagerProvider.get ().handle (
+			commandManager.handle (
 				inbox,
 				nextCommand,
-				Optional.<Long>absent (),
+				optionalAbsent (),
 				rest));
 
 	}

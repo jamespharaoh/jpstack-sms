@@ -15,7 +15,7 @@
 	</models>
 
 	<layer name="logic">
-		<component class="logic.MessageSender"/>
+		<component class="logic.SmsMessageSender"/>
 		<component class="logic.SmsOutboxLogicImplementation"/>
 	</layer>
 

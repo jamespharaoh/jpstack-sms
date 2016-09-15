@@ -1,45 +1,56 @@
 package wbs.sms.message.core.console;
 
-import static wbs.framework.utils.etc.StringUtils.bytesToString;
-import static wbs.framework.utils.etc.StringUtils.stringEqualSafe;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.bytesToString;
+import static wbs.utils.string.StringUtils.stringEqualSafe;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
 
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
-
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.utils.etc.Html;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
+import wbs.utils.web.HtmlTableCellWriter;
 
 @PrototypeComponent ("messageThreadPart")
 public
 class MessageThreadPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
 
-	Set<MessageRec> messages;
+	Set <MessageRec> messages;
 
 	// implementation
 
@@ -63,27 +74,25 @@ class MessageThreadPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>ID</th>\n",
-			"<th>From</th>\n",
-			"<th>To</th>\n",
-			"<th>Time</th>\n",
-			"<th>Route</th>\n",
-			"<th>Status</th>\n",
-			"<th>Media</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"ID",
+			"From",
+			"To",
+			"Time",
+			"Route",
+			"Status",
+			"Media");
 
-		for (MessageRec message
-				: messages) {
+		for (
+			MessageRec message
+				: messages
+		) {
 
 			// separator
 
-			printFormat (
-				"<tr class=\"sep\">\n");
+			htmlTableRowSeparatorWrite ();
 
 			// various fields
 
@@ -91,35 +100,36 @@ class MessageThreadPart
 				messageConsoleLogic.classForMessage (
 					message);
 
-			printFormat (
-				"<tr class=\"%h\">\n",
-				rowClass,
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					rowClass));
 
-				"<td>%h</td>\n",
-				message.getId (),
+			htmlTableCellWrite (
+				integerToDecimalString (
+					message.getId ()));
 
-				"<td>%h</td>\n",
-				message.getNumFrom (),
+			htmlTableCellWrite (
+				message.getNumFrom ());
 
-				"<td>%h</td>\n",
-				message.getNumTo (),
+			htmlTableCellWrite (
+				message.getNumTo ());
 
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()),
+					message.getCreatedTime ()));
 
-				"<td>%h</td>\n",
-				message.getRoute ().getCode (),
+			htmlTableCellWrite (
+				message.getRoute ().getCode ());
 
-				"%s\n",
-				messageConsoleLogic.tdForMessageStatus (
-					message.getStatus ()));
+			messageConsoleLogic.writeTdForMessageStatus (
+				formatWriter,
+				message.getStatus ());
 
-			List<MediaRec> medias =
+			List <MediaRec> medias =
 				message.getMedias ();
 
-			printFormat (
-				"<td rowspan=\"2\">\n");
+			htmlTableCellOpen (
+				htmlRowSpanAttribute (2l));
 
 			for (
 				int index = 0;
@@ -136,56 +146,56 @@ class MessageThreadPart
 						"text/plain")
 				) {
 
-					printFormat (
-						"%h\n",
+					formatWriter.writeLineFormat (
+						"%h",
 						bytesToString (
 							media.getContent ().getData (),
 							media.getEncoding ()));
 
 				} else {
 
-					printFormat (
-						"%s\n",
-						mediaConsoleLogic.mediaThumb32OrText (
-							media));
+					mediaConsoleLogic.writeMediaThumb32OrText (
+						media);
 
 				}
 
 			}
 
-			printFormat (
-				"</td>\n");
+			htmlTableCellClose ();
 
-			printFormat (
-				"</tr>\n");
+			htmlTableRowClose ();
 
 			// message
 
-			printFormat (
-				"<tr class=\"%h\">\n",
-				rowClass);
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					rowClass));
 
-			printFormat (
-				"%s%s</td>\n",
-				Html.magicTd (
+			new HtmlTableCellWriter ()
+
+				.href (
 					requestContext.resolveContextUrl (
 						stringFormat (
 							"/message",
 							"/%u",
 							message.getId (),
-							"/message_summary")),
-					null,
-					6),
-				messageConsoleLogic.messageContentHtml (
-					message));
+							"/message_summary")))
 
-			printFormat (
-				"</tr>\n");
+				.columnSpan (
+					6l)
+
+				.write (
+					formatWriter);
+
+			messageConsoleLogic.writeMessageContentHtml (
+				formatWriter,
+				message);
+
+			htmlTableRowClose ();
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

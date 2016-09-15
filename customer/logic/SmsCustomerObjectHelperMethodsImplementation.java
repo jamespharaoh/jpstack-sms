@@ -1,47 +1,43 @@
 package wbs.sms.customer.logic;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import lombok.NonNull;
 
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.utils.RandomLogic;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerObjectHelper;
 import wbs.sms.customer.model.SmsCustomerObjectHelperMethods;
 import wbs.sms.customer.model.SmsCustomerRec;
 import wbs.sms.number.core.model.NumberRec;
+import wbs.utils.random.RandomLogic;
 
 public
 class SmsCustomerObjectHelperMethodsImplementation
 	implements SmsCustomerObjectHelperMethods {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	RandomLogic randomLogic;
 
-	// indirect dependencies
-
-	@Inject
-	Provider<SmsCustomerObjectHelper> smsCustomerHelperProvider;
+	@WeakSingletonDependency
+	SmsCustomerObjectHelper smsCustomerHelper;
 
 	// implementation
 
 	@Override
 	public
 	SmsCustomerRec findOrCreate (
-			SmsCustomerManagerRec manager,
-			NumberRec number) {
+			@NonNull SmsCustomerManagerRec manager,
+			@NonNull NumberRec number) {
 
 		Transaction transaction =
 			database.currentTransaction ();
-
-		SmsCustomerObjectHelper smsCustomerHelper =
-			smsCustomerHelperProvider.get ();
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.find (

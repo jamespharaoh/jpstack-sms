@@ -1,16 +1,17 @@
 package wbs.sms.messageset.logic;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.logic.MessageSender;
+import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.number.core.model.NumberRec;
@@ -20,11 +21,17 @@ public
 class MessageSetLogicImplementation
 	implements MessageSetLogic {
 
-	@Inject
+	// singleton dependencies
+
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
-	Provider<MessageSender> messageSender;
+	// prototype dependencies
+
+	@PrototypeDependency
+	Provider <SmsMessageSender> messageSender;
+
+	// implementation
 
 	@Override
 	public

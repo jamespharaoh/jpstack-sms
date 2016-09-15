@@ -1,17 +1,18 @@
 package wbs.sms.message.status.console;
 
-import static wbs.framework.utils.etc.ConcurrentUtils.futureValue;
-import static wbs.framework.utils.etc.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.thread.ConcurrentUtils.futureValue;
 
 import java.util.concurrent.Future;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import wbs.console.part.PagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.platform.status.console.StatusLine;
 
@@ -20,24 +21,24 @@ public
 class MessageStatusLine
 	implements StatusLine {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
-	@Inject
+	@SingletonDependency
 	MessageNumInboxCache numInboxCache;
 
-	@Inject
+	@SingletonDependency
 	MessageNumOutboxCache numOutboxCache;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
 	// prototype dependencies
 
-	@Inject
-	Provider<MessageStatusLinePart> messageStatusLinePart;
+	@PrototypeDependency
+	Provider <MessageStatusLinePart> messageStatusLinePartProvider;
 
 	// details
 
@@ -53,7 +54,7 @@ class MessageStatusLine
 	public
 	PagePart get () {
 
-		return messageStatusLinePart.get ();
+		return messageStatusLinePartProvider.get ();
 
 	}
 

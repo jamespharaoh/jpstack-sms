@@ -1,12 +1,19 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.framework.utils.etc.StringUtils.emptyStringIfNull;
-
-import javax.inject.Inject;
+import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.LogicUtils.ifNotNullThenElseEmDash;
+import static wbs.utils.etc.LogicUtils.ifNullThenEmDash;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteRaw;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
 
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -18,18 +25,18 @@ public
 class MessageNotProcessedSummaryPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
@@ -53,124 +60,72 @@ class MessageNotProcessedSummaryPart
 	public
 	void renderHtmlBodyContent () {
 
-		if (message.getStatus () != MessageStatus.notProcessed) {
+		if (
+			enumNotEqualSafe (
+				message.getStatus (),
+				MessageStatus.notProcessed)
+		) {
 
-			printFormat (
-				"<p>Message is not in correct state</p>\n");
+			formatWriter.writeFormat (
+				"<p>Message is not in correct state</p>");
 
 			return;
 
 		}
 
-		printFormat (
-			"<table class=\"details\">");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>ID</th>\n",
+		htmlTableDetailsRowWrite (
+			"ID",
+			integerToDecimalString (
+				message.getId ()));
 
-			"<td>%h</td>\n",
-			message.getId (),
+		htmlTableDetailsRowWrite (
+			"From",
+			message.getNumFrom ());
 
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"To",
+			message.getNumTo ());
 
-		printFormat (
-			"<tr>\n",
-			"<th>From</th>\n",
+		htmlTableDetailsRowWrite (
+			"Message",
+			message.getText ().getText ());
 
-			"<td>%h</td>\n",
-			message.getNumFrom (),
-			"</tr>\n");
+		htmlTableDetailsRowWriteRaw (
+			"Route",
+			() -> objectManager.writeTdForObjectMiniLink (
+				message.getRoute ()));
 
-		printFormat (
-			"<tr>\n",
-			"<th>To</th>\n",
+		htmlTableDetailsRowWriteRaw (
+			"Status",
+			() -> messageConsoleLogic.writeTdForMessageStatus (
+				formatWriter,
+				message.getStatus ()));
 
-			"<td>%h</td>\n",
-			message.getNumTo (),
+		htmlTableDetailsRowWriteHtml (
+			"Time sent",
+			ifNotNullThenElseEmDash (
+				message.getNetworkTime (),
+				() -> userConsoleLogic.timestampWithTimezoneString (
+					message.getNetworkTime ())));
 
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>Message</th>\n",
-
-			"<td>%h</td>\n",
-			message.getText ().getText (),
-
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>Route</th>\n",
-
-			"%s\n",
-			objectManager.tdForObjectMiniLink (
-				message.getRoute ()),
-
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>Status</th>\n",
-
-			"%s\n",
-			messageConsoleLogic.tdForMessageStatus (
-				message.getStatus ()),
-
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>Time sent</th>\n",
-			"<td>%h</td>\n",
-			message.getNetworkTime () != null
-				? userConsoleLogic.timestampWithTimezoneString (
-					message.getNetworkTime ())
-				: "-",
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>Time received</th>\n",
-			"<td>%h</td>\n",
+		htmlTableDetailsRowWrite (
+			"Time received",
 			userConsoleLogic.timestampWithTimezoneString (
-				message.getCreatedTime ()),
-			"</tr>\n");
+				message.getCreatedTime ()));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Charge</th>\n",
+		htmlTableDetailsRowWrite (
+			"Charge",
+			integerToDecimalString (
+				message.getCharge ()));
 
-			"<td>%h</td>\n",
-			message.getCharge (),
+		htmlTableDetailsRowWrite (
+			"AV status",
+			ifNullThenEmDash (
+				message.getAdultVerified ()));
 
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-			"<th>AVSTATUS</th>\n",
-
-			"<td>%h</td>\n",
-			emptyStringIfNull (
-				message.getAdultVerified ()),
-
-			"</tr>\n");
-
-		/*
-		printFormat (
-			"<tr>\n",
-			"<th>Notes</th>\n",
-
-			"<td>%h</td>\n",
-			emptyStringIfNull (
-				message.getNotes ()),
-
-			"</tr>");
-		*/
-
-		printFormat (
-			"</table>");
+		htmlTableClose ();
 
 	}
 

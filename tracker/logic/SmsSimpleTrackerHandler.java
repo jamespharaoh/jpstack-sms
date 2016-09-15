@@ -1,14 +1,13 @@
 package wbs.sms.tracker.logic;
 
-import javax.inject.Inject;
+import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
 import org.joda.time.Instant;
 
-import com.google.common.base.Optional;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerObjectHelper;
 import wbs.sms.tracker.model.SmsSimpleTrackerRec;
@@ -19,12 +18,12 @@ public
 class SmsSimpleTrackerHandler
 	implements SmsTrackerHandler {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	SmsSimpleTrackerObjectHelper smsSimpleTrackerHelper;
 
-	@Inject
+	@SingletonDependency
 	SmsTrackerLogic smsTrackerLogic;
 
 	// details

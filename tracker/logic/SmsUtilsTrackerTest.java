@@ -1,23 +1,22 @@
 package wbs.sms.tracker.logic;
 
-import javax.inject.Inject;
-
-import junit.framework.TestCase;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+
+import junit.framework.TestCase;
 
 public
 class SmsUtilsTrackerTest
 	extends TestCase {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
 	// implementation

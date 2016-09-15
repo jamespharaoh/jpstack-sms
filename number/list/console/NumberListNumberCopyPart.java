@@ -2,15 +2,15 @@ package wbs.sms.number.list.console;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.google.common.collect.ImmutableList;
 
 import lombok.experimental.Accessors;
+
 import wbs.console.helper.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (fluent = true)
@@ -19,20 +19,20 @@ public
 class NumberListNumberCopyPart
 	extends AbstractPagePart {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	NumberListConsoleHelper numberListHelper;
 
-	@Inject
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	UserPrivChecker privChecker;
 
 	// state
 
-	List<NumberListRec> browseableNumberLists;
+	List <NumberListRec> browseableNumberLists;
 
 	NumberListRec thisNumberList;
 

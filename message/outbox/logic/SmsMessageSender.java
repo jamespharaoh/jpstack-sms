@@ -1,14 +1,10 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.framework.utils.etc.StringUtils.stringEqualSafe;
-import static wbs.framework.utils.etc.StringUtils.stringInSafe;
+import static wbs.utils.string.StringUtils.stringEqualSafe;
+import static wbs.utils.string.StringUtils.stringInSafe;
 
 import java.util.Collection;
 import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.joda.time.Instant;
 
 import com.google.common.base.Optional;
 
@@ -17,7 +13,10 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import org.joda.time.Instant;
+
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
@@ -53,50 +52,50 @@ import wbs.sms.route.router.model.RouterRec;
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSender")
 public
-class MessageSender {
+class SmsMessageSender {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
 
-	@Inject
+	@SingletonDependency
 	BatchObjectHelper batchHelper;
 
-	@Inject
+	@SingletonDependency
 	Database database;
 
-	@Inject
+	@SingletonDependency
 	DeliveryTypeObjectHelper deliveryTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
-	@Inject
+	@SingletonDependency
 	MessageTypeObjectHelper messageTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
 
-	@Inject
+	@SingletonDependency
 	RootObjectHelper rootHelper;
 
-	@Inject
+	@SingletonDependency
 	RouteObjectHelper routeHelper;
 
-	@Inject
+	@SingletonDependency
 	RouterLogic routerLogic;
 
-	@Inject
+	@SingletonDependency
 	ServiceObjectHelper serviceHelper;
 
-	@Inject
+	@SingletonDependency
 	SliceObjectHelper sliceHelper;
 
-	@Inject
+	@SingletonDependency
 	TextObjectHelper textHelper;
 
-	@Inject
+	@SingletonDependency
 	WbsConfig wbsConfig;
 
 	// properties
@@ -156,7 +155,7 @@ class MessageSender {
 	// custom setters
 
 	public
-	MessageSender deliveryTypeCode (
+	SmsMessageSender deliveryTypeCode (
 			@NonNull String deliveryTypeCode) {
 
 		return deliveryTypeCode (
@@ -166,7 +165,7 @@ class MessageSender {
 	}
 
 	public
-	MessageSender messageString (
+	SmsMessageSender messageString (
 			@NonNull String messageString) {
 
 		return messageText (
@@ -176,7 +175,7 @@ class MessageSender {
 	}
 
 	public
-	MessageSender subjectString (
+	SmsMessageSender subjectString (
 			@NonNull String subjectString) {
 
 		return subjectText (
@@ -186,7 +185,7 @@ class MessageSender {
 	}
 
 	public
-	MessageSender deliveryTypeCode (
+	SmsMessageSender deliveryTypeCode (
 			@NonNull Optional<String> deliveryTypeCode) {
 
 		return deliveryType (
@@ -200,7 +199,7 @@ class MessageSender {
 	}
 
 	public
-	MessageSender serviceLookup (
+	SmsMessageSender serviceLookup (
 			@NonNull Record<?> parent,
 			@NonNull String code) {
 
@@ -212,7 +211,7 @@ class MessageSender {
 	}
 
 	public
-	MessageSender routerResolve (
+	SmsMessageSender routerResolve (
 			@NonNull RouterRec router) {
 
 		return route (

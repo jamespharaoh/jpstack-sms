@@ -1,8 +1,7 @@
 package wbs.sms.message.batch.fixture;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
@@ -18,18 +17,18 @@ public
 class BatchFixtureProvider
 	implements FixtureProvider {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	BatchObjectHelper batchHelper;
 
-	@Inject
+	@SingletonDependency
 	BatchSubjectObjectHelper batchSubjectHelper;
 
-	@Inject
+	@SingletonDependency
 	BatchTypeObjectHelper batchTypeHelper;
 
-	@Inject
+	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
 
 	// implementation

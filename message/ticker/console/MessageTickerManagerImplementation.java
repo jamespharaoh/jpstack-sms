@@ -1,23 +1,23 @@
 package wbs.sms.message.ticker.console;
 
-import static wbs.framework.utils.etc.StringUtils.spacify;
-import static wbs.framework.utils.etc.TimeUtils.earlierThan;
-import static wbs.framework.utils.etc.TimeUtils.millisToInstant;
+import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
+import static wbs.utils.string.StringUtils.spacify;
+import static wbs.utils.time.TimeUtils.earlierThan;
+import static wbs.utils.time.TimeUtils.millisToInstant;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.inject.Inject;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.console.MessageConsoleLogic;
@@ -29,15 +29,15 @@ public
 class MessageTickerManagerImplementation
 	implements MessageTickerManager {
 
-	// dependencies
+	// singleton dependencies
 
-	@Inject
+	@SingletonDependency
 	ObjectManager objectManager;
 
-	@Inject
+	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
-	@Inject
+	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
 	// properties
@@ -158,8 +158,14 @@ class MessageTickerManagerImplementation
 
 				messageTickerMessage.text =
 					spacify (
-						messageConsoleLogic.messageContentText (
-							message));
+						formatWriterConsumerToString (
+							formatWriter ->
+
+					messageConsoleLogic.writeMessageContentText (
+						formatWriter,
+						message)
+
+				));
 
 				messageTickerMessage.direction =
 					message.getDirection ();

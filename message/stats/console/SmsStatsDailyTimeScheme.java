@@ -9,8 +9,8 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
-import wbs.framework.utils.etc.Html;
 import wbs.sms.message.stats.model.MessageStatsData;
+import wbs.utils.web.HtmlUtils;
 
 @SingletonComponent ("smsStatsDailyTimeScheme")
 public
@@ -114,7 +114,7 @@ class SmsStatsDailyTimeScheme
 					out.println("<th colspan=\""
 							+ cols
 							+ "\">"
-							+ Html.encode(cols > 1 ? lastMonthNameLong
+							+ HtmlUtils.htmlEncode(cols > 1 ? lastMonthNameLong
 									: lastMonthNameShort) + "</th>");
 				}
 				lastMonth = thisMonth;
@@ -126,8 +126,8 @@ class SmsStatsDailyTimeScheme
 		out.println("<th colspan=\""
 				+ cols
 				+ "\">"
-				+ Html
-						.encode(cols > 1 ? lastMonthNameLong
+				+ HtmlUtils
+						.htmlEncode(cols > 1 ? lastMonthNameLong
 								: lastMonthNameShort) + "</th>");
 		out.println("</tr>");
 
@@ -142,7 +142,7 @@ class SmsStatsDailyTimeScheme
 
 			out.println((cal.getTime().equals(today) ? "<th class=\"hilite\">"
 					: "<th>")
-					+ Html.encode(weekDateFormat.format(cal.getTime()))
+					+ HtmlUtils.htmlEncode(weekDateFormat.format(cal.getTime()))
 					+ "</th>");
 
 		}

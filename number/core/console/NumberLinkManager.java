@@ -1,21 +1,22 @@
 package wbs.sms.number.core.console;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.number.core.model.NumberRec;
 
 @SingletonComponent ("numberLinkManager")
 public
 class NumberLinkManager {
 
-	@Inject
-	List<NumberPlugin> numberPlugins =
-		Collections.emptyList ();
+	// singleton dependencies
+
+	@SingletonDependency
+	List <NumberPlugin> numberPlugins;
+
+	// implementation
 
 	/**
 	 * Calls findAdvicesByNumberId() on all available modules and aggregates the
