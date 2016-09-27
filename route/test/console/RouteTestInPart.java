@@ -1,5 +1,17 @@
 package wbs.sms.route.test.console;
 
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWrite;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormat;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -37,86 +49,78 @@ class RouteTestInPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<p>This facility can be used to insert an inbound message into ",
-			"the system, which will then be treated exactly as if we had ",
-			"received it from the aggregator.</p>\n");
+		htmlParagraphWriteFormat (
+			"This facility can be used to insert an inbound message into the ",
+			"system, which will then be treated exactly as if we had received ",
+			"it from the aggregator.");
 
-		printFormat (
-			"<p class=\"warning\">Please note, that this is intended ",
-			"primarily for testing, and any other usage should instead be ",
-			"performed using a separate facility designed for that specific ",
-			"purpose.\n");
+		htmlParagraphWrite (
+			stringFormat (
+				"Please note, that this is intended primarily for testing, ",
+				"and any other usage should instead be performed using a ",
+				"separate facility designed for that specific purpose"),
+			htmlClassAttribute (
+				"warning"));
 
 		if (! route.getCanReceive ()) {
 
-			printFormat (
-				"<p class=\"error\">This route is not configured for inbound ",
-				"messages, and so this facility is not available.</p>\n");
+			htmlParagraphWrite (
+				stringFormat (
+					"This route is not configured for inbound messages, and so",
+					"this facility is not available."),
+				htmlClassAttribute (
+					"error"));
 
 			return;
 
 		}
 
-		printFormat (
-			"<form",
-			" action=\"%h\"",
+		htmlFormOpenPostAction (
 			requestContext.resolveLocalUrl (
-				"/route.test.in"),
-			" method=\"post\"",
-			">\n");
+				"/route.test.in"));
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Num from</th>\n",
-			"<td>",
-			"<input",
-			" type=\"text\"",
-			" name=\"num_from\"",
-			" size=\"32\"",
-			">",
-			"</td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Num from",
+			() -> formatWriter.writeLineFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_from\"",
+				" size=\"32\"",
+				">"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Num to</th>\n",
-			"<td>",
-			"<input",
-			" type=\"text\"",
-			" name=\"num_to\"",
-			" size=\"32\"></td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Num to",
+			() -> formatWriter.writeLineFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_to\"",
+				" size=\"32\"",
+				">"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Message</th>\n",
-			"<td>",
-			"<textarea",
-			" rows=\"8\"",
-			" cols=\"32\"",
-			" name=\"message\"",
-			">",
-			"</textarea>",
-			"</td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Message",
+			() -> formatWriter.writeLineFormat (
+				"<textarea",
+				" rows=\"8\"",
+				" cols=\"32\"",
+				" name=\"message\"",
+				"></textarea>"));
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"<p>",
+		htmlParagraphOpen ();
+
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"insert message\"",
-			">",
-			"</p>\n");
+			">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphClose ();
+
+		htmlFormClose ();
 
 	}
 

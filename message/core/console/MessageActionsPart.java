@@ -2,6 +2,11 @@ package wbs.sms.message.core.console;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormat;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -41,13 +46,9 @@ class MessageActionsPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<form",
-			" method=\"post\"",
-			" action=\"%h\"",
+		htmlFormOpenPostAction (
 			requestContext.resolveLocalUrl (
-				"/message.actions"),
-			">\n");
+				"/message.actions"));
 
 		if (
 
@@ -64,17 +65,21 @@ class MessageActionsPart
 
 		) {
 
-			printFormat (
-				"<p>This outbound message is in the \"%h\" ",
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
 				message.getStatus ().getDescription (),
-				"state, and can be manually undelivered.</p>\n");
+				"state, and can be manually undelivered.");
 
-			printFormat (
-				"<p><input",
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
 				" type=\"submit\"",
 				" name=\"manuallyUndeliver\"",
 				" value=\"manually undeliver\"",
-				"></p>\n");
+				">");
+
+			htmlParagraphClose ();
 
 		} else if (
 
@@ -90,17 +95,21 @@ class MessageActionsPart
 
 		) {
 
-			printFormat (
-				"<p>This outbound message is in the \"%h\" ",
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
 				message.getStatus ().getDescription (),
-				"state, and can be manually delivered.</p>\n");
+				"state, and can be manually delivered.");
 
-			printFormat (
-				"<p><input",
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
 				" type=\"submit\"",
 				" name=\"manuallyDeliver\"",
 				" value=\"manually deliver\"",
-				"></p>\n");
+				">");
+
+			htmlParagraphClose ();
 
 		} else if (
 
@@ -114,17 +123,21 @@ class MessageActionsPart
 
 		) {
 
-			printFormat (
-				"<p>This outbound message is in the \"%h\" ",
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
 				message.getStatus ().getDescription (),
-				"state, and can be manually unheld.</p>\n");
+				"state, and can be manually unheld.");
 
-			printFormat (
-				"<p><input",
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
 				" type=\"submit\"",
 				" name=\"manuallyUnhold\"",
 				" value=\"manually unhold\"",
-				"></p>\n");
+				">");
+
+			htmlParagraphClose ();
 
 		} else if (
 
@@ -140,28 +153,30 @@ class MessageActionsPart
 
 		) {
 
-			printFormat (
-				"<p>This outbound message is in the \"%h\" ",
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
 				message.getStatus ().getDescription (),
-				"state, and can be manually retried.</p>\n");
+				"state, and can be manually retried.");
 
-			printFormat (
-				"<p><input",
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
 				" type=\"submit\"",
 				" name=\"manuallyRetry\"",
 				" value=\"manually retry\"",
-				"></p>\n");
+				">");
+
+			htmlParagraphClose ();
 
 		} else {
 
-			printFormat (
-				"<p>No actions can be taken on this message at this ",
-				"time.</p>\n");
+			htmlParagraphWriteFormat (
+				"No actions can be taken on this message at this time.");
 
 		}
 
-		printFormat (
-			"</form>\n");
+		htmlFormClose ();
 
 	}
 

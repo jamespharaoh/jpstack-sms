@@ -5,6 +5,6 @@ interface GenericSmsSender
 	extends SmsSender {
 
 	GenericSmsSender smsSenderHelper (
-			SmsSenderHelper<?> smsSenderHelper);
+			SmsSenderHelper <?> smsSenderHelper);
 
 }

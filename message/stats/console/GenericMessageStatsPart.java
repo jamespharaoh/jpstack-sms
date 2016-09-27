@@ -4,6 +4,15 @@ import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.Misc.toEnum;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenGetAction;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlUtils.htmlLinkWrite;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,11 +23,13 @@ import java.util.TreeMap;
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
@@ -86,10 +97,10 @@ class GenericMessageStatsPart
 
 	TabList.Prepared splitTabsPrepared;
 
-	Map<SmsStatsCriteria,Set<Long>> criteriaMap =
+	Map <SmsStatsCriteria, Set <Long>> criteriaMap =
 		new HashMap<> ();
 
-	Map<String,String> criteriaInfo =
+	Map <String, String> criteriaInfo =
 		new TreeMap<> ();
 
 	SmsStatsCriteria splitCriteria;
@@ -100,6 +111,21 @@ class GenericMessageStatsPart
 	boolean ready;
 
 	ObsoleteDateField dateField;
+
+	// details
+
+	@Override
+	public
+	Set <HtmlLink> links () {
+
+		return ImmutableSet.<HtmlLink> of (
+
+			HtmlLink.applicationCssStyle (
+				"/style/sms-message-stats.css")
+
+		);
+
+	}
 
 	// implementation
 
@@ -202,8 +228,10 @@ class GenericMessageStatsPart
 		splitTabs.add (
 			splitTab = new TotalTab ());
 
-		for (SmsStatsCriteria criteria
-				: SmsStatsCriteria.values ()) {
+		for (
+			SmsStatsCriteria criteria
+				: SmsStatsCriteria.values ()
+		) {
 
 			if (excludeCriteria.contains(criteria))
 				continue;
@@ -229,8 +257,10 @@ class GenericMessageStatsPart
 
 		Tab viewTab = null;
 
-		for (SmsStatsViewMode smsStatsViewMode
-				: SmsStatsViewMode.values ()) {
+		for (
+			SmsStatsViewMode smsStatsViewMode
+				: SmsStatsViewMode.values ()
+		) {
 
 			Tab newTab =
 				new ViewTab (
@@ -287,22 +317,6 @@ class GenericMessageStatsPart
 
 		super.renderHtmlHeadContent ();
 
-		printFormat (
-			"<style type=\"text/css\">\n",
-			"table.list td.group-name { background-color: #808080; color: white; font-weight: bold; }\n",
-			"table.list td.group-name-hover { background-color: #404040; color: white; font-weight: bold; }\n",
-			"table.list td.plain { background-color: #eeeeee; }\n",
-			"table.list td.unknown { background-color: #ffffc0; }\n",
-			"table.list td.succeeded { background-color: #c0ffc0; }\n",
-			"table.list td.failed { background-color: #ffc0c0; }\n",
-			"table.list td.hi-plain { background-color: #cecece; }\n",
-			"table.list td.hi-unknown { background-color: #e0e0a0; }\n",
-			"table.list td.hi-succeeded { background-color: #a0e0a0; }\n",
-			"table.list td.hi-failed { background-color: #e0a0a0; }\n",
-			"table.list td.revenue { background-color: #3366CC; color: white;}\n",
-			"table.list td.hi-revenue { background-color: #6666CC; color: white;}\n",
-			"</style>\n");
-
 	}
 
 	@Override
@@ -310,18 +324,19 @@ class GenericMessageStatsPart
 	void renderHtmlBodyContent () {
 
 		splitTabsPrepared.go (
-			requestContext);
+			formatWriter);
 
 		viewTabsPrepared.go (
-			requestContext);
+			formatWriter);
 
 		if (criteriaInfo.size () > 0) {
 
-			printFormat (
-				"<table class=\"details\">\n");
+			htmlTableOpenDetails ();
 
-			for (Map.Entry<String,String> entry
-					: criteriaInfo.entrySet ()) {
+			for (
+				Map.Entry <String, String> entry
+					: criteriaInfo.entrySet ()
+			) {
 
 				String name =
 					entry.getKey ();
@@ -329,30 +344,18 @@ class GenericMessageStatsPart
 				String value =
 					entry.getValue ();
 
-				printFormat (
-					"<tr>\n",
-
-					"<th>%h</th>\n",
+				htmlTableDetailsRowWrite (
 					name,
-
-					"<td>%h</td>\n",
-					value,
-
-					"</tr>\n");
+					value);
 
 			}
 
-			printFormat (
-				"</table>\n");
+			htmlTableClose ();
 
 		}
 
-		printFormat (
-			"<form\n",
-			" method=\"get\"",
-			" action=\"%h\"",
-			url,
-			"\">\n");
+		htmlFormOpenGetAction (
+			url);
 
 		UrlParams myUrlParams =
 			new UrlParams (
@@ -364,29 +367,35 @@ class GenericMessageStatsPart
 		urlParams.printHidden (
 			formatWriter);
 
-		printFormat (
-			"<p>Date<br>\n",
+		htmlParagraphOpen ();
 
+		formatWriter.writeLineFormat (
+			"Date<br>");
+
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"text\"",
 			" name=\"date\"",
 			" value=\"%h\"",
 			dateField.text,
-			">\n",
+			">");
 
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"ok\"",
-			"></p>\n");
+			">");
 
-		printFormat (
-			"</form>");
+		htmlParagraphClose ();
+
+		htmlFormClose ();
 
 		if (! ready)
 			return;
 
-		printFormat (
-			"<p class=\"links\">\n");
+		htmlParagraphOpen (
+			htmlClassAttribute (
+				"links"));
 
 		switch (viewMode) {
 
@@ -401,18 +410,18 @@ class GenericMessageStatsPart
 				timeFormatter.dateString (
 					dateField.date.minusWeeks (1)));
 
-			printFormat (
-				"<a href=\"%h\">Prev week</a>\n",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Prev week");
 
 			myUrlParams.set (
 				"date",
 				timeFormatter.dateString (
 					dateField.date.plusWeeks (1)));
 
-			printFormat (
-				"<a href=\"%h\">Next week</a>\n",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Next week");
 
 			break;
 
@@ -427,18 +436,18 @@ class GenericMessageStatsPart
 				timeFormatter.dateString (
 					dateField.date.minusDays (49)));
 
-			printFormat (
-				"<a href=\"%h\">Prev weeks</a>\n",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Prev weeks");
 
 			myUrlParams.set (
 				"date",
 				timeFormatter.dateString (
 					dateField.date.plusDays (49)));
 
-			printFormat (
-				"<a href=\"%h\">Next weeks</a>\n",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Next weeks");
 
 			break;
 
@@ -453,24 +462,23 @@ class GenericMessageStatsPart
 				timeFormatter.dateString (
 					dateField.date.minusMonths (6)));
 
-			printFormat (
-				"<a href=\"%h\">Prev months</a>\n",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Prev months");
 
 			myUrlParams.set (
 				"date",
 				timeFormatter.dateString (
 					dateField.date.plusMonths (6)));
 
-			printFormat (
-				"<a href=\"%h\">Next months</a>",
-				myUrlParams.toUrl (url));
+			htmlLinkWrite (
+				myUrlParams.toUrl (url),
+				"Next months");
 
 			break;
 		}
 
-		printFormat (
-			"</p>\n");
+		htmlParagraphClose ();
 
 		UrlParams groupedUrlParams =
 			new UrlParams (urlParams);

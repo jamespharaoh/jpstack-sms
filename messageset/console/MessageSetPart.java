@@ -1,8 +1,28 @@
 package wbs.sms.messageset.console;
 
-import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlIdAttributeFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
+import static wbs.utils.web.HtmlInputUtils.htmlOptionWrite;
+import static wbs.utils.web.HtmlInputUtils.htmlSelectClose;
+import static wbs.utils.web.HtmlInputUtils.htmlSelectOpen;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -69,9 +89,15 @@ class MessageSetPart
 				ConsoleApplicationScriptRef.javascript (
 					"/js/gsm.js"))
 
+			.add (
+				ConsoleApplicationScriptRef.javascript (
+					"/js/sms-message-set.js"))
+
 			.build ();
 
 	}
+
+	// implementation
 
 	void prepareFormData (
 			MessageSetRec messageSet) {
@@ -161,41 +187,19 @@ class MessageSetPart
 
 	}
 
-	@Override
-	public
-	void renderHtmlHeadContent () {
-
-		printFormat (
-			"<script language=\"JavaScript\">\n",
-			"function form_magic () {\n",
-			"  for (var i = 0; i < " + numMessages + "; i++) {\n",
-			"    var check = document.getElementById ('enabled_' + i)\n",
-			"    var route = document.getElementById ('route_' + i)\n",
-			"    var number = document.getElementById ('number_' + i)\n",
-			"    var message = document.getElementById ('message_' + i)\n",
-			"    route.disabled = ! check.checked\n",
-			"    number.disabled = ! check.checked\n",
-			"    message.disabled = ! check.checked\n",
-			"  }\n",
-			"}\n",
-			"</script>\n");
-
-	}
-
-
 	public
 	void goRow (
-			int row) {
+			long row) {
 
-		printFormat (
-			"<tr>\n");
+		htmlTableRowOpen ();
 
 		// output checkbox
 
-		printFormat (
-			"<td",
-			" rowspan=\"2\"",
-			"><input",
+		htmlTableCellOpen (
+			htmlRowSpanAttribute (2l));
+
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"checkbox\"",
 			" id=\"enabled_%h\"",
 			row,
@@ -205,13 +209,15 @@ class MessageSetPart
 				? " checked"
 				: "",
 			" onclick=\"form_magic ()\"",
-			"></td>\n");
+			">");
+
+		htmlTableCellClose ();
 
 		// output i
 
-		printFormat (
-			"<td>%h</td>\n",
-			row + 1);
+		htmlTableCellWrite (
+			integerToDecimalString (
+				row + 1));
 
 		// output route
 
@@ -219,44 +225,50 @@ class MessageSetPart
 			formData.get (
 				"route_" + row);
 
-		printFormat (
-			"<td><select",
-			" id=\"route_%h\"",
-			row,
-			" name=\"route_%h\"",
-			row,
-			">\n");
+		htmlTableCellOpen ();
 
-		printFormat (
-			"<option>\n");
+		htmlSelectOpen (
+			stringFormat (
+				"route_%s",
+				row),
+			htmlIdAttributeFormat (
+				"route_%s",
+				row));
 
-		for (RouteRec route
-				: routes) {
+		htmlOptionWrite ();
 
-			printFormat (
-				"<option",
-				" value=\"%h\"",
-				route.getId (),
-				ifThenElse (
-					stringEqualSafe (
-						Long.toString (
-							route.getId ()),
-						routeStr),
-					() -> " selected",
-					() -> ""),
-				">%h.%h</option>\n",
-				route.getSlice ().getCode (),
-				route.getCode ());
+		for (
+			RouteRec route
+				: routes
+		) {
+
+			htmlOptionWrite (
+
+				integerToDecimalString (
+					route.getId ()),
+
+				stringEqualSafe (
+					Long.toString (
+						route.getId ()),
+					routeStr),
+
+				stringFormat (
+					"%h.%h",
+					route.getSlice ().getCode (),
+					route.getCode ())
+
+			);
 
 		}
 
-		printFormat (
-			"</select></td>");
+		htmlSelectClose ();
 
 		// output number
 
-		printFormat (
-			"<td><input",
+		htmlTableCellOpen ();
+
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"text\"",
 			" id=\"number_%h\"",
 			row,
@@ -265,27 +277,33 @@ class MessageSetPart
 			" size=\"16\"",
 			" value=\"%h\"",
 			formData.get ("number_" + row),
-			"></td>\n");
+			">");
+
+		htmlTableCellClose ();
 
 		// output chars
 
-		printFormat (
-			"<td><span",
+		htmlTableCellOpen ();
+
+		formatWriter.writeLineFormat (
+			"<span",
 			" id=\"chars_%h\"",
 			row,
-			">&nbsp;</span></td>\n");
+			">&nbsp;</span>");
 
-		printFormat (
-			"</tr>\n");
+		htmlTableCellClose ();
+
+		htmlTableRowClose ();
 
 		// output second row
 
-		printFormat (
-			"<tr>\n");
+		htmlTableRowOpen ();
 
-		printFormat (
-			"<td",
-			" colspan=\"4\"><textarea",
+		htmlTableCellOpen (
+			htmlColumnSpanAttribute (4l));
+
+		formatWriter.writeLineFormat (
+			"<textarea",
 			" rows=\"3\"",
 			" cols=\"96\"",
 			" id=\"message_%h\"",
@@ -300,12 +318,13 @@ class MessageSetPart
 			stringFormat (
 				"gsmCharCount (this, document.getElementById ('chars_%j'))",
 				row),
-			">%h</textarea></td>\n",
+			">%h</textarea>",
 			formData.get (
 				"message_" + row));
 
-		printFormat (
-			"</tr>\n");
+		htmlTableCellClose ();
+
+		htmlTableRowClose ();
 
 	}
 
@@ -313,39 +332,31 @@ class MessageSetPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<form method=\"post\">\n");
+		htmlFormOpenPost ();
 
-		printFormat (
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"hidden\"",
 			" name=\"num_messages\"",
 			" value=\"%h\"",
 			formData.get (
 				"num_messages"),
-			">\n");
+			">");
 
-		printFormat (
-			"<p><input",
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"submit\"",
 			" value=\"save changes\"",
-			"></p>\n");
+			">");
 
-		printFormat (
-			"<table",
-			" class=\"list\"",
-			" border=\"0\"",
-			" cellspacing=\"1\"",
-			">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>&nbsp;</th>\n",
-			"<th>i</th>\n",
-			"<th>Route</th>\n",
-			"<th>Number</th>\n",
-			"<th>Chars</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"",
+			"i",
+			"Route",
+			"Number",
+			"Chars");
 
 		for (
 			int index = 0;
@@ -353,30 +364,31 @@ class MessageSetPart
 			index ++
 		) {
 
-			printFormat (
-				"<tr class=\"sep\">\n");
+			htmlTableRowSeparatorWrite ();
 
 			goRow (
 				index);
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"<p><input",
+		htmlParagraphOpen ();
+
+		formatWriter.writeLineFormat (
+			"<input",
 			" type=\"submit\"",
 			" value=\"save changes\"",
-			"></p>\n");
+			">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphClose ();
 
-		printFormat (
-			"<script language=\"JavaScript\">\n",
-			"form_magic ()\n",
-			"</script>\n");
+		htmlFormClose ();
+
+		htmlFormClose ();
+
+		htmlScriptBlockWrite (
+			"form_magic ()");
 
 	}
 

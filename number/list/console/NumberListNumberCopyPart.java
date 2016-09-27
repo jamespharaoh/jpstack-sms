@@ -1,5 +1,14 @@
 package wbs.sms.number.list.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -51,22 +60,27 @@ class NumberListNumberCopyPart
 
 		// browseable number lists
 
-		List<NumberListRec> allNumberLists =
+		List <NumberListRec> allNumberLists =
 			numberListHelper.findAll ();
 
-		ImmutableList.Builder<NumberListRec> browseableNumberListsBuilder =
-			ImmutableList.<NumberListRec>builder ();
+		ImmutableList.Builder <NumberListRec> browseableNumberListsBuilder =
+			ImmutableList.builder ();
 
-		for (NumberListRec someNumberList
-				: allNumberLists) {
+		for (
+			NumberListRec someNumberList
+				: allNumberLists
+		) {
 
 			if (someNumberList == thisNumberList)
 				continue;
 
-			if (! privChecker.canRecursive (
+			if (
+				! privChecker.canRecursive (
 					someNumberList,
-					"number_list_browse"))
+					"number_list_browse")
+			) {
 				continue;
+			}
 
 			browseableNumberListsBuilder.add (
 				someNumberList);
@@ -90,71 +104,80 @@ class NumberListNumberCopyPart
 
 	void goDetails () {
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Numbers</th>\n",
-			"<td>%h</td>\n",
-			thisNumberList.getNumberCount (),
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"Numbers",
+			integerToDecimalString (
+				thisNumberList.getNumberCount ()));
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 
 	void goForm () {
 
-		printFormat (
-			"<form method=\"post\">\n");
+		// form open
 
-		printFormat (
-			"<p>Number list<br>\n",
+		htmlFormOpenPost ();
 
+		// number list
+
+		htmlParagraphOpen ();
+
+		formatWriter.writeLineFormat (
+			"Number list<br>");
+
+		formatWriter.writeLineFormat (
 			"<textarea",
 			" name=\"numbers\"",
 			" rows=\"8\"",
 			" cols=\"60\"",
-			">%h</textarea></p>\n",
+			">%h</textarea>",
 			requestContext.parameterOrEmptyString (
 				"numbers"));
 
-		printFormat (
-			"<p>\n");
+		htmlParagraphClose ();
 
-		if (privChecker.canRecursive (
+		// controls
+
+		htmlParagraphOpen ();
+
+		if (
+			privChecker.canRecursive (
 				thisNumberList,
-				"number_list_add")) {
+				"number_list_add")
+		) {
 
-			printFormat (
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"add\"",
 				" value=\"add numbers\"",
-				">\n");
+				">");
 
 		}
 
-		if (privChecker.canRecursive (
+		if (
+			privChecker.canRecursive (
 				thisNumberList,
-				"number_list_remove")) {
+				"number_list_remove")
+		) {
 
-			printFormat (
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"remove\"",
 				" value=\"remove numbers\"",
-				">\n");
+				">");
 
 		}
 
-		printFormat (
-			"</p>\n");
+		htmlParagraphClose ();
 
-		printFormat (
-			"</form>\n");
+		// form close
+
+		htmlFormClose ();
 
 	}
 

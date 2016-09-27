@@ -1,5 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -377,7 +378,7 @@ class AbstractSmsSender1 <MessageContainer>
 		 */
 		void reliableOutboxSuccess (
 				@NonNull Long messageId,
-				@NonNull Optional<List<String>> otherIds) {
+				@NonNull Optional <List <String>> otherIds) {
 
 			boolean interrupted = false;
 
@@ -397,7 +398,8 @@ class AbstractSmsSender1 <MessageContainer>
 
 					smsOutboxLogic.messageSuccess (
 						message,
-						otherIds);
+						otherIds,
+						optionalAbsent ());
 
 					if (interrupted)
 						Thread.currentThread ().interrupt ();

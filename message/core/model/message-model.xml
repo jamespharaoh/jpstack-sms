@@ -138,6 +138,11 @@
 			value-column="tag"
 			owned="yes"/>
 
+		<children-collection
+			name="multipartCompanionLinks"
+			type="smsOutboxMultipartLink"
+			join-column="main_message_id"/>
+
 	</collections>
 
 	<priv-types>

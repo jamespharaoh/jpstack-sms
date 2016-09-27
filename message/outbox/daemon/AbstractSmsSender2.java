@@ -2,7 +2,9 @@ package wbs.sms.message.outbox.daemon;
 
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -558,8 +560,9 @@ class AbstractSmsSender2
 
 					outboxLogic.messageSuccess (
 						smsOutboxAttempt.getMessage (),
-						Optional.of (
-							otherIds));
+						optionalOf (
+							otherIds),
+						optionalAbsent ());
 
 					transaction.commit ();
 
@@ -739,7 +742,7 @@ class AbstractSmsSender2
 		PerformSendStatus status;
 		String message;
 		Throwable exception;
-		List<String> otherIds;
+		List <String> otherIds;
 		JSONObject responseTrace;
 		JSONObject errorTrace;
 	}

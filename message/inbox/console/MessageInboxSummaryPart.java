@@ -4,6 +4,8 @@ import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWriteHtml;
 import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
@@ -12,8 +14,6 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
-import static wbs.utils.web.HtmlUtils.htmlFormClose;
-import static wbs.utils.web.HtmlUtils.htmlFormOpenMethod;
 
 import java.util.List;
 
@@ -62,8 +62,7 @@ class MessageInboxSummaryPart
 	public
 	void renderHtmlBodyContent () {
 
-		htmlFormOpenMethod (
-			"post");
+		htmlFormOpenPost ();
 
 		htmlTableOpenList ();
 

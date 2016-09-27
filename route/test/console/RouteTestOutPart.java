@@ -1,5 +1,16 @@
 package wbs.sms.route.test.console;
 
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWrite;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormat;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -37,86 +48,79 @@ class RouteTestOutPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<p>This facility can be used to insert an outbound message into ",
-			"the system, which will then be sent out to the aggregator as ",
-			"normal.</p>\n");
+		htmlParagraphWriteFormat (
+			"This facility can be used to insert an outbound message into the ",
+			"system, which will then be sent out to the aggregator as normal");
 
-		printFormat (
-			"<p class=\"warning\">Please note, that this is intended ",
-			"primarily for testing, and any other usage should instead be ",
-			"performed using a separate facility designed for that specific ",
-			"purpose.\n");
+		htmlParagraphWrite (
+			stringFormat (
+				"Please note, that this is intended primarily for testing, ",
+				"and any other usage should instead be performed using a ",
+				"separate facility designed for that specific purpose."),
+			htmlClassAttribute (
+				"warning"));
 
 		if (! route.getCanSend ()) {
 
-			printFormat (
-				"<p class=\"error\">This route is not configured for outbound ",
-				"messages, and so this facility is not available.</p>\n");
+			htmlParagraphWrite (
+				stringFormat (
+					"This route is not configured for outbound messages, and ",
+					"so this facility is not available."),
+				htmlClassAttribute (
+					"error"));
 
 			return;
 
 		}
 
-		printFormat (
-			"<form",
-			" action=\"%h\"",
+		htmlFormOpenPostAction (
 			requestContext.resolveLocalUrl (
-				"/route.test.out"),
-			" method=\"post\"",
-			">\n");
+				"/route.test.out"));
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Num from</th>\n",
-			"<td><input",
-			" type=\"text\"",
-			" name=\"num_from\"",
-			" size=\"32\"",
-			"></td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Num free",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_from\"",
+				" size=\"32\"",
+				">"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Num to</th>\n",
-			"<td>",
-			"<input",
-			" type=\"text\"",
-			" name=\"num_to\"",
-			" size=\"32\"",
-			">",
-			"</td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Num to",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_to\"",
+				" size=\"32\"",
+				">"));
 
-		printFormat (
-			"<tr>\n",
-			"<th>Message</th>\n",
-			"<td>",
-			"<textarea",
-			" rows=\"8\"",
-			" cols=\"32\"",
-			" name=\"message\"",
-			">",
-			"</textarea>",
-			"</td>\n",
-			"</tr>\n");
+		htmlTableDetailsRowWriteHtml (
+			"Message",
+			stringFormat (
+				"<textarea",
+				" rows=\"8\"",
+				" cols=\"32\"",
+				" name=\"message\"",
+				"></textarea>"));
 
-		printFormat (
-			"</table>\n");
+		htmlTableRowClose ();
 
-		printFormat (
-			"<p>",
+		htmlTableClose ();
+
+		htmlParagraphOpen ();
+
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"insert message\"",
-			">",
-			"</p>\n");
+			">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphOpen ();
+
+		htmlTableClose ();
 
 	}
 

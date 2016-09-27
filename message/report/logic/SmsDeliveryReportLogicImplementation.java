@@ -1,12 +1,11 @@
 package wbs.sms.message.report.logic;
 
-import org.joda.time.ReadableInstant;
-
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -14,6 +13,8 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+
+import org.joda.time.ReadableInstant;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -266,8 +267,28 @@ class SmsDeliveryReportLogicImplementation
 				"DLV %s %s %s %s",
 				message.getId (),
 				message.getRoute ().getCode (),
-				message.getOtherId (),
+				ifNull (
+					message.getOtherId (),
+					"—"),
 				message.getStatus ()));
+
+		// update simulated multipart messages
+
+		message.getMultipartCompanionLinks ().stream ()
+
+			.filter (
+				link ->
+					link.getSimulated ())
+
+			.forEach (
+				link ->
+					deliveryReport (
+						link.getMessage (),
+						newMessageStatus,
+						theirCode,
+						theirDescription,
+						extraInformation,
+						theirTimestamp));
 
 	}
 

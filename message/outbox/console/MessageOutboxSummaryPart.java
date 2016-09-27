@@ -1,6 +1,15 @@
 package wbs.sms.message.outbox.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlDataAttribute;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 
 import java.util.List;
 import java.util.Set;
@@ -79,15 +88,12 @@ class MessageOutboxSummaryPart
 		Transaction transaction =
 			database.currentTransaction ();
 
-		printFormat (
-			"<table class=\"list\">\n");
+		htmlTableOpenList ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Route</th>\n",
-			"<th>Messages</th>\n",
-			"<th>Oldest</th>\n",
-			"</tr>\n");
+		htmlTableHeaderRowWrite (
+			"Route",
+			"Messages",
+			"Oldest");
 
 		for (
 			RouteOutboxSummaryRec routeOutboxSummary
@@ -97,40 +103,34 @@ class MessageOutboxSummaryPart
 			RouteRec route =
 				routeOutboxSummary.getRoute ();
 
-			printFormat (
-				"<tr",
-				" class=\"magic-table-row\"",
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					"magic-table-row"),
+				htmlDataAttribute (
+					"target-href",
+					requestContext.resolveLocalUrl (
+						stringFormat (
+							"/outbox.route",
+							"?routeId=%u",
+							route.getId ()))));
 
-				" data-target-href=\"%h\"",
-				requestContext.resolveLocalUrl (
-					stringFormat (
-						"/outbox.route",
-						"?routeId=%u",
-						route.getId ())),
-
-				">\n");
-
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				route.getCode ());
 
-			printFormat (
-				"<td>%h</td>\n",
-				routeOutboxSummary.getNumMessages ());
+			htmlTableCellWrite (
+				integerToDecimalString (
+					routeOutboxSummary.getNumMessages ()));
 
-			printFormat (
-				"<td>%h</td>\n",
+			htmlTableCellWrite (
 				timeFormatter.prettyDuration (
 					routeOutboxSummary.getOldestTime (),
 					transaction.now ()));
 
-			printFormat (
-				"</tr>\n");
+			htmlTableRowClose ();
 
 		}
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 

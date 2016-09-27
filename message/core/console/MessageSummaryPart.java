@@ -2,14 +2,19 @@ package wbs.sms.message.core.console;
 
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElseEmDash;
+import static wbs.utils.etc.LogicUtils.ifThenElseEmDash;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.NumberUtils.moreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
 import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteRaw;
 import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
 import static wbs.utils.web.HtmlUtils.htmlLinkWriteHtml;
@@ -110,7 +115,7 @@ class MessageSummaryPart
 				message.getOtherId (),
 				"—"));
 
-		htmlTableDetailsRowWriteRaw (
+		htmlTableDetailsRowWriteHtml (
 			"Message",
 			() -> messageConsoleLogic.writeMessageContentHtml (
 				formatWriter,
@@ -236,9 +241,12 @@ class MessageSummaryPart
 
 		htmlTableDetailsRowWriteRaw (
 			"Charge",
-			currencyLogic.formatHtmlTd (
-				message.getRoute ().getCurrency (),
-				message.getCharge ()));
+			ifThenElseEmDash (
+				moreThanZero (
+					message.getCharge ()),
+				() -> currencyLogic.formatHtmlTd (
+					message.getRoute ().getCurrency (),
+					message.getCharge ())));
 
 		List <MediaRec> medias =
 			message.getMedias ();
@@ -307,15 +315,19 @@ class MessageSummaryPart
 
 		htmlTableDetailsRowWriteRaw (
 			"User",
-			() ->
-				objectManager.writeTdForObjectMiniLink (
-					message.getUser ()));
+			ifNotNullThenElse (
+				message.getUser (),
+				() -> objectManager.writeTdForObjectMiniLink (
+					message.getUser ()),
+				() -> htmlTableCellWrite ("—")));
 
 		htmlTableDetailsRowWriteRaw (
 			"Delivery type",
-			() ->
-				objectManager.writeTdForObjectMiniLink (
-					message.getDeliveryType ()));
+			ifNotNullThenElse (
+				message.getDeliveryType (),
+				() -> objectManager.writeTdForObjectMiniLink (
+					message.getDeliveryType ()),
+				() -> htmlTableCellWrite ("—")));
 
 		htmlTableClose ();
 

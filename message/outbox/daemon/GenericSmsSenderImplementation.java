@@ -218,7 +218,7 @@ class GenericSmsSenderImplementation <StateType>
 			transaction.commit ();
 
 			setupRequestResult =
-				new SetupRequestResult<StateType> ()
+				new SetupRequestResult <StateType> ()
 
 				.status (
 					SetupRequestStatus.blacklisted)
@@ -260,7 +260,7 @@ class GenericSmsSenderImplementation <StateType>
 				GenericExceptionResolution.fatalError);
 
 			setupRequestResult =
-				new SetupRequestResult<StateType> ()
+				new SetupRequestResult <StateType> ()
 
 				.status (
 					SetupRequestStatus.unknownError)
@@ -618,6 +618,8 @@ class GenericSmsSenderImplementation <StateType>
 				smsOutboxAttempt,
 				optionalFromNullable (
 					processResponseResult.otherIds ()),
+				optionalFromNullable (
+					processResponseResult.simulateMessageParts ()),
 				optionalMapRequired (
 					optionalFromNullable (
 						performSendResult.requestTrace ()),
@@ -723,8 +725,8 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	public final static
-	Map<FailureType,String> defaultStatusMessages =
-		ImmutableMap.<FailureType,String>builder ()
+	Map <FailureType, String> defaultStatusMessages =
+		ImmutableMap.<FailureType, String> builder ()
 
 		.put (
 			FailureType.daily,

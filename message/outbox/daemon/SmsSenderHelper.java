@@ -89,7 +89,8 @@ interface SmsSenderHelper <StateType> {
 		Throwable exception;
 		FailureType failureType;
 
-		List<String> otherIds;
+		List <String> otherIds;
+		Long simulateMessageParts;
 
 		JSONObject errorTrace;
 

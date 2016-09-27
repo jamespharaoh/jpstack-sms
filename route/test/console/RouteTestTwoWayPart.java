@@ -1,6 +1,23 @@
 package wbs.sms.route.test.console;
 
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlBlockUtils.htmlHeadingThreeWrite;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormat;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormatError;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphWriteFormatWarning;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 
 import java.util.Collection;
 
@@ -80,132 +97,114 @@ class RouteTestTwoWayPart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<p>This facility can be used to insert an inbound message into ",
-			"the system, which will then be treated exactly as if we had ",
-			"received it from the aggregator. It will also show messages sent ",
-			"back out by the system, allowing an interaction over several ",
-			"messages in and out.</p>\n");
+		htmlParagraphWriteFormat (
+			"This facility can be used to insert an inbound message into the ",
+			"system, which will then be treated exactly as if we had received ",
+			"it from the aggregator. It will also show messages sent back out",
+			"by the system, allowing an interaction over several messages in ",
+			"and out.");
 
-		printFormat (
-			"<p class=\"warning\">Please note, that this is intended ",
-			"primarily for testing, and any other usage should instead be ",
-			"performed using a separate facility designed for that specific ",
-			"purpose.\n");
+		htmlParagraphWriteFormatWarning (
+			"Please note, that this is intended primarily for testing, and ",
+			"any other usage should instead be performed using a separate ",
+			"facility designed for that specific purpose.");
 
 		if (! route.getCanReceive ()) {
 
-			printFormat (
-				"<p class=\"error\">This route is not configured for ",
-				"inbound messages, and so this facility is not available.",
-				"</p>\n");
+			htmlParagraphWriteFormatError (
+				"This route is not configured for inbound messages, and so ",
+				"this facility is not available.");
 
 			return;
 
 		}
 
-		printFormat (
-			"<form",
-			" action=\"%h\"",
+		htmlFormOpenPostAction (
 			requestContext.resolveLocalUrl (
-				"/route.test.twoWay"),
-			" method=\"post\"",
-			">\n");
+				"/route.test.twoWay"));
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
+		htmlTableDetailsRowWriteHtml (
+			"Num from",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_from\"",
+				" size=\"32\"",
+				" value=\"%h\"",
+				requestContext.parameterOrEmptyString (
+					"num_from"),
+				">"));
 
-			"<th>Num from</th>\n",
+		htmlTableDetailsRowWriteHtml (
+			"Num to",
+			stringFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"num_to\"",
+				" size=\"32\"",
+				" value=\"%h\"",
+				requestContext.parameterOrEmptyString (
+					"num_to"),
+				">"));
 
-			"<td><input",
-			" type=\"text\"",
-			" name=\"num_from\"",
-			" size=\"32\"",
-			" value=\"%h\"",
-			requestContext.parameterOrEmptyString (
-				"num_from"),
-			"></td>\n",
+		htmlTableDetailsRowWriteHtml (
+			"Message",
+			stringFormat (
+				"<textarea",
+				" name=\"message\"",
+				" rows=\"3\"",
+				" cols=\"64\"",
+				"></textarea>"));
 
-			"</tr>\n");
+		htmlTableClose ();
 
-		printFormat (
-			"<tr>\n",
+		htmlParagraphOpen ();
 
-			"<th>Num to</th>\n",
-
-			"<td><input",
-			" type=\"text\"",
-			" name=\"num_to\"",
-			" size=\"32\"",
-			" value=\"%h\"",
-			requestContext.parameterOrEmptyString (
-				"num_to"),
-			"></td>\n",
-
-			"</tr>\n");
-
-		printFormat (
-			"<tr>\n",
-
-			"<th>Message</th>\n",
-
-			"<td><textarea",
-			" name=\"message\"",
-			" rows=\"3\"",
-			" cols=\"64\"",
-			"></textarea></td>\n",
-
-			"</tr>\n");
-
-		printFormat (
-			"</table>\n");
-
-		printFormat (
-			"<p>",
+		formatWriter.writeLineFormat (
 			"<input",
 			" type=\"submit\"",
 			" value=\"send message\"",
-			"></p>\n");
+			">");
+
+		htmlParagraphClose ();
 
 		if (messages != null && messages.size () > 0) {
 
-			printFormat (
-				"<h3>Messages</h3>\n");
+			htmlHeadingThreeWrite (
+				"Messages");
 
-			printFormat (
-				"<table class=\"list\">\n");
+			htmlTableOpenList ();
 
-			printFormat (
-				"<tr>\n",
-				"<th>Number</th>\n",
-				"<th>Message</th>\n",
-				"</tr>\n");
+			htmlTableHeaderRowWrite (
+				"Number",
+				"Message");
 
-			for (MessageRec message
-					: messages) {
+			for (
+				MessageRec message
+					: messages
+			) {
 
-				printFormat (
-					"<tr>\n",
-					"<td>%h</td>\n",
+				htmlTableRowOpen ();
+
+				htmlTableCellWrite (
 					message.getDirection () == MessageDirection.in
 						? message.getNumTo ()
-						: message.getNumFrom (),
-					"<td>%h</td>\n",
-					message.getText (),
-					"</tr>\n");
+						: message.getNumFrom ());
+
+				htmlTableCellWrite (
+					message.getText ().getText ());
+
+				htmlTableCellClose ();
 
 			}
 
-			printFormat (
-				"</table>\n");
+			htmlTableClose ();
 
 		}
 
-		printFormat (
-			"</form>\n");
+		htmlFormClose ();
 
 	}
 

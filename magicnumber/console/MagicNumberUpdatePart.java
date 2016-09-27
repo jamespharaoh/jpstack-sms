@@ -1,5 +1,10 @@
 package wbs.sms.magicnumber.console;
 
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 
@@ -12,35 +17,51 @@ class MagicNumberUpdatePart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<form method=\"post\">\n");
+		// form open
 
-		printFormat (
-			"<p>Numbers<br>\n",
+		htmlFormOpenPost ();
+
+		// numbers
+
+		htmlParagraphOpen ();
+
+		formatWriter.writeFormat (
+			"Numbers<br>");
+
+		formatWriter.writeFormat (
 			"<textarea",
 			" name=\"numbers\"",
 			" rows=\"16\"",
 			" cols=\"40\"",
-			">%h</textarea></p>\n",
+			">%h</textarea>",
 			requestContext.parameterOrEmptyString (
 				"numbers"));
 
-		printFormat (
-			"<p><input",
+		htmlParagraphClose ();
+
+		// form controls
+
+		htmlParagraphOpen ();
+
+		formatWriter.writeFormat (
+			"<input",
 			" type=\"submit\"",
 			" name=\"create\"",
 			" value=\"create magic numbers\"",
-			"></p>\n");
+			">");
 
-		printFormat (
-			"<p><input",
+		formatWriter.writeFormat (
+			"<input",
 			" type=\"submit\"",
 			" name=\"delete\"",
 			" value=\"delete magic numbers\"",
-			"></p>\n");
+			">");
 
-		printFormat (
-			"</form>\n");
+		htmlParagraphClose ();
+
+		// form close
+
+		htmlFormClose ();
 
 	}
 

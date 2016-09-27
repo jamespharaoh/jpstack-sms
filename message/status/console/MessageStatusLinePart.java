@@ -1,5 +1,19 @@
 package wbs.sms.message.status.console;
 
+import static wbs.utils.web.HtmlAttributeUtils.htmlAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlAttributeFormat;
+import static wbs.utils.web.HtmlAttributeUtils.htmlIdAttribute;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockClose;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockOpen;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleBlockClose;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleBlockOpen;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleClose;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleEntryWrite;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 
@@ -12,31 +26,96 @@ class MessageStatusLinePart
 	public
 	void renderHtmlHeadContent () {
 
-		printFormat (
-			"<style type=\"text/css\">\n",
-			"#inboxRow, #outboxRow { display: none; cursor: pointer; }\n",
-			"</style>\n");
+		renderStyleBlock ();
+		renderScriptBlock ();
 
-		printFormat (
-			"<script type=\"text/javascript\">\n",
+	}
 
-			"function updateMessage (numInbox, numOutbox, numNotPro) {\n",
+	private
+	void renderStyleBlock () {
 
-			"  var inboxCell = document.getElementById ('inboxCell');\n",
-			"  var outboxCell = document.getElementById ('outboxCell');\n",
+		htmlStyleBlockOpen ();
 
-			"  var inboxRow = document.getElementById ('inboxRow');\n",
-			"  var outboxRow = document.getElementById ('outboxRow');\n",
+		htmlStyleRuleOpen (
+			"#inboxRow",
+			"#outboxRow");
 
-			"  if (numInbox > 0) inboxCell.firstChild.data = '' + numInbox + ' items in inbox';\n",
-			"  if (numOutbox > 0) outboxCell.firstChild.data = '' + numOutbox + ' items in outbox';\n",
+		htmlStyleRuleEntryWrite (
+			"display",
+			"none");
 
-			"  showTableRow (inboxRow, numInbox > 0);\n",
-			"  showTableRow (outboxRow, numOutbox > 0);\n",
+		htmlStyleRuleEntryWrite (
+			"cursor",
+			"pointer");
 
-			"}\n",
+		htmlStyleRuleClose ();
 
-			"</script>\n");
+		htmlStyleBlockClose ();
+
+	}
+
+	private
+	void renderScriptBlock () {
+
+		// script block open
+
+		htmlScriptBlockOpen ();
+
+		// function open
+
+		formatWriter.writeLineFormatIncreaseIndent (
+			"function updateMessage (numInbox, numOutbox, numNotPro) {");
+
+		// variables
+
+		formatWriter.writeLineFormat (
+			"var inboxCell = document.getElementById ('inboxCell');");
+
+		formatWriter.writeLineFormat (
+			"var outboxCell = document.getElementById ('outboxCell');");
+
+		formatWriter.writeLineFormat (
+			"var inboxRow = document.getElementById ('inboxRow');");
+
+		formatWriter.writeLineFormat (
+			"var outboxRow = document.getElementById ('outboxRow');");
+
+		// inbox items
+
+		formatWriter.writeLineFormatIncreaseIndent (
+			"if (numInbox > 0) {");
+
+		formatWriter.writeLineFormat (
+			"inboxCell.firstChild.data = '' + numInbox + ' items in inbox';");
+
+		formatWriter.writeLineFormatDecreaseIndent (
+			"}");
+
+		formatWriter.writeLineFormat (
+			"showTableRow (inboxRow, numInbox > 0);");
+
+		// outbox items
+
+		formatWriter.writeLineFormatIncreaseIndent (
+			"if (numOutbox > 0) {");
+
+		formatWriter.writeLineFormat (
+			"outboxCell.firstChild.data = '' + numOutbox + ' items in outbox';");
+
+		formatWriter.writeLineFormatDecreaseIndent (
+			"}");
+
+		formatWriter.writeLineFormat (
+			"showTableRow (outboxRow, numOutbox > 0);");
+
+		// function close
+
+		formatWriter.writeLineFormatDecreaseIndent (
+			"}");
+
+		// script block close
+
+		htmlScriptBlockClose ();
 
 	}
 
@@ -44,33 +123,74 @@ class MessageStatusLinePart
 	public
 	void renderHtmlBodyContent () {
 
-		printFormat (
-			"<tr",
-			" id=\"inboxRow\"",
-			" onmouseover=\"this.className='hover';\"",
-			" onmouseout=\"this.className='';\"",
-			" onclick=\"top.frames.main.location='%j';\"",
-			requestContext.resolveApplicationUrl (
-				"/inbox"),
-			">\n",
+		renderInboxRow ();
+		renderOutboxRow ();
 
-			"<td id=\"inboxCell\">-</td>\n",
+	}
 
-			"</tr>\n");
+	private
+	void renderInboxRow () {
 
-		printFormat (
-			"<tr",
-			" id=\"outboxRow\"",
-			" onmouseover=\"this.className='hover';\"",
-			" onmouseout=\"this.className='';\"",
-			" onclick=\"top.frames.main.location='%j';\"",
-			requestContext.resolveApplicationUrl (
-				"/outbox"),
-			">\n",
+		htmlTableRowOpen (
 
-			"<td id=\"outboxCell\">-</td>\n",
+			htmlIdAttribute (
+				"inboxRow"),
 
-			"</tr>\n");
+			htmlAttribute (
+				"onmouseover",
+				"this.className='hover';"),
+
+			htmlAttribute (
+				"onmouseout",
+				"this.className='';"),
+
+			htmlAttributeFormat (
+				"onclick",
+				"top.frames.main.location='%j';",
+				requestContext.resolveApplicationUrl (
+					"/inbox"))
+
+		);
+
+		htmlTableCellWrite (
+			"—",
+			htmlIdAttribute (
+				"inboxCell"));
+
+		htmlTableRowClose ();
+
+	}
+
+	private
+	void renderOutboxRow () {
+
+		htmlTableRowOpen (
+
+			htmlIdAttribute (
+				"outboxRow"),
+
+			htmlAttribute (
+				"onmouseover",
+				"this.className='hover';"),
+
+			htmlAttribute (
+				"onmouseout",
+				"this.className='';"),
+
+			htmlAttributeFormat (
+				"onclick",
+				"top.frames.main.location='%j'",
+				requestContext.resolveApplicationUrl (
+					"/outbox"))
+
+		);
+
+		htmlTableCellWrite (
+			"—",
+			htmlIdAttribute (
+				"outboxCell"));
+
+		htmlTableRowClose ();
 
 	}
 

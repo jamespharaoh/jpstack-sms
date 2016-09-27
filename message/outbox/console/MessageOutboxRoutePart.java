@@ -6,6 +6,8 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
@@ -15,8 +17,6 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
-import static wbs.utils.web.HtmlUtils.htmlFormClose;
-import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -172,8 +172,7 @@ class MessageOutboxRoutePart
 				htmlRowSpanAttribute (
 					rowSpan));
 
-			htmlFormOpenMethodAction (
-				"post",
+			htmlFormOpenPostAction (
 				requestContext.resolveLocalUrl (
 					stringFormat (
 						"/outbox.route",

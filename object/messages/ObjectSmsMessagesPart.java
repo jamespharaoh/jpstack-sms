@@ -9,6 +9,8 @@ import static wbs.utils.web.HtmlAttributeUtils.htmlAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenGetAction;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellOpen;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
@@ -18,8 +20,6 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
-import static wbs.utils.web.HtmlUtils.htmlFormClose;
-import static wbs.utils.web.HtmlUtils.htmlFormOpenMethodAction;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -147,8 +147,7 @@ class ObjectSmsMessagesPart
 			requestContext.resolveLocalUrl (
 				localName);
 
-		htmlFormOpenMethodAction (
-			"get",
+		htmlFormOpenGetAction (
 			localUrl);
 
 		formatWriter.writeLineFormat (
@@ -175,12 +174,11 @@ class ObjectSmsMessagesPart
 			" value=\"ok\"",
 			">");
 
-		formatWriter.writeLineFormat (
-			"%s",
-			ObsoleteDateLinks.dailyBrowserLinks (
-				localUrl,
-				requestContext.getFormData (),
-				dateField.date));
+		ObsoleteDateLinks.dailyBrowserLinks (
+			formatWriter,
+			localUrl,
+			requestContext.getFormData (),
+			dateField.date);
 
 		formatWriter.decreaseIndent ();
 

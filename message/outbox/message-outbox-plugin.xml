@@ -12,6 +12,7 @@
 		<model name="outbox"/>
 		<model name="routeOutboxSummary"/>
 		<model name="smsOutboxAttempt"/>
+		<model name="smsOutboxMultipartLink"/>
 	</models>
 
 	<layer name="logic">

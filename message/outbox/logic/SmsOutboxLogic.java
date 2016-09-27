@@ -55,7 +55,8 @@ interface SmsOutboxLogic {
 	 */
 	void messageSuccess (
 			MessageRec message,
-			Optional <List <String>> otherIds);
+			Optional <List <String>> otherIds,
+			Optional <Long> simulateMultipart);
 
 	/**
 	 * Removes the given message from the outbox and marks it as failed. The
@@ -87,6 +88,7 @@ interface SmsOutboxLogic {
 	void completeSendAttemptSuccess (
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			Optional <List <String>> otherIds,
+			Optional <Long> simulateMultipart,
 			Optional <byte[]> requestTrace,
 			Optional <byte[]> responseTrace);
 

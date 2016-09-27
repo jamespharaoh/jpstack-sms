@@ -1,7 +1,7 @@
 package wbs.sms.number.core.console;
 
+import static wbs.utils.etc.LogicUtils.booleanToYesNo;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
-import static wbs.utils.etc.Misc.booleanToYesNo;
 import static wbs.utils.etc.Misc.isNotNull;
 
 import java.util.Collection;

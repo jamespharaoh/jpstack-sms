@@ -1,16 +1,21 @@
 package wbs.sms.message.outbox.logic;
 
+import static wbs.utils.collection.CollectionUtils.collectionHasMoreThanOneElement;
+import static wbs.utils.collection.CollectionUtils.collectionSize;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.moreThanOne;
+import static wbs.utils.etc.NumberUtils.notMoreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.earliest;
 
 import java.util.List;
+import java.util.stream.LongStream;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -42,6 +47,7 @@ import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.message.outbox.model.SmsOutboxAttemptObjectHelper;
 import wbs.sms.message.outbox.model.SmsOutboxAttemptRec;
 import wbs.sms.message.outbox.model.SmsOutboxAttemptState;
+import wbs.sms.message.outbox.model.SmsOutboxMultipartLinkObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @Log4j
@@ -75,6 +81,9 @@ class SmsOutboxLogicImplementation
 
 	@SingletonDependency
 	SmsOutboxAttemptObjectHelper smsOutboxAttemptHelper;
+
+	@SingletonDependency
+	SmsOutboxMultipartLinkObjectHelper smsOutboxMultipartLinkHelper;
 
 	@SingletonDependency
 	TextObjectHelper textHelper;
@@ -368,16 +377,21 @@ class SmsOutboxLogicImplementation
 	public
 	void messageSuccess (
 			@NonNull MessageRec message,
-			@NonNull Optional<List<String>> otherIds) {
+			@NonNull Optional <List <String>> otherIds,
+			@NonNull Optional <Long> simulateMultipart) {
+
+		sanityCheckMultipartOptions (
+			otherIds,
+			simulateMultipart);
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		log.debug ("outbox success id = " + message.getId ());
-
 		OutboxRec outbox =
 			outboxHelper.findRequired (
 				message.getId ());
+
+		// check message state
 
 		if (
 
@@ -399,9 +413,14 @@ class SmsOutboxLogicImplementation
 
 		}
 
-		if (outbox.getSending () == null)
+		if (outbox.getSending () == null) {
+
 			throw new RuntimeException (
 				"Outbox not marked as sending!");
+
+		}
+
+		// remove the outbox and log success
 
 		outboxHelper.remove (
 			outbox);
@@ -454,81 +473,198 @@ class SmsOutboxLogicImplementation
 
 		database.flush ();
 
-		// create multipart companions if appropriate
+		// create multipart companions from other ids
 
 		if (
+
 			optionalIsPresent (
 				otherIds)
+
+			&& collectionHasMoreThanOneElement (
+				otherIds.get ())
+
 		) {
 
 			otherIds.get ().stream ().skip (1).forEach (
-				otherId ->
+				otherId -> {
+
+				MessageRec companionMessage =
 					messageHelper.insert (
 						messageHelper.createInstance ()
 
-				.setThreadId (
-					message.getThreadId ())
+					.setThreadId (
+						message.getThreadId ())
+	
+					.setOtherId (
+						otherId)
+	
+					.setText (
+						textHelper.findOrCreate (
+							stringFormat (
+								"[multipart companion for %s]",
+								message.getId ())))
+	
+					.setNumFrom (
+						message.getNumFrom ())
+	
+					.setNumTo (
+						message.getNumTo ())
+	
+					.setDirection (
+						MessageDirection.out)
+	
+					.setNumber (
+						message.getNumber ())
+	
+					.setCharge (
+						message.getCharge ())
+	
+					.setMessageType (
+						message.getMessageType ())
+	
+					.setRoute (
+						message.getRoute ())
+	
+					.setService (
+						message.getService ())
+	
+					.setNetwork (
+						message.getNetwork ())
+	
+					.setBatch (
+						message.getBatch ())
+	
+					.setAffiliate (
+						message.getAffiliate ())
+	
+					.setStatus (
+						MessageStatus.sent)
+	
+					.setCreatedTime (
+						message.getCreatedTime ())
+	
+					.setProcessedTime (
+						message.getProcessedTime ())
+	
+					.setNetworkTime (
+						null)
+	
+					.setUser (
+						message.getUser ())
 
-				.setOtherId (
-					otherId)
+				);
 
-				.setText (
-					textHelper.findOrCreate (
-						stringFormat (
-							"[multipart companion for %s]",
-							message.getId ())))
+				smsOutboxMultipartLinkHelper.insert (
+					smsOutboxMultipartLinkHelper.createInstance ()
 
-				.setNumFrom (
-					message.getNumFrom ())
+					.setMessage (
+						companionMessage)
 
-				.setNumTo (
-					message.getNumTo ())
+					.setMainMessage (
+						message)
 
-				.setDirection (
-					MessageDirection.out)
+					.setSimulated (
+						false)
 
-				.setNumber (
-					message.getNumber ())
+				);
 
-				.setCharge (
-					message.getCharge ())
+			});
 
-				.setMessageType (
-					message.getMessageType ())
+		}
 
-				.setRoute (
-					message.getRoute ())
+		// create simulated multipart companions
 
-				.setService (
-					message.getService ())
+		if (
 
-				.setNetwork (
-					message.getNetwork ())
+			optionalIsPresent (
+				simulateMultipart)
 
-				.setBatch (
-					message.getBatch ())
+			&& moreThanOne (
+				simulateMultipart.get ())
 
-				.setAffiliate (
-					message.getAffiliate ())
+		) {
 
-				.setStatus (
-					MessageStatus.sent)
+			LongStream.range (1, simulateMultipart.get ()).forEach (
+				companionIndex -> {
 
-				.setCreatedTime (
-					message.getCreatedTime ())
+				MessageRec companionMessage =
+					messageHelper.insert (
+						messageHelper.createInstance ()
 
-				.setProcessedTime (
-					message.getProcessedTime ())
+					.setThreadId (
+						message.getThreadId ())
+	
+					.setText (
+						textHelper.findOrCreate (
+							stringFormat (
+								"[multipart companion for %s]",
+								message.getId ())))
+	
+					.setNumFrom (
+						message.getNumFrom ())
+	
+					.setNumTo (
+						message.getNumTo ())
+	
+					.setDirection (
+						MessageDirection.out)
+	
+					.setNumber (
+						message.getNumber ())
+	
+					.setCharge (
+						message.getCharge ())
+	
+					.setMessageType (
+						message.getMessageType ())
+	
+					.setRoute (
+						message.getRoute ())
+	
+					.setService (
+						message.getService ())
+	
+					.setNetwork (
+						message.getNetwork ())
+	
+					.setBatch (
+						message.getBatch ())
+	
+					.setAffiliate (
+						message.getAffiliate ())
+	
+					.setStatus (
+						MessageStatus.sent)
+	
+					.setCreatedTime (
+						message.getCreatedTime ())
+	
+					.setProcessedTime (
+						message.getProcessedTime ())
+	
+					.setNetworkTime (
+						null)
+	
+					.setUser (
+						message.getUser ())
 
-				.setNetworkTime (
-					null)
+				);
 
-				.setUser (
-					message.getUser ())
+				smsOutboxMultipartLinkHelper.insert (
+					smsOutboxMultipartLinkHelper.createInstance ()
 
-			));
+					.setMessage (
+						companionMessage)
 
-			// TODO expire multipart companions?
+					.setMainMessage (
+						message)
+
+					.setSimulated (
+						true)
+
+				);
+
+			});
 
 		}
 
@@ -753,9 +889,16 @@ class SmsOutboxLogicImplementation
 	public
 	void completeSendAttemptSuccess (
 			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
-			@NonNull Optional<List<String>> otherIds,
-			@NonNull Optional<byte[]> requestTrace,
-			@NonNull Optional<byte[]> responseTrace) {
+			@NonNull Optional <List <String>> otherIds,
+			@NonNull Optional <Long> simulateMultipart,
+			@NonNull Optional <byte[]> requestTrace,
+			@NonNull Optional <byte[]> responseTrace) {
+
+		sanityCheckMultipartOptions (
+			otherIds,
+			simulateMultipart);
+
+		// create sms outbox attempt
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -785,7 +928,8 @@ class SmsOutboxLogicImplementation
 
 		messageSuccess (
 			smsMessage,
-			otherIds);
+			otherIds,
+			simulateMultipart);
 
 	}
 
@@ -831,6 +975,55 @@ class SmsOutboxLogicImplementation
 			smsMessage,
 			errorMessage,
 			failureType);
+
+	}
+
+	private
+	void sanityCheckMultipartOptions (
+			@NonNull Optional <List <String>> otherIds,
+			@NonNull Optional <Long> simulateMultipart) {
+
+		// sanity check
+
+		if (
+			optionalIsPresent (
+				simulateMultipart)
+		) {
+
+			// check simulate multipart is one or more
+
+			if (
+				notMoreThanZero (
+					simulateMultipart.get ())
+			) {
+
+				throw new IllegalArgumentException (
+					"simulateMultiparts must be greater than zero");
+
+			}
+
+			// check multiple other ids weren't returned
+
+			if (
+
+				optionalIsPresent (
+					otherIds)
+
+				&& collectionHasMoreThanOneElement (
+					otherIds.get ())
+
+			) {
+
+				throw new IllegalArgumentException (
+					stringFormat (
+						"simulateMultiparts can only be used with a single ",
+						"otherId, but %s were provided",
+						collectionSize (
+							otherIds.get ())));
+
+			}
+
+		}
 
 	}
 

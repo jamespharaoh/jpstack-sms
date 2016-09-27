@@ -1,5 +1,14 @@
 package wbs.sms.number.list.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphClose;
+import static wbs.utils.web.HtmlBlockUtils.htmlParagraphOpen;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
+
 import lombok.experimental.Accessors;
 
 import wbs.console.part.AbstractPagePart;
@@ -51,39 +60,44 @@ class NumberListNumberUpdatePart
 
 	void goDetails () {
 
-		printFormat (
-			"<table class=\"details\">\n");
+		htmlTableOpenDetails ();
 
-		printFormat (
-			"<tr>\n",
-			"<th>Numbers</th>\n",
-			"<td>%h</td>\n",
-			numberList.getNumberCount (),
-			"</tr>\n");
+		htmlTableDetailsRowWrite (
+			"Numbers",
+			integerToDecimalString (
+				numberList.getNumberCount ()));
 
-		printFormat (
-			"</table>\n");
+		htmlTableClose ();
 
 	}
 
 	void goForm () {
 
-		printFormat (
-			"<form method=\"post\">\n");
+		// form open
 
-		printFormat (
-			"<p>Numbers<br>\n",
+		htmlFormOpenPost ();
 
+		// numbers
+
+		htmlParagraphOpen ();
+
+		formatWriter.writeLineFormat (
+			"Numbers<br>");
+
+		formatWriter.writeLineFormat (
 			"<textarea",
 			" name=\"numbers\"",
 			" rows=\"8\"",
 			" cols=\"60\"",
-			">%h</textarea></p>\n",
+			">%h</textarea>",
 			requestContext.parameterOrEmptyString (
 				"numbers"));
 
-		printFormat (
-			"<p>\n");
+		htmlParagraphClose ();
+
+		// form controls
+
+		htmlParagraphOpen ();
 
 		if (
 			privChecker.canRecursive (
@@ -91,12 +105,12 @@ class NumberListNumberUpdatePart
 				"number_list_add")
 		) {
 
-			printFormat (
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"add\"",
 				" value=\"add numbers\"",
-				">\n");
+				">");
 
 		}
 
@@ -106,20 +120,20 @@ class NumberListNumberUpdatePart
 				"number_list_remove")
 		) {
 
-			printFormat (
+			formatWriter.writeLineFormat (
 				"<input",
 				" type=\"submit\"",
 				" name=\"remove\"",
 				" value=\"remove numbers\"",
-				">\n");
+				">");
 
 		}
 
-		printFormat (
-			"</p>\n");
+		htmlParagraphClose ();
 
-		printFormat (
-			"</form>\n");
+		// form close
+
+		htmlFormClose ();
 
 	}
 
