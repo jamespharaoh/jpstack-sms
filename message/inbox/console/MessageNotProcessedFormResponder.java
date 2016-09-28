@@ -1,6 +1,17 @@
 package wbs.sms.message.inbox.console;
 
+import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.web.HtmlBlockUtils.htmlHeadingOneWrite;
+import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
+import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPostAction;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockClose;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
 
 import java.util.Set;
 
@@ -64,14 +75,13 @@ class MessageNotProcessedFormResponder
 
 		super.renderHtmlHeadContents ();
 
-		printFormat (
-			"<script language=\"JavaScript\">\n");
+		htmlScriptBlockOpen ();
 
-		printFormat (
-			"top.show_inbox (true);\n");
+		formatWriter.writeLineFormat (
+			"top.show_inbox (true);");
 
-		printFormat (
-			"top.frames['main'].location = '%j';\n",
+		formatWriter.writeLineFormat (
+			"top.frames ['main'].location = '%j';",
 			requestContext.resolveApplicationUrl (
 				stringFormat (
 					"/message.notProcessed",
@@ -79,8 +89,7 @@ class MessageNotProcessedFormResponder
 					message.getId (),
 					"/message.notProcessed.summary")));
 
-		printFormat (
-			"</script>\n");
+		htmlScriptBlockClose ();
 
 	}
 
@@ -88,75 +97,76 @@ class MessageNotProcessedFormResponder
 	public
 	void renderHtmlBodyContents () {
 
-		printFormat (
-			"<h1>Message&mdash;not processed</h1>\n");
+		// heading
 
-		printFormat (
-			"<table class=\"details\">");
+		htmlHeadingOneWrite (
+			"Message—not processed");
 
-		printFormat (
-			"<tr>\n",
-			"<th>ID</th>\n",
-			"<td>%h</td>\n",
-			message.getId (),
-			"</tr>\n");
+		// table open
 
-		if (message.getStatus () != MessageStatus.notProcessed) {
+		htmlTableOpenDetails ();
 
-			printFormat (
-				"<tr>\n",
-				"<th>Error</th>\n",
-				"<td>%h</td>\n",
-				"Message is not in correct state",
-				"</tr>\n");
+		// id
+
+		htmlTableDetailsRowWrite (
+			"ID",
+			integerToDecimalString (
+				message.getId ()));
+
+		if (
+			enumNotEqualSafe (
+				message.getStatus (),
+				MessageStatus.notProcessed)
+		) {
+
+			// error
+
+			htmlTableDetailsRowWrite (
+				"Error",
+				"Message is not in correct state");
 
 		} else {
 
-			printFormat (
-				"<tr>\n",
-				"<th>Actions</th>\n",
-				"<td>\n");
+			// actions
 
-			printFormat (
-				"<form",
-				" method=\"post\"",
-				" action=\"%h\"",
-				requestContext.resolveLocalUrl (
-					"/message.notProcessed.form"),
-				">\n");
+			htmlTableDetailsRowWriteHtml (
+				"Actions",
+				() -> {
 
-			printFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"process_again\"",
-				" value=\"process again\"",
-				">\n");
+				htmlFormOpenPostAction (
+					requestContext.resolveLocalUrl (
+						"/message.notProcessed.form"));
 
-			printFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"ignore\"",
-				" value=\"ignore\"",
-				">\n");
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"process_again\"",
+					" value=\"process again\"",
+					">");
 
-			printFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"processed_manually\"",
-				" value=\"processed manually\"",
-				">\n");
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"ignore\"",
+					" value=\"ignore\"",
+					">");
 
-			printFormat (
-				"</form>\n");
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"processed_manually\"",
+					" value=\"processed manually\"",
+					">");
 
-			printFormat (
-				"</td>\n",
-				"</tr>\n");
+				htmlFormClose ();
+
+			});
 
 		}
 
-		printFormat (
-			"</table>\n");
+		// table close
+
+		htmlTableClose ();
 
 	}
 

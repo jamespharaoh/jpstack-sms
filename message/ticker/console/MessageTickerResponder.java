@@ -1,5 +1,22 @@
 package wbs.sms.message.ticker.console;
 
+import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlIdAttribute;
+import static wbs.utils.web.HtmlBlockUtils.htmlHeadingTwoWrite;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockClose;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockOpen;
+import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableBodyClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableBodyOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeadClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeadOpen;
+import static wbs.utils.web.HtmlTableUtils.htmlTableHeaderRowWrite;
+import static wbs.utils.web.HtmlTableUtils.htmlTableOpenList;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
+import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
+
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
@@ -44,13 +61,23 @@ class MessageTickerResponder
 
 		super.renderHtmlHeadContents ();
 
-		printFormat (
-			"<script type=\"text/javascript\">\n",
-			"  var messageTickerParams = {\n",
-			"    reloadMs: %s,\n", reloadMs,
-			"    maxEntries: %s\n", maxEntries,
-			"  }\n",
-			"</script>\n");
+		htmlScriptBlockOpen ();
+
+		formatWriter.writeLineFormatIncreaseIndent (
+			"var messageTickerParams = {");
+
+		formatWriter.writeLineFormat (
+			"reloadMs: %s,",
+			reloadMs);
+
+		formatWriter.writeLineFormat (
+			"maxEntries: %s",
+			maxEntries);
+
+		formatWriter.writeLineFormatDecreaseIndent (
+			"}");
+
+		htmlScriptBlockClose ();
 
 	}
 
@@ -58,36 +85,47 @@ class MessageTickerResponder
 	public
 	void renderHtmlBodyContents () {
 
-		printFormat (
-			"<h2>Message ticker</h1>\n");
+		// heading
 
-		printFormat (
-			"<table id=\"tickerTable\" class=\"list\">\n",
-			"<tbody>\n");
+		htmlHeadingTwoWrite (
+			"Message ticker");
 
-		printFormat (
-			"<tr>\n",
-			"<th>&nbsp;</th>\n",
-			"<th>Time</th>\n",
-			"<th>From</th>\n",
-			"<th>To</th>\n",
-			"<th>Message</th>\n",
-			"<th>S</th>\n",
-			"</tr>\n");
+		// table
 
-		printFormat (
-			"<tr>\n",
-			"<td colspan=\"6\">Loading, please wait...</td>\n",
-			"</tr>\n");
+		htmlTableOpenList (
+			htmlIdAttribute (
+				"tickerTable"));
 
-		printFormat (
-			"</tbody>\n",
-			"</table>\n");
+		htmlTableHeadOpen ();
 
-		printFormat (
-			"<script type=\"text/javascript\">\n",
-			"  messageTicker.doUpdate ();\n",
-			"</script>\n");
+		htmlTableHeaderRowWrite (
+			"",
+			"Time",
+			"From",
+			"To",
+			"Message",
+			"S");
+
+		htmlTableHeadClose ();
+
+		htmlTableBodyOpen ();
+
+		htmlTableRowOpen ();
+
+		htmlTableCellWrite (
+			"Loading, plrease wait...",
+			htmlColumnSpanAttribute (6l));
+
+		htmlTableRowClose ();
+
+		htmlTableBodyClose ();
+
+		htmlTableClose ();
+
+		// script
+
+		htmlScriptBlockWrite (
+			"messageTicker.doUpdate ();");
 
 	}
 
