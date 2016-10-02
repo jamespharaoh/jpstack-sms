@@ -210,9 +210,12 @@ class MessageSummaryPart
 
 			htmlTableDetailsRowWriteRaw (
 				"Command",
-				() ->
-					objectManager.writeTdForObjectMiniLink (
-						message.getCommand ()));
+				() -> ifNotNullThenElse (
+					message.getCommand (),
+					() -> objectManager.writeTdForObjectMiniLink (
+						message.getCommand ()),
+					() -> htmlTableCellWrite (
+						"—")));
 
 		} else {
 
@@ -315,7 +318,7 @@ class MessageSummaryPart
 
 		htmlTableDetailsRowWriteRaw (
 			"User",
-			ifNotNullThenElse (
+			() -> ifNotNullThenElse (
 				message.getUser (),
 				() -> objectManager.writeTdForObjectMiniLink (
 					message.getUser ()),
@@ -323,7 +326,7 @@ class MessageSummaryPart
 
 		htmlTableDetailsRowWriteRaw (
 			"Delivery type",
-			ifNotNullThenElse (
+			() -> ifNotNullThenElse (
 				message.getDeliveryType (),
 				() -> objectManager.writeTdForObjectMiniLink (
 					message.getDeliveryType ()),

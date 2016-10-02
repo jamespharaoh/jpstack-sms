@@ -4,6 +4,7 @@ import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
 import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
 import static wbs.utils.web.HtmlFormUtils.htmlFormOpenPost;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
@@ -121,7 +122,8 @@ class MessageInboxSummaryPart
 					" name=\"ignore_%h\"",
 					message.getId (),
 					" value=\"cancel\"",
-					">"));
+					">"),
+				htmlRowSpanAttribute (3l));
 
 			htmlTableRowClose ();
 
