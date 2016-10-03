@@ -1,5 +1,17 @@
 package wbs.sms.network.fixture;
 
+import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
+import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
+
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
@@ -30,56 +42,14 @@ class NetworkFixtureProvider
 	public
 	void createFixtures () {
 
-		networkHelper.insert (
-			networkHelper.createInstance ()
+		createMenuItems ();
 
-			.setId (
-				0l)
+		createDefaultNetworks ();
 
-			.setCode (
-				"unknown")
+	}
 
-			.setName (
-				"Unknown")
-
-			.setDescription (
-				"Unknown")
-
-		);
-
-		networkHelper.insert (
-			networkHelper.createInstance ()
-
-			.setId (
-				1l)
-
-			.setCode (
-				"blue")
-
-			.setName (
-				"Blue")
-
-			.setDescription (
-				"Blue")
-
-		);
-
-		networkHelper.insert (
-			networkHelper.createInstance ()
-
-			.setId (
-				2l)
-
-			.setCode (
-				"red")
-
-			.setName (
-				"Red")
-
-			.setDescription (
-				"Red")
-
-		);
+	private
+	void createMenuItems () {
 
 		menuItemHelper.insert (
 			menuItemHelper.createInstance ()
@@ -111,5 +81,92 @@ class NetworkFixtureProvider
 		);
 
 	}
+
+	private
+	void createDefaultNetworks () {
+
+		defaultNetworks.forEach (
+			defaultNetwork ->
+				networkHelper.insert (
+					networkHelper.createInstance ()
+
+			.setId (
+				defaultNetwork.id ())
+
+			.setCode (
+				simplifyToCodeRequired (
+					defaultNetwork.name ()))
+
+			.setName (
+				defaultNetwork.name ())
+
+			.setDescription (
+				defaultNetwork.description ())
+
+			.setVirtualNetworkOfNetwork (
+				optionalOrNull (
+					optionalMapRequired (
+						optionalFromNullable (
+							defaultNetwork.virtualNetworkOf ()),
+						networkHelper::findRequired)))
+
+		));
+
+	}
+
+	// types
+
+	@Accessors (fluent = true)
+	@Data
+	public static
+	class DefaultNetwork {
+		Long id;
+		String name;
+		String description;
+		Long virtualNetworkOf;
+	}
+
+	// default data
+
+	List <DefaultNetwork> defaultNetworks =
+		ImmutableList.of (
+
+		new DefaultNetwork ()
+			.id (0l)
+			.name ("Unknown")
+			.description ("Unknown"),
+
+		new DefaultNetwork ()
+			.id (1l)
+			.name ("UK Orange")
+			.description ("Orange UK"),
+
+		new DefaultNetwork ()
+			.id (2l)
+			.name ("UK Vodafone")
+			.description ("Vodafone UK"),
+
+		new DefaultNetwork ()
+			.id (3l)
+			.name ("UK TMobile")
+			.description ("T-Mobile UK"),
+
+		new DefaultNetwork ()
+			.id (4l)
+			.name ("UK O2")
+			.description ("O2 UK"),
+
+		new DefaultNetwork ()
+			.id (5l)
+			.name ("UK Virgin")
+			.description ("Virgin UK")
+			.virtualNetworkOf (3l),
+
+		new DefaultNetwork ()
+			.id (6l)
+			.name ("UK Three")
+			.description ("Three UK")
+
+	);
 
 }
