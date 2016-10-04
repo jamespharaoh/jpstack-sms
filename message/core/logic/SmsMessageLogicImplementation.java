@@ -217,26 +217,20 @@ class SmsMessageLogicImplementation
 
 	@Override
 	public
-	Optional<MessageRec> findMessageByMangledId (
+	Optional <MessageRec> findMessageByMangledId (
 			@NonNull String mangledMessageId) {
 
-System.out.println ("=== A " + mangledMessageId);
-
-		Optional<Long> messageIdOptional =
+		Optional <Long> messageIdOptional =
 			unmangleMessageId (
 				mangledMessageId);
-
-System.out.println ("=== B " + messageIdOptional);
 
 		if (
 			optionalIsNotPresent (
 				messageIdOptional)
 		) {
-System.out.println ("=== C");
 			return Optional.absent ();
 		}
 
-System.out.println ("=== D");
 		return smsMessageHelper.find (
 			messageIdOptional.get ());
 
