@@ -724,7 +724,7 @@ class AbstractSmsSender2
 		String message;
 		JSONObject requestTrace;
 		Throwable exception;
-		Callable<PerformSendResult> performSend;
+		Callable <PerformSendResult> performSend;
 	}
 
 	public static

@@ -2,6 +2,7 @@ package wbs.sms.message.stats.console;
 
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.Misc.toEnum;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.web.HtmlAttributeUtils.htmlClassAttribute;
@@ -186,7 +187,8 @@ class GenericMessageStatsPart
 
 			urlParams.set (
 				crit.toString (),
-				critId);
+				integerToDecimalString (
+					critId));
 
 		}
 

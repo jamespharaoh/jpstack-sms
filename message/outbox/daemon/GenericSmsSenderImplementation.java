@@ -37,6 +37,7 @@ import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.sms.message.core.logic.SmsMessageLogic;
+import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.daemon.SmsSenderHelper.PerformSendResult;
 import wbs.sms.message.outbox.daemon.SmsSenderHelper.PerformSendStatus;
@@ -88,6 +89,9 @@ class GenericSmsSenderImplementation <StateType>
 
 	@SingletonDependency
 	BlacklistObjectHelper smsBlacklistHelper;
+
+	@SingletonDependency
+	MessageObjectHelper smsMessageHelper;
 
 	@SingletonDependency
 	SmsMessageLogic smsMessageLogic;
@@ -253,7 +257,7 @@ class GenericSmsSenderImplementation <StateType>
 		} catch (Exception exception) {
 
 			exceptionLogger.logThrowable (
-				"console",
+				"daemon",
 				getClass ().getSimpleName (),
 				exception,
 				Optional.absent (),
@@ -286,12 +290,31 @@ class GenericSmsSenderImplementation <StateType>
 				SetupRequestStatus.success)
 		) {
 
-			smsOutboxLogic.messageFailure (
-				smsMessage,
-				setupRequestResult.statusMessage (),
-				SmsOutboxLogic.FailureType.permanent);
+			try {
 
-			transaction.commit ();
+				smsOutboxLogic.messageFailure (
+					smsMessage,
+					setupRequestResult.statusMessage (),
+					SmsOutboxLogic.FailureType.permanent);
+	
+				transaction.commit ();
+
+			} catch (RuntimeException exception) {
+
+				exceptionLogger.logThrowable (
+					"daemon",
+					getClass ().getSimpleName (),
+					exception,
+					Optional.absent (),
+					GenericExceptionResolution.tryAgainNow);
+
+				transaction.close ();
+
+				handleSetupErrorInSeparateTransaction (
+					smsMessage.getId (),
+					setupRequestResult);
+
+			}
 
 			return;
 
@@ -313,6 +336,34 @@ class GenericSmsSenderImplementation <StateType>
 		// commit and return
 
 		transaction.commit ();
+
+	}
+
+	void handleSetupErrorInSeparateTransaction (
+			@NonNull Long smsMessageId,
+			@NonNull SetupRequestResult <StateType> setupSendResult) {
+
+		try (
+
+			Transaction transaction =
+				database.beginReadWrite (
+					"GenericSmsSenderImplementation.handleSetupErrorInSeparateTransaction ()",
+					this);
+
+		) {
+
+			MessageRec smsMessage =
+				smsMessageHelper.findRequired (
+					smsMessageId);
+
+			smsOutboxLogic.messageFailure (
+				smsMessage,
+				setupRequestResult.statusMessage (),
+				SmsOutboxLogic.FailureType.permanent);
+
+			transaction.commit ();
+
+		}
 
 	}
 

@@ -72,7 +72,7 @@ class GenericSmsSenderService
 
 	@Getter @Setter
 	protected
-	SmsSenderHelper<?> smsSenderHelper;
+	SmsSenderHelper <?> smsSenderHelper;
 
 	@Getter @Setter
 	int maxTries = 10;

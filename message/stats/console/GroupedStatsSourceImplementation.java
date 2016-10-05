@@ -1,5 +1,7 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -209,19 +211,23 @@ class GroupedStatsSourceImplementation
 	}
 
 	String groupUrl (
-			MessageStatsRec mse) {
+			MessageStatsRec messageStats) {
 
 		if (groupCriteria == null)
 			return null;
 
 		UrlParams myUrlParams =
-			new UrlParams (urlParams);
+			new UrlParams (
+				urlParams);
 
 		myUrlParams.set (
 			groupCriteria.toString (),
-			groupId (mse));
+			integerToDecimalString (
+				groupId (
+					messageStats)));
 
-		return myUrlParams.toUrl (url);
+		return myUrlParams.toUrl (
+			url);
 
 	}
 
