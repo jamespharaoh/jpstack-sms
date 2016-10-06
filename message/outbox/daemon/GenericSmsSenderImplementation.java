@@ -261,14 +261,14 @@ class GenericSmsSenderImplementation <StateType>
 				getClass ().getSimpleName (),
 				exception,
 				Optional.absent (),
-				GenericExceptionResolution.fatalError);
+				GenericExceptionResolution.tryAgainLater);
 
 			setupRequestResult =
 				new SetupRequestResult <StateType> ()
 
 				.status (
 					SetupRequestStatus.unknownError)
-
+	
 				.statusMessage (
 					stringFormat (
 						"Error setting up send: %s: %s",
@@ -295,7 +295,12 @@ class GenericSmsSenderImplementation <StateType>
 				smsOutboxLogic.messageFailure (
 					smsMessage,
 					setupRequestResult.statusMessage (),
-					SmsOutboxLogic.FailureType.permanent);
+					ifThenElse (
+						enumEqualSafe (
+							setupRequestResult.status (),
+							SetupRequestStatus.validationError),
+						() -> SmsOutboxLogic.FailureType.permanent,
+						() -> SmsOutboxLogic.FailureType.temporary));
 	
 				transaction.commit ();
 
@@ -653,7 +658,69 @@ class GenericSmsSenderImplementation <StateType>
 					ProcessResponseStatus.unknownError)
 
 				.exception (
-					exception);
+					exception)
+
+				.failureType (
+					FailureType.temporary);
+
+		}
+
+		if (
+			enumNotEqualSafe (
+				processResponseResult.status (),
+				ProcessResponseStatus.success)
+		) {
+
+			// set status message from exception if not present
+
+			if (
+
+				isNotNull (
+					processResponseResult.exception ())
+
+				&& isNull (
+					processResponseResult.statusMessage ())
+
+			) {
+
+				Throwable exception =
+					processResponseResult.exception ();
+
+				processResponseResult.statusMessage (
+					ifThenElse (
+						isNotNull (
+							exception.getMessage ()),
+
+					() -> stringFormat (
+						"Error sending message: %s: %s",
+						exception.getClass ().getSimpleName (),
+						exception.getMessage ()),
+
+					() -> stringFormat (
+						"Error sending message: %s",
+						exception.getClass ().getSimpleName ())
+
+				));
+
+			}
+
+			// set error trace from exception if not present
+
+			if (
+
+				isNotNull (
+					processResponseResult.exception)
+
+				&& isNull (
+					processResponseResult.errorTrace ())
+
+			) {
+
+				processResponseResult.errorTrace (
+					exceptionUtils.throwableDumpJson (
+						processResponseResult.exception ()));
+
+			}
 
 		}
 
