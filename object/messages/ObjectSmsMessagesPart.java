@@ -177,7 +177,7 @@ class ObjectSmsMessagesPart
 		ObsoleteDateLinks.dailyBrowserLinks (
 			formatWriter,
 			localUrl,
-			requestContext.getFormData (),
+			requestContext.formData (),
 			dateField.date);
 
 		formatWriter.decreaseIndent ();
