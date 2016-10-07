@@ -113,7 +113,7 @@ class MessageTickerResponder
 		htmlTableRowOpen ();
 
 		htmlTableCellWrite (
-			"Loading, plrease wait...",
+			"Loading, please wait...",
 			htmlColumnSpanAttribute (6l));
 
 		htmlTableRowClose ();
