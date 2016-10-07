@@ -301,7 +301,7 @@ class GazetteerFormFieldBuilder {
 
 		if (readOnly) {
 
-			target.addFormField (
+			target.addFormItem (
 				readOnlyFormFieldProvider.get ()
 
 				.name (
@@ -329,7 +329,7 @@ class GazetteerFormFieldBuilder {
 
 		} else {
 
-			target.addFormField (
+			target.addFormItem (
 				updatableFormFieldProvider.get ()
 
 				.name (

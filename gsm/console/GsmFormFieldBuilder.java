@@ -246,7 +246,7 @@ class GsmFormFieldBuilder {
 
 		if (readOnly) {
 
-			target.addFormField (
+			target.addFormItem (
 				readOnlyFormFieldProvider.get ()
 
 				.name (
@@ -274,7 +274,7 @@ class GsmFormFieldBuilder {
 
 		} else {
 
-			target.addFormField (
+			target.addFormItem (
 				updatableFormFieldProvider.get ()
 
 				.name (
