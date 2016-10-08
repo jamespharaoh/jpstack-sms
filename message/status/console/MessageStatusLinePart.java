@@ -8,8 +8,8 @@ import static wbs.utils.web.HtmlScriptUtils.htmlScriptBlockOpen;
 import static wbs.utils.web.HtmlStyleUtils.htmlStyleBlockClose;
 import static wbs.utils.web.HtmlStyleUtils.htmlStyleBlockOpen;
 import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleClose;
-import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleEntryWrite;
-import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleOpen;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleEntry;
+import static wbs.utils.web.HtmlStyleUtils.htmlStyleRuleWrite;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
@@ -36,17 +36,12 @@ class MessageStatusLinePart
 
 		htmlStyleBlockOpen ();
 
-		htmlStyleRuleOpen (
+		htmlStyleRuleWrite (
 			"#inboxRow",
-			"#outboxRow");
-
-		htmlStyleRuleEntryWrite (
-			"display",
-			"none");
-
-		htmlStyleRuleEntryWrite (
-			"cursor",
-			"pointer");
+			"#outboxRow",
+			htmlStyleRuleEntry (
+				"cursor",
+				"pointer"));
 
 		htmlStyleRuleClose ();
 
@@ -148,7 +143,11 @@ class MessageStatusLinePart
 				"onclick",
 				"top.frames.main.location='%j';",
 				requestContext.resolveApplicationUrl (
-					"/inbox"))
+					"/inbox")),
+
+			htmlStyleRuleEntry (
+				"display",
+				"none")
 
 		);
 
@@ -181,7 +180,11 @@ class MessageStatusLinePart
 				"onclick",
 				"top.frames.main.location='%j'",
 				requestContext.resolveApplicationUrl (
-					"/outbox"))
+					"/outboxes")),
+
+			htmlStyleRuleEntry (
+				"display",
+				"none")
 
 		);
 

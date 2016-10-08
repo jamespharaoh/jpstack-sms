@@ -21,9 +21,9 @@
 	</layer>
 
 	<layer name="console">
+		<component class="console.MessageOutboxOverviewPart"/>
 		<component class="console.MessageOutboxRouteAction"/>
 		<component class="console.MessageOutboxRoutePart"/>
-		<component class="console.MessageOutboxSummaryPart"/>
 	</layer>
 
 	<layer name="daemon">

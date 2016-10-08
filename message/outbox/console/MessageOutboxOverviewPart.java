@@ -14,11 +14,15 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableRowOpen;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import com.google.common.collect.ImmutableSet;
 
+import wbs.console.forms.FormFieldSet;
 import wbs.console.html.MagicTableScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
+import wbs.console.module.ConsoleModule;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -29,15 +33,19 @@ import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.utils.time.TimeFormatter;
 
-@PrototypeComponent ("messageOutboxSummaryPart")
+@PrototypeComponent ("messageOutboxOverviewPart")
 public
-class MessageOutboxSummaryPart
+class MessageOutboxOverviewPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
 
 	@SingletonDependency
 	Database database;
+
+	@SingletonDependency
+	@Named
+	ConsoleModule messageOutboxConsoleModule;
 
 	@SingletonDependency
 	RouteOutboxSummaryObjectHelper routeOutboxSummaryHelper;
@@ -47,15 +55,17 @@ class MessageOutboxSummaryPart
 
 	// state
 
-	List<RouteOutboxSummaryRec> routeOutboxSummaries;
+	FormFieldSet <RouteOutboxSummaryRec> fields;
+
+	List <RouteOutboxSummaryRec> routeOutboxSummaries;
 
 	// details
 
 	@Override
 	public
-	Set<ScriptRef> scriptRefs () {
+	Set <ScriptRef> scriptRefs () {
 
-		return ImmutableSet.<ScriptRef>builder ()
+		return ImmutableSet.<ScriptRef> builder ()
 
 			.addAll (
 				super.scriptRefs ())
@@ -75,6 +85,11 @@ class MessageOutboxSummaryPart
 	@Override
 	public
 	void prepare () {
+
+		fields =
+			messageOutboxConsoleModule.formFieldSet (
+				"routeOutboxSummary",
+				RouteOutboxSummaryRec.class);
 
 		routeOutboxSummaries =
 			routeOutboxSummaryHelper.findAll ();

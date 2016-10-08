@@ -152,23 +152,22 @@ class ObjectSmsMessageSetPageBuilder <
 	}
 
 	void buildTab (
-			@NonNull ResolvedConsoleContextExtensionPoint
-				resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		consoleModule.addContextTab (
+			container.taskLogger (),
 			"end",
 			contextTab.get ()
 				.name (tabName)
 				.defaultLabel (tabLabel)
 				.localFile (fileName)
 				.privKeys (Collections.singletonList (privKey)),
-			resolvedExtensionPoint.contextTypeNames ());
+			extensionPoint.contextTypeNames ());
 
 	}
 
 	void buildFile (
-			@NonNull ResolvedConsoleContextExtensionPoint
-				resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		Provider <PagePart> partFactory =
 			new Provider <PagePart> () {
@@ -236,7 +235,7 @@ class ObjectSmsMessageSetPageBuilder <
 				.getAction (getAction)
 				.postAction (postAction)
 				.privName (privKey),
-			resolvedExtensionPoint.contextTypeNames ());
+			extensionPoint.contextTypeNames ());
 
 	}
 

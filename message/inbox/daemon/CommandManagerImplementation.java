@@ -10,6 +10,7 @@ import javax.inject.Provider;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
@@ -23,6 +24,7 @@ import wbs.sms.command.model.CommandTypeRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 
+@Log4j
 @SingletonComponent ("commandManager")
 public
 class CommandManagerImplementation
@@ -132,6 +134,7 @@ class CommandManagerImplementation
 
 		return (CommandHandler)
 			componentManager.getComponentRequired (
+				log,
 				beanName,
 				CommandHandler.class);
 

@@ -20,20 +20,88 @@
 
 	</console-helper-provider>
 
-	<simple-context
-		name="outbox">
+	<object-context
+		name="outbox"
+		object-name="outbox">
 
-		<context-tab-responder-page
-			name="summary"
-			page-part="messageOutboxSummaryPart"/>
+		<list>
 
-		<context-tab-action-page
+			<context-tab-responder-page
+				name="overview"
+				page-part="messageOutboxOverviewPart"/>
+
+			<context-tab-action-page
+				name="route"
+				page-part="messageOutboxRoutePart"
+				responder="messageOutboxRouteResponder"
+				action="messageOutboxRouteAction"
+				hide-tab="yes"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="routeOutboxSummary"
+		object-name="routeOutboxSummary">
+
+		<object-field
 			name="route"
-			page-part="messageOutboxRoutePart"
-			responder="messageOutboxRouteResponder"
-			action="messageOutboxRouteAction"
-			hide-tab="yes"/>
+			object-type="route"/>
 
-	</simple-context>
+		<integer-field
+			name="numMessages"
+			label="Messages"/>
+
+		<timestamp-field
+			name="oldestTime"
+			label="Oldest"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="outbox">
+
+		<id-field/>
+		<parent-field/>
+
+		<object-field
+			name="route"
+			object-type="route"/>
+
+		<timestamp-field
+			name="createdTime"/>
+
+		<integer-field
+			name="pri"
+			label="Priority"/>
+
+		<timestamp-field
+			name="retryTime"/>
+
+		<integer-field
+			name="tries"/>
+
+		<integer-field
+			name="remainingTries"/>
+
+		<text-field
+			name="error"/>
+
+		<yes-no-field
+			name="dailyFailure"/>
+
+		<timestamp-field
+			name="sending"/>
+
+	</field-set>
 
 </console-module>

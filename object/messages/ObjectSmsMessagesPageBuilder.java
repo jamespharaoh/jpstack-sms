@@ -132,17 +132,17 @@ class ObjectSmsMessagesPageBuilder <
 	}
 
 	void buildContextTab (
-			@NonNull ResolvedConsoleContextExtensionPoint
-				resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		consoleModule.addContextTab (
+			container.taskLogger (),
 			"end",
 			contextTabProvider.get ()
 				.name (tabName)
 				.defaultLabel ("Messages")
 				.localFile (fileName)
 				.privKeys (privKey),
-			resolvedExtensionPoint.contextTypeNames ());
+			extensionPoint.contextTypeNames ());
 
 	}
 

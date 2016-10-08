@@ -100,9 +100,10 @@ class ObjectSmsStatsPageBuilder <
 	}
 
 	void buildContextTab (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		consoleModule.addContextTab (
+			container.taskLogger (),
 			"end",
 			contextTabProvider.get ()
 
@@ -118,12 +119,12 @@ class ObjectSmsStatsPageBuilder <
 				.privKeys (
 					privKey),
 
-			resolvedExtensionPoint.contextTypeNames ());
+			extensionPoint.contextTypeNames ());
 
 	}
 
 	void buildContextFile (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint) {
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		consoleModule.addContextFile (
 
@@ -139,7 +140,7 @@ class ObjectSmsStatsPageBuilder <
 				.privKeys (
 					Collections.singletonList (privKey)),
 
-			resolvedExtensionPoint.contextTypeNames ());
+			extensionPoint.contextTypeNames ());
 
 	}
 
