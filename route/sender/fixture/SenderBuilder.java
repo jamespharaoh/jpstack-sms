@@ -51,7 +51,7 @@ class SenderBuilder {
 	SenderSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.Cleanup;
 
 import wbs.console.action.ConsoleAction;
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;

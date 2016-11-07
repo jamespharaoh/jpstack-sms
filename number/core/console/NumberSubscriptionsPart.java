@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;

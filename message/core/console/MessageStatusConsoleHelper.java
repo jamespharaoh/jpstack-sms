@@ -4,7 +4,7 @@ import lombok.NonNull;
 
 import com.google.common.base.Optional;
 
-import wbs.console.helper.EnumConsoleHelper;
+import wbs.console.helper.enums.EnumConsoleHelper;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.message.core.model.MessageStatus;
 

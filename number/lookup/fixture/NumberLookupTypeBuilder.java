@@ -59,7 +59,7 @@ class NumberLookupTypeBuilder {
 	NumberLookupTypeSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

@@ -268,7 +268,7 @@ class GenericSmsSenderImplementation <StateType>
 
 				.status (
 					SetupRequestStatus.unknownError)
-	
+
 				.statusMessage (
 					stringFormat (
 						"Error setting up send: %s: %s",
@@ -301,7 +301,7 @@ class GenericSmsSenderImplementation <StateType>
 							SetupRequestStatus.validationError),
 						() -> SmsOutboxLogic.FailureType.permanent,
 						() -> SmsOutboxLogic.FailureType.temporary));
-	
+
 				transaction.commit ();
 
 			} catch (RuntimeException exception) {

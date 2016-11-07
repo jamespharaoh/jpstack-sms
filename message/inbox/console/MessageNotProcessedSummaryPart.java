@@ -10,7 +10,7 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
 import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWriteRaw;
 import static wbs.utils.web.HtmlTableUtils.htmlTableOpenDetails;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;

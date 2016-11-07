@@ -59,7 +59,7 @@ class RouterTypeBuilder {
 	RouterTypeSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

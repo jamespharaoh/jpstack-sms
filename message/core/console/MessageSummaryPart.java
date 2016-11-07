@@ -23,7 +23,7 @@ import java.util.List;
 
 import com.google.common.base.Optional;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -177,7 +177,7 @@ class MessageSummaryPart
 
 		htmlTableDetailsRowWriteRaw (
 			"Affiliate",
-			() -> 
+			() ->
 				objectManager.writeTdForObjectMiniLink (
 					message.getAffiliate ()));
 

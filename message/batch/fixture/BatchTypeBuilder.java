@@ -58,7 +58,7 @@ class BatchTypeBuilder {
 	BatchTypeSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

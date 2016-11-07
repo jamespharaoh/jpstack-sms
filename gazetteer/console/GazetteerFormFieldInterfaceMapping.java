@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;

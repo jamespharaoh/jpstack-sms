@@ -26,7 +26,7 @@ class CommandTypesBuilder {
 	CommandTypesSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

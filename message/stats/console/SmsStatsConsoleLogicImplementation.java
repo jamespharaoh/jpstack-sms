@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.SingletonComponent;

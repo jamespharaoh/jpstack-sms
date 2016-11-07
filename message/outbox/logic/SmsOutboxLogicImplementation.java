@@ -494,61 +494,61 @@ class SmsOutboxLogicImplementation
 
 					.setThreadId (
 						message.getThreadId ())
-	
+
 					.setOtherId (
 						otherId)
-	
+
 					.setText (
 						textHelper.findOrCreate (
 							stringFormat (
 								"[multipart companion for %s]",
 								message.getId ())))
-	
+
 					.setNumFrom (
 						message.getNumFrom ())
-	
+
 					.setNumTo (
 						message.getNumTo ())
-	
+
 					.setDirection (
 						MessageDirection.out)
-	
+
 					.setNumber (
 						message.getNumber ())
-	
+
 					.setCharge (
 						message.getCharge ())
-	
+
 					.setMessageType (
 						message.getMessageType ())
-	
+
 					.setRoute (
 						message.getRoute ())
-	
+
 					.setService (
 						message.getService ())
-	
+
 					.setNetwork (
 						message.getNetwork ())
-	
+
 					.setBatch (
 						message.getBatch ())
-	
+
 					.setAffiliate (
 						message.getAffiliate ())
-	
+
 					.setStatus (
 						MessageStatus.sent)
-	
+
 					.setCreatedTime (
 						message.getCreatedTime ())
-	
+
 					.setProcessedTime (
 						message.getProcessedTime ())
-	
+
 					.setNetworkTime (
 						null)
-	
+
 					.setUser (
 						message.getUser ())
 
@@ -593,58 +593,58 @@ class SmsOutboxLogicImplementation
 
 					.setThreadId (
 						message.getThreadId ())
-	
+
 					.setText (
 						textHelper.findOrCreate (
 							stringFormat (
 								"[multipart companion for %s]",
 								message.getId ())))
-	
+
 					.setNumFrom (
 						message.getNumFrom ())
-	
+
 					.setNumTo (
 						message.getNumTo ())
-	
+
 					.setDirection (
 						MessageDirection.out)
-	
+
 					.setNumber (
 						message.getNumber ())
-	
+
 					.setCharge (
 						message.getCharge ())
-	
+
 					.setMessageType (
 						message.getMessageType ())
-	
+
 					.setRoute (
 						message.getRoute ())
-	
+
 					.setService (
 						message.getService ())
-	
+
 					.setNetwork (
 						message.getNetwork ())
-	
+
 					.setBatch (
 						message.getBatch ())
-	
+
 					.setAffiliate (
 						message.getAffiliate ())
-	
+
 					.setStatus (
 						MessageStatus.sent)
-	
+
 					.setCreatedTime (
 						message.getCreatedTime ())
-	
+
 					.setProcessedTime (
 						message.getProcessedTime ())
-	
+
 					.setNetworkTime (
 						null)
-	
+
 					.setUser (
 						message.getUser ())
 

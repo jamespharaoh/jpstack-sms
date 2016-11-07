@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;

@@ -51,7 +51,7 @@ class DeliveryTypeBuilder {
 	DeliveryTypeSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

@@ -61,7 +61,7 @@ class BlacklistSearchPart
 			String stringFormat) {
 
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -18,7 +18,7 @@ import static wbs.utils.web.HtmlTableUtils.htmlTableRowSeparatorWrite;
 
 import java.util.List;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;

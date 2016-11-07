@@ -30,7 +30,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.html.ObsoleteDateLinks;
 import wbs.console.part.AbstractPagePart;

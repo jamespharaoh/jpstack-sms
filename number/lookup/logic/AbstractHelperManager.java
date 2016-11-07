@@ -1,5 +1,6 @@
 package wbs.sms.number.lookup.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -93,7 +94,8 @@ class AbstractHelperManager <HelperType extends Helper> {
 			throw new RuntimeException (
 				stringFormat (
 					"Aborting due to %s errors",
-					errorCount));
+					integerToDecimalString (
+						errorCount)));
 
 		}
 

@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Cleanup;
 
 import wbs.console.action.ConsoleAction;
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.param.ParamChecker;
 import wbs.console.param.ParamCheckerSet;
 import wbs.console.param.RegexpParamChecker;

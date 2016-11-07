@@ -105,14 +105,14 @@ class MessageActionsPart
 					"state, and can be manually retried.");
 
 				htmlParagraphOpen ();
-	
+
 				formatWriter.writeLineFormat (
 					"<input",
 					" type=\"submit\"",
 					" name=\"manuallyRetry\"",
 					" value=\"manually retry\"",
 					">");
-	
+
 				htmlParagraphClose ();
 
 			}

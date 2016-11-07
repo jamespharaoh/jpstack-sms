@@ -26,7 +26,7 @@ class RouterTypesBuilder {
 	RouterTypesSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

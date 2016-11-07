@@ -14,7 +14,7 @@ import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
 import wbs.console.context.ConsoleContextPrivLookup;
 import wbs.console.context.ResolvedConsoleContextExtensionPoint;
-import wbs.console.helper.ConsoleHelper;
+import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleMetaModuleImplementation;

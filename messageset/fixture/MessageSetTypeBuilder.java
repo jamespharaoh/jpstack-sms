@@ -57,7 +57,7 @@ class MessageSetTypeBuilder {
 	MessageSetTypeSpec spec;
 
 	@BuilderTarget
-	Model model;
+	Model <?> model;
 
 	// build
 

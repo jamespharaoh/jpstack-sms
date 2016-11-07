@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.part.PagePart;
 import wbs.console.request.ConsoleRequestContext;

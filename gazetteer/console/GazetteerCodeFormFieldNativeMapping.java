@@ -10,7 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import wbs.console.forms.FormFieldNativeMapping;
-import wbs.console.helper.ConsoleObjectManager;
+import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
