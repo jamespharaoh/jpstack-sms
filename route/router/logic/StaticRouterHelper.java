@@ -33,7 +33,7 @@ class StaticRouterHelper
 
 		RouteRec route =
 			(RouteRec)
-			objectManager.getParent (
+			objectManager.getParentOrNull (
 				router);
 
 		return route;

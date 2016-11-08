@@ -1,12 +1,17 @@
 package wbs.sms.message.core.console;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
+import static wbs.utils.etc.Misc.getError;
+import static wbs.utils.etc.Misc.getValue;
+import static wbs.utils.etc.Misc.isError;
 import static wbs.utils.etc.NumberUtils.moreThanZero;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 
 import wbs.console.helper.core.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
@@ -24,7 +29,10 @@ import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import fj.data.Either;
+
 @SingletonComponent ("messageConsoleHooks")
+@Log4j
 public
 class MessageConsoleHooks
 	implements ConsoleHooks <MessageRec> {
@@ -103,11 +111,29 @@ class MessageConsoleHooks
 				: serviceHelper.findAll ()
 		) {
 
-			Record<?> serviceParent =
-				objectManager.getParent (
+			Either <Optional <Record <?>>, String> serviceParentOrError =
+				objectManager.getParentOrError (
 					service);
 
-			 if (
+			if (
+				isError (
+					serviceParentOrError)
+			) {
+
+				log.warn (
+					getError (
+						serviceParentOrError));
+
+				continue;
+
+			}
+
+			Record <?> serviceParent =
+				optionalGetRequired (
+					getValue (
+						serviceParentOrError));
+
+			if (
 			 	! privChecker.canRecursive (
 			 		serviceParent,
 			 		"messages")
@@ -135,9 +161,27 @@ class MessageConsoleHooks
 				: affiliateHelper.findAll ()
 		) {
 
-			Record<?> affiliateParent =
-				objectManager.getParent (
+			Either <Optional <Record <?>>, String> affiliateParentOrError =
+				objectManager.getParentOrError (
 					affiliate);
+
+			if (
+				isError (
+					affiliateParentOrError)
+			) {
+
+				log.warn (
+					getError (
+						affiliateParentOrError));
+
+				continue;
+
+			}
+
+			Record <?> affiliateParent =
+				optionalGetRequired (
+					getValue (
+						affiliateParentOrError));
 
 			if (
 				! privChecker.canRecursive (

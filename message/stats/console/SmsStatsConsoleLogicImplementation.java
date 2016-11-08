@@ -90,7 +90,7 @@ class SmsStatsConsoleLogicImplementation
 			try {
 
 				if (! privChecker.canRecursive (
-						objectManager.getParent (service),
+						objectManager.getParentOrNull (service),
 						"stats"))
 					continue;
 
@@ -125,7 +125,7 @@ class SmsStatsConsoleLogicImplementation
 			try {
 
 				if (! privChecker.canRecursive (
-						objectManager.getParent (affiliate),
+						objectManager.getParentOrNull (affiliate),
 						"stats"))
 					continue;
 

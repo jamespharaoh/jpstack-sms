@@ -122,7 +122,7 @@ class NumberServicesPart
 		) {
 
 			Record <?> parent =
-				objectManager.getParent (
+				objectManager.getParentOrNull (
 					service);
 
 			// open table row

@@ -120,7 +120,7 @@ class SmsCustomerStopCommand
 
 		SmsCustomerManagerRec customerManager =
 			(SmsCustomerManagerRec)
-			objectManager.getParent (
+			objectManager.getParentOrNull (
 				command);
 
 		SmsCustomerRec customer =

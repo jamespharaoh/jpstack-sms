@@ -104,7 +104,7 @@ class MessageOutboxRouteAction
 			ImmutableMap.<Object,Collection<String>>builder ()
 
 				.put (
-					objectManager.getParent (
+					objectManager.getParentOrNull (
 						message.getService ()),
 					ImmutableSet.<String>of ("manage"))
 

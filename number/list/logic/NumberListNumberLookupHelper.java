@@ -39,7 +39,7 @@ class NumberListNumberLookupHelper
 
 		NumberListRec numberList =
 			(NumberListRec)
-			objectManager.getParent (
+			objectManager.getParentOrNull (
 				numberLookup);
 
 		return numberListLogic.includesNumber (
