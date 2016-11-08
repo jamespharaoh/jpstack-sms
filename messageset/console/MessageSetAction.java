@@ -2,10 +2,10 @@ package wbs.sms.messageset.console;
 
 import static wbs.utils.etc.LogicUtils.referenceNotEqualWithClass;
 import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsEmpty;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 
@@ -15,9 +15,9 @@ import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.extern.log4j.Log4j;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
@@ -26,6 +26,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -38,7 +39,6 @@ import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @Accessors (fluent = true)
-@Log4j
 @PrototypeComponent ("messageSetAction")
 public
 class MessageSetAction
@@ -96,7 +96,8 @@ class MessageSetAction
 
 	@Override
 	public
-	Responder goReal () {
+	Responder goReal (
+			@NonNull TaskLogger taskLogger) {
 
 		// check privs
 
@@ -153,9 +154,9 @@ class MessageSetAction
 						"route_" + index))
 			) {
 
-				requestContext.addError (
-					stringFormat (
-						"Message %s has no route",
+				requestContext.addErrorFormat (
+					"Message %s has no route",
+					integerToDecimalString (
 						index + 1));
 
 				return null;
@@ -168,8 +169,10 @@ class MessageSetAction
 						"number_" + index))
 			) {
 
-				requestContext.addError (
-					"Message " + (index + 1) + " has no number");
+				requestContext.addErrorFormat (
+					"Message %s has no number",
+					integerToDecimalString (
+						index + 1));
 
 				return null;
 
@@ -181,8 +184,10 @@ class MessageSetAction
 
 			if (! GsmUtils.gsmStringIsValid (message)) {
 
-				requestContext.addError (
-					"Message " + (index + 1) + " has invalid characters");
+				requestContext.addErrorFormat (
+					"Message %s has invalid characters",
+					integerToDecimalString (
+						index + 1));
 
 				return null;
 
@@ -207,8 +212,6 @@ class MessageSetAction
 			index ++
 		) {
 
-			log.debug (index);
-
 			boolean enabled =
 				optionalIsPresent (
 					requestContext.parameter (
@@ -221,17 +224,7 @@ class MessageSetAction
 							index))
 					: null;
 
-			log.debug (
-				"enabled " + enabled);
-
-			log.debug (
-				"msg " + (messageSetMessage != null));
-
-
 			if (messageSetMessage != null && ! enabled) {
-
-				log.debug (
-					"deleting");
 
 				// delete existing message
 
@@ -268,9 +261,6 @@ class MessageSetAction
 					isNull (
 						messageSetMessage)
 				) {
-
-					log.debug (
-						"creating");
 
 					// create new message
 
@@ -311,9 +301,6 @@ class MessageSetAction
 						newMessage);
 
 				} else {
-
-					log.debug (
-						"updating");
 
 					// update existing message
 

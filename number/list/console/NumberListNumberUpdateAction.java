@@ -1,13 +1,14 @@
 package wbs.sms.number.list.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 
 import javax.servlet.ServletException;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import wbs.console.action.ConsoleAction;
@@ -16,6 +17,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -77,7 +79,8 @@ class NumberListNumberUpdateAction
 
 	@Override
 	protected
-	Responder goReal ()
+	Responder goReal (
+			@NonNull TaskLogger taskLogger)
 		throws ServletException {
 
 		// start transaction
@@ -296,36 +299,36 @@ class NumberListNumberUpdateAction
 
 		if (numAdded > 0) {
 
-			requestContext.addNotice (
-				stringFormat (
-					"%s numbers added",
+			requestContext.addNoticeFormat (
+				"%s numbers added",
+				integerToDecimalString (
 					numAdded));
 
 		}
 
 		if (numAlreadyAdded > 0) {
 
-			requestContext.addWarning (
-				stringFormat (
-					"%s numbers already added",
+			requestContext.addWarningFormat (
+				"%s numbers already added",
+				integerToDecimalString (
 					numAlreadyAdded));
 
 		}
 
 		if (numRemoved > 0) {
 
-			requestContext.addNotice (
-				stringFormat (
-					"%s numbers removed",
+			requestContext.addNoticeFormat (
+				"%s numbers removed",
+				integerToDecimalString (
 					numRemoved));
 
 		}
 
 		if (numAlreadyRemoved > 0) {
 
-			requestContext.addWarning (
-				stringFormat (
-					"%s numbers already removed",
+			requestContext.addWarningFormat (
+				"%s numbers already removed",
+				integerToDecimalString (
 					numAlreadyRemoved));
 
 		}

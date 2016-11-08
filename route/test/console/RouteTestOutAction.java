@@ -1,5 +1,6 @@
 package wbs.sms.route.test.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Map;
@@ -9,6 +10,7 @@ import javax.inject.Provider;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.helper.manager.ConsoleObjectManager;
@@ -22,6 +24,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.web.Responder;
 import wbs.platform.service.console.ServiceConsoleHelper;
 import wbs.platform.service.model.ServiceRec;
@@ -77,7 +80,8 @@ class RouteTestOutAction
 
 	@Override
 	public
-	Responder goReal () {
+	Responder goReal (
+			@NonNull TaskLogger taskLogger) {
 
 		MessageRec message = null;
 
@@ -139,9 +143,9 @@ class RouteTestOutAction
 
 		if (message != null) {
 
-			requestContext.addNotice (
-				stringFormat (
-					"Message %s inserted",
+			requestContext.addNoticeFormat (
+				"Message %s inserted",
+				integerToDecimalString (
 					message.getId ()));
 
 		}

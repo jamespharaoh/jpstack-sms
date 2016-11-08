@@ -1,20 +1,21 @@
 package wbs.sms.message.inbox.console;
 
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
+import wbs.console.notice.ConsoleNotices;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.web.Responder;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -48,7 +49,8 @@ class MessageInboxAction
 
 	@Override
 	public
-	Responder goReal () {
+	Responder goReal (
+			@NonNull TaskLogger taskLogger) {
 
 		@Cleanup
 		Transaction transaction =
@@ -56,8 +58,8 @@ class MessageInboxAction
 				"MessageInboxAction.goReal ()",
 				this);
 
-		List<String> notices =
-			new ArrayList<String> ();
+		ConsoleNotices notices =
+			new ConsoleNotices ();
 
 		for (
 			String paramName
@@ -87,11 +89,11 @@ class MessageInboxAction
 
 			if (inbox.getState () != InboxState.pending) {
 
-				requestContext.addError (
-					stringFormat (
-						"Inbox message %s ",
-						messageId,
-						"is not pending"));
+				requestContext.addErrorFormat (
+					"Inbox message %s ",
+					integerToDecimalString (
+						messageId),
+					"is not pending");
 
 			}
 
@@ -109,17 +111,17 @@ class MessageInboxAction
 				.setStatus (
 					MessageStatus.ignored);
 
-			notices.add (
-				stringFormat (
-					"Ignored inbox message %s",
+			notices.noticeFormat (
+				"Ignored inbox message %s",
+				integerToDecimalString (
 					messageId));
 
 		}
 
 		transaction.commit ();
 
-		for (String notice : notices)
-			requestContext.addNotice (notice);
+		requestContext.addNotices (
+			notices);
 
 		return null;
 
