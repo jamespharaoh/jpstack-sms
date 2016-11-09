@@ -1,5 +1,6 @@
 package wbs.sms.message.ticker.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlUtils.htmlColourFromObject;
@@ -171,10 +172,14 @@ class MessageTickerUpdateResponder
 
 		writer.print (
 			stringFormat (
-				"messageTicker.generation = %d;\n",
-				newGeneration));
+				"messageTicker.generation = %s;\n",
+				integerToDecimalString (
+					newGeneration)));
 
-		for (String command : commands) {
+		for (
+			String command
+				: commands
+		) {
 
 			writer.print (
 				stringFormat (
@@ -230,12 +235,12 @@ class MessageTickerUpdateResponder
 				color,
 
 				", '%j'",
-				requestContext.resolveApplicationUrl (
-					stringFormat (
-						"/message",
-						"/%u",
-						messageTickerMessage.messageId (),
-						"/message.summary")),
+				requestContext.resolveApplicationUrlFormat (
+					"/message",
+					"/%u",
+					integerToDecimalString (
+						messageTickerMessage.messageId ()),
+					"/message.summary"),
 
 				", [ '%j'",
 				userConsoleLogic.timeString (

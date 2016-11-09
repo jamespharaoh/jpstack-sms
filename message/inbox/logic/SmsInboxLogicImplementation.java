@@ -1,6 +1,8 @@
 package wbs.sms.message.inbox.logic;
 
+import static wbs.utils.etc.EnumUtils.enumNameSpaces;
 import static wbs.utils.etc.LogicUtils.referenceEqualWithClass;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -683,10 +685,12 @@ class SmsInboxLogicImplementation
 
 			throw new RuntimeException (
 				stringFormat (
-					"Unable to process inbox %d ",
-					inbox.getId (),
-					"in state %s",
-					inbox.getState ()));
+					"Unable to process inbox %s ",
+					integerToDecimalString (
+						inbox.getId ()),
+					"in state \"%s\"",
+					enumNameSpaces (
+						inbox.getState ())));
 
 		}
 
@@ -699,10 +703,12 @@ class SmsInboxLogicImplementation
 
 			throw new RuntimeException (
 				stringFormat (
-					"Unable to process message %d ",
-					message.getId (),
-					"with status %s",
-					message.getStatus ()));
+					"Unable to process message %s ",
+					integerToDecimalString (
+						message.getId ()),
+					"with status \"%s\"",
+					enumNameSpaces (
+						message.getStatus ())));
 
 		}
 

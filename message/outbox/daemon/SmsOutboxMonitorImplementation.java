@@ -1,5 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
@@ -106,9 +107,10 @@ class SmsOutboxMonitorImplementation
 
 		log.debug (
 			stringFormat (
-				"Thread %s is waiting for route %d",
+				"Thread %s is waiting for route %s",
 				Thread.currentThread ().getName (),
-				routeId));
+				integerToDecimalString (
+					routeId)));
 
 		countDownLatch.await ();
 
@@ -208,9 +210,11 @@ class SmsOutboxMonitorImplementation
 
 					log.debug (
 						stringFormat (
-							"Route %d has %d messages",
-							routeId,
-							count));
+							"Route %s has %s messages",
+							integerToDecimalString (
+								routeId),
+							integerToDecimalString (
+								count)));
 
 					CountDownLatch countDownLatch =
 						waiters.get (

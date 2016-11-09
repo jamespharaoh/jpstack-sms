@@ -317,7 +317,7 @@ class ObjectSmsMessagesPart
 
 			formatWriter.writeFormat (
 				"%h",
-				message.getText ());
+				message.getText ().getText ());
 
 			htmlTableCellClose ();
 

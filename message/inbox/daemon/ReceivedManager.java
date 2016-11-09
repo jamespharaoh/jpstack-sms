@@ -1,5 +1,6 @@
 package wbs.sms.message.inbox.daemon;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
 import static wbs.utils.string.StringUtils.joinWithFullStop;
@@ -180,8 +181,9 @@ class ReceivedManager
 
 			log.error (
 				stringFormat (
-					"Error processing command for message %d",
-					messageId),
+					"Error processing command for message %s",
+					integerToDecimalString (
+						messageId)),
 				exception);
 
 			@Cleanup
@@ -196,7 +198,8 @@ class ReceivedManager
 						joinWithCommaAndSpace (
 							stringFormat (
 								"messageId = %s",
-								messageId),
+								integerToDecimalString (
+									messageId)),
 							stringFormat (
 								"exception = %s",
 								exception.getClass ().getSimpleName ()))),

@@ -202,9 +202,11 @@ class MessageSetPart
 			"<input",
 			" type=\"checkbox\"",
 			" id=\"enabled_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			" name=\"enabled_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			formData.containsKey ("enabled_" + row)
 				? " checked"
 				: "",
@@ -230,10 +232,12 @@ class MessageSetPart
 		htmlSelectOpen (
 			stringFormat (
 				"route_%s",
-				row),
+				integerToDecimalString (
+					row)),
 			htmlIdAttributeFormat (
 				"route_%s",
-				row));
+				integerToDecimalString (
+					row)));
 
 		htmlOptionWrite ();
 
@@ -271,9 +275,11 @@ class MessageSetPart
 			"<input",
 			" type=\"text\"",
 			" id=\"number_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			" name=\"number_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			" size=\"16\"",
 			" value=\"%h\"",
 			formData.get ("number_" + row),
@@ -288,7 +294,8 @@ class MessageSetPart
 		formatWriter.writeLineFormat (
 			"<span",
 			" id=\"chars_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			">&nbsp;</span>");
 
 		htmlTableCellClose ();
@@ -307,17 +314,21 @@ class MessageSetPart
 			" rows=\"3\"",
 			" cols=\"96\"",
 			" id=\"message_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			" name=\"message_%h\"",
-			row,
+			integerToDecimalString (
+				row),
 			" onkeyup=\"%h\"",
 			stringFormat (
 				"gsmCharCount (this, document.getElementById ('chars_%j'))",
-				row),
+				integerToDecimalString (
+					row)),
 			" onfocus=\"%h\"",
 			stringFormat (
 				"gsmCharCount (this, document.getElementById ('chars_%j'))",
-				row),
+				integerToDecimalString (
+					row)),
 			">%h</textarea>",
 			formData.get (
 				"message_" + row));

@@ -7,6 +7,7 @@ import static wbs.utils.etc.EnumUtils.enumInSafe;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThanOne;
 import static wbs.utils.etc.NumberUtils.notMoreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
@@ -407,9 +408,10 @@ class SmsOutboxLogicImplementation
 
 			throw new RuntimeException (
 				stringFormat (
-					"Invalid message status %s for message %d",
+					"Invalid message status %s for message %s",
 					message.getStatus ().toString (),
-					message.getId ()));
+					integerToDecimalString (
+						message.getId ())));
 
 		}
 
@@ -502,7 +504,8 @@ class SmsOutboxLogicImplementation
 						textHelper.findOrCreate (
 							stringFormat (
 								"[multipart companion for %s]",
-								message.getId ())))
+								integerToDecimalString (
+									message.getId ()))))
 
 					.setNumFrom (
 						message.getNumFrom ())
@@ -595,9 +598,9 @@ class SmsOutboxLogicImplementation
 						message.getThreadId ())
 
 					.setText (
-						textHelper.findOrCreate (
-							stringFormat (
-								"[multipart companion for %s]",
+						textHelper.findOrCreateFormat (
+							"[multipart companion for %s]",
+							integerToDecimalString (
 								message.getId ())))
 
 					.setNumFrom (
@@ -1018,8 +1021,9 @@ class SmsOutboxLogicImplementation
 					stringFormat (
 						"simulateMultiparts can only be used with a single ",
 						"otherId, but %s were provided",
-						collectionSize (
-							otherIds.get ())));
+						integerToDecimalString (
+							collectionSize (
+								otherIds.get ()))));
 
 			}
 

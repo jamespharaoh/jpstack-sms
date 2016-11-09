@@ -1,7 +1,6 @@
 package wbs.sms.route.test.console;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Map;
 

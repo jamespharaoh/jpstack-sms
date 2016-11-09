@@ -3,7 +3,6 @@ package wbs.sms.message.outbox.console;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlRowSpanAttribute;
 import static wbs.utils.web.HtmlFormUtils.htmlFormClose;
@@ -173,10 +172,10 @@ class MessageOutboxRoutePart
 					rowSpan));
 
 			htmlFormOpenPostAction (
-				requestContext.resolveLocalUrl (
-					stringFormat (
-						"/outbox.route",
-						"?routeId=%u",
+				requestContext.resolveLocalUrlFormat (
+					"/outbox.route",
+					"?routeId=%u",
+					integerToDecimalString (
 						route.getId ())));
 
 			formatWriter.writeLineFormat (
@@ -184,7 +183,8 @@ class MessageOutboxRoutePart
 				" type=\"hidden\"",
 				" name=\"messageId\"",
 				" value=\"%h\"",
-				outbox.getId (),
+				integerToDecimalString (
+					outbox.getId ()),
 				">");
 
 			formatWriter.writeLineFormat (

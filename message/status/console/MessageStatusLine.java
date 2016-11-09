@@ -1,5 +1,6 @@
 package wbs.sms.message.status.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.thread.ConcurrentUtils.futureValue;
 
@@ -95,9 +96,11 @@ class MessageStatusLine
 
 		return futureValue (
 			stringFormat (
-				"updateMessage (%d, %d);\n",
-				numInbox,
-				numOutbox));
+				"updateMessage (%s, %s);\n",
+				integerToDecimalString (
+					numInbox),
+				integerToDecimalString (
+					numOutbox)));
 
 	}
 

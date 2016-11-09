@@ -10,7 +10,6 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
-import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.web.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.utils.web.HtmlTableUtils.htmlTableClose;
 import static wbs.utils.web.HtmlTableUtils.htmlTableDetailsRowWrite;
@@ -278,14 +277,15 @@ class MessageSummaryPart
 						medias.get (index);
 
 					htmlLinkWriteHtml (
-						requestContext.resolveContextUrl (
-							stringFormat (
-								"/message_media",
-								"/%d",
-								message.getId (),
-								"/%d",
-								index,
-								"/message_media_summary")),
+						requestContext.resolveContextUrlFormat (
+							"/message_media",
+							"/%s",
+							integerToDecimalString (
+								message.getId ()),
+							"/%s",
+							integerToDecimalString (
+								index),
+							"/message_media_summary"),
 						() -> mediaConsoleLogic.writeMediaThumb100 (
 							media));
 

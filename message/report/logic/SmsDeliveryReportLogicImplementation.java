@@ -2,10 +2,13 @@ package wbs.sms.message.report.logic;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
+import static wbs.utils.etc.EnumUtils.enumName;
+import static wbs.utils.etc.EnumUtils.enumNameSpaces;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -97,9 +100,11 @@ class SmsDeliveryReportLogicImplementation
 
 			throw new IllegalArgumentException (
 				stringFormat (
-					"Invalid newMessageStatus %s for message %d",
-					newMessageStatus,
-					message.getId ()));
+					"Invalid new message status \"%s\" for message %s",
+					enumNameSpaces (
+						newMessageStatus),
+					integerToDecimalString (
+						message.getId ())));
 
 		}
 
@@ -252,9 +257,11 @@ class SmsDeliveryReportLogicImplementation
 
 				throw new InvalidMessageStateException (
 					stringFormat (
-						"Message %d has status %s",
-						message.getId (),
-						message.getStatus ()));
+						"Message %s has status \"%s\"",
+						integerToDecimalString (
+							message.getId ()),
+						enumNameSpaces (
+							message.getStatus ())));
 
 			}
 
@@ -265,12 +272,14 @@ class SmsDeliveryReportLogicImplementation
 		log.info (
 			stringFormat (
 				"DLV %s %s %s %s",
-				message.getId (),
+				integerToDecimalString (
+					message.getId ()),
 				message.getRoute ().getCode (),
 				ifNull (
 					message.getOtherId (),
 					"—"),
-				message.getStatus ()));
+				enumName (
+					message.getStatus ())));
 
 		// update simulated multipart messages
 
@@ -320,9 +329,10 @@ class SmsDeliveryReportLogicImplementation
 				stringFormat (
 					"Delivery report for unrecognised message id %s ",
 					otherId,
-					"on route %s (%d)",
+					"on route %s (%s)",
 					route.getCode (),
-					route.getId ()));
+					integerToDecimalString (
+						route.getId ())));
 
 		}
 

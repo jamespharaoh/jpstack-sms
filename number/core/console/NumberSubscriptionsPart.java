@@ -3,6 +3,7 @@ package wbs.sms.number.core.console;
 import static wbs.utils.etc.LogicUtils.booleanToYesNo;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.Collection;
 
@@ -121,7 +122,8 @@ class NumberSubscriptionsPart
 
 			formatWriter.writeLineFormat (
 				"<td colspan=\"%h\">No data to display</td>",
-				activeOnly ? 4 : 6);
+				integerToDecimalString (
+					activeOnly ? 4 : 6));
 
 			formatWriter.decreaseIndent ();
 

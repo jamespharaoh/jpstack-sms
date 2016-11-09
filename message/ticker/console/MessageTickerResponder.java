@@ -1,5 +1,6 @@
 package wbs.sms.message.ticker.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.web.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.utils.web.HtmlAttributeUtils.htmlIdAttribute;
 import static wbs.utils.web.HtmlBlockUtils.htmlHeadingTwoWrite;
@@ -68,11 +69,13 @@ class MessageTickerResponder
 
 		formatWriter.writeLineFormat (
 			"reloadMs: %s,",
-			reloadMs);
+			integerToDecimalString (
+				reloadMs));
 
 		formatWriter.writeLineFormat (
 			"maxEntries: %s",
-			maxEntries);
+			integerToDecimalString (
+				maxEntries));
 
 		formatWriter.writeLineFormatDecreaseIndent (
 			"}");
