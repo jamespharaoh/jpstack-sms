@@ -7,6 +7,7 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import com.google.common.base.Optional;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -14,6 +15,8 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.command.model.CommandRec;
@@ -44,7 +47,7 @@ class MagicNumberCommandTypeHandler
 	Database database;
 
 	@SingletonDependency
-	SmsInboxLogic smsInboxLogic;
+	LogContext logContext;
 
 	@SingletonDependency
 	MagicNumberObjectHelper magicNumberHelper;
@@ -53,7 +56,10 @@ class MagicNumberCommandTypeHandler
 	MagicNumberUseObjectHelper magicNumberUseHelper;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	SmsInboxLogic smsInboxLogic;
+
+	@SingletonDependency
+	MessageObjectHelper smsMessageHelper;
 
 	// properties
 
@@ -85,7 +91,13 @@ class MagicNumberCommandTypeHandler
 
 	@Override
 	public
-	InboxAttemptRec handle () {
+	InboxAttemptRec handle (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handle");
 
 		MessageRec message =
 			inbox.getMessage ();
@@ -131,6 +143,7 @@ class MagicNumberCommandTypeHandler
 		// and delegate
 
 		return commandManager.handle (
+			taskLogger,
 			inbox,
 			magicNumberUse.getCommand (),
 			Optional.of (

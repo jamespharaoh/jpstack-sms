@@ -9,13 +9,14 @@ import java.sql.SQLException;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -25,16 +26,20 @@ import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
+
 import wbs.sms.route.router.metamodel.RouterTypeSpec;
 import wbs.sms.route.router.model.RouterTypeObjectHelper;
 
-@Log4j
 @PrototypeComponent ("routerTypeBuilder")
 @ModelMetaBuilderHandler
 public
-class RouterTypeBuilder {
+class RouterTypeBuilder
+	implements BuilderComponent {
 
 	// singleton dependencies
 
@@ -43,6 +48,9 @@ class RouterTypeBuilder {
 
 	@SingletonDependency
 	EntityHelper entityHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
@@ -64,21 +72,27 @@ class RouterTypeBuilder {
 	// build
 
 	@BuildMethod
+	@Override
 	public
 	void build (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"build");
 
 		try {
 
-			log.info (
-				stringFormat (
-					"Create router type %s.%s",
-					camelToUnderscore (
-						ifNull (
-							spec.subject (),
-							parent.name ())),
-					simplifyToCodeRequired (
-						spec.name ())));
+			taskLogger.noticeFormat (
+				"Create router type %s.%s",
+				camelToUnderscore (
+					ifNull (
+						spec.subject (),
+						parent.name ())),
+				simplifyToCodeRequired (
+					spec.name ()));
 
 			createRouterType ();
 

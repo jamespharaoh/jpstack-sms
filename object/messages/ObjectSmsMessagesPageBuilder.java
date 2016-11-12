@@ -21,6 +21,7 @@ import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleModuleImplementation;
 import wbs.console.part.PagePart;
+import wbs.console.part.PagePartFactory;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleFile;
 import wbs.console.tab.ConsoleContextTab;
@@ -36,6 +37,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.batch.model.BatchRec;
@@ -101,7 +103,7 @@ class ObjectSmsMessagesPageBuilder <
 	String fileName;
 	String responderName;
 
-	Provider<PagePart> partFactory;
+	PagePartFactory partFactory;
 
 	// build
 
@@ -149,11 +151,12 @@ class ObjectSmsMessagesPageBuilder <
 	void buildPartFactory () {
 
 		partFactory =
-			new Provider<PagePart> () {
+			new PagePartFactory () {
 
 			@Override
 			public
-			PagePart get () {
+			PagePart buildPagePart (
+					@NonNull TaskLogger parentTaskLogger) {
 
 				@Cleanup
 				Transaction transaction =
@@ -237,7 +240,8 @@ class ObjectSmsMessagesPageBuilder <
 					throw new RuntimeException (
 						stringFormat (
 							"No affiliates, services, batches or routes for %s",
-							object));
+							objectManager.objectPath (
+								object)));
 
 				}
 
@@ -347,10 +351,18 @@ class ObjectSmsMessagesPageBuilder <
 		consoleModule.addResponder (
 			responderName,
 			tabContextResponder.get ()
-				.tab (tabName)
-				.title (capitalise (
+
+			.tab (
+				tabName)
+
+			.title (
+				capitalise (
 					consoleHelper.friendlyName () + " messages"))
-				.pagePartFactory (partFactory));
+
+			.pagePartFactory (
+				partFactory)
+
+		);
 
 	}
 

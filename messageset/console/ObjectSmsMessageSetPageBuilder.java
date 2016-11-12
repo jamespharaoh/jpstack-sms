@@ -20,6 +20,7 @@ import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleMetaModuleImplementation;
 import wbs.console.module.ConsoleModuleImplementation;
 import wbs.console.part.PagePart;
+import wbs.console.part.PagePartFactory;
 import wbs.console.responder.ConsoleFile;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.TabContextResponder;
@@ -32,9 +33,10 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
-import wbs.framework.web.Action;
-import wbs.framework.web.Responder;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.core.console.CoreAuthAction;
+import wbs.web.action.Action;
+import wbs.web.responder.Responder;
 
 @PrototypeComponent ("objectSmsMessageSetPageBuilder")
 @ConsoleModuleBuilderHandler
@@ -169,12 +171,13 @@ class ObjectSmsMessageSetPageBuilder <
 	void buildFile (
 			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
-		Provider <PagePart> partFactory =
-			new Provider <PagePart> () {
+		PagePartFactory partFactory =
+			new PagePartFactory () {
 
 			@Override
 			public
-			PagePart get () {
+			PagePart buildPagePart (
+					@NonNull TaskLogger parentTaskLogger) {
 
 				return messageSetPartProvider.get ()
 
@@ -185,25 +188,33 @@ class ObjectSmsMessageSetPageBuilder <
 
 		};
 
-		final Provider <Responder> responder =
+		Provider <Responder> responder =
 			tabContextResponderProvider.get ()
-				.tab (tabName)
-				.title (tabLabel)
-				.pagePartFactory (partFactory);
+
+			.tab (
+				tabName)
+
+			.title (
+				tabLabel)
+
+			.pagePartFactory (
+				partFactory);
 
 		Action getAction =
 			new Action () {
 
 			@Override
 			public
-			Responder handle () {
+			Responder handle (
+					@NonNull TaskLogger parentTaskLogger) {
 
 				Action action =
 					authActionProvider.get ()
 						.lookup (canViewLookup)
 						.normalResponder (responder);
 
-				return action.handle ();
+				return action.handle (
+					parentTaskLogger);
 
 			}
 
@@ -214,7 +225,8 @@ class ObjectSmsMessageSetPageBuilder <
 
 			@Override
 			public
-			Responder handle () {
+			Responder handle (
+					@NonNull TaskLogger taskLogger) {
 
 				Action action =
 					messageSetActionProvider.get ()
@@ -222,7 +234,8 @@ class ObjectSmsMessageSetPageBuilder <
 						.messageSetFinder (messageSetFinder)
 						.privLookup (canUpdateLookup);
 
-				return action.handle ();
+				return action.handle (
+					taskLogger);
 
 			}
 

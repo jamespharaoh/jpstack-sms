@@ -3,18 +3,21 @@ package wbs.sms.message.ticker.console;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 import static wbs.utils.string.StringUtils.stringFormat;
-import static wbs.utils.web.HtmlUtils.htmlColourFromObject;
+import static wbs.web.utils.HtmlUtils.htmlColourFromObject;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.NonNull;
+
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -61,7 +64,8 @@ class MessageTickerUpdateResponder
 
 	@Override
 	public
-	void prepare () {
+	void prepare (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		Collection<MessageTickerMessage> messageTickerMessages =
 			messageTickerManager.getMessages ();
@@ -165,7 +169,8 @@ class MessageTickerUpdateResponder
 
 	@Override
 	public
-	void render () {
+	void render (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		PrintWriter writer =
 			requestContext.writer ();

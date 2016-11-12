@@ -18,7 +18,6 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
-import wbs.framework.web.Responder;
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -28,6 +27,7 @@ import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.list.model.NumberListNumberRec;
 import wbs.sms.number.list.model.NumberListRec;
 import wbs.sms.number.list.model.NumberListUpdateRec;
+import wbs.web.responder.Responder;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("numberListNumberUpdateAction")

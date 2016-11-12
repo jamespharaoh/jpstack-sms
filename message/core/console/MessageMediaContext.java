@@ -1,5 +1,6 @@
 package wbs.sms.message.core.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.LinkedHashMap;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -14,14 +16,17 @@ import wbs.console.context.ConsoleContext;
 import wbs.console.context.ConsoleContextStuff;
 import wbs.console.module.ConsoleManager;
 import wbs.console.tab.ConsoleContextTab;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.framework.web.WebFile;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.media.model.MediaRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
+import wbs.web.file.WebFile;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageMediaContext")
@@ -36,6 +41,9 @@ class MessageMediaContext
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
@@ -75,11 +83,15 @@ class MessageMediaContext
 
 		return stringFormat (
 			"/%u",
-			contextStuff.get (
-				"messageId"),
+			integerToDecimalString (
+				(Integer)
+				contextStuff.get (
+					"messageId")),
 			"/%u",
-			contextStuff.get (
-				"messageMediaIndex"));
+			integerToDecimalString (
+				(Integer)
+				contextStuff.get (
+					"messageMediaIndex")));
 
 	}
 
@@ -90,16 +102,24 @@ class MessageMediaContext
 
 		return stringFormat (
 			"Media %s",
-			contextStuff.get (
-				"messageMediaIndex"));
+			integerToDecimalString (
+				(Integer)
+				contextStuff.get (
+					"messageMediaIndex")));
 
 	}
 
 	@Override
 	public
 	void initContext (
-			PathSupply pathParts,
-			ConsoleContextStuff stuff) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull PathSupply pathParts,
+			@NonNull ConsoleContextStuff stuff) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"initContext");
 
 		Long messageId =
 			Long.parseLong (
@@ -132,6 +152,7 @@ class MessageMediaContext
 			media.getId ());
 
 		consoleManager.runPostProcessors (
+			taskLogger,
 			"message",
 			stuff);
 

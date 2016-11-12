@@ -16,7 +16,7 @@ import wbs.console.context.ResolvedConsoleContextExtensionPoint;
 import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleModuleImplementation;
-import wbs.console.part.PagePart;
+import wbs.console.part.PagePartFactory;
 import wbs.console.responder.ConsoleFile;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.TabContextResponder;
@@ -146,7 +146,7 @@ class ObjectSmsStatsPageBuilder <
 
 	void buildResponder () {
 
-		Provider<PagePart> partFactory =
+		PagePartFactory partFactory =
 			objectStatsPartFactoryProvider.get ()
 
 			.localName (

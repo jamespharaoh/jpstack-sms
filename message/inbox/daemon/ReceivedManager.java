@@ -13,8 +13,8 @@ import com.google.common.base.Optional;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
@@ -22,6 +22,8 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
@@ -39,7 +41,6 @@ import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.utils.thread.ThreadManager;
 
-@Log4j
 @SingletonComponent ("receivedManager")
 public
 class ReceivedManager
@@ -64,6 +65,9 @@ class ReceivedManager
 
 	@SingletonDependency
 	InboxObjectHelper inboxHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
@@ -114,18 +118,27 @@ class ReceivedManager
 		}
 
 		void dumpMessageInfo (
-				MessageRec message) {
+				@NonNull TaskLogger taskLogger,
+				@NonNull MessageRec message) {
 
-			log.info (
-				message.getId () + " " +
-				message.getNumFrom () + " " +
-				message.getNumTo () + " " +
-				message.getText ());
+			taskLogger.noticeFormat (
+				"%s %s %s %s",
+				integerToDecimalString (
+					message.getId ()),
+				message.getNumFrom (),
+				message.getNumTo (),
+				message.getText ().getText ());
 
 		}
 
 		void doMessage (
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"doMessage");
 
 			@Cleanup
 			Transaction transaction =
@@ -142,6 +155,7 @@ class ReceivedManager
 					messageId);
 
 			dumpMessageInfo (
+				taskLogger,
 				message);
 
 			RouteRec route =
@@ -151,6 +165,7 @@ class ReceivedManager
 
 				InboxAttemptRec inboxAttempt =
 					commandManager.handle (
+						taskLogger,
 						inbox,
 						route.getCommand (),
 						Optional.fromNullable (
@@ -176,15 +191,20 @@ class ReceivedManager
 		}
 
 		void doError (
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId,
 				@NonNull Throwable exception) {
 
-			log.error (
-				stringFormat (
-					"Error processing command for message %s",
-					integerToDecimalString (
-						messageId)),
-				exception);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"doError");
+
+			taskLogger.errorFormatException (
+				exception,
+				"Error processing command for message %s",
+				integerToDecimalString (
+					messageId));
 
 			@Cleanup
 			Transaction transaction =
@@ -242,8 +262,6 @@ class ReceivedManager
 
 			while (true) {
 
-				log.info ("Received thread run " + threadName);
-
 				// get the next message
 
 				Long messageId;
@@ -259,14 +277,20 @@ class ReceivedManager
 
 				// handle it
 
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"run");
+
 				try {
 
 					doMessage (
+						taskLogger,
 						messageId);
 
 				} catch (Exception exception) {
 
 					doError (
+						taskLogger,
 						messageId,
 						exception);
 

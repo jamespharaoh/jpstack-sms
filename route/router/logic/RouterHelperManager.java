@@ -1,5 +1,6 @@
 package wbs.sms.route.router.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
@@ -90,7 +91,8 @@ class RouterHelperManager {
 			throw new RuntimeException (
 				stringFormat (
 					"Aborting due to %s errors",
-					errorCount));
+					integerToDecimalString (
+						errorCount)));
 
 		}
 

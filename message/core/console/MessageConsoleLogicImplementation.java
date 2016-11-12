@@ -5,7 +5,7 @@ import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.string.StringUtils.spacify;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsNotEmpty;
-import static wbs.utils.web.HtmlUtils.htmlLinkWriteHtml;
+import static wbs.web.utils.HtmlUtils.htmlLinkWriteHtml;
 
 import lombok.NonNull;
 

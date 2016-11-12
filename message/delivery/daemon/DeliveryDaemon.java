@@ -15,6 +15,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -22,6 +23,8 @@ import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.sms.message.delivery.model.DeliveryObjectHelper;
@@ -50,6 +53,9 @@ class DeliveryDaemon
 
 	@SingletonDependency
 	Map <String, Provider <DeliveryHandler>> handlersByBeanName;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// properties
 
@@ -247,6 +253,10 @@ class DeliveryDaemon
 					return;
 				}
 
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"worker.run");
+
 				DeliveryTypeRec deliveryType =
 					delivery.getMessage ().getDeliveryType ();
 
@@ -266,6 +276,7 @@ class DeliveryDaemon
 					}
 
 					handler.handle (
+						taskLogger,
 						delivery.getId (),
 						delivery.getMessage ().getRef ());
 

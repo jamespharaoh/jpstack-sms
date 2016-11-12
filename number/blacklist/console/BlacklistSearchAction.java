@@ -22,7 +22,6 @@ import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.TaskLogger;
-import wbs.framework.web.Responder;
 import wbs.platform.event.model.EventLinkObjectHelper;
 import wbs.platform.event.model.EventLinkRec;
 import wbs.platform.event.model.EventRec;
@@ -33,7 +32,8 @@ import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatRec;
-import wbs.utils.web.HtmlUtils;
+import wbs.web.responder.Responder;
+import wbs.web.utils.HtmlUtils;
 
 @PrototypeComponent ("blacklistSearchAction")
 public

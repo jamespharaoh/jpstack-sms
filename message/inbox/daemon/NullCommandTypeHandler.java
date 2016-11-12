@@ -6,12 +6,14 @@ import static wbs.utils.etc.OptionalUtils.optionalOf;
 import com.google.common.base.Optional;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.logging.TaskLogger;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -69,7 +71,8 @@ class NullCommandTypeHandler
 
 	@Override
 	public
-	InboxAttemptRec handle () {
+	InboxAttemptRec handle (
+			@NonNull TaskLogger taskLogger) {
 
 		return smsInboxLogic.inboxNotProcessed (
 			inbox,

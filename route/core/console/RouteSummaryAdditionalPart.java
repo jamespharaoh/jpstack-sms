@@ -2,10 +2,15 @@ package wbs.sms.route.core.console;
 
 import java.util.Collections;
 
+import lombok.NonNull;
+
 import wbs.console.part.AbstractPagePart;
 import wbs.console.part.PagePart;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")
@@ -14,6 +19,9 @@ class RouteSummaryAdditionalPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -29,7 +37,13 @@ class RouteSummaryAdditionalPart
 
 	@Override
 	public
-	void prepare () {
+	void prepare (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
 
 		route =
 			routeHelper.findRequired (
@@ -47,9 +61,10 @@ class RouteSummaryAdditionalPart
 		if (summaryAdditionalPart != null) {
 
 			summaryAdditionalPart.setup (
-				Collections.<String,Object>emptyMap ());
+				Collections.emptyMap ());
 
-			summaryAdditionalPart.prepare ();
+			summaryAdditionalPart.prepare (
+				taskLogger);
 
 		}
 
@@ -57,11 +72,18 @@ class RouteSummaryAdditionalPart
 
 	@Override
 	public
-	void renderHtmlBodyContent () {
+	void renderHtmlBodyContent (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		if (summaryAdditionalPart != null) {
 
-			summaryAdditionalPart.renderHtmlBodyContent ();
+			summaryAdditionalPart.renderHtmlBodyContent (
+				taskLogger);
 
 		}
 

@@ -1,8 +1,13 @@
 package wbs.sms.route.router.logic;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+
+import lombok.NonNull;
+
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
+
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.model.RouterRec;
 import wbs.sms.route.router.model.SimpleRouterRec;
@@ -30,12 +35,12 @@ class SimpleRouterHelper
 	@Override
 	public
 	RouteRec resolve (
-			RouterRec router) {
+			@NonNull RouterRec router) {
 
 		SimpleRouterRec simpleRouter =
-			(SimpleRouterRec)
-			objectManager.getParentOrNull (
-				router);
+			genericCastUnchecked (
+				objectManager.getParentRequired (
+					router));
 
 		return simpleRouter.getRoute ();
 

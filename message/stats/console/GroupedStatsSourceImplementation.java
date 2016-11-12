@@ -20,12 +20,12 @@ import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
-import wbs.framework.web.UrlParams;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.web.misc.UrlParams;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("groupedStatsSource")

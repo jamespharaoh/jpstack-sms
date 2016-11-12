@@ -7,12 +7,15 @@ import static wbs.utils.collection.MapUtils.mapWithDerivedKey;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
+
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -43,7 +46,8 @@ class NumberServicesPart
 
 	@Override
 	public
-	void prepare () {
+	void prepare (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		NumberRec number =
 			numberHelper.findRequired (
@@ -65,7 +69,8 @@ class NumberServicesPart
 
 	@Override
 	public
-	void renderHtmlBodyContent () {
+	void renderHtmlBodyContent (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		// open table
 
@@ -122,7 +127,7 @@ class NumberServicesPart
 		) {
 
 			Record <?> parent =
-				objectManager.getParentOrNull (
+				objectManager.getParentRequired (
 					service);
 
 			// open table row

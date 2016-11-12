@@ -12,7 +12,7 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
-import wbs.utils.web.HtmlUtils;
+import wbs.web.utils.HtmlUtils;
 
 @SingletonComponent ("smsStatsWeeklyTimeScheme")
 public

@@ -1,8 +1,11 @@
 package wbs.sms.route.router.logic;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
+
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.model.RouterRec;
 
@@ -32,9 +35,9 @@ class StaticRouterHelper
 			RouterRec router) {
 
 		RouteRec route =
-			(RouteRec)
-			objectManager.getParentOrNull (
-				router);
+			genericCastUnchecked (
+				objectManager.getParentRequired (
+					router));
 
 		return route;
 

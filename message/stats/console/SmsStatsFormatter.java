@@ -21,7 +21,7 @@ import wbs.sms.message.stats.console.GroupedStatsSource.GroupStats;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.utils.etc.PropertyUtils;
-import wbs.utils.web.HtmlUtils;
+import wbs.web.utils.HtmlUtils;
 
 /**
  * Responsible for outputing standardised tables of message statistics. Requires

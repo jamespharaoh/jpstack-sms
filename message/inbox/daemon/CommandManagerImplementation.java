@@ -1,5 +1,6 @@
 package wbs.sms.message.inbox.daemon;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
@@ -10,13 +11,15 @@ import javax.inject.Provider;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.manager.ComponentManager;
 import wbs.framework.database.Database;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.platform.exception.logic.ExceptionLogLogic;
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
@@ -24,7 +27,6 @@ import wbs.sms.command.model.CommandTypeRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
 
-@Log4j
 @SingletonComponent ("commandManager")
 public
 class CommandManagerImplementation
@@ -46,6 +48,9 @@ class CommandManagerImplementation
 
 	@SingletonDependency
 	ExceptionLogLogic exceptionLogic;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// state
 
@@ -104,9 +109,11 @@ class CommandManagerImplementation
 
 	public
 	CommandHandler getHandler (
-			CommandTypeRec commandType) {
+			@NonNull TaskLogger taskLogger,
+			@NonNull CommandTypeRec commandType) {
 
 		return getHandler (
+			taskLogger,
 			commandType.getParentType ().getCode (),
 			commandType.getCode ());
 
@@ -114,8 +121,14 @@ class CommandManagerImplementation
 
 	public
 	CommandHandler getHandler (
-			String parentObjectTypeCode,
-			String commandTypeCode) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull String parentObjectTypeCode,
+			@NonNull String commandTypeCode) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"getHandler");
 
 		String key =
 			parentObjectTypeCode + "." + commandTypeCode;
@@ -132,23 +145,25 @@ class CommandManagerImplementation
 		String beanName =
 			commandTypeHandlerBeanNamesByCommandType.get (key);
 
-		return (CommandHandler)
+		return genericCastUnchecked (
 			componentManager.getComponentRequired (
-				log,
+				taskLogger,
 				beanName,
-				CommandHandler.class);
+				CommandHandler.class));
 
 	}
 
 	@Override
 	public
 	InboxAttemptRec handle (
+			@NonNull TaskLogger taskLogger,
 			@NonNull InboxRec inbox,
 			@NonNull CommandRec command,
 			@NonNull Optional<Long> ref,
 			@NonNull String rest) {
 
 		return getHandler (
+			taskLogger,
 			command.getCommandType ())
 
 			.inbox (
@@ -163,7 +178,8 @@ class CommandManagerImplementation
 			.rest (
 				rest)
 
-			.handle ();
+			.handle (
+				taskLogger);
 
 	}
 

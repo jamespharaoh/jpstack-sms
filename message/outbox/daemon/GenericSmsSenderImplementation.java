@@ -55,7 +55,7 @@ import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.logic.NumberLookupManager;
 import wbs.sms.route.core.model.RouteRec;
-import wbs.utils.web.JsonUtils;
+import wbs.web.utils.JsonUtils;
 
 @Log4j
 @Accessors (fluent = true)

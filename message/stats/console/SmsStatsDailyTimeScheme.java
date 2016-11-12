@@ -10,7 +10,7 @@ import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.sms.message.stats.model.MessageStatsData;
-import wbs.utils.web.HtmlUtils;
+import wbs.web.utils.HtmlUtils;
 
 @SingletonComponent ("smsStatsDailyTimeScheme")
 public

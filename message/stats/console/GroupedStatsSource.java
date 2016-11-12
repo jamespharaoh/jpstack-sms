@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.joda.time.LocalDate;
 
-import wbs.framework.web.UrlParams;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
+import wbs.web.misc.UrlParams;
 
 public
 interface GroupedStatsSource {

@@ -9,12 +9,14 @@ import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.part.PagePart;
+import wbs.console.part.PagePartFactory;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
@@ -22,6 +24,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.TaskLogger;
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
 import wbs.sms.message.stats.console.SmsStatsSource;
@@ -31,7 +34,7 @@ import wbs.sms.message.stats.console.SmsStatsSourceImplementation;
 @PrototypeComponent ("objectStatsPartFactory")
 public
 class ObjectStatsPartFactory
-	implements Provider <PagePart> {
+	implements PagePartFactory {
 
 	// singelton dependencies
 
@@ -67,7 +70,8 @@ class ObjectStatsPartFactory
 
 	@Override
 	public
-	PagePart get () {
+	PagePart buildPagePart (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		@Cleanup
 		Transaction transaction =

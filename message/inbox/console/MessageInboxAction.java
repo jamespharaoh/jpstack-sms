@@ -16,12 +16,12 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
-import wbs.framework.web.Responder;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.inbox.model.InboxState;
+import wbs.web.responder.Responder;
 
 @PrototypeComponent ("messageInboxAction")
 public

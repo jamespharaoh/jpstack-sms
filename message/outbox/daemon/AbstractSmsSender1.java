@@ -15,11 +15,16 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.daemon.AbstractDaemonService;
+
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -62,19 +67,22 @@ class AbstractSmsSender1 <MessageContainer>
 	// singleton dependencies
 
 	@SingletonDependency
-	BlacklistObjectHelper smsBlacklistHelper;
+	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
-	Database database;
+	NumberLookupManager numberLookupManager;
+
+	@SingletonDependency
+	BlacklistObjectHelper smsBlacklistHelper;
 
 	@SingletonDependency
 	MessageObjectHelper smsMessageHelper;
 
 	@SingletonDependency
 	SmsMessageLogic smsMessageLogic;
-
-	@SingletonDependency
-	NumberLookupManager numberLookupManager;
 
 	@SingletonDependency
 	SmsOutboxLogic smsOutboxLogic;
@@ -102,7 +110,7 @@ class AbstractSmsSender1 <MessageContainer>
 		throws SendFailureException;
 
 	protected abstract
-	Optional<List<String>> sendMessage (
+	Optional <List <String>> sendMessage (
 			MessageContainer messageContainer)
 		throws SendFailureException;
 
@@ -225,6 +233,10 @@ class AbstractSmsSender1 <MessageContainer>
 
 		void processMessages () {
 
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"processMessages");
+
 			while (! Thread.interrupted ()) {
 
 				// get the next message from the database, synchronize to stop
@@ -323,7 +335,8 @@ class AbstractSmsSender1 <MessageContainer>
 					try {
 
 						messageContainer =
-							getMessage (outbox);
+							getMessage (
+								outbox);
 
 					} catch (SendFailureException exception) {
 
