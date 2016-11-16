@@ -1,8 +1,11 @@
 package wbs.sms.number.list.logic;
 
+import lombok.NonNull;
+
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
+
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListRec;
 import wbs.sms.number.lookup.logic.NumberLookupHelper;
@@ -34,12 +37,12 @@ class NumberListNumberLookupHelper
 	@Override
 	public
 	boolean lookupNumber (
-			NumberLookupRec numberLookup,
-			NumberRec number) {
+			@NonNull NumberLookupRec numberLookup,
+			@NonNull NumberRec number) {
 
 		NumberListRec numberList =
 			(NumberListRec)
-			objectManager.getParentOrNull (
+			objectManager.getParentRequired (
 				numberLookup);
 
 		return numberListLogic.includesNumber (

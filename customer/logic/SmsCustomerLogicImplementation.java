@@ -2,6 +2,7 @@ package wbs.sms.customer.logic;
 
 import static wbs.utils.etc.LogicUtils.ifThenElse;
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -21,9 +22,11 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.event.logic.EventLogic;
+
 import wbs.sms.customer.model.SmsCustomerAffiliateRec;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerRec;
@@ -282,7 +285,8 @@ class SmsCustomerLogicImplementation
 		log.debug (
 			stringFormat (
 				"Automatic session timeout for %s",
-				session.getId ()));
+				integerToDecimalString (
+					session.getId ())));
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -298,7 +302,8 @@ class SmsCustomerLogicImplementation
 			log.debug (
 				stringFormat (
 					"Not timing out session %s ",
-					session.getId (),
+					integerToDecimalString (
+						session.getId ()),
 					"since it has already ended"));
 
 			return;
@@ -310,9 +315,11 @@ class SmsCustomerLogicImplementation
 			log.debug (
 				stringFormat (
 					"Not timing out session %s ",
-					session.getId (),
+					integerToDecimalString (
+						session.getId ()),
 					"since manager %s ",
-					manager.getId (),
+					integerToDecimalString (
+						manager.getId ()),
 					"has no timeout configured"));
 
 			return;
@@ -330,11 +337,12 @@ class SmsCustomerLogicImplementation
 			log.debug (
 				stringFormat (
 					"Not timing out session %s, ",
-					session.getId (),
+					integerToDecimalString (
+						session.getId ()),
 					"which started at %s, ",
-					session.getStartTime (),
+					session.getStartTime ().toString (),
 					"since that is not before %s",
-					startTimeBefore));
+					startTimeBefore.toString ()));
 
 			return;
 
@@ -343,7 +351,8 @@ class SmsCustomerLogicImplementation
 		log.warn (
 			stringFormat (
 				"Timing out sms customer session %s",
-				session.getId ()));
+				integerToDecimalString (
+					session.getId ())));
 
 		session
 
