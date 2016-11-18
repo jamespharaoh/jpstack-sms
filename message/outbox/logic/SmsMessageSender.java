@@ -1,5 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
+import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringInSafe;
 
@@ -22,6 +24,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.media.model.MediaRec;
@@ -32,6 +35,7 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
 import wbs.platform.user.model.UserRec;
+
 import wbs.sms.message.batch.model.BatchObjectHelper;
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.message.core.model.MessageDirection;
@@ -171,6 +175,18 @@ class SmsMessageSender {
 		return messageText (
 			textHelper.findOrCreate (
 				messageString));
+
+	}
+
+	public
+	SmsMessageSender subjectString (
+			@NonNull Optional <String> subjectString) {
+
+		return subjectText (
+			optionalOrNull (
+				optionalMapRequired (
+					subjectString,
+					textHelper::findOrCreate)));
 
 	}
 
