@@ -78,7 +78,7 @@ class SmsCustomerEndSessionFormActionHelper
 			userConsoleLogic.timestampWithoutTimezoneString (
 				session.getStartTime ()),
 			"This action will end the customer's session.");
-	
+
 	}
 
 	@Override

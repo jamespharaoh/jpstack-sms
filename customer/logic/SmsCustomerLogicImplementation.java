@@ -283,10 +283,10 @@ class SmsCustomerLogicImplementation
 		) {
 			throw new IllegalStateException ();
 		}
-	
+
 		SmsCustomerSessionRec session =
 			customer.getActiveSession ();
-	
+
 		session
 
 			.setEndTime (
