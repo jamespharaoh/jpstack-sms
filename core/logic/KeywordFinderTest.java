@@ -1,14 +1,15 @@
 package wbs.sms.core.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
+import junit.framework.TestCase;
 
 public
 class KeywordFinderTest
@@ -301,24 +302,27 @@ class KeywordFinderTest
 
 					assertEquals (
 						stringFormat (
-							"result[%s].keyword for [%s]",
-							index,
+							"result [%s].keyword for [%s]",
+							integerToDecimalString (
+								index),
 							input),
 						(String) expectedResult.get (0),
 						(String) actualResult.keyword ());
 
 					assertEquals (
 						stringFormat (
-							"result[%s].simpleKeyword for [%s]",
-							index,
+							"result [%s].simpleKeyword for [%s]",
+							integerToDecimalString (
+								index),
 							input),
 						(String) expectedResult.get (1),
 						(String) actualResult.simpleKeyword ());
 
 					assertEquals (
 						stringFormat (
-							"result[%s].rest for [%s]",
-							index,
+							"result [%s].rest for [%s]",
+							integerToDecimalString (
+								index),
 							input),
 						(String) expectedResult.get (2),
 						(String) actualResult.rest ());

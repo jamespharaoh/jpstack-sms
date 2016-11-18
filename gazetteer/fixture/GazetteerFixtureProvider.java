@@ -2,16 +2,23 @@ package wbs.sms.gazetteer.fixture;
 
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 
+import lombok.NonNull;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuGroupRec;
 import wbs.platform.menu.model.MenuItemObjectHelper;
 import wbs.platform.scaffold.model.SliceObjectHelper;
+
 import wbs.sms.gazetteer.model.GazetteerData;
 import wbs.sms.gazetteer.model.GazetteerEntryData;
 import wbs.sms.gazetteer.model.GazetteerEntryObjectHelper;
@@ -32,6 +39,9 @@ class GazetteerFixtureProvider
 	@SingletonDependency
 	GazetteerObjectHelper gazetteerHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MenuGroupObjectHelper menuGroupHelper;
 
@@ -45,7 +55,13 @@ class GazetteerFixtureProvider
 
 	@Override
 	public
-	void createFixtures () {
+	void createFixtures (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createFixtures");
 
 		MenuGroupRec smsMenuGroup =
 			menuGroupHelper.findByCodeRequired (
@@ -91,6 +107,7 @@ class GazetteerFixtureProvider
 		GazetteerData gazetteerData =
 			(GazetteerData)
 			gazetteerReader.readClasspath (
+				taskLogger,
 				"/wbs/sms/gazetteer/fixture/gazetteer-test-data.xml");
 
 		GazetteerRec testGazetteer =

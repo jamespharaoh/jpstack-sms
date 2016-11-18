@@ -3,7 +3,7 @@ package wbs.sms.object.messages;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.time.TimeUtils.instantToDateNullSafe;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
@@ -356,7 +356,7 @@ class ObjectSmsMessagesPart
 		public
 		String getUrl () {
 
-			return stringFormat (
+			return stringFormatObsolete (
 				"%s",
 				requestContext.resolveLocalUrl (
 					localName),

@@ -64,6 +64,11 @@
 			text="Affiliate for %0 set to %1 due to %2"
 			admin="no"/>
 
+		<event-type
+			name="Sms customer session end manually"
+			text="%0 ended session for %1, giving reason %2"
+			admin="no"/>
+
 	</event-types>
 
 </model-meta>

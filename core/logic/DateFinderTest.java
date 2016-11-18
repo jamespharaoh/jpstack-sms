@@ -2,7 +2,7 @@ package wbs.sms.core.logic;
 
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.time.TimeUtils.localDateNotEqual;
 
 import java.util.List;
@@ -76,7 +76,7 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormat (
+				stringFormatObsolete (
 					"Expected '%s' ",
 					example.input (),
 					"to fail but matched '%s' ",
@@ -99,7 +99,7 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormat (
+				stringFormatObsolete (
 					"Expected '%s' ",
 					example.input (),
 					"to find '%s' ",
@@ -118,7 +118,7 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormat (
+				stringFormatObsolete (
 					"Expected '%s' ",
 					example.input (),
 					"to find '%s' ",
@@ -355,7 +355,7 @@ class DateFinderTest
 
 				.mapToObj (day ->
 					passingExample (
-						stringFormat (
+						stringFormatObsolete (
 							"%s/01/1980",
 							day),
 						1900,
@@ -368,7 +368,7 @@ class DateFinderTest
 
 				.mapToObj (day ->
 					passingExample (
-						stringFormat (
+						stringFormatObsolete (
 							"%s%s/01/1980",
 							day,
 							suffixes.get (day)),

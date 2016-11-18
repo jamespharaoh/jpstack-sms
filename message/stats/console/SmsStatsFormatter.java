@@ -1,5 +1,6 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.io.PrintWriter;
@@ -14,13 +15,18 @@ import lombok.experimental.Accessors;
 import org.joda.time.LocalDate;
 
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.platform.currency.logic.CurrencyLogic;
+
 import wbs.sms.message.stats.console.GroupedStatsSource.GroupStats;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.utils.etc.PropertyUtils;
+
 import wbs.web.utils.HtmlUtils;
 
 /**
@@ -242,7 +248,8 @@ class SmsStatsFormatter {
 			stringFormat (
 				"<tr>\n",
 				"<td class=\"group-name\" colspan=\"%h\">TOTALS</td>",
-				colSpan,
+				integerToDecimalString (
+					colSpan),
 				"</tr>\n"));
 
 	}

@@ -2,7 +2,7 @@ package wbs.sms.message.wap.logic;
 
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Map;
 import java.util.Set;
@@ -157,7 +157,7 @@ class WapPushLogic
 				wapPushMessageType)) {
 
 			throw new RuntimeException (
-				stringFormat (
+				stringFormatObsolete (
 					"Cannot send wap push on route %s",
 					route.getId ()));
 

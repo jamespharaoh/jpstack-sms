@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
-import lombok.NonNull;
-
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.model.OutboxDao;
 import wbs.sms.message.outbox.model.OutboxRec;

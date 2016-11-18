@@ -4,8 +4,11 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.entity.record.GlobalId;
+
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -29,7 +32,7 @@ class NumberObjectHelperMethodsImplementation
 	@Override
 	public
 	NumberRec findOrCreate (
-			String numberString) {
+			@NonNull String numberString) {
 
 		// find existing
 

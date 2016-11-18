@@ -3,6 +3,7 @@ package wbs.sms.route.http.daemon;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +27,7 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.daemon.AbstractSmsSender1;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -93,7 +95,7 @@ class HttpSender
 		if (httpRoute == null) {
 
 			log.error (
-				stringFormat (
+				stringFormatObsolete (
 					"No network information for message %s",
 					outbox.getMessage ().getId ()));
 
@@ -114,7 +116,7 @@ class HttpSender
 				wapPushMessageHelper.findOrThrow (
 					outbox.getId (),
 					() -> tempFailure (
-						stringFormat (
+						stringFormatObsolete (
 							"Wap push message not found for message %s",
 							outbox.getId ())));
 
@@ -142,7 +144,7 @@ class HttpSender
 		throws SendFailureException {
 
 		log.info (
-			stringFormat (
+			stringFormatObsolete (
 				"Sending message %s",
 				httpOutbox.messageId));
 

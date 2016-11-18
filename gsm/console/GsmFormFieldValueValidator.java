@@ -6,6 +6,7 @@ import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.Misc.lessThan;
 import static wbs.utils.etc.NumberUtils.integerEqualSafe;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThan;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -16,7 +17,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
 import wbs.console.forms.FormFieldValueValidator;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 
 @Accessors (fluent = true)
@@ -103,9 +106,11 @@ class GsmFormFieldValueValidator
 				return Optional.of (
 					stringFormat (
 						"You must use no more than %s ",
-						maximumLength,
+						integerToDecimalString (
+							maximumLength),
 						"GSM characters, this value is %s ",
-						gsmLength,
+						integerToDecimalString (
+							gsmLength),
 						"GSM characters long"));
 
 			} else if (
@@ -116,9 +121,11 @@ class GsmFormFieldValueValidator
 				return Optional.of (
 					stringFormat (
 						"You must use at least %s ",
-						minimumLength,
+						integerToDecimalString (
+							minimumLength),
 						"GSM characters, this value is %s ",
-						gsmLength,
+						integerToDecimalString (
+							gsmLength),
 						"GSM characters long"));
 
 			} else if (
@@ -130,9 +137,11 @@ class GsmFormFieldValueValidator
 				return Optional.of (
 					stringFormat (
 						"You must use exactly %s ",
-						minimumLength,
+						integerToDecimalString (
+							minimumLength),
 						"GSM characters, this value is %s ",
-						gsmLength,
+						integerToDecimalString (
+							gsmLength),
 						"GSM characters long"));
 
 			} else {
@@ -140,11 +149,14 @@ class GsmFormFieldValueValidator
 				return Optional.of (
 					stringFormat (
 						"You must use between %s ",
-						minimumLength,
+						integerToDecimalString (
+							minimumLength),
 						"and %s ",
-						maximumLength,
+						integerToDecimalString (
+							maximumLength),
 						"GSM characters, this value is %s ",
-						gsmLength,
+						integerToDecimalString (
+							gsmLength),
 						"GSM characters long"));
 
 			}

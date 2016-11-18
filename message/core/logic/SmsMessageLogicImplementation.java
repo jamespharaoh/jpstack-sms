@@ -7,7 +7,7 @@ import static wbs.utils.collection.CollectionUtils.listThirdElementRequired;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.parseInteger;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 import static wbs.utils.string.StringUtils.stringSplitHyphen;
 
@@ -156,7 +156,7 @@ class SmsMessageLogicImplementation
 
 		} else {
 
-			return stringFormat (
+			return stringFormatObsolete (
 				"test-%s-%s",
 				root.getFixturesSeed (),
 				messageId);

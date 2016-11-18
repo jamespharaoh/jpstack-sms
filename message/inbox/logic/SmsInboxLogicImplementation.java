@@ -22,6 +22,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.event.logic.EventLogic;
@@ -34,6 +35,7 @@ import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.batch.model.BatchObjectHelper;
 import wbs.sms.message.core.logic.SmsMessageLogic;
@@ -150,7 +152,8 @@ class SmsInboxLogicImplementation
 			throw new RuntimeException (
 				stringFormat (
 					"Cannot receive on route %s",
-					route.getId ()));
+					integerToDecimalString (
+						route.getId ())));
 
 		}
 
@@ -307,7 +310,8 @@ class SmsInboxLogicImplementation
 		log.info (
 			stringFormat (
 				"SMS %s %s %s %s %s %s",
-				message.getId (),
+				integerToDecimalString (
+					message.getId ()),
 				route.getCode (),
 				emptyStringIfNull (
 					message.getOtherId ()),

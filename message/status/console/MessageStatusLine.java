@@ -11,10 +11,12 @@ import javax.inject.Provider;
 import wbs.console.part.PagePart;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
+
 import wbs.platform.status.console.StatusLine;
 
 @SingletonComponent ("messageStatusLine")

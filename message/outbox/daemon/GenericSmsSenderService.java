@@ -4,6 +4,7 @@ import static wbs.utils.collection.CollectionUtils.collectionIsEmpty;
 import static wbs.utils.collection.IterableUtils.iterableMapToList;
 import static wbs.utils.etc.NumberUtils.equalToZero;
 import static wbs.utils.etc.NumberUtils.integerEqualSafe;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.joinWithFullStop;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.underscoreToHyphen;
@@ -19,16 +20,22 @@ import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.daemon.AbstractDaemonService;
+
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -47,6 +54,9 @@ class GenericSmsSenderService
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsOutboxMonitor outboxMonitor;
@@ -178,7 +188,8 @@ class GenericSmsSenderService
 							"sms-route-%s-send-%s",
 							underscoreToHyphen (
 								smsRoute.getCode ()),
-							threadIndex),
+							integerToDecimalString (
+								threadIndex)),
 						this::messageSendLoop));
 
 			return this;
@@ -341,7 +352,12 @@ class GenericSmsSenderService
 					return;
 				}
 
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"messageSendLoop");
+
 				sendOneMessage (
+					taskLogger,
 					smsMessageId);
 
 				synchronized (this) {
@@ -377,7 +393,13 @@ class GenericSmsSenderService
 		}
 
 		void sendOneMessage (
-				long messageId) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull Long messageId) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendOneMessage");
 
 			genericSmsSenderProvider.get ()
 
@@ -387,7 +409,8 @@ class GenericSmsSenderService
 				.smsMessageId (
 					messageId)
 
-				.send ();
+				.send (
+					taskLogger);
 
 		}
 

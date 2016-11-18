@@ -1,5 +1,6 @@
 package wbs.sms.locator.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
@@ -23,6 +25,7 @@ import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextObjectHelper;
+
 import wbs.sms.locator.model.LocatorLogObjectHelper;
 import wbs.sms.locator.model.LocatorLogRec;
 import wbs.sms.locator.model.LocatorObjectHelper;
@@ -285,7 +288,8 @@ class LocatorManager {
 				throw new RuntimeException (
 					stringFormat (
 						"Locator not found for type %s",
-						locatorTypeId));
+						integerToDecimalString (
+							locatorTypeId)));
 
 			}
 

@@ -7,6 +7,8 @@ import lombok.experimental.Accessors;
 
 import org.json.simple.JSONObject;
 
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.outbox.logic.SmsOutboxLogic.FailureType;
 import wbs.sms.message.outbox.model.OutboxRec;
 
@@ -18,12 +20,15 @@ interface SmsSenderHelper <StateType> {
 	String senderCode ();
 
 	SetupRequestResult <StateType> setupRequest (
+			TaskLogger parentTaskLogger,
 			OutboxRec outbox);
 
 	PerformSendResult performSend (
+			TaskLogger parentTaskLogger,
 			StateType state);
 
 	ProcessResponseResult processSend (
+			TaskLogger parentTaskLogger,
 			StateType state);
 
 	// data structures

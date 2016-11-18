@@ -46,6 +46,13 @@
 			<object-settings-page
 				fields="settings"/>
 
+			<context-tab-form-actions-page>
+
+				<form-action
+					name="end-session"/>
+
+			</context-tab-form-actions-page>
+
 			<context-link
 				name="session"
 				link="smsCustomerSession"
@@ -151,6 +158,17 @@
 			label="Affiliate"
 			object-type="smsCustomerAffiliate"
 			nullable="yes"/>
+
+	</field-set>
+
+	<field-set
+		name="end-session-form"
+		class="wbs.sms.customer.console.SmsCustomerEndSessionForm">
+
+		<text-field
+			name="reason"
+			nullable="no"
+			minimum-length="1"/>
 
 	</field-set>
 

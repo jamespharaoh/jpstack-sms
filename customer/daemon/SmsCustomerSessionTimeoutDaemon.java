@@ -1,7 +1,7 @@
 package wbs.sms.customer.daemon;
 
 import static wbs.utils.etc.Misc.isNull;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.List;
 
@@ -114,7 +114,7 @@ class SmsCustomerSessionTimeoutDaemon
 			@NonNull Long managerId) {
 
 		log.debug (
-			stringFormat (
+			stringFormatObsolete (
 				"Performing session timeouts for manager %s",
 				managerId));
 
@@ -142,7 +142,7 @@ class SmsCustomerSessionTimeoutDaemon
 						manager.getSessionTimeout ()));
 
 		log.debug (
-			stringFormat (
+			stringFormatObsolete (
 				"Got start time before %s",
 				startTimeBefore));
 
@@ -153,7 +153,7 @@ class SmsCustomerSessionTimeoutDaemon
 				batchSize);
 
 		log.debug (
-			stringFormat (
+			stringFormatObsolete (
 				"Found %s sessions",
 				sessionsToTimeout.size ()));
 

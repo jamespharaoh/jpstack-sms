@@ -4,6 +4,7 @@ import static wbs.utils.collection.CollectionUtils.collectionHasMoreThanOneEleme
 import static wbs.utils.collection.CollectionUtils.collectionSize;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
+import static wbs.utils.etc.EnumUtils.enumNameSpaces;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.NullUtils.ifNull;
@@ -32,8 +33,10 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
+
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageExpiryObjectHelper;
@@ -214,7 +217,8 @@ class SmsOutboxLogicImplementation
 			throw new RuntimeException (
 				stringFormat (
 					"Trying to unhold message in state: %s",
-					message.getStatus ()));
+					enumNameSpaces (
+						message.getStatus ())));
 
 		}
 

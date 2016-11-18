@@ -7,6 +7,7 @@ import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.Misc.todo;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
@@ -24,10 +25,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -36,6 +37,9 @@ import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -55,9 +59,9 @@ import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.logic.NumberLookupManager;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.utils.JsonUtils;
 
-@Log4j
 @Accessors (fluent = true)
 @PrototypeComponent ("genericSmsSender")
 public
@@ -83,6 +87,9 @@ class GenericSmsSenderImplementation <StateType>
 
 	@SingletonDependency
 	ExceptionUtils exceptionUtils;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberLookupManager numberLookupManager;
@@ -144,11 +151,18 @@ class GenericSmsSenderImplementation <StateType>
 
 	@Override
 	public
-	void send () {
+	void send (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"send");
 
 		// setup request
 
-		setupSend ();
+		setupSend (
+			taskLogger);
 
 		if (
 			enumNotEqualSafe (
@@ -165,7 +179,8 @@ class GenericSmsSenderImplementation <StateType>
 
 		// perform send
 
-		performSend ();
+		performSend (
+			taskLogger);
 
 		if (
 			enumNotEqualSafe (
@@ -181,11 +196,18 @@ class GenericSmsSenderImplementation <StateType>
 
 		// process response
 
-		processResponse ();
+		processResponse (
+			taskLogger);
 
 	}
 
-	void setupSend () {
+	void setupSend (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setupSend");
 
 		@Cleanup
 		Transaction transaction =
@@ -240,6 +262,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			setupRequestResult =
 				smsSenderHelper.setupRequest (
+					taskLogger,
 					smsOutbox);
 
 			if (
@@ -372,7 +395,13 @@ class GenericSmsSenderImplementation <StateType>
 
 	}
 
-	void performSend () {
+	void performSend (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"performSend");
 
 		// now send it
 
@@ -380,6 +409,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			performSendResult =
 				smsSenderHelper.performSend (
+					taskLogger,
 					state);
 
 			if (
@@ -522,13 +552,16 @@ class GenericSmsSenderImplementation <StateType>
 					joinWithCommaAndSpace (
 						stringFormat (
 							"smsMessageId = %s",
-							smsMessageId),
+							integerToDecimalString (
+								smsMessageId)),
 						stringFormat (
 							"smsOutboxAttemptId = %s",
-							smsOutboxAttemptId),
+							integerToDecimalString (
+								smsOutboxAttemptId)),
 						stringFormat (
 							"attemptNUmber = %s",
-							attemptNumber))),
+							integerToDecimalString (
+								attemptNumber)))),
 				this);
 
 		SmsOutboxAttemptRec smsOutboxAttempt =
@@ -556,12 +589,19 @@ class GenericSmsSenderImplementation <StateType>
 
 	}
 
-	void processResponse () {
+	void processResponse (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"processResponse");
 
 		boolean success =
 			LongStream.range (0, databaseRetriesMax).anyMatch (
 				attemptNumber ->
 					attemptToProcessResponse (
+						taskLogger,
 						state,
 						attemptNumber));
 
@@ -574,12 +614,19 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	boolean attemptToProcessResponse (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull StateType state,
 			@NonNull Long attemptNumber) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"attemptToProcessResponse");
 
 		try {
 
 			attemptToProcessResponseReal (
+				taskLogger,
 				state,
 				attemptNumber);
 
@@ -601,8 +648,14 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	void attemptToProcessResponseReal (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull StateType state,
 			@NonNull Long attemptNumber) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"attemptToProcessResponseReal");
 
 		// begin transaction
 
@@ -616,13 +669,16 @@ class GenericSmsSenderImplementation <StateType>
 					joinWithCommaAndSpace (
 						stringFormat (
 							"smsMessageId = %s",
-							smsMessageId),
+							integerToDecimalString (
+								smsMessageId)),
 						stringFormat (
 							"smsOutboxAttemptId = %s",
-							smsOutboxAttemptId),
+							integerToDecimalString (
+								smsOutboxAttemptId)),
 						stringFormat (
 							"attemptNUmber = %s",
-							attemptNumber))),
+							integerToDecimalString (
+								attemptNumber)))),
 				this);
 
 		SmsOutboxAttemptRec smsOutboxAttempt =
@@ -635,6 +691,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			processResponseResult =
 				smsSenderHelper.processSend (
+					taskLogger,
 					state);
 
 			if (
@@ -754,11 +811,11 @@ class GenericSmsSenderImplementation <StateType>
 					processResponseResult.failureType ())
 			) {
 
-				log.warn (
-					stringFormat (
-						"No failure type for send attempt %s ",
-						smsOutboxAttemptId,
-						"(defaulting to temporary)"));
+				taskLogger.warningFormat (
+					"No failure type for send attempt %s ",
+					integerToDecimalString (
+						smsOutboxAttemptId),
+					"(defaulting to temporary)");
 
 				processResponseResult.failureType (
 					FailureType.temporary);

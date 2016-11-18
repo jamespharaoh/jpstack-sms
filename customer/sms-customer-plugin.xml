@@ -23,6 +23,10 @@
 		<fixture name="smsCustomerManager"/>
 	</fixtures>
 
+	<layer name="console">
+		<component class="console.SmsCustomerEndSessionFormActionHelper"/>
+	</layer>
+
 	<layer name="logic">
 		<component class="logic.SmsCustomerLogicImplementation"/>
 	</layer>

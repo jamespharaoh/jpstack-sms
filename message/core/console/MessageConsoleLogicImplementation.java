@@ -3,7 +3,7 @@ package wbs.sms.message.core.console;
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.string.StringUtils.spacify;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.string.StringUtils.stringIsNotEmpty;
 import static wbs.web.utils.HtmlUtils.htmlLinkWriteHtml;
 
@@ -131,7 +131,7 @@ class MessageConsoleLogicImplementation
 					htmlLinkWriteHtml (
 						formatWriter,
 						requestContext.resolveContextUrl (
-							stringFormat (
+							stringFormatObsolete (
 								"/message",
 								"/%u",
 								message.getId (),

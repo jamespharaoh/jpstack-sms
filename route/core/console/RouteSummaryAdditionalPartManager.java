@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.log4j.Log4j;
 
 import wbs.console.part.PagePart;
+
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;

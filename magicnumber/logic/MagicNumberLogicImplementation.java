@@ -1,7 +1,7 @@
 package wbs.sms.magicnumber.logic;
 
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Collection;
 
@@ -163,7 +163,7 @@ class MagicNumberLogicImplementation
 		if (magicNumberUse == null) {
 
 			log.fatal (
-				stringFormat (
+				stringFormatObsolete (
 					"No magic numbers found for %s",
 					magicNumberSet));
 

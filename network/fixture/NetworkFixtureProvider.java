@@ -10,14 +10,18 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
+
 import wbs.sms.network.model.NetworkObjectHelper;
 
 @PrototypeComponent ("networkFixtureProvider")
@@ -40,7 +44,8 @@ class NetworkFixtureProvider
 
 	@Override
 	public
-	void createFixtures () {
+	void createFixtures (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		createMenuItems ();
 

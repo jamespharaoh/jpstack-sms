@@ -185,7 +185,7 @@ BEGIN
 			old_message_status,
 			new_message_status)
 		VALUES (
-			nextval ('delivery_notice_queue_id_seq'),
+			nextval ('delivery_id_seq'),
 			NEW.id,
 			OLD.status,
 			NEW.status);

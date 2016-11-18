@@ -8,6 +8,7 @@ import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.string.StringUtils.stringToBytes;
 import static wbs.utils.string.StringUtils.stringToUtf8;
 
@@ -33,7 +34,9 @@ import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+
 import wbs.platform.daemon.AbstractDaemonService;
+
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
@@ -576,7 +579,7 @@ class AbstractSmsSender2
 					if (++ tries == maxTries) {
 
 						log.fatal (
-							stringFormat (
+							stringFormatObsolete (
 								"Outbox success for message %s failed %s ",
 								messageId,
 								maxTries,
@@ -586,7 +589,7 @@ class AbstractSmsSender2
 					}
 
 					log.warn (
-						stringFormat (
+						stringFormatObsolete (
 							"Outbox success for message %s failed, retrying",
 							messageId),
 						updateException);
@@ -677,7 +680,7 @@ class AbstractSmsSender2
 					if (++ tries == maxTries) {
 
 						log.fatal (
-							stringFormat (
+							stringFormatObsolete (
 								"Outbox failure for message %s failed %s ",
 								messageId,
 								tries,
@@ -690,7 +693,7 @@ class AbstractSmsSender2
 					}
 
 					log.warn (
-						stringFormat (
+						stringFormatObsolete (
 							"Outbox failure for message %s failed, retrying",
 							messageId),
 						updateException);

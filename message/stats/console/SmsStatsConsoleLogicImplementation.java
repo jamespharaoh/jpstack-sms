@@ -1,7 +1,7 @@
 package wbs.sms.message.stats.console;
 
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -97,7 +97,7 @@ class SmsStatsConsoleLogicImplementation
 			} catch (Exception exception) {
 
 				log.error (
-					stringFormat (
+					stringFormatObsolete (
 						"Error checking privs for service %s",
 						service.getId ()),
 					exception);
@@ -132,7 +132,7 @@ class SmsStatsConsoleLogicImplementation
 			} catch (Exception exception) {
 
 				log.error (
-					stringFormat (
+					stringFormatObsolete (
 						"Error checking privs for affiliate %s",
 						affiliate.getId ()),
 					exception);

@@ -1,7 +1,7 @@
 package wbs.sms.network.logic;
 
 import static wbs.utils.etc.Misc.isNotNull;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.time.TimeUtils.laterThan;
 import static wbs.utils.time.TimeUtils.millisToInstant;
 
@@ -131,7 +131,7 @@ class NetworkPrefixCache {
 			) {
 
 				log.debug (
-					stringFormat (
+					stringFormatObsolete (
 						"Found %s, networkId = %s for %s",
 						prefixToTry,
 						networkId,

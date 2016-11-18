@@ -15,13 +15,16 @@ import lombok.NonNull;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.media.console.MediaConsoleHelper;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 
@@ -293,7 +296,8 @@ class MessageTickerUpdateResponder
 		stringBuilder.append (
 			stringFormat (
 				" ], %s",
-				messageTickerMessage.messageId ()));
+				integerToDecimalString (
+					messageTickerMessage.messageId ())));
 
 		stringBuilder.append (
 			stringFormat (
@@ -314,12 +318,13 @@ class MessageTickerUpdateResponder
 
 	private
 	String doStatus (
-			MessageTickerMessage messageTickerMessage) {
+			@NonNull MessageTickerMessage messageTickerMessage) {
 
 		return stringFormat (
 			"messageTicker.updateStatus (%s, '%j', '%j');",
 
-			messageTickerMessage.messageId (),
+			integerToDecimalString (
+				messageTickerMessage.messageId ()),
 
 			messageConsoleLogic.classForMessageStatus (
 				messageTickerMessage.status ()),

@@ -1,6 +1,6 @@
 package wbs.sms.smpp.daemon;
 
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -70,7 +70,7 @@ class SmppOutputStream
 			if (newValue > 0x000000ff) {
 
 				throw new IllegalArgumentException (
-					stringFormat (
+					stringFormatObsolete (
 						"Integer too big for length %s: %s",
 						length,
 						value));
@@ -86,7 +86,7 @@ class SmppOutputStream
 			if (newValue > 0x0000ffff) {
 
 				throw new IllegalArgumentException (
-					stringFormat (
+					stringFormatObsolete (
 						"Integer too big for length %s: %s",
 						length,
 						value));
@@ -106,7 +106,7 @@ class SmppOutputStream
 			if (length < 1 || length > 4) {
 
 				throw new IllegalArgumentException (
-					stringFormat (
+					stringFormatObsolete (
 						"Invalid integer size: %s",
 						length));
 

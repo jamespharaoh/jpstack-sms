@@ -1,6 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.List;
 
@@ -105,7 +105,7 @@ class SmsOutboxUnstickDaemon
 			) {
 
 				log.warn (
-					stringFormat (
+					stringFormatObsolete (
 						"Unsticking outbox %s (sending time is %s",
 						outbox.getId (),
 						outbox.getSending ()));

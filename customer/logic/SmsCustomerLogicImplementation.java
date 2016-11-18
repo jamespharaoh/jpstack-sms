@@ -2,6 +2,7 @@ package wbs.sms.customer.logic;
 
 import static wbs.utils.etc.LogicUtils.ifThenElse;
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
@@ -26,6 +27,7 @@ import wbs.framework.database.Transaction;
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.event.logic.EventLogic;
+import wbs.platform.user.model.UserRec;
 
 import wbs.sms.customer.model.SmsCustomerAffiliateRec;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
@@ -262,6 +264,48 @@ class SmsCustomerLogicImplementation
 				message);
 
 		return;
+
+	}
+
+	@Override
+	public
+	void sessionEndManually (
+			@NonNull UserRec user,
+			@NonNull SmsCustomerRec customer,
+			@NonNull String reason) {
+
+		Transaction transaction =
+			database.currentTransaction ();
+
+		if (
+			isNull (
+				customer.getActiveSession ())
+		) {
+			throw new IllegalStateException ();
+		}
+	
+		SmsCustomerSessionRec session =
+			customer.getActiveSession ();
+	
+		session
+
+			.setEndTime (
+				transaction.now ())
+
+		;
+
+		customer
+
+			.setActiveSession (
+				null)
+
+		;
+
+		eventLogic.createEvent (
+			"sms_customer_session_end_manually",
+			user,
+			customer,
+			reason);
 
 	}
 

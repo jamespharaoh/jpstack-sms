@@ -1,6 +1,6 @@
 package wbs.sms.route.test.console;
 
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Collections;
 
@@ -101,7 +101,7 @@ class RouteTestTwoWayAction
 				Optional.<String>absent ());
 
 		requestContext.addNotice (
-			stringFormat (
+			stringFormatObsolete (
 				"Message %s inserted",
 				messageRecord.getId ()));
 

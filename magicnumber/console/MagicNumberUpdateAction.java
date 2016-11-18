@@ -2,6 +2,7 @@ package wbs.sms.magicnumber.console;
 
 import static wbs.utils.etc.LogicUtils.referenceNotEqualWithClass;
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -14,17 +15,21 @@ import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("magicNumberUpdateAction")
@@ -204,7 +209,8 @@ class MagicNumberUpdateAction
 				requestContext.addNotice (
 					stringFormat (
 						"%s magic numbers created",
-						numAdded));
+						integerToDecimalString (
+							numAdded)));
 
 			}
 
@@ -267,7 +273,8 @@ class MagicNumberUpdateAction
 				requestContext.addNotice (
 					stringFormat (
 						"%s magic numbers deleted",
-						numDeleted));
+						integerToDecimalString (
+							numDeleted)));
 
 			}
 

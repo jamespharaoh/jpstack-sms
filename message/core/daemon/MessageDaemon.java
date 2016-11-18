@@ -1,7 +1,7 @@
 package wbs.sms.message.core.daemon;
 
 import static wbs.utils.etc.EnumUtils.enumInSafe;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -151,7 +151,7 @@ class MessageDaemon
 					MessageStatus.reportTimedOut);
 
 				log.debug (
-					stringFormat (
+					stringFormatObsolete (
 						"Message %s expired from state %s",
 						message.getId (),
 						oldMessageStatus));
@@ -168,7 +168,7 @@ class MessageDaemon
 				// ignore expiry
 
 				log.debug (
-					stringFormat (
+					stringFormatObsolete (
 						"Message %s expiry ignored due to state %s",
 						message.getId (),
 						oldMessageStatus));
@@ -178,7 +178,7 @@ class MessageDaemon
 				// error
 
 				throw new RuntimeException (
-					stringFormat (
+					stringFormatObsolete (
 						"Cannot expire message %s in state %s",
 						message.getId (),
 						oldMessageStatus));

@@ -11,14 +11,17 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -46,7 +49,7 @@ class MagicNumberCommandTypeHandler
 	@SingletonDependency
 	Database database;
 
-	@SingletonDependency
+	@ClassSingletonDependency
 	LogContext logContext;
 
 	@SingletonDependency
