@@ -116,16 +116,16 @@ class SmsInboxLogicImplementation
 	@Override
 	public
 	MessageRec inboxInsert (
-			@NonNull Optional<String> otherId,
+			@NonNull Optional <String> otherId,
 			@NonNull TextRec text,
-			@NonNull Object numFrom,
+			@NonNull NumberRec number,
 			@NonNull String numTo,
 			@NonNull RouteRec route,
-			@NonNull Optional<NetworkRec> optionalNetwork,
-			@NonNull Optional<Instant> networkTime,
-			@NonNull List<MediaRec> medias,
-			@NonNull Optional<String> avStatus,
-			@NonNull Optional<String> subject) {
+			@NonNull Optional <NetworkRec> optionalNetwork,
+			@NonNull Optional <Instant> networkTime,
+			@NonNull List <MediaRec> medias,
+			@NonNull Optional <String> avStatus,
+			@NonNull Optional <String> subject) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -137,10 +137,6 @@ class SmsInboxLogicImplementation
 				0l);
 
 		// lookup the number
-
-		NumberRec number =
-			numberLogic.objectToNumber (
-				numFrom);
 
 		NetworkRec network =
 			optionalNetwork.or (

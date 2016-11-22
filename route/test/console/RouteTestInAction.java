@@ -1,28 +1,28 @@
 package wbs.sms.route.test.console;
 
-import java.util.Collections;
-
-import com.google.common.base.Optional;
+import static wbs.utils.collection.CollectionUtils.emptyList;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 
 import lombok.Cleanup;
 import lombok.NonNull;
 
-import org.joda.time.Instant;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
-import wbs.platform.media.model.MediaRec;
+
 import wbs.platform.text.model.TextObjectHelper;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.SmsInboxLogic;
-import wbs.sms.network.model.NetworkRec;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("routeTestInAction")
@@ -39,10 +39,13 @@ class RouteTestInAction
 	Database database;
 
 	@SingletonDependency
+	RouteConsoleHelper routeHelper;
+
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
 	@SingletonDependency
-	RouteConsoleHelper routeHelper;
+	NumberObjectHelper smsNumberHelper;
 
 	@SingletonDependency
 	TextObjectHelper textHelper;
@@ -78,20 +81,21 @@ class RouteTestInAction
 
 		MessageRec message =
 			smsInboxLogic.inboxInsert (
-				Optional.<String>absent (),
+				optionalAbsent (),
 				textHelper.findOrCreate (
 					requestContext.parameterRequired (
 						"message")),
-				requestContext.parameterRequired (
-					"num_from"),
+				smsNumberHelper.findOrCreate (
+					requestContext.parameterRequired (
+						"num_from")),
 				requestContext.parameterRequired (
 					"num_to"),
 				route,
-				Optional.<NetworkRec>absent (),
-				Optional.<Instant>absent (),
-				Collections.<MediaRec>emptyList (),
-				Optional.<String>absent (),
-				Optional.<String>absent ());
+				optionalAbsent (),
+				optionalAbsent (),
+				emptyList (),
+				optionalAbsent (),
+				optionalAbsent ());
 
 		transaction.commit ();
 

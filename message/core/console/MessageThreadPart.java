@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import lombok.NonNull;
 
+import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -29,7 +30,6 @@ import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.web.utils.HtmlTableCellWriter;
 
 @PrototypeComponent ("messageThreadPart")
 public

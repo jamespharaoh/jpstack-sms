@@ -1,30 +1,29 @@
 package wbs.sms.route.test.console;
 
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
-
-import java.util.Collections;
-
-import com.google.common.base.Optional;
+import static wbs.utils.collection.CollectionUtils.emptyList;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 
 import lombok.Cleanup;
 import lombok.NonNull;
 
-import org.joda.time.Instant;
-
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
-import wbs.platform.media.model.MediaRec;
+
 import wbs.platform.text.model.TextObjectHelper;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.SmsInboxLogic;
-import wbs.sms.network.model.NetworkRec;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("routeTestTwoWayAction")
@@ -41,10 +40,13 @@ class RouteTestTwoWayAction
 	Database database;
 
 	@SingletonDependency
+	RouteConsoleHelper routeHelper;
+
+	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
 
 	@SingletonDependency
-	RouteConsoleHelper routeHelper;
+	NumberObjectHelper smsNumberHelper;
 
 	@SingletonDependency
 	TextObjectHelper textHelper;
@@ -89,20 +91,22 @@ class RouteTestTwoWayAction
 
 		MessageRec messageRecord =
 			smsInboxLogic.inboxInsert (
-				Optional.<String>absent (),
-				textHelper.findOrCreate (messageString),
-				numFrom,
+				optionalAbsent (),
+				textHelper.findOrCreate (
+					messageString),
+				smsNumberHelper.findOrCreate (
+					numFrom),
 				numTo,
 				route,
-				Optional.<NetworkRec>absent (),
-				Optional.<Instant>absent (),
-				Collections.<MediaRec>emptyList (),
-				Optional.<String>absent (),
-				Optional.<String>absent ());
+				optionalAbsent (),
+				optionalAbsent (),
+				emptyList (),
+				optionalAbsent (),
+				optionalAbsent ());
 
-		requestContext.addNotice (
-			stringFormatObsolete (
-				"Message %s inserted",
+		requestContext.addNoticeFormat (
+			"Message %s inserted",
+			integerToDecimalString (
 				messageRecord.getId ()));
 
 		transaction.commit ();

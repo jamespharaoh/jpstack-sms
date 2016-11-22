@@ -1,5 +1,7 @@
 package wbs.sms.modempoll.daemon;
 
+import static wbs.utils.collection.CollectionUtils.emptyList;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.io.BufferedReader;
@@ -10,13 +12,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Optional;
 
 import lombok.Cleanup;
 import lombok.Getter;
@@ -24,14 +23,12 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
-import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 
 import wbs.platform.daemon.AbstractDaemonService;
-import wbs.platform.media.model.MediaRec;
 import wbs.platform.text.model.TextObjectHelper;
 
 import wbs.sms.gsm.Pdu;
@@ -39,7 +36,7 @@ import wbs.sms.gsm.SmsDeliverPdu;
 import wbs.sms.message.inbox.logic.SmsInboxLogic;
 import wbs.sms.modempoll.model.ModemPollQueueObjectHelper;
 import wbs.sms.modempoll.model.ModemPollQueueRec;
-import wbs.sms.network.model.NetworkRec;
+import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -54,13 +51,16 @@ class ModemPollDaemon
 	Database database;
 
 	@SingletonDependency
-	SmsInboxLogic smsInboxLogic;
-
-	@SingletonDependency
 	ModemPollQueueObjectHelper modemPollQueueHelper;
 
 	@SingletonDependency
 	RouteObjectHelper routeHelper;
+
+	@SingletonDependency
+	SmsInboxLogic smsInboxLogic;
+
+	@SingletonDependency
+	NumberObjectHelper smsNumberHelper;
 
 	@SingletonDependency
 	TextObjectHelper textHelper;
@@ -559,16 +559,18 @@ class ModemPollDaemon
 					routeId);
 
 			smsInboxLogic.inboxInsert (
-				Optional.<String>absent (),
-				textHelper.findOrCreate (pdu.getMessage ()),
-				pdu.getOriginatingAddress ().getAddressValue (),
+				optionalAbsent (),
+				textHelper.findOrCreate (
+					pdu.getMessage ()),
+				smsNumberHelper.findOrCreate (
+					pdu.getOriginatingAddress ().getAddressValue ()),
 				destinationNumber,
 				route,
-				Optional.<NetworkRec>absent (),
-				Optional.<Instant>absent (),
-				Collections.<MediaRec>emptyList (),
-				Optional.<String>absent (),
-				Optional.<String>absent ());
+				optionalAbsent (),
+				optionalAbsent (),
+				emptyList (),
+				optionalAbsent (),
+				optionalAbsent ());
 
 			transaction.commit ();
 
