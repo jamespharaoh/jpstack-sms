@@ -203,54 +203,43 @@ class ObjectSmsMessageSetPageBuilder <
 			.pagePartFactory (
 				partFactory);
 
-		Action getAction =
-			new Action () {
+		Provider <Action> getActionProvider =
+			() -> authActionProvider.get ()
 
-			@Override
-			public
-			Responder handle (
-					@NonNull TaskLogger parentTaskLogger) {
+			.lookup (
+				canViewLookup)
 
-				Action action =
-					authActionProvider.get ()
-						.lookup (canViewLookup)
-						.normalResponder (responder);
+			.normalResponder (
+				responder);
 
-				return action.handle (
-					parentTaskLogger);
+		Provider <Action> postActionProvider =
+			() -> messageSetActionProvider.get ()
 
-			}
+			.responder (
+				responder)
 
-		};
+			.messageSetFinder (
+				messageSetFinder)
 
-		Action postAction =
-			new Action () {
-
-			@Override
-			public
-			Responder handle (
-					@NonNull TaskLogger taskLogger) {
-
-				Action action =
-					messageSetActionProvider.get ()
-						.responder (responder)
-						.messageSetFinder (messageSetFinder)
-						.privLookup (canUpdateLookup);
-
-				return action.handle (
-					taskLogger);
-
-			}
-
-		};
+			.privLookup (
+				canUpdateLookup);
 
 		consoleModule.addContextFile (
 			fileName,
 			consoleFile.get ()
-				.getResponderName (responderName)
-				.getAction (getAction)
-				.postAction (postAction)
-				.privName (privKey),
+
+				.getResponderName (
+					responderName)
+
+				.getActionProvider (
+					getActionProvider)
+
+				.postActionProvider (
+					postActionProvider)
+
+				.privName (
+					privKey),
+
 			extensionPoint.contextTypeNames ());
 
 	}
