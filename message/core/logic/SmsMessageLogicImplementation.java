@@ -5,9 +5,10 @@ import static wbs.utils.collection.CollectionUtils.listFirstElementRequired;
 import static wbs.utils.collection.CollectionUtils.listSecondElementRequired;
 import static wbs.utils.collection.CollectionUtils.listThirdElementRequired;
 import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.parseInteger;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 import static wbs.utils.string.StringUtils.stringSplitHyphen;
 
@@ -19,8 +20,10 @@ import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
+
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -156,10 +159,11 @@ class SmsMessageLogicImplementation
 
 		} else {
 
-			return stringFormatObsolete (
+			return stringFormat (
 				"test-%s-%s",
 				root.getFixturesSeed (),
-				messageId);
+				integerToDecimalString (
+					messageId));
 
 		}
 

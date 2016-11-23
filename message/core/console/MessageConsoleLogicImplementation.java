@@ -2,22 +2,27 @@ package wbs.sms.message.core.console;
 
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.spacify;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsNotEmpty;
 import static wbs.web.utils.HtmlUtils.htmlLinkWriteHtml;
 
 import lombok.NonNull;
 
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+
 import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("messageConsoleLogic")
@@ -131,13 +136,15 @@ class MessageConsoleLogicImplementation
 					htmlLinkWriteHtml (
 						formatWriter,
 						requestContext.resolveContextUrl (
-							stringFormatObsolete (
+							stringFormat (
 								"/message",
 								"/%u",
-								message.getId (),
+								integerToDecimalString (
+									message.getId ()),
 								"/message_mediaSummary",
 								"?index=%u",
-								index ++)),
+								integerToDecimalString (
+									index ++))),
 						() -> mediaConsoleLogic.writeMediaThumb32OrText (
 							formatWriter,
 							media));

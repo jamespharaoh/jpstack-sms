@@ -1,7 +1,8 @@
 package wbs.sms.magicnumber.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
 
@@ -17,11 +18,13 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextRec;
 import wbs.platform.user.model.UserRec;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -163,9 +166,10 @@ class MagicNumberLogicImplementation
 		if (magicNumberUse == null) {
 
 			log.fatal (
-				stringFormatObsolete (
+				stringFormat (
 					"No magic numbers found for %s",
-					magicNumberSet));
+					integerToDecimalString (
+						magicNumberSet.getId ())));
 
 			return null;
 

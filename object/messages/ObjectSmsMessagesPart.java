@@ -3,7 +3,8 @@ package wbs.sms.object.messages;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.instantToDateNullSafe;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
@@ -38,12 +39,15 @@ import wbs.console.html.ObsoleteDateLinks;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
@@ -356,14 +360,15 @@ class ObjectSmsMessagesPart
 		public
 		String getUrl () {
 
-			return stringFormatObsolete (
+			return stringFormat (
 				"%s",
 				requestContext.resolveLocalUrl (
 					localName),
 				"?date=%u",
 				ifNull (
-					requestContext.request (
-						"date"),
+					genericCastUnchecked (
+						requestContext.request (
+							"date")),
 					""));
 
 		}

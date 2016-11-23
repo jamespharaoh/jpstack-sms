@@ -36,11 +36,16 @@ import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.utils.time.TimeFormatter;
+
 import wbs.web.misc.UrlParams;
 
 @Accessors (fluent = true)
@@ -50,6 +55,9 @@ class GenericMessageStatsPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsStatsDailyTimeScheme smsStatsDailyTimeScheme;
@@ -321,6 +329,11 @@ class GenericMessageStatsPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
+
 		splitTabsPrepared.go (
 			formatWriter);
 
@@ -496,7 +509,8 @@ class GenericMessageStatsPart
 				criteriaMap)
 
 			.filterMap (
-				statsConsoleLogic.makeFilterMap ())
+				statsConsoleLogic.makeFilterMap (
+					taskLogger))
 
 			.url (
 				url)

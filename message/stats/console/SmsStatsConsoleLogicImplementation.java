@@ -1,7 +1,7 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,18 +14,23 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.message.batch.model.BatchObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsSearch;
 import wbs.sms.network.console.NetworkConsoleHelper;
@@ -34,7 +39,6 @@ import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
 @SingletonComponent ("smsStatsConsoleLogic")
-@Log4j
 public
 class SmsStatsConsoleLogicImplementation
 	implements SmsStatsConsoleLogic {
@@ -46,6 +50,9 @@ class SmsStatsConsoleLogicImplementation
 
 	@SingletonDependency
 	BatchObjectHelper batchHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NetworkConsoleHelper networkHelper;
@@ -69,14 +76,23 @@ class SmsStatsConsoleLogicImplementation
 
 	@Override
 	public
-	Map<SmsStatsCriteria,Set<Long>> makeFilterMap () {
+	Map <SmsStatsCriteria, Set <Long>> makeFilterMap (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		if (privChecker.canRecursive (
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"makeFilterMap");
+
+		if (
+			privChecker.canRecursive (
 				GlobalId.root,
-				"stats"))
+				"stats")
+		) {
 			return null;
+		}
 
-		Set<Long> serviceIds =
+		Set <Long> serviceIds =
 			new HashSet<> ();
 
 		serviceIds.add (
@@ -89,18 +105,22 @@ class SmsStatsConsoleLogicImplementation
 
 			try {
 
-				if (! privChecker.canRecursive (
-						objectManager.getParentOrNull (service),
-						"stats"))
+				if (
+					! privChecker.canRecursive (
+						objectManager.getParentRequired (
+							service),
+						"stats")
+				) {
 					continue;
+				}
 
 			} catch (Exception exception) {
 
-				log.error (
-					stringFormatObsolete (
-						"Error checking privs for service %s",
-						service.getId ()),
-					exception);
+				taskLogger.errorFormatException (
+					exception,
+					"Error checking privs for service %s",
+					integerToDecimalString (
+						service.getId ()));
 
 				continue;
 
@@ -124,18 +144,22 @@ class SmsStatsConsoleLogicImplementation
 
 			try {
 
-				if (! privChecker.canRecursive (
-						objectManager.getParentOrNull (affiliate),
-						"stats"))
+				if (
+					! privChecker.canRecursive (
+						objectManager.getParentRequired (
+							affiliate),
+						"stats")
+				) {
 					continue;
+				}
 
 			} catch (Exception exception) {
 
-				log.error (
-					stringFormatObsolete (
-						"Error checking privs for affiliate %s",
-						affiliate.getId ()),
-					exception);
+				taskLogger.errorFormatException (
+					exception,
+					"Error checking privs for affiliate %s",
+					integerToDecimalString (
+						affiliate.getId ()));
 
 				continue;
 

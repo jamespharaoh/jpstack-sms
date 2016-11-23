@@ -16,17 +16,21 @@ import wbs.console.action.ConsoleAction;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.message.outbox.model.OutboxRec;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("messageOutboxRouteAction")
@@ -100,19 +104,25 @@ class MessageOutboxRouteAction
 
 		// check privs
 
-		if (! privChecker.canRecursive (
-			ImmutableMap.<Object,Collection<String>>builder ()
+		if (
+
+			! privChecker.canRecursive (
+				ImmutableMap.<Object, Collection <String>> builder ()
 
 				.put (
-					objectManager.getParentOrNull (
+					objectManager.getParentRequired (
 						message.getService ()),
-					ImmutableSet.<String>of ("manage"))
+					ImmutableSet.of ("manage"))
 
 				.put (
 					message.getRoute (),
-					ImmutableSet.<String>of ("manage"))
+					ImmutableSet.of ("manage"))
 
-				.build ())) {
+				.build ()
+
+			)
+
+		) {
 
 			requestContext.addError (
 				"Access denied");

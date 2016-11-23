@@ -1,7 +1,9 @@
 package wbs.sms.message.core.daemon;
 
 import static wbs.utils.etc.EnumUtils.enumInSafe;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.EnumUtils.enumName;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,8 +23,10 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.text.model.TextObjectHelper;
+
 import wbs.sms.core.daemon.MessageRetrier;
 import wbs.sms.core.daemon.MessageRetrierFactory;
 import wbs.sms.message.core.logic.SmsMessageLogic;
@@ -151,10 +155,12 @@ class MessageDaemon
 					MessageStatus.reportTimedOut);
 
 				log.debug (
-					stringFormatObsolete (
+					stringFormat (
 						"Message %s expired from state %s",
-						message.getId (),
-						oldMessageStatus));
+						integerToDecimalString (
+							message.getId ()),
+						enumName (
+							oldMessageStatus)));
 
 			} else if (
 				enumInSafe (
@@ -168,20 +174,24 @@ class MessageDaemon
 				// ignore expiry
 
 				log.debug (
-					stringFormatObsolete (
+					stringFormat (
 						"Message %s expiry ignored due to state %s",
-						message.getId (),
-						oldMessageStatus));
+						integerToDecimalString (
+							message.getId ()),
+						enumName (
+							oldMessageStatus)));
 
 			} else {
 
 				// error
 
 				throw new RuntimeException (
-					stringFormatObsolete (
+					stringFormat (
 						"Cannot expire message %s in state %s",
-						message.getId (),
-						oldMessageStatus));
+						integerToDecimalString (
+							message.getId ()),
+						enumName (
+							oldMessageStatus)));
 
 			}
 

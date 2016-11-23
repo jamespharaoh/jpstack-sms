@@ -1,9 +1,9 @@
 package wbs.sms.route.http.daemon;
 
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringFormat;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,9 +95,10 @@ class HttpSender
 		if (httpRoute == null) {
 
 			log.error (
-				stringFormatObsolete (
+				stringFormat (
 					"No network information for message %s",
-					outbox.getMessage ().getId ()));
+					integerToDecimalString (
+						outbox.getMessage ().getId ())));
 
 			throw permFailure (
 				"No network information or no route for network");
@@ -116,9 +117,10 @@ class HttpSender
 				wapPushMessageHelper.findOrThrow (
 					outbox.getId (),
 					() -> tempFailure (
-						stringFormatObsolete (
+						stringFormat (
 							"Wap push message not found for message %s",
-							outbox.getId ())));
+							integerToDecimalString (
+								outbox.getId ()))));
 
 			wapPushMessage
 				.getUrlText ()
@@ -139,14 +141,15 @@ class HttpSender
 
 	@Override
 	protected
-	Optional<List<String>> sendMessage (
+	Optional <List <String>> sendMessage (
 			@NonNull HttpOutbox httpOutbox)
 		throws SendFailureException {
 
 		log.info (
-			stringFormatObsolete (
+			stringFormat (
 				"Sending message %s",
-				httpOutbox.messageId));
+				integerToDecimalString (
+					httpOutbox.messageId)));
 
 		try {
 

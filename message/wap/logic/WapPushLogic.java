@@ -2,7 +2,8 @@ package wbs.sms.message.wap.logic;
 
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Map;
 import java.util.Set;
@@ -14,12 +15,14 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
+
 import wbs.sms.core.daemon.MessageRetrier;
 import wbs.sms.core.daemon.MessageRetrierFactory;
 import wbs.sms.message.batch.model.BatchObjectHelper;
@@ -157,9 +160,10 @@ class WapPushLogic
 				wapPushMessageType)) {
 
 			throw new RuntimeException (
-				stringFormatObsolete (
+				stringFormat (
 					"Cannot send wap push on route %s",
-					route.getId ()));
+					integerToDecimalString (
+						route.getId ())));
 
 		}
 
