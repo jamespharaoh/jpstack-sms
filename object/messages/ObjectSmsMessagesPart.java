@@ -32,6 +32,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
+import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.html.ObsoleteDateLinks;
 import wbs.console.part.AbstractPagePart;
@@ -46,7 +47,6 @@ import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.web.utils.HtmlTableCellWriter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("objectSmsMessagesPart")
