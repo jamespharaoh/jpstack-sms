@@ -163,10 +163,13 @@ class SmsOrigHibernateType
 	void nullSafeSet (
 			PreparedStatement preparedStatement,
 			Object object,
-			int index,
+			int originalIndex,
 			SessionImplementor session)
 		throws HibernateException,
 			SQLException {
+
+		int index =
+			originalIndex;
 
 		SmsOrig smsOrig =
 			(SmsOrig) object;
