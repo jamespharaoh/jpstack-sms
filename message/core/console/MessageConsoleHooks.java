@@ -2,7 +2,7 @@ package wbs.sms.message.core.console;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.Misc.getError;
-import static wbs.utils.etc.Misc.getValue;
+import static wbs.utils.etc.Misc.resultValueRequired;
 import static wbs.utils.etc.Misc.isError;
 import static wbs.utils.etc.NumberUtils.moreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
@@ -130,7 +130,7 @@ class MessageConsoleHooks
 
 			Record <?> serviceParent =
 				optionalGetRequired (
-					getValue (
+					resultValueRequired (
 						serviceParentOrError));
 
 			if (
@@ -180,7 +180,7 @@ class MessageConsoleHooks
 
 			Record <?> affiliateParent =
 				optionalGetRequired (
-					getValue (
+					resultValueRequired (
 						affiliateParentOrError));
 
 			if (

@@ -78,7 +78,7 @@ class GazetteerFormFieldInterfaceMapping <Container>
 
 		GazetteerRec gazetteer =
 			(GazetteerRec)
-			objectManager.dereference (
+			objectManager.dereferenceObsolete (
 				container,
 				gazetteerFieldName);
 

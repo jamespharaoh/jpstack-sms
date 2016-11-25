@@ -1,6 +1,5 @@
 package wbs.sms.message.wap.logic;
 
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -39,9 +38,12 @@ import wbs.sms.message.wap.model.WapPushMessageObjectHelper;
 import wbs.sms.message.wap.model.WapPushMessageRec;
 import wbs.sms.network.model.NetworkRec;
 import wbs.sms.number.core.logic.NumberLogic;
+import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 import wbs.sms.route.router.logic.RouterLogic;
 import wbs.sms.route.router.model.RouterRec;
+
+import wbs.utils.etc.NullUtils;
 
 @SingletonComponent ("wapPushLogic")
 public
@@ -88,62 +90,41 @@ class WapPushLogic
 	public
 	MessageRec wapPushSend (
 			Long threadId,
-			Object number,
+			Object numberObject,
 			String numFrom,
 			TextRec text,
 			TextRec url,
 			RouterRec router,
-			ServiceRec service,
-			BatchRec batch,
-			AffiliateRec affiliate,
+			ServiceRec serviceOrNull,
+			BatchRec batchOrNull,
+			AffiliateRec affiliateOrNull,
 			DeliveryTypeRec deliveryType,
 			Long ref,
 			boolean sendNow,
-			Set<String> tags,
+			Set <String> tags,
 			NetworkRec network) {
 
 		Transaction transaction =
 			database.currentTransaction ();
 
-		number =
+		NumberRec number =
 			numberLogic.objectToNumber (
-				number);
+				numberObject);
 
-		if (threadId != null && threadId < 0)
-			threadId = null;
+		ServiceRec service =
+			NullUtils.<ServiceRec> ifNull (
+				() -> serviceOrNull,
+				() -> serviceHelper.findRequired (0l));
 
-		if (
-			isNull (
-				service)
-		) {
+		AffiliateRec affiliate =
+			NullUtils.<AffiliateRec> ifNull (
+				() -> affiliateOrNull,
+				() -> affiliateHelper.findRequired (0l));
 
-			service =
-				serviceHelper.findRequired (
-					0l);
-
-		}
-
-		if (
-			isNull (
-				affiliate)
-		) {
-
-			affiliate =
-				affiliateHelper.findRequired (
-					0l);
-
-		}
-
-		if (
-			isNull (
-				batch)
-		) {
-
-			batch =
-				batchHelper.findRequired (
-					0l);
-
-		}
+		BatchRec batch =
+			NullUtils.<BatchRec> ifNull (
+				() -> batchOrNull,
+				() -> batchHelper.findRequired (0l));
 
 		// check this route can send wap push
 
@@ -295,7 +276,7 @@ class WapPushLogic
 	MessageRec wapPushRetry (
 			MessageRec oldMessage,
 			RouteRec route,
-			TextRec textRec) {
+			TextRec textOrNull) {
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -304,15 +285,10 @@ class WapPushLogic
 			wapPushMessageHelper.findRequired (
 				oldMessage.getId ());
 
-		if (
-			isNull (
-				textRec)
-		) {
-
-			textRec =
-				oldWapPushMessage.getTextText ();
-
-		}
+		TextRec text =
+			NullUtils.<TextRec> ifNull (
+				() -> textOrNull,
+				() -> oldWapPushMessage.getTextText ());
 
 		MessageRec message =
 			messageHelper.createInstance ()
@@ -390,7 +366,7 @@ class WapPushLogic
 				message)
 
 			.setTextText (
-				textRec)
+				text)
 
 			.setUrlText (
 				oldWapPushMessage.getUrlText ())

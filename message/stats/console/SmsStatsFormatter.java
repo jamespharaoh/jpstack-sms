@@ -133,7 +133,7 @@ class SmsStatsFormatter {
 				MessageStatsData messageStats) {
 
 			return (Long)
-				PropertyUtils.getProperty (
+				PropertyUtils.propertyGetAuto (
 					messageStats,
 					fieldName);
 
