@@ -44,7 +44,7 @@ class SimpleMessageSetFinder
 		Record<?> object =
 			(Record<?>)
 			objectLookup.lookupObject (
-				requestContext.contextStuff ());
+				requestContext.contextStuffRequired ());
 
 		return messageSetHelper.findByCodeRequired (
 			object,

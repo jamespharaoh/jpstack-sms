@@ -26,13 +26,18 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -48,6 +53,9 @@ class MessageSummaryPart
 
 	@SingletonDependency
 	CurrencyLogic currencyLogic;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -97,6 +105,11 @@ class MessageSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
+
 		// open table
 
 		htmlTableOpenDetails ();
@@ -135,6 +148,7 @@ class MessageSummaryPart
 				"Number from",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
 						message.getNumber ()));
 
 			htmlTableDetailsRowWrite (
@@ -151,6 +165,7 @@ class MessageSummaryPart
 				"Number to",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
 						message.getNumber ()));
 
 		}
@@ -167,6 +182,7 @@ class MessageSummaryPart
 			"Route",
 			() ->
 				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getRoute ()));
 
 		htmlTableDetailsRowWrite (
@@ -177,12 +193,14 @@ class MessageSummaryPart
 			"Service",
 			() ->
 				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getService ()));
 
 		htmlTableDetailsRowWriteRaw (
 			"Affiliate",
 			() ->
 				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getAffiliate ()));
 
 		if (
@@ -217,6 +235,7 @@ class MessageSummaryPart
 				() -> ifNotNullThenElse (
 					message.getCommand (),
 					() -> objectManager.writeTdForObjectMiniLink (
+						taskLogger,
 						message.getCommand ()),
 					() -> htmlTableCellWrite (
 						"—")));
@@ -326,6 +345,7 @@ class MessageSummaryPart
 			() -> ifNotNullThenElse (
 				message.getUser (),
 				() -> objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getUser ()),
 				() -> htmlTableCellWrite ("—")));
 
@@ -334,6 +354,7 @@ class MessageSummaryPart
 			() -> ifNotNullThenElse (
 				message.getDeliveryType (),
 				() -> objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getDeliveryType ()),
 				() -> htmlTableCellWrite ("—")));
 

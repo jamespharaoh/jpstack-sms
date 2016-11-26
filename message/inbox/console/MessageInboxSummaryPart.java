@@ -23,8 +23,10 @@ import lombok.NonNull;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
@@ -42,6 +44,9 @@ class MessageInboxSummaryPart
 
 	@SingletonDependency
 	InboxObjectHelper inboxHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -70,6 +75,11 @@ class MessageInboxSummaryPart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		htmlFormOpenPost ();
 
@@ -100,9 +110,11 @@ class MessageInboxSummaryPart
 			htmlTableRowOpen ();
 
 			objectManager.writeTdForObjectMiniLink (
+				taskLogger,
 				message);
 
 			objectManager.writeTdForObjectMiniLink (
+				taskLogger,
 				message.getNumber ());
 
 			htmlTableCellWrite (
@@ -121,6 +133,7 @@ class MessageInboxSummaryPart
 					inbox.getNextAttempt ()));
 
 			objectManager.writeTdForObjectMiniLink (
+				taskLogger,
 				message.getRoute ());
 
 			htmlTableCellWriteHtml (

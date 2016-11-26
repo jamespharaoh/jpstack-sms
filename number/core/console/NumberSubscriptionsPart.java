@@ -14,10 +14,15 @@ import lombok.experimental.Accessors;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 
@@ -28,6 +33,9 @@ class NumberSubscriptionsPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
@@ -73,6 +81,11 @@ class NumberSubscriptionsPart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		// open table
 
@@ -157,6 +170,7 @@ class NumberSubscriptionsPart
 			// write parent object cell
 
 			objectManager.writeTdForObjectLink (
+				taskLogger,
 				formatWriter,
 				link.getParentObject ());
 
@@ -168,6 +182,7 @@ class NumberSubscriptionsPart
 			) {
 
 				objectManager.writeTdForObjectLink (
+					taskLogger,
 					formatWriter,
 					link.getSubscriptionObject (),
 					link.getParentObject ());

@@ -12,11 +12,16 @@ import lombok.NonNull;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
@@ -27,6 +32,9 @@ class NumberServicesPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
@@ -49,6 +57,11 @@ class NumberServicesPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
+
 		NumberRec number =
 			numberHelper.findRequired (
 				requestContext.stuffInteger (
@@ -61,7 +74,10 @@ class NumberServicesPart
 		services =
 			mapWithDerivedKey (
 				iterableFilter (
-					objectManager::canView,
+					service ->
+						objectManager.canView (
+							taskLogger,
+							service),
 					allServices),
 				objectManager::objectPathMini);
 
@@ -71,6 +87,11 @@ class NumberServicesPart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		// open table
 
@@ -140,12 +161,14 @@ class NumberServicesPart
 			// write parent table cell
 
 			objectManager.writeTdForObjectLink (
+				taskLogger,
 				formatWriter,
 				parent);
 
 			// write service table cell
 
 			objectManager.writeTdForObjectMiniLink (
+				taskLogger,
 				formatWriter,
 				service,
 				parent);

@@ -169,7 +169,7 @@ class ObjectSmsMessagesPageBuilder <
 
 				Record<?> object =
 					consoleHelper.lookupObject (
-						requestContext.contextStuff ());
+						requestContext.contextStuffRequired ());
 
 				MessageSearch search =
 					new MessageSearch ();

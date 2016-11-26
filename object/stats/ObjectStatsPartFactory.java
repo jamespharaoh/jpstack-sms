@@ -83,7 +83,7 @@ class ObjectStatsPartFactory
 
 		Record<?> parent =
 			objectLookup.lookupObject (
-				requestContext.contextStuff ());
+				requestContext.contextStuffRequired ());
 
 		// find its services
 

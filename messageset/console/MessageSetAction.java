@@ -103,7 +103,7 @@ class MessageSetAction
 
 		if (
 			! privLookup.lookup (
-				requestContext.contextStuff ())
+				requestContext.contextStuffRequired ())
 		) {
 
 			requestContext.addError (

@@ -24,10 +24,15 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -40,6 +45,9 @@ class MessageOutboxRoutePart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -81,6 +89,11 @@ class MessageOutboxRoutePart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		if (outboxes.size () == 30) {
 
@@ -142,6 +155,7 @@ class MessageOutboxRoutePart
 			) {
 
 				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getNumber ());
 
 			} else {
@@ -158,6 +172,7 @@ class MessageOutboxRoutePart
 			) {
 
 				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
 					message.getNumber ());
 
 			} else {
