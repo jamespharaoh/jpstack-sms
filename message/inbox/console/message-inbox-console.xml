@@ -4,19 +4,17 @@
 	<console-helper-provider
 		object-name="inbox">
 
-		<context-stuff
-			name="inboxName"
-			field="id"/>
-
 		<priv-key
 			name="inbox.view"
-			delegate="root"
-			priv="inbox_view"/>
+			priv="root:inbox_view"/>
 
 		<priv-key
 			name="inbox.manage"
-			delegate="root"
-			priv="manage"/>
+			priv="root:manage"/>
+
+		<context-stuff
+			name="inboxName"
+			field="id"/>
 
 	</console-helper-provider>
 

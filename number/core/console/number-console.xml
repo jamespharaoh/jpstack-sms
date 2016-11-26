@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="number.manage"
-			delegate="parent"
-			priv="manage"/>
+			priv="parent:manage"/>
 
 		<context-stuff
 			name="numberName"

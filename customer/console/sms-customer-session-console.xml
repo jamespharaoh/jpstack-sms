@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="smsCustomerSession.manage"
-			delegate="customer.smsCustomerManager"
-			priv="manage"/>
+			priv="customer.smsCustomerManager:manage"/>
 
 		<context-stuff
 			name="smsCustomerSessionName"
@@ -16,8 +15,7 @@
 
 		<context-stuff
 			name="smsCustomerId"
-			delegate="customer"
-			field="id"/>
+			field="customer.id"/>
 
 		<run-post-processor
 			name="smsCustomer"/>

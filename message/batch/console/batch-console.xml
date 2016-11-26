@@ -5,14 +5,13 @@
 		object-name="batch"
 		view-priv="parent">
 
+		<priv-key
+			name="batch.manage"
+			priv="parent:manage"/>
+
 		<context-stuff
 			name="batchSubjectName"
 			field="id"/>
-
-		<priv-key
-			name="batch.manage"
-			delegate="parent"
-			priv="manage"/>
 
 	</console-helper-provider>
 

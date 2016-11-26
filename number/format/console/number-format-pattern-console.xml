@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="numberFormatPattern.manage"
-			delegate="root"
-			priv="manage"/>
+			priv="root:manage"/>
 
 		<context-stuff
 			name="numberFormatPatternName"
@@ -16,8 +15,7 @@
 
 		<context-stuff
 			name="numberFormatId"
-			delegate="numberFormat"
-			field="id"/>
+			field="numberFormat:id"/>
 
 		<run-post-processor
 			name="numberFormat"/>

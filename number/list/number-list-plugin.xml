@@ -32,6 +32,7 @@
 
 	<console-modules>
 		<console-module name="number-list"/>
+		<console-module name="number-list-update"/>
 	</console-modules>
 
 </plugin>

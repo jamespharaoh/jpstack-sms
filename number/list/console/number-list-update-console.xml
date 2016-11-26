@@ -1,0 +1,98 @@
+<console-module
+	name="number-list-update">
+
+	<console-helper-provider
+		object-name="numberListUpdate"
+		view-priv="numberList:manage">
+
+		<priv-key
+			name="numberListUpdate.manage"
+			priv="numberList:manage"/>
+
+		<context-stuff
+			name="numberListUpdateName"
+			field="id"/>
+
+		<context-stuff
+			name="numberListId"
+			field="numberList.id"/>
+
+		<run-post-processor
+			name="numberList"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="numberListUpdate"
+		object-name="numberListUpdate">
+
+		<list>
+
+			<object-list-page
+				fields="list"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="list"
+		object-name="numberListUpdate">
+
+		<id-field/>
+
+		<timestamp-field
+			name="timestamp"/>
+
+		<object-field
+			name="user"/>
+
+		<object-field
+			name="service"/>
+
+		<object-field
+			name="message"/>
+
+		<yes-no-field
+			name="present"/>
+
+		<integer-field
+			name="numberCount"/>
+
+	</field-set>
+
+	<field-set
+		name="summary"
+		object-name="numberListUpdate">
+
+		<parent-field/>
+		<id-field/>
+
+		<timestamp-field
+			name="timestamp"/>
+
+		<object-field
+			name="user"/>
+
+		<object-field
+			name="service"/>
+
+		<object-field
+			name="message"/>
+
+		<yes-no-field
+			name="present"/>
+
+		<integer-field
+			name="numberCount"/>
+
+	</field-set>
+
+</console-module>

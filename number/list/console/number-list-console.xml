@@ -43,10 +43,11 @@
 				<context-tab-action-page
 					name="update"/>
 
-				<!--
-				<context-tab-action-page
-					name="copy"/>
-				-->
+				<context-link
+					name="history"
+					link="numberListUpdate"
+					label="History"
+					priv-key="numberList.manage"/>
 
 			</section>
 

@@ -5,14 +5,13 @@
 		object-name="sender"
 		view-priv="parent">
 
+		<priv-key
+			name="sender.manage"
+			priv="parent:manage"/>
+
 		<context-stuff
 			name="senderName"
 			field="code"/>
-
-		<priv-key
-			name="sender.manage"
-			delegate="parent"
-			priv="manage"/>
 
 	</console-helper-provider>
 

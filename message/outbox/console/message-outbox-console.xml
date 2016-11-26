@@ -4,19 +4,17 @@
 	<console-helper-provider
 		object-name="outbox">
 
-		<context-stuff
-			name="outboxName"
-			field="id"/>
-
 		<priv-key
 			name="outbox.view"
-			delegate="root"
-			priv="outbox_view"/>
+			priv="root:outbox_view"/>
 
 		<priv-key
 			name="outbox.manage"
-			delegate="root"
-			priv="manage"/>
+			priv="root:manage"/>
+
+		<context-stuff
+			name="outboxName"
+			field="id"/>
 
 	</console-helper-provider>
 

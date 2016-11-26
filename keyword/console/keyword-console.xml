@@ -11,8 +11,7 @@
 
 		<context-stuff
 			name="keywordSetId"
-			delegate="keywordSet"
-			field="id"/>
+			field="keywordSet.id"/>
 
 		<run-post-processor
 			name="keywordSet"/>

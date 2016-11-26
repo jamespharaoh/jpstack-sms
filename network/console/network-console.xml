@@ -5,14 +5,13 @@
 		object-name="network"
 		view-priv="root:manage">
 
+		<priv-key
+			name="network.manage"
+			priv="root:manage"/>
+
 		<context-stuff
 			name="networkName"
 			field="name"/>
-
-		<priv-key
-			name="network.manage"
-			delegate="root"
-			priv="manage"/>
 
 	</console-helper-provider>
 

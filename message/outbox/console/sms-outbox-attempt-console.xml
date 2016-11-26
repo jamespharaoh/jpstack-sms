@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="smsOutboxAttempt.manage"
-			delegate="message.route"
-			priv="manage"/>
+			priv="message.route:manage"/>
 
 		<context-stuff
 			name="smsOutboxAttemptName"
@@ -16,8 +15,7 @@
 
 		<context-stuff
 			name="messageId"
-			delegate="message"
-			field="id"/>
+			field="message.id"/>
 
 		<run-post-processor
 			name="message"/>

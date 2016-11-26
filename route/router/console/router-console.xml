@@ -11,8 +11,7 @@
 
 		<priv-key
 			name="router.manage"
-			delegate="parent"
-			priv="manage"/>
+			priv="parent:manage"/>
 
 	</console-helper-provider>
 

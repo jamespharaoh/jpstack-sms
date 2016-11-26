@@ -5,14 +5,13 @@
 		object-name="numberLookup"
 		view-priv="parent">
 
+		<priv-key
+			name="numberLookup.manage"
+			priv="parent:manage"/>
+
 		<context-stuff
 			name="numberLookupName"
 			field="id"/>
-
-		<priv-key
-			name="numberLookup.manage"
-			delegate="parent"
-			priv="manage"/>
 
 	</console-helper-provider>
 

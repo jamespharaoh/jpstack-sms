@@ -5,19 +5,17 @@
 		object-name="magicNumber"
 		view-priv="magicNumberSet:manage">
 
+		<priv-key
+			name="magicNumber.manage"
+			priv="magicNumberSet:manage"/>
+
 		<context-stuff
 			name="magicNumberName"
 			field="number"/>
 
 		<context-stuff
 			name="magicNumberSetId"
-			delegate="magicNumberSet"
-			field="id"/>
-
-		<priv-key
-			name="magicNumber.manage"
-			delegate="magicNumberSet"
-			priv="manage"/>
+			field="magicNumberSet.id"/>
 
 		<run-post-processor
 			name="magicNumberSet"/>

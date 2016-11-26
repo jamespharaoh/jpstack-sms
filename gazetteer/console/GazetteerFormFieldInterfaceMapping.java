@@ -1,10 +1,12 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.utils.etc.Misc.errorResult;
 import static wbs.utils.etc.Misc.isNull;
-import static wbs.utils.etc.Misc.successResult;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.ResultUtils.errorResult;
+import static wbs.utils.etc.ResultUtils.errorResultFormat;
+import static wbs.utils.etc.ResultUtils.successResult;
 import static wbs.utils.string.CodeUtils.simplifyToCode;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsEmpty;
@@ -72,7 +74,7 @@ class GazetteerFormFieldInterfaceMapping <Container>
 		) {
 
 			return successResult (
-				Optional.<GazetteerEntryRec>absent ());
+				optionalAbsent ());
 
 		}
 
@@ -87,9 +89,8 @@ class GazetteerFormFieldInterfaceMapping <Container>
 				gazetteer)
 		) {
 
-			return errorResult (
-				stringFormat (
-					"You must configure a gazetteer first"));
+			return errorResultFormat (
+				"You must configure a gazetteer first");
 
 		}
 

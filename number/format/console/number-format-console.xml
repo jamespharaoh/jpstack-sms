@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="numberFormat.manage"
-			delegate="root"
-			priv="manage"/>
+			priv="root:manage"/>
 
 		<context-stuff
 			name="numberFormatName"

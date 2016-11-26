@@ -1,6 +1,7 @@
 package wbs.sms.message.core.console;
 
-import static wbs.utils.etc.Misc.successResult;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
+import static wbs.utils.etc.ResultUtils.successResult;
 
 import java.util.Map;
 
@@ -9,9 +10,12 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.message.core.model.MessageRec;
+
 import wbs.utils.string.StringFormatWriter;
 
 import fj.data.Either;
@@ -54,7 +58,7 @@ class MessageContentHtmlFormFieldInterfaceMapping
 			container);
 
 		return successResult (
-			Optional.of (
+			optionalOf (
 				formatWriter.toString ()));
 
 	}

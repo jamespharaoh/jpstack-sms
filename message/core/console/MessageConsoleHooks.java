@@ -1,11 +1,11 @@
 package wbs.sms.message.core.console;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
-import static wbs.utils.etc.Misc.getError;
-import static wbs.utils.etc.Misc.resultValueRequired;
-import static wbs.utils.etc.Misc.isError;
 import static wbs.utils.etc.NumberUtils.moreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
+import static wbs.utils.etc.ResultUtils.getError;
+import static wbs.utils.etc.ResultUtils.isError;
+import static wbs.utils.etc.ResultUtils.resultValueRequired;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -15,14 +15,17 @@ import lombok.extern.log4j.Log4j;
 
 import wbs.console.helper.core.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
+
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;

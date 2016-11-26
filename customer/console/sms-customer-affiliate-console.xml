@@ -22,8 +22,7 @@
 
 		<context-stuff
 			name="smsCustomerManagerId"
-			delegate="smsCustomerManager"
-			field="id"/>
+			field="smsCustomerManager.id"/>
 
 		<run-post-processor
 			name="smsCustomerManager"/>

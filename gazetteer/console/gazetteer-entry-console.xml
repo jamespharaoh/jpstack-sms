@@ -7,8 +7,7 @@
 
 		<priv-key
 			name="gazetteerEntry.manage"
-			delegate="parent"
-			priv="manage"/>
+			priv="parent:manage"/>
 
 		<context-stuff
 			name="gazetteerEntryName"
@@ -16,8 +15,7 @@
 
 		<context-stuff
 			name="gazetteerId"
-			delegate="gazetteer"
-			field="id"/>
+			field="gazetteer:id"/>
 
 		<run-post-processor
 			name="gazetteer"/>
@@ -60,13 +58,13 @@
 		<description-field/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="longitude"
+			field="longLat.longitude"
 			label="Longitude"/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="latitude"
+			field="longLat.latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -82,13 +80,13 @@
 		<description-field/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="longitude"
+			field="longLat.longitude"
 			label="Longitude"/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="latitude"
+			field="longLat.latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -108,13 +106,13 @@
 		<deleted-field/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="longitude"
+			field="longLat.longitude"
 			label="Longitude"/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="latitude"
+			field="longLat.latitude"
 			label="Latitude"/>
 
 		<yes-no-field
@@ -133,13 +131,13 @@
 		<deleted-field/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="longitude"
+			field="longLat.longitude"
 			label="Longitude"/>
 
 		<floating-point-field
-			delegate="longLat"
 			name="latitude"
+			field="longLat.latitude"
 			label="Latitude"/>
 
 		<yes-no-field

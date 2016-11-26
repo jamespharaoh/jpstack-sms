@@ -10,28 +10,23 @@
 
 		<priv-key
 			name="message.view"
-			delegate="root"
-			priv="messages"/>
+			priv="root:messages"/>
 
 		<priv-key
 			name="message.view"
-			delegate="route"
-			priv="messages"/>
+			priv="route:messages"/>
 
 		<priv-key
 			name="message.view"
-			delegate="service.parent"
-			priv="messages"/>
+			priv="service.parent:messages"/>
 
 		<priv-key
 			name="message.view"
-			delegate="affiliate.parent"
-			priv="messages"/>
+			priv="affiliate.parent:messages"/>
 
 		<priv-key
 			name="message.manage"
-			delegate="route"
-			priv="manage"/>
+			priv="route:manage"/>
 
 	</console-helper-provider>
 
