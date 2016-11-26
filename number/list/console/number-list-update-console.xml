@@ -38,6 +38,11 @@
 			<object-summary-page
 				fields="summary"/>
 
+			<context-tab-form-action-page
+				name="numbers"
+				submit-label="download numbers"
+				help-text="Download a list of numbers added/removed by this update"/>
+
 		</object>
 
 	</object-context>
