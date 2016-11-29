@@ -5,6 +5,8 @@ import static wbs.utils.collection.IterableUtils.iterableMapToList;
 import static wbs.utils.etc.NumberUtils.equalToZero;
 import static wbs.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.TypeUtils.classNameSimple;
 import static wbs.utils.string.StringUtils.joinWithFullStop;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.underscoreToHyphen;
@@ -31,6 +33,8 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.exception.ExceptionLogger;
+import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -54,6 +58,9 @@ class GenericSmsSenderService
 
 	@SingletonDependency
 	Database database;
+
+	@SingletonDependency
+	ExceptionLogger exceptionLogger;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -276,64 +283,81 @@ class GenericSmsSenderService
 
 			// begin transaction
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
-					stringFormat (
-						"%s.claimMessages ()",
-						joinWithFullStop (
-							"GenericSmsSenderService",
-							"RouteSenderService")),
-					this);
+			try (
 
-			// get some messages
+				Transaction transaction =
+					database.beginReadWrite (
+						stringFormat (
+							"%s.claimMessages ()",
+							joinWithFullStop (
+								"GenericSmsSenderService",
+								"RouteSenderService")),
+						this);
 
-			RouteRec route =
-				smsRouteHelper.findRequired (
-					smsRouteId);
-
-			List <OutboxRec> smsOutboxes =
-				smsOutboxHelper.findNextLimit (
-					transaction.now (),
-					route,
-					numToGet);
-
-			// return if empty
-
-			if (
-				collectionIsEmpty (
-					smsOutboxes)
 			) {
+
+				// get some messages
+
+				RouteRec route =
+					smsRouteHelper.findRequired (
+						smsRouteId);
+
+				List <OutboxRec> smsOutboxes =
+					smsOutboxHelper.findNextLimit (
+						transaction.now (),
+						route,
+						numToGet);
+
+				// return if empty
+
+				if (
+					collectionIsEmpty (
+						smsOutboxes)
+				) {
+					return 0l;
+				}
+
+				// mark them as sending
+
+				smsOutboxes.forEach (
+					smsOutbox -> {
+
+					smsOutbox
+
+						.setSending (
+							transaction.now ());
+
+				});
+
+				// store their ids
+
+				List <Long> messageIds =
+					iterableMapToList (
+						OutboxRec::getId,
+						smsOutboxes);
+
+				// commit and add them to the queue
+
+				transaction.commit ();
+
+				messageQueue.addAll (
+					messageIds);
+
+				return messageIds.size ();
+
+			} catch (Exception exception) {
+
+				exceptionLogger.logThrowable (
+					"daemon",
+					classNameSimple (
+						this.getClass ()),
+					exception,
+					optionalAbsent (),
+					GenericExceptionResolution.tryAgainLater);
+
 				return 0l;
+
 			}
-
-			// mark them as sending
-
-			smsOutboxes.forEach (
-				smsOutbox -> {
-
-				smsOutbox
-
-					.setSending (
-						transaction.now ());
-
-			});
-
-			// store their ids
-
-			List <Long> messageIds =
-				iterableMapToList (
-					OutboxRec::getId,
-					smsOutboxes);
-
-			// commit and add them to the queue
-
-			transaction.commit ();
-
-			messageQueue.addAll (
-				messageIds);
-
-			return messageIds.size ();
 
 		}
 
