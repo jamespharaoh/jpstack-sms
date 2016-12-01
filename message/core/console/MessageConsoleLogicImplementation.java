@@ -141,7 +141,7 @@ class MessageConsoleLogicImplementation
 								"/%u",
 								integerToDecimalString (
 									message.getId ()),
-								"/message_mediaSummary",
+								"/message.mediaSummary",
 								"?index=%u",
 								integerToDecimalString (
 									index ++))),

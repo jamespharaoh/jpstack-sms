@@ -10,6 +10,7 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
+import static wbs.utils.string.StringUtils.utf8ToString;
 import static wbs.web.utils.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.web.utils.HtmlTableUtils.htmlTableClose;
 import static wbs.web.utils.HtmlTableUtils.htmlTableDetailsRowWrite;
@@ -35,6 +36,7 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.platform.media.console.MediaConsoleLogic;
+import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -59,6 +61,9 @@ class MessageSummaryPart
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
+
+	@SingletonDependency
+	MediaLogic mediaLogic;
 
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
@@ -282,45 +287,53 @@ class MessageSummaryPart
 				medias)
 		) {
 
-			htmlTableDetailsRowWriteRaw (
-				"Media",
-				() -> {
+			for (
+				int index = 0;
+				index < medias.size ();
+				index ++
+			) {
 
-				formatWriter.writeLineFormat (
-					"<td>");
+				MediaRec media =
+					medias.get (index);
 
-				formatWriter.increaseIndent ();
+				int mediaIndex =
+					index;
 
-				for (
-					int index = 0;
-					index < medias.size ();
-					index ++
+				if (
+					mediaLogic.isText (
+						media)
 				) {
 
-					MediaRec media =
-						medias.get (index);
+					htmlTableDetailsRowWrite (
+						"Media",
+						utf8ToString (
+							media.getContent ().getData ()));
 
-					htmlLinkWriteHtml (
-						requestContext.resolveContextUrlFormat (
-							"/message_media",
-							"/%s",
-							integerToDecimalString (
-								message.getId ()),
-							"/%s",
-							integerToDecimalString (
-								index),
-							"/message_media_summary"),
-						() -> mediaConsoleLogic.writeMediaThumb100 (
-							media));
+				} else {
+
+					htmlTableDetailsRowWriteRaw (
+						"Media",
+						() -> {
+
+						formatWriter.writeLineFormatIncreaseIndent (
+							"<td>");
+	
+						htmlLinkWriteHtml (
+							requestContext.resolveLocalUrlFormat (
+								"/message.mediaSummary?index=%u",
+								integerToDecimalString (
+									mediaIndex)),
+							() -> mediaConsoleLogic.writeMediaThumb100 (
+								media));
+
+						formatWriter.writeLineFormatDecreaseIndent (
+							"</td>");
+
+					});
 
 				}
 
-				formatWriter.decreaseIndent ();
-
-				formatWriter.writeLineFormat (
-					"</td>");
-
-			});
+			}
 
 		}
 
