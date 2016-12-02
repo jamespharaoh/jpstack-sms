@@ -1,8 +1,11 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.string.StringUtils.stringFormatArray;
+
 import java.util.List;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import org.json.simple.JSONObject;
@@ -47,6 +50,18 @@ interface SmsSenderHelper <StateType> {
 
 		JSONObject requestTrace;
 		JSONObject errorTrace;
+
+		// property utils
+
+		public
+		SetupRequestResult <StateType> statusMessageFormat (
+				@NonNull String ... arguments) {
+
+			return statusMessage (
+				stringFormatArray (
+					arguments));
+
+		}
 
 	}
 
@@ -98,6 +113,18 @@ interface SmsSenderHelper <StateType> {
 		Long simulateMessageParts;
 
 		JSONObject errorTrace;
+
+		// property utils
+
+		public
+		ProcessResponseResult statusMessageFormat (
+				@NonNull String ... arguments) {
+
+			return statusMessage (
+				stringFormatArray (
+					arguments));
+
+		}
 
 	}
 

@@ -21,7 +21,7 @@ class SmsSimpleTrackerNumberDaoHibernate
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (smsSimpleTracker, number)",
 			SmsSimpleTrackerNumberRec.class,
 

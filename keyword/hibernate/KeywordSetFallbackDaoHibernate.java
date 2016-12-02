@@ -21,7 +21,7 @@ class KeywordSetFallbackDaoHibernate
 			@NonNull KeywordSetRec keywordSet,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (keywordSet, number)",
 			KeywordSetFallbackRec.class,
 

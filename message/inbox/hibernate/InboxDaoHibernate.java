@@ -27,7 +27,7 @@ class InboxDaoHibernate
 	public
 	Long countPending () {
 
-		return findOne (
+		return findOneOrNull (
 			"countPending ()",
 			Long.class,
 
@@ -52,7 +52,7 @@ class InboxDaoHibernate
 	Long countPendingOlderThan (
 			@NonNull Instant instant) {
 
-		return findOne (
+		return findOneOrNull (
 			"countPending ()",
 			Long.class,
 

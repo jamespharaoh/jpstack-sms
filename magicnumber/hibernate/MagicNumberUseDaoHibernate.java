@@ -24,7 +24,7 @@ class MagicNumberUseDaoHibernate
 			@NonNull MagicNumberRec magicNumber,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (magicNumber, number)",
 			MagicNumberUseRec.class,
 
@@ -54,7 +54,7 @@ class MagicNumberUseDaoHibernate
 			@NonNull CommandRec command,
 			@NonNull Long ref) {
 
-		return findOne (
+		return findOneOrNull (
 			"findExistingByRef (magicNumberSet, number, command, ref)",
 			MagicNumberUseRec.class,
 
@@ -101,7 +101,7 @@ class MagicNumberUseDaoHibernate
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"findExistingLeastRecentlyUsed (magicNumberSet, number)",
 			MagicNumberUseRec.class,
 

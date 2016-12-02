@@ -20,7 +20,7 @@ class MagicNumberDaoHibernate
 	MagicNumberRec findByNumber (
 			@NonNull String number) {
 
-		return findOne (
+		return findOneOrNull (
 			"findByNumber (number)",
 			MagicNumberRec.class,
 

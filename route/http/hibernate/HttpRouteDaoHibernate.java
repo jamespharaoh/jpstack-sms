@@ -21,7 +21,7 @@ class HttpRouteDaoHibernate
 			@NonNull RouteRec route,
 			@NonNull NetworkRec network) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (route, network)",
 			HttpRouteRec.class,
 

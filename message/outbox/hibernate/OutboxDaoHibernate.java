@@ -33,7 +33,7 @@ class OutboxDaoHibernate
 	public
 	Long count () {
 
-		return findOne (
+		return findOneOrNull (
 			"count ()",
 			Long.class,
 
@@ -53,7 +53,7 @@ class OutboxDaoHibernate
 	Long countOlderThan (
 			@NonNull Instant instant) {
 
-		return findOne (
+		return findOneOrNull (
 			"count ()",
 			Long.class,
 
@@ -120,7 +120,7 @@ class OutboxDaoHibernate
 			@NonNull Instant now,
 			@NonNull RouteRec route) {
 
-		return findOne (
+		return findOneOrNull (
 			"findNext (now, route)",
 			OutboxRec.class,
 

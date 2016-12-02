@@ -21,7 +21,7 @@ class NumberListNumberDaoHibernate
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (numberList, number)",
 			NumberListNumberRec.class,
 

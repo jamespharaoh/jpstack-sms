@@ -22,7 +22,7 @@ class SmsSpendLimiterNumberDayDaoHibernate
 			@NonNull SmsSpendLimiterNumberRec smsSpendLimiterNumber,
 			@NonNull LocalDate date) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (smsSpendLimiterNumber, date)",
 			SmsSpendLimiterNumberDayRec.class,
 

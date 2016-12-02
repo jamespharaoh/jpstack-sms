@@ -29,7 +29,7 @@ class SmsSpendLimiterNumberDaoHibernate
 			@NonNull SmsSpendLimiterRec smsSpendLimiter,
 			@NonNull NumberRec number) {
 
-		return findOne (
+		return findOneOrNull (
 			"find (smsSpendLimiter, number)",
 			SmsSpendLimiterNumberRec.class,
 

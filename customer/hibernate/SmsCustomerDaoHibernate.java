@@ -94,7 +94,7 @@ class SmsCustomerDaoHibernate
 				"number",
 				number));
 
-		return findOne (
+		return findOneOrNull (
 			"find (manager, number)",
 			SmsCustomerRec.class,
 			customerCriteria);

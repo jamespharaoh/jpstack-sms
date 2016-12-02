@@ -73,7 +73,7 @@ class MessageDaoHibernate
 	public
 	Long countNotProcessed () {
 
-		return findOne (
+		return findOneOrNull (
 			"countNotProcessed ()",
 			Long.class,
 
@@ -100,7 +100,7 @@ class MessageDaoHibernate
 			@NonNull RouteRec route,
 			@NonNull String otherId) {
 
-		return findOne (
+		return findOneOrNull (
 			"findByOtherId (direction, route, otherId)",
 			MessageRec.class,
 

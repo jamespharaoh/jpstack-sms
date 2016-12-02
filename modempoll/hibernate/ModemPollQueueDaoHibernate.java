@@ -20,7 +20,7 @@ class ModemPollQueueDaoHibernate
 	ModemPollQueueRec findNext (
 			@NonNull Instant now) {
 
-		return findOne (
+		return findOneOrNull (
 			"findNext (now)",
 			ModemPollQueueRec.class,
 
