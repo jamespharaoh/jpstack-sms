@@ -1,6 +1,8 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
@@ -29,6 +31,7 @@ import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -90,6 +93,9 @@ class AbstractSmsSender2
 	@SingletonDependency
 	SenderObjectHelper senderHelper;
 
+	@SingletonDependency
+	WbsConfig wbsConfig;
+
 	// properties
 
 	@Getter @Setter
@@ -114,6 +120,18 @@ class AbstractSmsSender2
 			OutboxRec outbox);
 
 	// implementation
+
+	@Override
+	protected
+	boolean checkEnabled () {
+
+		return parseBooleanYesNoRequired (
+			mapItemForKeyOrDefault (
+				wbsConfig.runtimeSettings (),
+				"abstract-sms-sender-2.enable",
+				"yes"));
+
+	}
 
 	@Override
 	protected
@@ -259,7 +277,6 @@ class AbstractSmsSender2
 
 			synchronized (routeLock) {
 
-				@Cleanup
 				Transaction transaction =
 					database.beginReadWrite (
 						"AbstractSmsSender2.Worker.processOneMessage ()",

@@ -1,5 +1,7 @@
 package wbs.sms.message.inbox.daemon;
 
+import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
+import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
@@ -18,6 +20,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
@@ -83,6 +86,9 @@ class ReceivedManager
 
 	@SingletonDependency
 	ThreadManager threadManager;
+
+	@SingletonDependency
+	WbsConfig wbsConfig;
 
 	// configuration
 
@@ -394,6 +400,18 @@ class ReceivedManager
 	String getThreadName () {
 
 		throw new UnsupportedOperationException ();
+
+	}
+
+	@Override
+	protected
+	boolean checkEnabled () {
+
+		return parseBooleanYesNoRequired (
+			mapItemForKeyOrDefault (
+				wbsConfig.runtimeSettings (),
+				"received-manager.enable",
+				"yes"));
 
 	}
 

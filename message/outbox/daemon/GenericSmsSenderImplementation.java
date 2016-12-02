@@ -209,161 +209,166 @@ class GenericSmsSenderImplementation <StateType>
 				parentTaskLogger,
 				"setupSend");
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"GenericSmsSenderImplementation.setupSend ()",
-				this);
+		try (
 
-		OutboxRec smsOutbox =
-			smsOutboxHelper.findRequired (
-				smsMessageId);
+			Transaction transaction =
+				database.beginReadWrite (
+					"GenericSmsSenderImplementation.setupSend ()",
+					this);
 
-		MessageRec smsMessage =
-			smsOutbox.getMessage ();
-
-		RouteRec smsRoute =
-			smsOutbox.getRoute ();
-
-		// check block number list
-
-		if (
-			checkBlacklist (
-				smsRoute,
-				smsMessage.getNumber ())
 		) {
 
-			smsOutbox
+			OutboxRec smsOutbox =
+				smsOutboxHelper.findRequired (
+					smsMessageId);
 
-				.setSending (
-					null);
+			MessageRec smsMessage =
+				smsOutbox.getMessage ();
 
-			smsMessageLogic.blackListMessage (
-				smsOutbox.getMessage ());
+			RouteRec smsRoute =
+				smsOutbox.getRoute ();
 
-			transaction.commit ();
-
-			setupRequestResult =
-				new SetupRequestResult <StateType> ()
-
-				.status (
-					SetupRequestStatus.blacklisted)
-
-				.statusMessage (
-					"Not sending message due to blacklist");
-
-			return;
-
-		}
-
-		// call setup send hook
-
-		try {
-
-			setupRequestResult =
-				smsSenderHelper.setupRequest (
-					taskLogger,
-					smsOutbox);
+			// check block number list
 
 			if (
-
-				isNull (
-					setupRequestResult)
-
-				|| isNull (
-					setupRequestResult.status ())
-
+				checkBlacklist (
+					smsRoute,
+					smsMessage.getNumber ())
 			) {
-				throw new NullPointerException ();
-			}
 
-		} catch (Exception exception) {
+				smsOutbox
 
-			exceptionLogger.logThrowable (
-				"daemon",
-				getClass ().getSimpleName (),
-				exception,
-				Optional.absent (),
-				GenericExceptionResolution.tryAgainLater);
+					.setSending (
+						null);
 
-			setupRequestResult =
-				new SetupRequestResult <StateType> ()
-
-				.status (
-					SetupRequestStatus.unknownError)
-
-				.statusMessage (
-					stringFormat (
-						"Error setting up send: %s: %s",
-						exception.getClass ().getSimpleName (),
-						ifNull (
-							exception.getMessage (),
-							"null")))
-
-				.exception (
-					exception);
-
-		}
-
-		// handle error
-
-		if (
-			enumNotEqualSafe (
-				setupRequestResult.status (),
-				SetupRequestStatus.success)
-		) {
-
-			try {
-
-				smsOutboxLogic.messageFailure (
-					smsMessage,
-					setupRequestResult.statusMessage (),
-					ifThenElse (
-						enumEqualSafe (
-							setupRequestResult.status (),
-							SetupRequestStatus.validationError),
-						() -> SmsOutboxLogic.FailureType.permanent,
-						() -> SmsOutboxLogic.FailureType.temporary));
+				smsMessageLogic.blackListMessage (
+					smsOutbox.getMessage ());
 
 				transaction.commit ();
 
-			} catch (RuntimeException exception) {
+				setupRequestResult =
+					new SetupRequestResult <StateType> ()
+
+					.status (
+						SetupRequestStatus.blacklisted)
+
+					.statusMessage (
+						"Not sending message due to blacklist");
+
+				return;
+
+			}
+
+			// call setup send hook
+
+			try {
+
+				setupRequestResult =
+					smsSenderHelper.setupRequest (
+						taskLogger,
+						smsOutbox);
+
+				if (
+
+					isNull (
+						setupRequestResult)
+
+					|| isNull (
+						setupRequestResult.status ())
+
+				) {
+					throw new NullPointerException ();
+				}
+
+			} catch (Exception exception) {
 
 				exceptionLogger.logThrowable (
 					"daemon",
 					getClass ().getSimpleName (),
 					exception,
 					Optional.absent (),
-					GenericExceptionResolution.tryAgainNow);
+					GenericExceptionResolution.tryAgainLater);
 
-				transaction.close ();
+				setupRequestResult =
+					new SetupRequestResult <StateType> ()
 
-				handleSetupErrorInSeparateTransaction (
-					smsMessage.getId (),
-					setupRequestResult);
+					.status (
+						SetupRequestStatus.unknownError)
+
+					.statusMessage (
+						stringFormat (
+							"Error setting up send: %s: %s",
+							exception.getClass ().getSimpleName (),
+							ifNull (
+								exception.getMessage (),
+								"null")))
+
+					.exception (
+						exception);
 
 			}
 
-			return;
+			// handle error
+
+			if (
+				enumNotEqualSafe (
+					setupRequestResult.status (),
+					SetupRequestStatus.success)
+			) {
+
+				try {
+
+					smsOutboxLogic.messageFailure (
+						smsMessage,
+						setupRequestResult.statusMessage (),
+						ifThenElse (
+							enumEqualSafe (
+								setupRequestResult.status (),
+								SetupRequestStatus.validationError),
+							() -> SmsOutboxLogic.FailureType.permanent,
+							() -> SmsOutboxLogic.FailureType.temporary));
+
+					transaction.commit ();
+
+				} catch (RuntimeException exception) {
+
+					exceptionLogger.logThrowable (
+						"daemon",
+						getClass ().getSimpleName (),
+						exception,
+						Optional.absent (),
+						GenericExceptionResolution.tryAgainNow);
+
+					transaction.close ();
+
+					handleSetupErrorInSeparateTransaction (
+						smsMessage.getId (),
+						setupRequestResult);
+
+				}
+
+				return;
+
+			}
+
+			// create send attempt
+
+			SmsOutboxAttemptRec smsOutboxAttempt =
+				smsOutboxLogic.beginSendAttempt (
+					smsOutbox,
+					optionalMapRequired (
+						optionalFromNullable (
+							setupRequestResult.requestTrace ()),
+						JsonUtils::jsonToBytes));
+
+			smsOutboxAttemptId =
+				smsOutboxAttempt.getId ();
+
+			// commit and return
+
+			transaction.commit ();
 
 		}
-
-		// create send attempt
-
-		SmsOutboxAttemptRec smsOutboxAttempt =
-			smsOutboxLogic.beginSendAttempt (
-				smsOutbox,
-				optionalMapRequired (
-					optionalFromNullable (
-						setupRequestResult.requestTrace ()),
-					JsonUtils::jsonToBytes));
-
-		smsOutboxAttemptId =
-			smsOutboxAttempt.getId ();
-
-		// commit and return
-
-		transaction.commit ();
 
 	}
 
@@ -375,7 +380,10 @@ class GenericSmsSenderImplementation <StateType>
 
 			Transaction transaction =
 				database.beginReadWrite (
-					"GenericSmsSenderImplementation.handleSetupErrorInSeparateTransaction ()",
+					stringFormat (
+						"%s.%s ()",
+						"GenericSmsSenderImplementation",
+						"handleSetupErrorInSeparateTransaction"),
 					this);
 
 		) {
@@ -387,7 +395,12 @@ class GenericSmsSenderImplementation <StateType>
 			smsOutboxLogic.messageFailure (
 				smsMessage,
 				setupRequestResult.statusMessage (),
-				SmsOutboxLogic.FailureType.permanent);
+				ifThenElse (
+					enumEqualSafe (
+						setupRequestResult.status (),
+						SetupRequestStatus.validationError),
+					() -> SmsOutboxLogic.FailureType.permanent,
+					() -> SmsOutboxLogic.FailureType.temporary));
 
 			transaction.commit ();
 

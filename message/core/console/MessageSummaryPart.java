@@ -317,7 +317,7 @@ class MessageSummaryPart
 
 						formatWriter.writeLineFormatIncreaseIndent (
 							"<td>");
-	
+
 						htmlLinkWriteHtml (
 							requestContext.resolveLocalUrlFormat (
 								"/message.mediaSummary?index=%u",
