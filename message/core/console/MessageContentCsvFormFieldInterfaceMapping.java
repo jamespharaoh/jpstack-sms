@@ -34,17 +34,6 @@ class MessageContentCsvFormFieldInterfaceMapping
 
 	@Override
 	public
-	Either <Optional <MessageRec>, String> interfaceToGeneric (
-			@NonNull MessageRec container,
-			@NonNull Map <String, Object> hints,
-			@NonNull Optional <String> interfaceValue) {
-
-		throw new UnsupportedOperationException ();
-
-	}
-
-	@Override
-	public
 	Either <Optional <String>, String> genericToInterface (
 			@NonNull MessageRec container,
 			@NonNull Map <String, Object> hints,
