@@ -1,7 +1,9 @@
 package wbs.sms.message.inbox.daemon;
 
+import static wbs.utils.collection.MapUtils.emptyMap;
 import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
 import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
+import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
@@ -409,7 +411,9 @@ class ReceivedManager
 
 		return parseBooleanYesNoRequired (
 			mapItemForKeyOrDefault (
-				wbsConfig.runtimeSettings (),
+				ifNull (
+					wbsConfig.runtimeSettings (),
+					emptyMap ()),
 				"received-manager.enable",
 				"yes"));
 

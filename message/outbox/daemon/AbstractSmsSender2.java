@@ -1,5 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.collection.MapUtils.emptyMap;
 import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
@@ -127,7 +128,9 @@ class AbstractSmsSender2
 
 		return parseBooleanYesNoRequired (
 			mapItemForKeyOrDefault (
-				wbsConfig.runtimeSettings (),
+				ifNull (
+					wbsConfig.runtimeSettings (),
+					emptyMap ()),
 				"abstract-sms-sender-2.enable",
 				"yes"));
 
