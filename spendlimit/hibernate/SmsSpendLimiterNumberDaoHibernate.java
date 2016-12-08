@@ -24,7 +24,7 @@ class SmsSpendLimiterNumberDaoHibernate
 	implements SmsSpendLimiterNumberDaoMethods {
 
 	@Override
-	public 
+	public
 	SmsSpendLimiterNumberRec find (
 			@NonNull SmsSpendLimiterRec smsSpendLimiter,
 			@NonNull NumberRec number) {
@@ -52,7 +52,7 @@ class SmsSpendLimiterNumberDaoHibernate
 	}
 
 	@Override
-	public 
+	public
 	List <Long> searchIds (
 			@NonNull SmsSpendLimiterNumberSearch search) {
 
@@ -70,12 +70,12 @@ class SmsSpendLimiterNumberDaoHibernate
 			isNotNull (
 				search.smsSpendLimiterId ())
 		) {
-		
+
 			criteria.add (
 				Restrictions.eq (
 					"_smsSpendLimiter.id",
 					search.smsSpendLimiterId ()));
-		
+
 		}
 
 		if (
@@ -97,7 +97,7 @@ class SmsSpendLimiterNumberDaoHibernate
 			"searchIds (smsSpendLimiterNumberSearch)",
 			Long.class,
 			criteria);
-	
+
 	}
 
 }

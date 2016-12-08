@@ -9,6 +9,8 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.console.request.ConsoleRequestContext;
 
@@ -50,13 +52,19 @@ class SmsCustomerEndSessionFormActionHelper
 
 	@Override
 	public
-	Boolean canBePerformed () {
+	Pair <Boolean, Boolean> canBePerformed () {
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.findFromContextRequired ();
 
-		return isNotNull (
-			customer.getActiveSession ());
+		boolean show = (
+			isNotNull (
+				customer.getActiveSession ())
+		);
+
+		return Pair.of (
+			show,
+			show);
 
 	}
 
@@ -64,7 +72,8 @@ class SmsCustomerEndSessionFormActionHelper
 	public
 	void writePreamble (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull FormatWriter formatWriter) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull Boolean submit) {
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.findFromContextRequired ();

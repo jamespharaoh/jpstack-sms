@@ -74,8 +74,22 @@
 			<context-tab-responder-page
 				name="thread"/>
 
-			<context-tab-action-page
-				name="actions"/>
+			<context-tab-form-actions-page
+				name="actions">
+
+				<form-action
+					name="manually-retry"/>
+
+				<form-action
+					name="manually-unhold"/>
+
+				<form-action
+					name="manually-deliver"/>
+
+				<form-action
+					name="manually-undeliver"/>
+
+			</context-tab-form-actions-page>
 
 			<object-events-page/>
 

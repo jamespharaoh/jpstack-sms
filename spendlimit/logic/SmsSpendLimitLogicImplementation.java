@@ -376,7 +376,7 @@ class SmsSpendLimitLogicImplementation
 
 			isNotNull (
 				spendLimiterNumber.getLastSpendDate ())
-				
+
 			&& notEarlierThan (
 				spendLimiterNumber.getLastSpendDate (),
 				today)

@@ -17,7 +17,7 @@ class SmsSpendLimiterNumberDayDaoHibernate
 	implements SmsSpendLimiterNumberDayDaoMethods {
 
 	@Override
-	public 
+	public
 	SmsSpendLimiterNumberDayRec find (
 			@NonNull SmsSpendLimiterNumberRec smsSpendLimiterNumber,
 			@NonNull LocalDate date) {

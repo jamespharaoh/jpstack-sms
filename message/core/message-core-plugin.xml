@@ -25,8 +25,10 @@
 	</layer>
 
 	<layer name="console">
-		<component class="console.MessageActionsAction"/>
-		<component class="console.MessageActionsPart"/>
+		<component class="console.MessageManuallyDeliverFormActionHelper"/>
+		<component class="console.MessageManuallyRetryFormActionHelper"/>
+		<component class="console.MessageManuallyUndeliverFormActionHelper"/>
+		<component class="console.MessageManuallyUnholdFormActionHelper"/>
 		<component class="console.MessageConsoleHooks"/>
 		<component class="console.MessageConsoleLogicImplementation"/>
 		<component class="console.MessageConsolePluginManager"/>

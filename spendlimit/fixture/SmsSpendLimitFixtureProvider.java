@@ -61,7 +61,7 @@ class SmsSpendLimitFixtureProvider
 	// public implementation
 
 	@Override
-	public 
+	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger) {
 
@@ -174,18 +174,18 @@ class SmsSpendLimitFixtureProvider
 					"static"))
 
 			.setDailySpendLimitAmount (
-				1000l)				
+				1000l)
 
 			.setDailySpendLimitMessage (
 				textHelper.findOrCreate (
-					"Daily spend limit"))				
+					"Daily spend limit"))
 
 			.setDailySpendAdviceAmount (
-				500l)				
+				500l)
 
 			.setDailySpendAdviceMessage (
 				textHelper.findOrCreate (
-					"Daily spend advice"))				
+					"Daily spend advice"))
 
 		);
 
