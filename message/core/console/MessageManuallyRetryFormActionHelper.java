@@ -177,7 +177,7 @@ class MessageManuallyRetryFormActionHelper
 		}
 
 		if (
-		
+
 			optionalIsPresent (
 				smsOutboxOptional)
 
