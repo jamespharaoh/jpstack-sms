@@ -22,7 +22,6 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
-import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.report.model.MessageReportRec;
 
@@ -37,7 +36,7 @@ class MessageReportsPart
 	MessageConsoleLogic messageConsoleLogic;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	MessageConsoleHelper messageHelper;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -55,12 +54,10 @@ class MessageReportsPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 		messageReports =
-			new TreeSet<MessageReportRec> (
+			new TreeSet<> (
 				message.getReports ());
 
 	}

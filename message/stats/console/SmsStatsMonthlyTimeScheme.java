@@ -1,18 +1,32 @@
 package wbs.sms.message.stats.console;
 
-import java.io.PrintWriter;
+import static wbs.utils.etc.LogicUtils.equalWithClass;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.NumberUtils.moreThan;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.web.utils.HtmlTableUtils.htmlTableHeaderCellWrite;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.NonNull;
+
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
-import wbs.web.utils.HtmlUtils;
+
+import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("smsStatsMonthlyTimeScheme")
 public
@@ -66,8 +80,8 @@ class SmsStatsMonthlyTimeScheme
 	@Override
 	public
 	void goTableHeader (
-			PrintWriter out,
-			LocalDate start) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull LocalDate start) {
 
 		Calendar calendar =
 			Calendar.getInstance ();
@@ -82,69 +96,117 @@ class SmsStatsMonthlyTimeScheme
 
 		Date thisMonth = calendar.getTime ();
 
-		out.println ("<tr>");
+		htmlTableRowOpen (
+			formatWriter);
 
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			"Type",
+			htmlRowSpanAttribute (
+				2l));
 
-		out.println ("<th rowspan=\"2\">Type</th>");
+		long lastYear = -1l;
+		long thisYear = -1l;
+		long cols = 0l;
 
-		int lastYear = -1;
-		int thisYear = -1;
-		int cols = 0;
+		for (
+			long month = 0l;
+			month < 9l;
+			month ++
+		) {
 
-		for (int month = 0; month < 9; month++) {
+			calendar.setTime (
+				start.toDate ());
 
-			calendar.setTime (start.toDate ());
-
-			calendar.add (Calendar.MONTH, month);
+			calendar.add (
+				Calendar.MONTH,
+				toJavaIntegerRequired (
+					month));
 
 			thisYear =
-				calendar.get (Calendar.YEAR);
+				calendar.get (
+					Calendar.YEAR);
 
 			if (thisYear == lastYear) {
 
-				cols++;
+				cols ++;
 
 			} else {
 
-				if (cols > 0) {
+				if (cols > 0l) {
 
-					out.println("<th colspan=\"" + cols + "\">" + lastYear
-							+ "</th>");
+					htmlTableHeaderCellWrite (
+						formatWriter,
+						integerToDecimalString (
+							lastYear),
+						htmlColumnSpanAttribute (
+							cols));
 
 				}
 
 				lastYear = thisYear;
 
-				cols = 1;
+				cols = 1l;
 
 			}
 
 		}
 
-		out.println ("<th colspan=\"" + cols + "\">" + lastYear + "</th>");
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			integerToDecimalString (
+				lastYear),
+			htmlColumnSpanAttribute (
+				cols));
 
-		out.println ("</tr>");
+		htmlTableRowClose (
+			formatWriter);
 
-		out.println ("<tr>");
+		htmlTableRowOpen (
+			formatWriter);
 
-		for (int month = 0; month < 9; month++) {
+		for (
+			long month = 0l;
+			month < 9l;
+			month ++
+		) {
 
-			calendar.setTime (start.toDate ());
+			calendar.setTime (
+				start.toDate ());
 
-			calendar.add (Calendar.MONTH, month);
+			calendar.add (
+				Calendar.MONTH,
+				toJavaIntegerRequired (
+					month));
 
-			out.println (""
-				+ (calendar.getTime ().equals (thisMonth)
-					? "<th class=\"hilite\">"
-					: "<th>")
-				+ HtmlUtils.htmlEncode (
+			if (
+				equalWithClass (
+					Date.class,
+					calendar.getTime (),
+					thisMonth)
+			) {
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
 					monthNameShortFormat.format (
-						calendar.getTime ()))
-				+ "</th>");
+						calendar.getTime ()),
+					htmlClassAttribute (
+						"hilite"));
+
+			} else {
+
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
+					monthNameShortFormat.format (
+						calendar.getTime ()));
+
+			}
 
 		}
 
-		out.println ("</tr>");
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
@@ -213,22 +275,31 @@ class SmsStatsMonthlyTimeScheme
 
 	@Override
 	public
-	boolean[] getHilites (
-			LocalDate start) {
+	Boolean[] getHilites (
+			@NonNull LocalDate start) {
 
-		Calendar cal =
+		Calendar calendar =
 			Calendar.getInstance ();
 
-		boolean[] hilites = new boolean[9];
+		Boolean[] hilites =
+			new Boolean [9];
 
 		for (int month = 0; month < 9; month++) {
 
-			cal.clear ();
-			cal.setTime (start.toDate ());
-			cal.add (Calendar.MONTH, month);
+			calendar.clear ();
+
+			calendar.setTime (
+				start.toDate ());
+
+			calendar.add (
+				Calendar.MONTH,
+				month);
 
 			hilites [month] =
-				cal.get (Calendar.MONTH) >= 6;
+				moreThan (
+					calendar.get (
+						Calendar.MONTH),
+					6);
 
 		}
 

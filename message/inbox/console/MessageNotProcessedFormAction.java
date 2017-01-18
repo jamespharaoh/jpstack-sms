@@ -1,24 +1,28 @@
 package wbs.sms.message.inbox.console;
 
+import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.queue.logic.QueueLogic;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("messageNotProcessedFormAction")
@@ -72,141 +76,143 @@ class MessageNotProcessedFormAction
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MessageNotProcessedFormAction.goReal ()",
-				this);
+		try (
 
-		MessageRec message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			Transaction transaction =
+				database.beginReadWrite (
+					"MessageNotProcessedFormAction.goReal ()",
+					this);
 
-		// check the message status is correct
-
-		if (message.getStatus () != MessageStatus.notProcessed) {
-
-			requestContext.addError (
-				"Message is not in correct state");
-
-			return responder (
-				"queueHomeResponder");
-
-		}
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"process_again"))
 		) {
 
-			queueLogic.processQueueItem (
-				message.getNotProcessedQueueItem (),
-				userConsoleLogic.userRequired ());
+			MessageRec message =
+				messageHelper.findFromContextRequired ();
 
-			messageLogic.messageStatus (
-				message,
-				MessageStatus.pending);
+			// check the message status is correct
 
-			message
+			if (message.getStatus () != MessageStatus.notProcessed) {
 
-				.setNotProcessedQueueItem (
-					null);
+				requestContext.addError (
+					"Message is not in correct state");
 
-			inboxHelper.insert (
-				inboxHelper.createInstance ()
+				return responder (
+					"queueHomeResponder");
 
-				.setMessage (
-					message)
+			}
 
-			);
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"process_again"))
+			) {
 
-			eventLogic.createEvent (
-				"message_processed_again",
-				userConsoleLogic.userRequired (),
-				message);
+				queueLogic.processQueueItem (
+					message.getNotProcessedQueueItem (),
+					userConsoleLogic.userRequired ());
 
-			transaction.commit ();
+				messageLogic.messageStatus (
+					message,
+					MessageStatus.pending);
 
-			requestContext.addNotice (
-				"Message queued for processing");
+				message
 
-			return responder (
-				"queueHomeResponder");
+					.setNotProcessedQueueItem (
+						null);
+
+				inboxHelper.insert (
+					inboxHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+				);
+
+				eventLogic.createEvent (
+					"message_processed_again",
+					userConsoleLogic.userRequired (),
+					message);
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Message queued for processing");
+
+				return responder (
+					"queueHomeResponder");
+
+			}
+
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"ignore"))
+			) {
+
+				queueLogic.processQueueItem (
+					message.getNotProcessedQueueItem (),
+					userConsoleLogic.userRequired ());
+
+				messageLogic.messageStatus (
+					message,
+					MessageStatus.ignored);
+
+				message
+
+					.setNotProcessedQueueItem (
+						null);
+
+				eventLogic.createEvent (
+					"message_ignored",
+					userConsoleLogic.userRequired (),
+					message);
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Message ignored");
+
+				return responder (
+					"queueHomeResponder");
+
+			}
+
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"processed_manually"))
+			) {
+
+				queueLogic.processQueueItem (
+					message.getNotProcessedQueueItem (),
+					userConsoleLogic.userRequired ());
+
+				messageLogic.messageStatus (
+					message,
+					MessageStatus.manuallyProcessed);
+
+				message
+
+					.setNotProcessedQueueItem (
+						null);
+
+				eventLogic.createEvent (
+					"message_manually_processed",
+					userConsoleLogic.userRequired (),
+					message);
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Message marked as processed manually");
+
+				return responder (
+					"queueHomeResponder");
+
+			}
+
+			throw shouldNeverHappen ();
 
 		}
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"ignore"))
-		) {
-
-			queueLogic.processQueueItem (
-				message.getNotProcessedQueueItem (),
-				userConsoleLogic.userRequired ());
-
-			messageLogic.messageStatus (
-				message,
-				MessageStatus.ignored);
-
-			message
-
-				.setNotProcessedQueueItem (
-					null);
-
-			eventLogic.createEvent (
-				"message_ignored",
-				userConsoleLogic.userRequired (),
-				message);
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message ignored");
-
-			return responder (
-				"queueHomeResponder");
-
-		}
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"processed_manually"))
-		) {
-
-			queueLogic.processQueueItem (
-				message.getNotProcessedQueueItem (),
-				userConsoleLogic.userRequired ());
-
-			messageLogic.messageStatus (
-				message,
-				MessageStatus.manuallyProcessed);
-
-			message
-
-				.setNotProcessedQueueItem (
-					null);
-
-			eventLogic.createEvent (
-				"message_manually_processed",
-				userConsoleLogic.userRequired (),
-				message);
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message marked as processed manually");
-
-			return responder (
-				"queueHomeResponder");
-
-		}
-
-		throw new RuntimeException (
-			"Assertion failure");
 
 	}
 

@@ -23,7 +23,6 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
-import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 
 @Accessors (fluent = true)
@@ -38,7 +37,7 @@ class NumberSubscriptionsPart
 	LogContext logContext;
 
 	@SingletonDependency
-	NumberObjectHelper numberHelper;
+	NumberConsoleHelper numberHelper;
 
 	@SingletonDependency
 	NumberLinkManager numberLinkManager;
@@ -66,9 +65,7 @@ class NumberSubscriptionsPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		NumberRec number =
-			numberHelper.findRequired (
-				requestContext.stuffInteger (
-					"numberId"));
+			numberHelper.findFromContextRequired ();
 
 		links =
 			numberLinkManager.findLinks (

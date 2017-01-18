@@ -1,14 +1,30 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.etc.LogicUtils.allOf;
+import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.NumberUtils.fromJavaInteger;
+import static wbs.utils.etc.NumberUtils.moreThanZero;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlAttributeFormat;
+import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.web.utils.HtmlStyleUtils.htmlStyleRuleEntry;
+import static wbs.web.utils.HtmlTableUtils.htmlTableCellWrite;
+import static wbs.web.utils.HtmlTableUtils.htmlTableClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableOpenList;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowSeparatorWrite;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Optional;
+
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -26,8 +42,8 @@ import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 
 import wbs.utils.etc.PropertyUtils;
-
-import wbs.web.utils.HtmlUtils;
+import wbs.utils.string.FormatWriter;
+import wbs.utils.string.StringFormatWriter;
 
 /**
  * Responsible for outputing standardised tables of message statistics. Requires
@@ -62,22 +78,22 @@ class SmsStatsFormatter {
 
 	// state
 
-	PrintWriter out;
-
 	LocalDate startDate;
 	LocalDate endDate;
-	Map<String,GroupStats> stats;
+	Map <String, GroupStats> stats;
 
 	// implementation
 
 	public
-	void go () {
+	void go (
+			@NonNull FormatWriter formatWriter) {
 
 		setupDates ();
 
 		loadStats ();
 
-		goOutput ();
+		goOutput (
+			formatWriter);
 
 	}
 
@@ -242,69 +258,100 @@ class SmsStatsFormatter {
 
 	protected
 	void goTotalsHeader (
-			int colSpan) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull Long colSpan) {
 
-		out.print (
-			stringFormat (
-				"<tr>\n",
-				"<td class=\"group-name\" colspan=\"%h\">TOTALS</td>",
-				integerToDecimalString (
-					colSpan),
-				"</tr>\n"));
+		htmlTableRowOpen (
+			formatWriter);
+
+		htmlTableCellWrite (
+			formatWriter,
+			"TOTALS",
+			htmlClassAttribute (
+				"group-name"),
+			htmlColumnSpanAttribute (
+				colSpan));
+
+		htmlTableRowClose ();
 
 	}
 
 	protected
 	void goSectionHeader (
-			String group,
-			String url,
-			int colSpan) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull String group,
+			@NonNull Optional <String> urlOptional,
+			@NonNull Long colSpan) {
 
-		if (url != null) {
+		htmlTableRowOpen (
+			formatWriter);
 
-			out.println("<tr>");
+		if (
+			optionalIsPresent (
+				urlOptional)
+		) {
 
-			out.print("<td");
-			out.print(" class=\"group-name\"");
-			out.print(" colspan=\"" + colSpan + "\"");
-			out.print(" style=\"cursor: pointer;\"");
-			out.print(" onmouseover=\"this.className='group-name-hover'\"");
-			out.print(" onmouseout=\"this.className='group-name'\"");
-			out.print(" onclick=\"window.location='" + HtmlUtils.htmlJavascriptEncode(url) + "'\"");
-			out.println(">");
+			htmlTableCellWrite (
+				formatWriter,
+				group,
+				htmlClassAttribute (
+					"group-name"),
+				htmlColumnSpanAttribute (
+					colSpan),
+				htmlStyleRuleEntry (
+					"cursor",
+					"pointer"),
+				htmlAttribute (
+					"onmouseover",
+					"this.className='group-name-hover'"),
+				htmlAttribute (
+					"onmouseout",
+					"this.className='group-name'"),
+				htmlAttributeFormat (
+					"onclick",
+					"window.location='%j'",
+					urlOptional.get ()));
 
-			out.println(HtmlUtils.htmlEncode(group));
-
-			out.println("</td>");
-
-			out.println("</tr>");
 		} else {
-			out.println("<tr> <td class=\"group-name\" colspan=\"" + colSpan
-					+ "\">" + HtmlUtils.htmlEncode(group) + "</td> </tr>");
+
+			htmlTableCellWrite (
+				formatWriter,
+				group,
+				htmlClassAttribute (
+					"group-name"),
+				htmlColumnSpanAttribute (
+					colSpan));
+
 		}
+
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
 	protected
 	void goSectionBody (
-			RouteRec route,
-			MessageStatsData[] data,
-			boolean[] hilites) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull Optional <RouteRec> routeOptional,
+			@NonNull MessageStatsData[] data,
+			@NonNull Boolean[] hilites) {
 
-		for (Row row : rows) {
+		for (
+			Row row
+				: rows
+		) {
 
-			StringBuilder stringBuilder =
-				new StringBuilder ();
+			StringFormatWriter buffer =
+				formatWriter.stringBuffer ();
 
-			stringBuilder.append (
-				stringFormat (
-					"<tr>\n",
+			htmlTableRowOpen (
+				buffer);
 
-					"<td",
-					" class=\"%h\"",
-					row.className,
-					">%h</td>\n",
-					row.name));
+			htmlTableCellWrite (
+				buffer,
+				row.name,
+				htmlClassAttribute (
+					row.className));
 
 			boolean foundSomething =
 				false;
@@ -344,23 +391,36 @@ class SmsStatsFormatter {
 					case in:
 
 						charge =
-							route != null && route.getInCharge () > 0
-								? currencyLogic.formatText (
-									route.getCurrency (),
-									route.getInCharge () * messageCount)
-								: noZero (
-									messageCount);
+							ifThenElse (
+								allOf (
+									() -> optionalIsPresent (
+										routeOptional),
+									() -> moreThanZero (
+										routeOptional.get ().getInCharge ())),
+								() -> currencyLogic.formatText (
+									routeOptional.get ().getCurrency (),
+									routeOptional.get ().getInCharge ()
+										* messageCount),
+								() -> noZero (
+									messageCount));
 
 						break;
 
 					case out:
 
 						charge =
-							route != null && route.getOutCharge () > 0
-								? currencyLogic.formatText (
-									route.getCurrency (),
-									Long.valueOf(route.getOutCharge () * messageCount))
-								: noZero (messageCount);
+							ifThenElse (
+								allOf (
+									() -> optionalIsPresent (
+										routeOptional),
+									() -> moreThanZero (
+										routeOptional.get ().getOutCharge ())),
+								() -> currencyLogic.formatText (
+									routeOptional.get ().getCurrency (),
+									routeOptional.get ().getOutCharge ()
+										* messageCount),
+								() -> noZero (
+									messageCount));
 
 						break;
 
@@ -368,48 +428,51 @@ class SmsStatsFormatter {
 
 				}
 
-				stringBuilder.append (
-					stringFormat (
-						"<td",
-						" class=\"%h\"",
-						className,
-						" style=\"text-align: right\"",
-						">%h</td>\n",
-						charge));
+				htmlTableCellWrite (
+					buffer,
+					charge,
+					htmlClassAttribute (
+						className),
+					htmlStyleRuleEntry (
+						"text-align",
+						"right"));
 
 			}
 
-			stringBuilder.append (
-				stringFormat (
-					"</tr>\n"));
+			htmlTableRowClose (
+				buffer);
 
-			if (foundSomething)
-				out.print (stringBuilder.toString ());
+			if (foundSomething) {
+
+				formatWriter.writeString (
+					buffer.toString ());
+
+			}
 
 		}
 
 	}
 
-	void goOutput () {
+	void goOutput (
+			@NonNull FormatWriter formatWriter) {
 
-		out =
-			requestContext.writer ();
-
-		out.print (
-			stringFormat (
-				"<table class=\"list\">\n"));
+		htmlTableOpenList (
+			formatWriter);
 
 		timeScheme.goTableHeader (
-			out,
+			formatWriter,
 			startDate);
 
-		boolean[] hilites =
-			timeScheme.getHilites (startDate);
+		Boolean[] hilites =
+			timeScheme.getHilites (
+				startDate);
 
 		// goTotals (job, out, hilites);
 
-		for (Map.Entry<String,GroupedStatsSource.GroupStats> entry
-				: stats.entrySet ()) {
+		for (
+			Map.Entry <String, GroupedStatsSource.GroupStats> entry
+				: stats.entrySet ()
+		) {
 
 			GroupedStatsSource.GroupStats groupStats =
 				entry.getValue ();
@@ -422,25 +485,26 @@ class SmsStatsFormatter {
 					startDate,
 					groupStats.getStatsByDate ());
 
-			out.print (
-				stringFormat (
-					"<tr class=\"sep\">\n"));
+			htmlTableRowSeparatorWrite (
+				formatWriter);
 
 			goSectionHeader (
+				formatWriter,
 				group,
 				groupStats.getUrl (),
-				data.length + 1);
+				fromJavaInteger (
+					data.length + 1));
 
 			goSectionBody (
+				formatWriter,
 				entry.getValue ().getRoute (),
 				data,
 				hilites);
 
 		}
 
-		out.print (
-			stringFormat (
-				"</table>\n"));
+		htmlTableClose (
+			formatWriter);
 
 	}
 

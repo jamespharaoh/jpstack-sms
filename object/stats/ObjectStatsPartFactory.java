@@ -18,6 +18,7 @@ import wbs.console.lookup.ObjectLookup;
 import wbs.console.part.PagePart;
 import wbs.console.part.PagePartFactory;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -25,6 +26,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
 import wbs.sms.message.stats.console.SmsStatsSource;
@@ -81,14 +83,14 @@ class ObjectStatsPartFactory
 
 		// lookup object
 
-		Record<?> parent =
+		Record <?> parent =
 			objectLookup.lookupObject (
-				requestContext.contextStuffRequired ());
+				requestContext.consoleContextStuffRequired ());
 
 		// find its services
 
-		List<SmsStatsSource> statsSources =
-			new ArrayList<SmsStatsSource> ();
+		List <SmsStatsSource> statsSources =
+			new ArrayList<> ();
 
 		for (
 			ObjectStatsSourceBuilder objectStatsSourceBuilder

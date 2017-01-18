@@ -7,19 +7,21 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
@@ -27,6 +29,7 @@ import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.list.model.NumberListNumberRec;
 import wbs.sms.number.list.model.NumberListRec;
 import wbs.sms.number.list.model.NumberListUpdateRec;
+
 import wbs.web.responder.Responder;
 
 @Accessors (fluent = true)
@@ -85,255 +88,258 @@ class NumberListNumberUpdateAction
 
 		// start transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"NumberListNumberUpdateAction.goReal ()",
-				this);
+		try (
 
-		int loop = 0;
+			Transaction transaction =
+				database.beginReadWrite (
+					"NumberListNumberUpdateAction.goReal ()",
+					this);
 
-		NumberListRec numberList =
-			numberListHelper.findRequired (
-				requestContext.stuffInteger (
-					"numberListId"));
-
-		NumberListUpdateRec numberListUpdate =
-			numberListUpdateHelper.createInstance ()
-
-			.setNumberList (
-				numberList)
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setUser (
-				userConsoleLogic.userRequired ())
-
-			.setNumberCount (
-				0l);
-
-		// parse numbers
-
-		List<String> numbers;
-
-		try {
-
-			numbers =
-				numberFormatLogic.parseLines (
-					numberList.getNumberFormat (),
-					requestContext.parameterRequired (
-						"numbers"));
-
-		} catch (WbsNumberFormatException exception) {
-
-			requestContext.addNotice (
-				"Invalid number format");
-
-			return null;
-
-		}
-
-		// add numbers
-
-		int numAdded = 0;
-		int numAlreadyAdded = 0;
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"add"))
 		) {
 
-			numberListUpdate
+			int loop = 0;
 
-				.setPresent (
-					true);
+			NumberListRec numberList =
+				numberListHelper.findFromContextRequired ();
 
-			for (
-				String numberString
-					: numbers
+			NumberListUpdateRec numberListUpdate =
+				numberListUpdateHelper.createInstance ()
+
+				.setNumberList (
+					numberList)
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setUser (
+					userConsoleLogic.userRequired ())
+
+				.setNumberCount (
+					0l);
+
+			// parse numbers
+
+			List<String> numbers;
+
+			try {
+
+				numbers =
+					numberFormatLogic.parseLines (
+						numberList.getNumberFormat (),
+						requestContext.parameterRequired (
+							"numbers"));
+
+			} catch (WbsNumberFormatException exception) {
+
+				requestContext.addNotice (
+					"Invalid number format");
+
+				return null;
+
+			}
+
+			// add numbers
+
+			int numAdded = 0;
+			int numAlreadyAdded = 0;
+
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"add"))
 			) {
 
-				if (++ loop % 1000 == 0)
-					transaction.flush ();
-
-				NumberRec number =
-					numberHelper.findOrCreate (
-						numberString);
-
-				NumberListNumberRec numberListNumber =
-					numberListNumberHelper.findOrCreate (
-						numberList,
-						number);
-
-				if (numberListNumber.getPresent ()) {
-
-					numAlreadyAdded ++;
-
-					continue;
-
-				}
-
-				numberListNumber
+				numberListUpdate
 
 					.setPresent (
 						true);
 
-				numberListUpdate
+				for (
+					String numberString
+						: numbers
+				) {
 
-					.setNumberCount (
-						numberListUpdate.getNumberCount () + 1);
+					if (++ loop % 1000 == 0)
+						transaction.flush ();
 
-				numberListUpdate.getNumbers ().add (
-					number);
+					NumberRec number =
+						numberHelper.findOrCreate (
+							numberString);
 
-				numberList
+					NumberListNumberRec numberListNumber =
+						numberListNumberHelper.findOrCreate (
+							numberList,
+							number);
 
-					.setNumberCount (
-						numberList.getNumberCount () + 1);
+					if (numberListNumber.getPresent ()) {
 
-				numAdded ++;
+						numAlreadyAdded ++;
 
-			}
+						continue;
 
-		}
+					}
 
-		// remove numbers
+					numberListNumber
 
-		int numRemoved = 0;
-		int numAlreadyRemoved = 0;
+						.setPresent (
+							true);
 
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"remove"))
-		) {
+					numberListUpdate
 
-			numberListUpdate.setPresent (false);
+						.setNumberCount (
+							numberListUpdate.getNumberCount () + 1);
 
-			for (
-				String numberString
-					: numbers
-			) {
-
-				if (++ loop % 1000 == 0)
-					transaction.flush ();
-
-				NumberRec number =
-					numberHelper.findOrCreate (
-						numberString);
-
-				NumberListNumberRec numberListNumber =
-					numberListNumberHelper.find (
-						numberList,
+					numberListUpdate.getNumbers ().add (
 						number);
 
-				if (numberListNumber == null
-						|| ! numberListNumber.getPresent ()) {
+					numberList
 
-					numAlreadyRemoved ++;
+						.setNumberCount (
+							numberList.getNumberCount () + 1);
 
-					continue;
+					numAdded ++;
 
 				}
 
-				numberListNumber.setPresent (
-					false);
+			}
 
-				numberListUpdate.setNumberCount (
-					numberListUpdate.getNumberCount () + 1);
+			// remove numbers
 
-				numberListUpdate.getNumbers ().add (
-					number);
+			int numRemoved = 0;
+			int numAlreadyRemoved = 0;
 
-				numberList.setNumberCount (
-					numberList.getNumberCount () - 1);
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"remove"))
+			) {
 
-				numRemoved ++;
+				numberListUpdate.setPresent (false);
+
+				for (
+					String numberString
+						: numbers
+				) {
+
+					if (++ loop % 1000 == 0)
+						transaction.flush ();
+
+					NumberRec number =
+						numberHelper.findOrCreate (
+							numberString);
+
+					NumberListNumberRec numberListNumber =
+						numberListNumberHelper.find (
+							numberList,
+							number);
+
+					if (numberListNumber == null
+							|| ! numberListNumber.getPresent ()) {
+
+						numAlreadyRemoved ++;
+
+						continue;
+
+					}
+
+					numberListNumber.setPresent (
+						false);
+
+					numberListUpdate.setNumberCount (
+						numberListUpdate.getNumberCount () + 1);
+
+					numberListUpdate.getNumbers ().add (
+						number);
+
+					numberList.setNumberCount (
+						numberList.getNumberCount () - 1);
+
+					numRemoved ++;
+
+				}
 
 			}
 
+			// insert update
+
+			if (numberListUpdate.getNumberCount () > 0) {
+
+				numberListUpdateHelper.insert (
+					numberListUpdate);
+
+			}
+
+			// events
+
+			if (numAdded > 0) {
+
+				eventLogic.createEvent (
+					"number_list_numbers_added",
+					userConsoleLogic.userRequired (),
+					numAdded,
+					numberList);
+
+			}
+
+			if (numRemoved > 0) {
+
+				eventLogic.createEvent (
+					"number_list_numbers_removed",
+					userConsoleLogic.userRequired (),
+					numRemoved,
+					numberList);
+
+			}
+
+			// commit transaction
+
+			if (numberListUpdate.getNumberCount () > 0) {
+
+				transaction.commit ();
+
+			}
+
+			// messages
+
+			if (numAdded > 0) {
+
+				requestContext.addNoticeFormat (
+					"%s numbers added",
+					integerToDecimalString (
+						numAdded));
+
+			}
+
+			if (numAlreadyAdded > 0) {
+
+				requestContext.addWarningFormat (
+					"%s numbers already added",
+					integerToDecimalString (
+						numAlreadyAdded));
+
+			}
+
+			if (numRemoved > 0) {
+
+				requestContext.addNoticeFormat (
+					"%s numbers removed",
+					integerToDecimalString (
+						numRemoved));
+
+			}
+
+			if (numAlreadyRemoved > 0) {
+
+				requestContext.addWarningFormat (
+					"%s numbers already removed",
+					integerToDecimalString (
+						numAlreadyRemoved));
+
+			}
+
+			return null;
+
 		}
-
-		// insert update
-
-		if (numberListUpdate.getNumberCount () > 0) {
-
-			numberListUpdateHelper.insert (
-				numberListUpdate);
-
-		}
-
-		// events
-
-		if (numAdded > 0) {
-
-			eventLogic.createEvent (
-				"number_list_numbers_added",
-				userConsoleLogic.userRequired (),
-				numAdded,
-				numberList);
-
-		}
-
-		if (numRemoved > 0) {
-
-			eventLogic.createEvent (
-				"number_list_numbers_removed",
-				userConsoleLogic.userRequired (),
-				numRemoved,
-				numberList);
-
-		}
-
-		// commit transaction
-
-		if (numberListUpdate.getNumberCount () > 0) {
-
-			transaction.commit ();
-
-		}
-
-		// messages
-
-		if (numAdded > 0) {
-
-			requestContext.addNoticeFormat (
-				"%s numbers added",
-				integerToDecimalString (
-					numAdded));
-
-		}
-
-		if (numAlreadyAdded > 0) {
-
-			requestContext.addWarningFormat (
-				"%s numbers already added",
-				integerToDecimalString (
-					numAlreadyAdded));
-
-		}
-
-		if (numRemoved > 0) {
-
-			requestContext.addNoticeFormat (
-				"%s numbers removed",
-				integerToDecimalString (
-					numRemoved));
-
-		}
-
-		if (numAlreadyRemoved > 0) {
-
-			requestContext.addWarningFormat (
-				"%s numbers already removed",
-				integerToDecimalString (
-					numAlreadyRemoved));
-
-		}
-
-		return null;
 
 	}
 

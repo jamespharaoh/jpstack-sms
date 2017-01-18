@@ -19,9 +19,11 @@ import lombok.experimental.Accessors;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (fluent = true)
@@ -57,9 +59,7 @@ class NumberListNumberCopyPart
 		// this number list
 
 		thisNumberList =
-			numberListHelper.findRequired (
-				requestContext.stuffInteger (
-					"numberListId"));
+			numberListHelper.findFromContextRequired ();
 
 		// browseable number lists
 

@@ -22,8 +22,7 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.model.ServiceRec;
 
-import wbs.sms.message.core.model.MessageObjectHelper;
-import wbs.sms.number.core.model.NumberObjectHelper;
+import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.number.core.model.NumberRec;
 
 @PrototypeComponent ("numberServicesPart")
@@ -37,13 +36,13 @@ class NumberServicesPart
 	LogContext logContext;
 
 	@SingletonDependency
-	NumberObjectHelper numberHelper;
+	NumberConsoleHelper numberHelper;
+
+	@SingletonDependency
+	MessageConsoleHelper messageHelper;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
-
-	@SingletonDependency
-	MessageObjectHelper messageHelper;
 
 	@SingletonDependency
 	UserPrivChecker privChecker;
@@ -63,9 +62,7 @@ class NumberServicesPart
 				"prepare");
 
 		NumberRec number =
-			numberHelper.findRequired (
-				requestContext.stuffInteger (
-					"numberId"));
+			numberHelper.findFromContextRequired ();
 
 		List <ServiceRec> allServices =
 			messageHelper.projectServices (

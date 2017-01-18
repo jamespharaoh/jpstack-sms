@@ -4,7 +4,6 @@ import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -66,59 +65,62 @@ class RouteTestTwoWayAction
 	Responder goReal (
 			@NonNull TaskLogger taskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"RouteTestTwoWayAction.goReal ()",
-				this);
+		try (
 
-		RouteRec route =
-			routeHelper.findRequired (
-				requestContext.stuffInteger (
-					"routeId"));
+			Transaction transaction =
+				database.beginReadWrite (
+					"RouteTestTwoWayAction.goReal ()",
+					this);
 
-		String messageString =
-			requestContext.parameterRequired (
-				"message");
+		) {
 
-		String numFrom =
-			requestContext.parameterRequired (
-				"num_from");
+			RouteRec route =
+				routeHelper.findFromContextRequired ();
 
-		String numTo =
-			requestContext.parameterRequired (
-				"num_to");
+			String messageString =
+				requestContext.parameterRequired (
+					"message");
 
-		MessageRec messageRecord =
-			smsInboxLogic.inboxInsert (
-				optionalAbsent (),
-				textHelper.findOrCreate (
-					messageString),
-				smsNumberHelper.findOrCreate (
-					numFrom),
-				numTo,
-				route,
-				optionalAbsent (),
-				optionalAbsent (),
-				emptyList (),
-				optionalAbsent (),
-				optionalAbsent ());
+			String numFrom =
+				requestContext.parameterRequired (
+					"num_from");
 
-		requestContext.addNoticeFormat (
-			"Message %s inserted",
-			integerToDecimalString (
-				messageRecord.getId ()));
+			String numTo =
+				requestContext.parameterRequired (
+					"num_to");
 
-		transaction.commit ();
+			MessageRec messageRecord =
+				smsInboxLogic.inboxInsert (
+					optionalAbsent (),
+					textHelper.findOrCreate (
+						messageString),
+					smsNumberHelper.findOrCreate (
+						numFrom),
+					numTo,
+					route,
+					optionalAbsent (),
+					optionalAbsent (),
+					emptyList (),
+					optionalAbsent (),
+					optionalAbsent ());
 
-		// wait a couple of seconds for the message to be processed
+			requestContext.addNoticeFormat (
+				"Message %s inserted",
+				integerToDecimalString (
+					messageRecord.getId ()));
 
-		try {
-			Thread.sleep (2000);
-		} catch (InterruptedException exception) {
+			transaction.commit ();
+
+			// wait a couple of seconds for the message to be processed
+
+			try {
+				Thread.sleep (2000);
+			} catch (InterruptedException exception) {
+			}
+
+			return null;
+
 		}
-
-		return null;
 
 	}
 

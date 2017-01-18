@@ -22,13 +22,16 @@ import lombok.experimental.Accessors;
 import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.gsm.GsmUtils;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.messageset.model.MessageSetMessageObjectHelper;
@@ -36,6 +39,7 @@ import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.responder.Responder;
 
 @Accessors (fluent = true)
@@ -103,7 +107,7 @@ class MessageSetAction
 
 		if (
 			! privLookup.lookup (
-				requestContext.contextStuffRequired ())
+				requestContext.consoleContextStuffRequired ())
 		) {
 
 			requestContext.addError (

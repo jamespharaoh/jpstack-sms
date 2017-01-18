@@ -1,15 +1,20 @@
 package wbs.sms.messageset.console;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectManager;
+
 import wbs.sms.messageset.model.MessageSetRec;
 
 @Accessors (fluent = true)
@@ -39,12 +44,12 @@ class SimpleMessageSetFinder
 	@Override
 	public
 	MessageSetRec findMessageSet (
-			ConsoleRequestContext requestContext) {
+			@NonNull ConsoleRequestContext requestContext) {
 
-		Record<?> object =
-			(Record<?>)
-			objectLookup.lookupObject (
-				requestContext.contextStuffRequired ());
+		Record <?> object =
+			genericCastUnchecked (
+				objectLookup.lookupObject (
+					requestContext.consoleContextStuffRequired ()));
 
 		return messageSetHelper.findByCodeRequired (
 			object,

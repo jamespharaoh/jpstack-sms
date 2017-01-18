@@ -1,6 +1,9 @@
 package wbs.sms.message.stats.console;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 
 import java.util.List;
 import java.util.Map;
@@ -17,14 +20,17 @@ import lombok.experimental.Accessors;
 import org.joda.time.LocalDate;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
+
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.misc.UrlParams;
 
 @Accessors (fluent = true)
@@ -68,32 +74,37 @@ class GroupedStatsSourceImplementation
 
 	@Override
 	public
-	Map<String,GroupStats> load (
+	Map <String, GroupStats> load (
 			@NonNull SmsStatsTimeScheme timeScheme,
 			@NonNull LocalDate start,
 			@NonNull LocalDate end) {
 
-		Map<String,GroupStats> ret =
+		Map <String, GroupStats> ret =
 			new TreeMap<> ();
 
-		RouteRec route =
+		Optional <RouteRec> route =
 			statsSource.findRoute ();
 
 		if (
-			route == null
+
+			optionalIsPresent (
+				route)
+
 			&& critMap.containsKey (
 				SmsStatsCriteria.route)
+
 		) {
 
-			Set<Long> routeIds =
+			Set <Long> routeIds =
 				critMap.get (
 					SmsStatsCriteria.route);
 
 			if (routeIds.size () == 1) {
 
 				route =
-					routeHelper.findRequired (
-						routeIds.iterator ().next ());
+					optionalOf (
+						routeHelper.findRequired (
+							routeIds.iterator ().next ()));
 
 			}
 
@@ -122,7 +133,8 @@ class GroupedStatsSourceImplementation
 			if (groupCriteria == SmsStatsCriteria.route) {
 
 				route =
-					messageStats.getMessageStatsId ().getRoute ();
+					optionalOf (
+						messageStats.getMessageStatsId ().getRoute ());
 
 			}
 
@@ -210,11 +222,12 @@ class GroupedStatsSourceImplementation
 
 	}
 
-	String groupUrl (
+	Optional <String> groupUrl (
 			MessageStatsRec messageStats) {
 
-		if (groupCriteria == null)
-			return null;
+		if (groupCriteria == null) {
+			return optionalAbsent ();
+		}
 
 		UrlParams myUrlParams =
 			new UrlParams (
@@ -226,8 +239,9 @@ class GroupedStatsSourceImplementation
 				groupId (
 					messageStats)));
 
-		return myUrlParams.toUrl (
-			url);
+		return optionalOf (
+			myUrlParams.toUrl (
+				url));
 
 	}
 

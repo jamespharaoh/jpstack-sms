@@ -14,9 +14,11 @@ import lombok.experimental.Accessors;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.number.list.model.NumberListRec;
 
 @Accessors (fluent = true)
@@ -45,9 +47,7 @@ class NumberListNumberUpdatePart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		numberList =
-			numberListHelper.findRequired (
-				requestContext.stuffInteger (
-					"numberListId"));
+			numberListHelper.findFromContextRequired ();
 
 	}
 

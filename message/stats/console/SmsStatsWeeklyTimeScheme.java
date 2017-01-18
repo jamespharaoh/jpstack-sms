@@ -1,18 +1,32 @@
 package wbs.sms.message.stats.console;
 
-import java.io.PrintWriter;
+import static wbs.utils.etc.LogicUtils.equalWithClass;
+import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.NumberUtils.moreThanOne;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.web.utils.HtmlTableUtils.htmlTableHeaderCellWrite;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.NonNull;
+
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
-import wbs.web.utils.HtmlUtils;
+
+import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("smsStatsWeeklyTimeScheme")
 public
@@ -95,8 +109,8 @@ class SmsStatsWeeklyTimeScheme
 	@Override
 	public
 	void goTableHeader (
-			PrintWriter out,
-			LocalDate start) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull LocalDate start) {
 
 		Calendar calendar =
 			Calendar.getInstance ();
@@ -117,22 +131,39 @@ class SmsStatsWeeklyTimeScheme
 		Date thisWeek =
 			calendar.getTime ();
 
-		out.println ("<tr> <th rowspan=\"3\">Type</th>");
+		htmlTableRowOpen (
+			formatWriter);
 
-		int lastMonth = -1;
-		int cols = 0;
-		int thisMonth = -1;
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			"Type",
+			htmlRowSpanAttribute (
+				3l));
+
+		long lastMonth = -1l;
+		long cols = 0l;
+		long thisMonth = -1l;
 
 		String lastMonthNameLong = "";
 		String lastMonthNameShort = "";
 
-		for (int week = 0; week < 9; week++) {
+		for (
+			long week = 0l;
+			week < 9l;
+			week ++
+		) {
 
-			calendar.setTime (start.toDate ());
-			calendar.add (Calendar.DATE, week * 7);
+			calendar.setTime (
+				start.toDate ());
+
+			calendar.add (
+				Calendar.DATE,
+				toJavaIntegerRequired (
+					week * 7));
 
 			thisMonth =
-				calendar.get (Calendar.MONTH);
+				calendar.get (
+					Calendar.MONTH);
 
 			if (thisMonth == lastMonth) {
 
@@ -140,13 +171,22 @@ class SmsStatsWeeklyTimeScheme
 
 			} else {
 
+				String lastMonthNameLongTemp =
+					lastMonthNameLong;
+
+				String lastMonthNameShortTemp =
+					lastMonthNameShort;
+
 				if (cols > 0) {
 
-					out.println("<th colspan=\""
-							+ cols
-							+ "\">"
-							+ HtmlUtils.htmlEncode(cols > 1 ? lastMonthNameLong
-									: lastMonthNameShort) + "</th>");
+					htmlTableHeaderCellWrite (
+						formatWriter,
+						ifThenElse (
+							cols > 1,
+							() -> lastMonthNameLongTemp,
+							() -> lastMonthNameShortTemp),
+						htmlColumnSpanAttribute (
+							cols));
 
 				}
 
@@ -166,44 +206,94 @@ class SmsStatsWeeklyTimeScheme
 
 		}
 
-		out.println("<th colspan=\""
-				+ cols
-				+ "\">"
-				+ HtmlUtils
-						.htmlEncode(cols > 1 ? lastMonthNameLong
-								: lastMonthNameShort) + "</th>");
+		String lastMonthNameLongTemp =
+			lastMonthNameLong;
 
-		out.println("<tr>");
+		String lastMonthNameShortTemp =
+			lastMonthNameShort;
 
-		for (int week = 0; week < 9; week++) {
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			ifThenElse (
+				moreThanOne (
+					cols),
+				() -> lastMonthNameLongTemp,
+				() -> lastMonthNameShortTemp),
+			htmlColumnSpanAttribute (
+				cols));
 
-			calendar.setTime (start.toDate ());
-			calendar.add (Calendar.DATE, week * 7);
+		htmlTableRowClose ();
 
-			out.println (
-				(calendar.getTime ().equals (thisWeek)
-					? "<th class=\"hilite\">"
-					: "<th>")
-				+ HtmlUtils.htmlEncode (weekDateFormat.format (calendar.getTime ()))
-				+ "</th>");
+		htmlTableRowOpen ();
+
+		for (
+			long week = 0l;
+			week < 9l;
+			week ++
+		) {
+
+			calendar.setTime (
+				start.toDate ());
+
+			calendar.add (
+				Calendar.DATE,
+				toJavaIntegerRequired (
+					week * 7));
+
+			if (
+				equalWithClass (
+					Date.class,
+					calendar.getTime (),
+					thisWeek)
+			) {
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
+					weekDateFormat.format (
+						calendar.getTime ()),
+					htmlClassAttribute (
+						"hilite"));
+
+			} else {
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
+					weekDateFormat.format (
+						calendar.getTime ()));
+
+			}
 
 		}
 
-		out.println ("</tr>");
-		out.println ("<tr>");
+		htmlTableRowClose (
+			formatWriter);
 
-		for (int week = 0; week < 9; week++) {
+		htmlTableRowOpen (
+			formatWriter);
 
-			calendar.setTime(start.toDate ());
-			calendar.add(Calendar.DATE, week * 7 + 6);
+		for (
+			long week = 0l;
+			week < 9l;
+			week ++
+		) {
 
-			out.println("<th>"
-					+ HtmlUtils.htmlEncode(weekDateFormat.format(calendar.getTime()))
-					+ "</th>");
+			calendar.setTime (
+				start.toDate ());
+
+			calendar.add (
+				Calendar.DATE,
+				toJavaIntegerRequired (
+					week * 7 + 6));
+
+			htmlTableHeaderCellWrite (
+				formatWriter,
+				weekDateFormat.format (
+					calendar.getTime ()));
 
 		}
 
-		out.println("</tr>");
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
@@ -256,22 +346,30 @@ class SmsStatsWeeklyTimeScheme
 
 	@Override
 	public
-	boolean[] getHilites (
-			LocalDate start) {
+	Boolean[] getHilites (
+			@NonNull LocalDate start) {
 
-		Calendar cal =
+		Calendar calendar =
 			Calendar.getInstance ();
 
-		boolean[] hilites =
-			new boolean [9];
+		Boolean[] hilites =
+			new Boolean [9];
 
-		for (int week = 0; week < 9; week++) {
+		for (
+			int week = 0;
+			week < 9;
+			week ++
+		) {
 
-			cal.setTime (start.toDate ());
-			cal.add (Calendar.DATE, week * 7);
+			calendar.setTime (
+				start.toDate ());
+
+			calendar.add (
+				Calendar.DATE,
+				week * 7);
 
 			hilites [week] =
-				(cal.get (Calendar.MONTH) & 0x1) == 0x1;
+				(calendar.get (Calendar.MONTH) & 0x1) == 0x1;
 
 		}
 

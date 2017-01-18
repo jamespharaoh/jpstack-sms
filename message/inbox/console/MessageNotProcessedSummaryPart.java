@@ -23,8 +23,8 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
+import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.console.MessageConsoleLogic;
-import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
@@ -42,7 +42,7 @@ class MessageNotProcessedSummaryPart
 	MessageConsoleLogic messageConsoleLogic;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	MessageConsoleHelper messageHelper;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -62,9 +62,7 @@ class MessageNotProcessedSummaryPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 	}
 

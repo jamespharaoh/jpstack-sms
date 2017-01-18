@@ -5,7 +5,6 @@ import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.web.utils.HtmlUtils.htmlColourFromObject;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +26,8 @@ import wbs.platform.user.console.UserConsoleLogic;
 
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageTickerUpdateResponder")
 public
@@ -175,32 +176,25 @@ class MessageTickerUpdateResponder
 	void render (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		PrintWriter writer =
-			requestContext.writer ();
+		FormatWriter formatWriter =
+			requestContext.formatWriter ();
 
-		writer.print (
-			stringFormat (
-				"messageTicker.generation = %s;\n",
-				integerToDecimalString (
-					newGeneration)));
+		formatWriter.writeLineFormat (
+			"messageTicker.generation = %s;",
+			integerToDecimalString (
+				newGeneration));
 
-		for (
-			String command
-				: commands
-		) {
-
-			writer.print (
-				stringFormat (
-					"%s\n",
+		commands.forEach (
+			command ->
+				formatWriter.writeLineFormat (
+					"%s",
 					command));
-
-		}
 
 	}
 
 	private
 	String doMessage (
-			MessageTickerMessage messageTickerMessage) {
+			@NonNull MessageTickerMessage messageTickerMessage) {
 
 		String rowClass;
 

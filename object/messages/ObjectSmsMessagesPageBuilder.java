@@ -167,9 +167,9 @@ class ObjectSmsMessagesPageBuilder <
 						"ObjectSmsMessagesPartFactory.get ()",
 						this);
 
-				Record<?> object =
+				Record <?> object =
 					consoleHelper.lookupObject (
-						requestContext.contextStuffRequired ());
+						requestContext.consoleContextStuffRequired ());
 
 				MessageSearch search =
 					new MessageSearch ();

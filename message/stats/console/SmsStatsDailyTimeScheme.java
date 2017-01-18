@@ -1,16 +1,29 @@
 package wbs.sms.message.stats.console;
 
-import java.io.PrintWriter;
+import static wbs.utils.etc.LogicUtils.equalWithClass;
+import static wbs.utils.etc.LogicUtils.ifThenElse;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
+import static wbs.web.utils.HtmlAttributeUtils.htmlRowSpanAttribute;
+import static wbs.web.utils.HtmlTableUtils.htmlTableHeaderCellWrite;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import lombok.NonNull;
+
 import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.SingletonComponent;
+
 import wbs.sms.message.stats.model.MessageStatsData;
-import wbs.web.utils.HtmlUtils;
+
+import wbs.utils.string.FormatWriter;
 
 @SingletonComponent ("smsStatsDailyTimeScheme")
 public
@@ -19,51 +32,54 @@ class SmsStatsDailyTimeScheme
 
 	private final static
 	SimpleDateFormat monthNameLongFormat =
-		new SimpleDateFormat ("MMMMM");
+		new SimpleDateFormat (
+			"MMMMM");
 
 	private final static
 	SimpleDateFormat monthNameShortFormat =
-		new SimpleDateFormat ("MMM");
+		new SimpleDateFormat (
+			"MMM");
 
 	private final static
 	SimpleDateFormat weekDateFormat =
-		new SimpleDateFormat ("EEE d");
+		new SimpleDateFormat (
+			"EEE d");
 
 	@Override
 	public
 	DateRange dateRange (
-			LocalDate date) {
+			@NonNull LocalDate date) {
 
 		// create calendar
 
-		Calendar cal =
+		Calendar calendar =
 			Calendar.getInstance ();
 
-		cal.setTime (
+		calendar.setTime (
 			date.toDate ());
 
 		// work out start date
 
-		if (cal.get (Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+		if (calendar.get (Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
 
-			cal.add (Calendar.DATE, -1);
+			calendar.add (Calendar.DATE, -1);
 
 		} else {
 
-			cal.set (Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-			cal.add (Calendar.DATE, -2);
+			calendar.set (Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			calendar.add (Calendar.DATE, -2);
 
 		}
 
 		Date start =
-			cal.getTime ();
+			calendar.getTime ();
 
 		// work out end date
 
-		cal.add (Calendar.DATE, 9);
+		calendar.add (Calendar.DATE, 9);
 
 		Date end =
-			cal.getTime ();
+			calendar.getTime ();
 
 		// return
 
@@ -76,78 +92,166 @@ class SmsStatsDailyTimeScheme
 	@Override
 	public
 	void goTableHeader (
-			PrintWriter out,
-			LocalDate start) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull LocalDate start) {
 
 		// create calendar
 
-		Calendar cal =
+		Calendar calendar =
 			Calendar.getInstance ();
 
 		// work out today
 
-		cal.clear (Calendar.HOUR_OF_DAY);
-		cal.clear (Calendar.MINUTE);
-		cal.clear (Calendar.SECOND);
-		cal.clear (Calendar.MILLISECOND);
+		calendar.clear (Calendar.HOUR_OF_DAY);
+		calendar.clear (Calendar.MINUTE);
+		calendar.clear (Calendar.SECOND);
+		calendar.clear (Calendar.MILLISECOND);
 
 		Date today =
-			cal.getTime ();
+			calendar.getTime ();
 
 		// do months row
 
-		out.println("<tr> <th rowspan=\"2\">Type</th>");
+		htmlTableRowOpen (
+			formatWriter);
 
-		int lastMonth = -1, cols = 0, thisMonth = -1;
-		String lastMonthNameLong = "", lastMonthNameShort = "";
-		for (int day = 0; day < 9; day++) {
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			"Type",
+			htmlRowSpanAttribute (
+				2l));
 
-			cal.setTime (
+		long lastMonth = -1l;
+		long cols = 0l;
+		long thisMonth = -1l;
+
+		String lastMonthNameLong = "";
+		String lastMonthNameShort = "";
+
+		for (
+			long day = 0l;
+			day < 9l;
+			day ++
+		) {
+
+			calendar.setTime (
 				start.toDate ());
 
-			cal.add(Calendar.DATE, day);
-			thisMonth = cal.get(Calendar.MONTH);
-			if (thisMonth == lastMonth)
-				cols++;
-			else {
+			calendar.add (
+				Calendar.DATE,
+				toJavaIntegerRequired (
+					day));
+
+			thisMonth =
+				calendar.get (
+					Calendar.MONTH);
+
+			if (thisMonth == lastMonth) {
+
+				cols ++;
+
+			} else {
+
 				if (cols > 0) {
-					out.println("<th colspan=\""
-							+ cols
-							+ "\">"
-							+ HtmlUtils.htmlEncode(cols > 1 ? lastMonthNameLong
-									: lastMonthNameShort) + "</th>");
+
+					String lastMonthNameLongTemp =
+						lastMonthNameLong;
+
+					String lastMonthNameShortTemp =
+						lastMonthNameShort;
+
+					htmlTableHeaderCellWrite (
+						formatWriter,
+						ifThenElse (
+							cols > 1l,
+							() -> lastMonthNameLongTemp,
+							() -> lastMonthNameShortTemp),
+						htmlColumnSpanAttribute (
+							cols));
+
 				}
-				lastMonth = thisMonth;
-				lastMonthNameLong = monthNameLongFormat.format(cal.getTime());
-				lastMonthNameShort = monthNameShortFormat.format(cal.getTime());
+
+				lastMonth =
+					thisMonth;
+
+				lastMonthNameLong =
+					monthNameLongFormat.format (
+						calendar.getTime ());
+
+				lastMonthNameShort =
+					monthNameShortFormat.format (
+						calendar.getTime ());
+
 				cols = 1;
+
 			}
+
 		}
-		out.println("<th colspan=\""
-				+ cols
-				+ "\">"
-				+ HtmlUtils
-						.htmlEncode(cols > 1 ? lastMonthNameLong
-								: lastMonthNameShort) + "</th>");
-		out.println("</tr>");
+
+		String lastMonthNameLongTemp =
+			lastMonthNameLong;
+
+		String lastMonthNameShortTemp =
+			lastMonthNameShort;
+
+		htmlTableHeaderCellWrite (
+			formatWriter,
+			ifThenElse (
+				cols > 1,
+				() -> lastMonthNameLongTemp,
+				() -> lastMonthNameShortTemp),
+			htmlColumnSpanAttribute (
+				cols));
+
+		htmlTableRowClose (
+			formatWriter);
 
 		// do dayss row
-		out.println("<tr>");
-		for (int day = 0; day < 9; day++) {
 
-			cal.setTime (
+		htmlTableRowOpen (
+			formatWriter);
+
+		for (
+			long day = 0l;
+			day < 9l;
+			day ++
+		) {
+
+			calendar.setTime (
 				start.toDate ());
 
-			cal.add (Calendar.DATE, day);
+			calendar.add (
+				Calendar.DATE,
+				toJavaIntegerRequired (
+					day));
 
-			out.println((cal.getTime().equals(today) ? "<th class=\"hilite\">"
-					: "<th>")
-					+ HtmlUtils.htmlEncode(weekDateFormat.format(cal.getTime()))
-					+ "</th>");
+			if (
+				equalWithClass (
+					Date.class,
+					calendar.getTime (),
+					today)
+			) {
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
+					weekDateFormat.format (
+						calendar.getTime ()),
+					htmlClassAttribute (
+						"hilite"));
+
+			} else {
+
+				htmlTableHeaderCellWrite (
+					formatWriter,
+					weekDateFormat.format (
+						calendar.getTime ()));
+
+			}
 
 		}
 
-		out.println ("</tr>");
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
@@ -182,7 +286,7 @@ class SmsStatsDailyTimeScheme
 	}
 
 	private final static
-	boolean[] hilites = {
+	Boolean[] hilites = {
 		true,
 		true,
 		false,
@@ -196,7 +300,7 @@ class SmsStatsDailyTimeScheme
 
 	@Override
 	public
-	boolean[] getHilites (
+	Boolean[] getHilites (
 			LocalDate start) {
 
 		return hilites;

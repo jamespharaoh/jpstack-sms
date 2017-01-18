@@ -3,7 +3,6 @@ package wbs.sms.route.test.console;
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -65,44 +64,44 @@ class RouteTestInAction
 	Responder goReal (
 			@NonNull TaskLogger taskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"RouteTestInAction.goReal ()",
-				this);
+		try (
 
-		Long routeId =
-			requestContext.stuffInteger (
-				"routeId");
+			Transaction transaction =
+				database.beginReadWrite (
+					"RouteTestInAction.goReal ()",
+					this);
 
-		RouteRec route =
-			routeHelper.findRequired (
-				routeId);
+		) {
 
-		MessageRec message =
-			smsInboxLogic.inboxInsert (
-				optionalAbsent (),
-				textHelper.findOrCreate (
+			RouteRec route =
+				routeHelper.findFromContextRequired ();
+
+			MessageRec message =
+				smsInboxLogic.inboxInsert (
+					optionalAbsent (),
+					textHelper.findOrCreate (
+						requestContext.parameterRequired (
+							"message")),
+					smsNumberHelper.findOrCreate (
+						requestContext.parameterRequired (
+							"num_from")),
 					requestContext.parameterRequired (
-						"message")),
-				smsNumberHelper.findOrCreate (
-					requestContext.parameterRequired (
-						"num_from")),
-				requestContext.parameterRequired (
-					"num_to"),
-				route,
-				optionalAbsent (),
-				optionalAbsent (),
-				emptyList (),
-				optionalAbsent (),
-				optionalAbsent ());
+						"num_to"),
+					route,
+					optionalAbsent (),
+					optionalAbsent (),
+					emptyList (),
+					optionalAbsent (),
+					optionalAbsent ());
 
-		transaction.commit ();
+			transaction.commit ();
 
-		requestContext.addNotice (
-			"Message " + message.getId () + " inserted");
+			requestContext.addNotice (
+				"Message " + message.getId () + " inserted");
 
-		return null;
+			return null;
+
+		}
 
 	}
 

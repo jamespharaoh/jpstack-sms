@@ -6,11 +6,13 @@ import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.console.part.PagePart;
+
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.route.core.model.RouteRec;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")
@@ -46,9 +48,7 @@ class RouteSummaryAdditionalPart
 				"prepare");
 
 		route =
-			routeHelper.findRequired (
-				requestContext.stuffInteger (
-					"routeId"));
+			routeHelper.findFromContextRequired ();
 
 		if (route.getSender () != null) {
 

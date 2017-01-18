@@ -23,12 +23,15 @@ import lombok.NonNull;
 
 import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.part.AbstractPagePart;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
+
 import wbs.sms.message.core.model.MessageRec;
 
 @PrototypeComponent ("messageThreadPart")
@@ -62,9 +65,7 @@ class MessageThreadPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		MessageRec message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 		messages =
 			new TreeSet<> (

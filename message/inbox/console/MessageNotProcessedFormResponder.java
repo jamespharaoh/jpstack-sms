@@ -55,9 +55,7 @@ class MessageNotProcessedFormResponder
 			@NonNull TaskLogger parentTaskLogger) {
 
 		message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 	}
 

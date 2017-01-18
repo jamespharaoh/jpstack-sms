@@ -111,9 +111,7 @@ class MessageManuallyUndeliverFormActionHelper
 		// load data
 
 		MessageRec smsMessage =
-			smsMessageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			smsMessageHelper.findFromContextRequired ();
 
 		if (
 			enumNotEqualSafe (

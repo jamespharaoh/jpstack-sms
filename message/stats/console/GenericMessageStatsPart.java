@@ -533,7 +533,8 @@ class GenericMessageStatsPart
 				.timeScheme (
 					smsStatsDailyTimeScheme)
 
-				.go ();
+				.go (
+					formatWriter);
 
 			break;
 
@@ -550,7 +551,8 @@ class GenericMessageStatsPart
 				.timeScheme (
 					smsStatsWeeklyTimeScheme)
 
-				.go ();
+				.go (
+					formatWriter);
 
 			break;
 
@@ -567,7 +569,8 @@ class GenericMessageStatsPart
 				.timeScheme (
 					smsStatsMonthlyTimeScheme)
 
-				.go ();
+				.go (
+					formatWriter);
 
 			break;
 

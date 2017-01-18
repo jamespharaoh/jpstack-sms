@@ -1,11 +1,12 @@
 package wbs.sms.message.stats.console;
 
-import java.io.PrintWriter;
 import java.util.Map;
 
 import org.joda.time.LocalDate;
 
 import wbs.sms.message.stats.model.MessageStatsData;
+
+import wbs.utils.string.FormatWriter;
 
 public
 interface SmsStatsTimeScheme {
@@ -14,14 +15,14 @@ interface SmsStatsTimeScheme {
 			LocalDate date);
 
 	void goTableHeader (
-			PrintWriter out,
+			FormatWriter formatWriter,
 			LocalDate start);
 
 	MessageStatsData[] getData (
 			LocalDate start,
 			Map<LocalDate,MessageStatsData> groupStats);
 
-	boolean[] getHilites (
+	Boolean[] getHilites (
 			LocalDate start);
 
 	boolean groupByDate ();

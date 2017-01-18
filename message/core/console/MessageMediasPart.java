@@ -26,12 +26,14 @@ import wbs.console.html.MagicTableScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.part.AbstractPagePart;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
-import wbs.sms.message.core.model.MessageObjectHelper;
+
 import wbs.sms.message.core.model.MessageRec;
 
 @PrototypeComponent ("messageMediasPart")
@@ -45,18 +47,18 @@ class MessageMediasPart
 	MediaConsoleLogic mediaConsoleLogic;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	MessageConsoleHelper messageHelper;
 
 	// state
 
 	MessageRec message;
-	List<MediaRec> medias;
+	List <MediaRec> medias;
 
 	// details
 
 	@Override
 	public
-	Set<ScriptRef> scriptRefs () {
+	Set <ScriptRef> scriptRefs () {
 
 		return ImmutableSet.<ScriptRef>builder ()
 
@@ -81,9 +83,7 @@ class MessageMediasPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 		medias =
 			message.getMedias ();

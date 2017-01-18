@@ -3,6 +3,8 @@ package wbs.sms.message.stats.console;
 import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveOneElement;
 import static wbs.utils.collection.CollectionUtils.iterableFirstElementRequired;
 import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalValueEqualSafe;
 
 import java.util.Collection;
@@ -23,6 +25,7 @@ import org.joda.time.LocalDate;
 
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
 import wbs.sms.message.stats.model.MessageStatsSearch;
@@ -124,7 +127,7 @@ class SmsStatsSourceImplementation
 
 	@Override
 	public
-	RouteRec findRoute () {
+	Optional <RouteRec> findRoute () {
 
 		Collection <Long> routeIds =
 			fixedCriteriaMap.get (
@@ -139,12 +142,17 @@ class SmsStatsSourceImplementation
 				routeIds)
 
 		) {
-			return null;
-		}
 
-		return routeHelper.findRequired (
-			iterableFirstElementRequired (
-				routeIds));
+			return optionalAbsent ();
+
+		} else {
+
+			return optionalOf (
+				routeHelper.findRequired (
+					iterableFirstElementRequired (
+						routeIds)));
+
+		}
 
 	}
 

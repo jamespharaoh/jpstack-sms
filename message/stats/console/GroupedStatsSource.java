@@ -1,13 +1,20 @@
 package wbs.sms.message.stats.console;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.base.Optional;
+
+import lombok.NonNull;
 
 import org.joda.time.LocalDate;
 
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.web.misc.UrlParams;
 
 public
@@ -23,65 +30,68 @@ interface GroupedStatsSource {
 	class GroupStats {
 
 		private final
-		Map<LocalDate,MessageStatsData> statsByDate;
+		Map <LocalDate, MessageStatsData> statsByDate;
 
 		private final
-		RouteRec route;
+		Optional <RouteRec> route;
 
 		private final
-		String url;
+		Optional <String> url;
 
 		public
 		GroupStats (
-				RouteRec newRoute,
-				String newUrl) {
+				@NonNull Map <LocalDate, MessageStatsData> statsByDate,
+				@NonNull Optional <RouteRec> route,
+				@NonNull Optional <String> url) {
 
-			route = newRoute;
-			url = newUrl;
+			this.statsByDate =
+				statsByDate;
 
-			statsByDate =
-				new HashMap<LocalDate,MessageStatsData> ();
+			this.route =
+				route;
+
+			this.url =
+				url;
 
 		}
 
 		public
 		GroupStats (
-				RouteRec newRoute) {
+				@NonNull Optional <RouteRec> route,
+				@NonNull Optional <String> url) {
 
-			route = newRoute;
-			url = null;
-
-			statsByDate =
-				new HashMap<LocalDate,MessageStatsData> ();
+			this (
+				new HashMap<> (),
+				route,
+				url);
 
 		}
 
 		public
 		GroupStats (
-				Map<LocalDate,MessageStatsData> newStatsByDate,
-				RouteRec newRoute,
-				String newUrl) {
+				@NonNull Optional <RouteRec> route) {
 
-			statsByDate = newStatsByDate;
-			route = newRoute;
-			url = newUrl;
+			this (
+				new HashMap<> (),
+				route,
+				optionalAbsent ());
 
 		}
 
 		public
-		Map<LocalDate,MessageStatsData> getStatsByDate () {
+		Map <LocalDate, MessageStatsData> getStatsByDate () {
 
 			return statsByDate;
 
 		}
 
 		public
-		RouteRec getRoute () {
+		Optional <RouteRec> getRoute () {
 			return route;
 		}
 
 		public
-		String getUrl () {
+		Optional <String> getUrl () {
 			return url;
 		}
 

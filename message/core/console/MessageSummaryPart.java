@@ -41,9 +41,8 @@ import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 
 import wbs.sms.message.core.model.MessageDirection;
-import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
-import wbs.sms.message.outbox.model.FailedMessageObjectHelper;
+import wbs.sms.message.outbox.console.FailedMessageConsoleHelper;
 import wbs.sms.message.outbox.model.FailedMessageRec;
 
 @PrototypeComponent ("messageSummaryPart")
@@ -55,6 +54,9 @@ class MessageSummaryPart
 
 	@SingletonDependency
 	CurrencyLogic currencyLogic;
+
+	@SingletonDependency
+	FailedMessageConsoleHelper failedMessageHelper;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -69,13 +71,10 @@ class MessageSummaryPart
 	MessageConsoleLogic messageConsoleLogic;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	MessageConsoleHelper messageHelper;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
-
-	@SingletonDependency
-	FailedMessageObjectHelper failedMessageHelper;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -95,9 +94,7 @@ class MessageSummaryPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 		failedMessageOptional =
 			failedMessageHelper.find (

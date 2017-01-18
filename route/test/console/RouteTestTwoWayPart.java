@@ -66,11 +66,9 @@ class RouteTestTwoWayPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		route =
-			routeHelper.findRequired (
-				requestContext.stuffInteger (
-					"routeId"));
+			routeHelper.findFromContextRequired ();
 
-		Optional<String> numberOptional =
+		Optional <String> numberOptional =
 			requestContext.parameter (
 				"num_from");
 

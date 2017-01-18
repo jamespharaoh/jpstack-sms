@@ -26,7 +26,6 @@ import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
 
-import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 
 @PrototypeComponent ("messageMediaSummaryPart")
@@ -43,7 +42,7 @@ class MessageMediaSummaryPart
 	MediaLogic mediaLogic;
 
 	@SingletonDependency
-	MessageObjectHelper messageHelper;
+	MessageConsoleHelper messageHelper;
 
 	// state
 
@@ -59,9 +58,7 @@ class MessageMediaSummaryPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		MessageRec message =
-			messageHelper.findRequired (
-				requestContext.stuffInteger (
-					"messageId"));
+			messageHelper.findFromContextRequired ();
 
 		mediaIndex =
 			Integer.parseInt (

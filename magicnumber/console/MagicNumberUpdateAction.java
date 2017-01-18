@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -81,206 +80,209 @@ class MagicNumberUpdateAction
 
 		// start transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MagicNumberUpdateAction.goReal ()",
-				this);
+		try (
 
-		MagicNumberSetRec magicNumberSet =
-			magicNumberSetHelper.findRequired (
-				requestContext.stuffInteger (
-					"magicNumberSetId"));
+			Transaction transaction =
+				database.beginReadWrite (
+					"MagicNumberUpdateAction.goReal ()",
+					this);
 
-		// parse numbers
-
-		List<String> numbers;
-
-		try {
-
-			numbers =
-				numberFormatLogic.parseLines (
-					magicNumberSet.getNumberFormat (),
-					requestContext.parameterRequired (
-						"numbers"));
-
-		} catch (WbsNumberFormatException exception) {
-
-			requestContext.addNotice (
-				"Invalid number format");
-
-			return null;
-
-		}
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"create"))
 		) {
 
-			// add numbers
+			MagicNumberSetRec magicNumberSet =
+				magicNumberSetHelper.findFromContextRequired ();
 
-			int numAdded = 0;
+			// parse numbers
 
-			for (
-				String number
-					: numbers
+			List <String> numbers;
+
+			try {
+
+				numbers =
+					numberFormatLogic.parseLines (
+						magicNumberSet.getNumberFormat (),
+						requestContext.parameterRequired (
+							"numbers"));
+
+			} catch (WbsNumberFormatException exception) {
+
+				requestContext.addNotice (
+					"Invalid number format");
+
+				return null;
+
+			}
+
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"create"))
 			) {
 
-				MagicNumberRec existingMagicNumber =
-					magicNumberHelper.findByNumber (
-						number);
+				// add numbers
 
-				if (
-					isNotNull (
-						existingMagicNumber)
+				int numAdded = 0;
+
+				for (
+					String number
+						: numbers
 				) {
+
+					MagicNumberRec existingMagicNumber =
+						magicNumberHelper.findByNumber (
+							number);
+
+					if (
+						isNotNull (
+							existingMagicNumber)
+					) {
+
+						if (
+							referenceNotEqualWithClass (
+								MagicNumberSetRec.class,
+								existingMagicNumber.getMagicNumberSet (),
+								magicNumberSet)
+						) {
+
+							requestContext.addNotice (
+								stringFormat (
+									"Number %s is already allocated to another ",
+									number,
+									"magic number set"));
+
+							return null;
+
+						}
+
+						if (! existingMagicNumber.getDeleted ()) {
+							continue;
+						}
+
+						existingMagicNumber
+
+							.setDeleted (
+								false);
+
+						numAdded ++;
+
+						eventLogic.createEvent (
+							"object_field_updated",
+							userConsoleLogic.userRequired (),
+							"deleted",
+							existingMagicNumber,
+							false);
+
+					} else {
+
+						MagicNumberRec newMagicNumber =
+							magicNumberHelper.insert (
+								magicNumberHelper.createInstance ()
+
+							.setMagicNumberSet (
+								magicNumberSet)
+
+							.setNumber (
+								number)
+
+						);
+
+						numAdded ++;
+
+						eventLogic.createEvent (
+							"object_created",
+							userConsoleLogic.userRequired (),
+							newMagicNumber,
+							magicNumberSet);
+
+					}
+
+				}
+
+				// commit transaction
+
+				transaction.commit ();
+
+				// messages
+
+				if (numAdded > 0) {
+
+					requestContext.addNotice (
+						stringFormat (
+							"%s magic numbers created",
+							integerToDecimalString (
+								numAdded)));
+
+				}
+
+			} else if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"delete"))
+			) {
+
+				// delete numbers
+
+				int numDeleted = 0;
+
+				for (
+					String number
+						: numbers
+				) {
+
+					MagicNumberRec magicNumber =
+						magicNumberHelper.findByNumber (
+							number);
 
 					if (
 						referenceNotEqualWithClass (
 							MagicNumberSetRec.class,
-							existingMagicNumber.getMagicNumberSet (),
+							magicNumber.getMagicNumberSet (),
 							magicNumberSet)
 					) {
-
-						requestContext.addNotice (
-							stringFormat (
-								"Number %s is already allocated to another ",
-								number,
-								"magic number set"));
-
-						return null;
-
-					}
-
-					if (! existingMagicNumber.getDeleted ()) {
 						continue;
 					}
 
-					existingMagicNumber
+					if (magicNumber.getDeleted ()) {
+						continue;
+					}
+
+					magicNumber
 
 						.setDeleted (
-							false);
+							true);
 
-					numAdded ++;
+					numDeleted ++;
 
 					eventLogic.createEvent (
 						"object_field_updated",
 						userConsoleLogic.userRequired (),
 						"deleted",
-						existingMagicNumber,
-						false);
-
-				} else {
-
-					MagicNumberRec newMagicNumber =
-						magicNumberHelper.insert (
-							magicNumberHelper.createInstance ()
-
-						.setMagicNumberSet (
-							magicNumberSet)
-
-						.setNumber (
-							number)
-
-					);
-
-					numAdded ++;
-
-					eventLogic.createEvent (
-						"object_created",
-						userConsoleLogic.userRequired (),
-						newMagicNumber,
-						magicNumberSet);
-
-				}
-
-			}
-
-			// commit transaction
-
-			transaction.commit ();
-
-			// messages
-
-			if (numAdded > 0) {
-
-				requestContext.addNotice (
-					stringFormat (
-						"%s magic numbers created",
-						integerToDecimalString (
-							numAdded)));
-
-			}
-
-		} else if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"delete"))
-		) {
-
-			// delete numbers
-
-			int numDeleted = 0;
-
-			for (
-				String number
-					: numbers
-			) {
-
-				MagicNumberRec magicNumber =
-					magicNumberHelper.findByNumber (
-						number);
-
-				if (
-					referenceNotEqualWithClass (
-						MagicNumberSetRec.class,
-						magicNumber.getMagicNumberSet (),
-						magicNumberSet)
-				) {
-					continue;
-				}
-
-				if (magicNumber.getDeleted ()) {
-					continue;
-				}
-
-				magicNumber
-
-					.setDeleted (
+						magicNumber,
 						true);
 
-				numDeleted ++;
+				}
 
-				eventLogic.createEvent (
-					"object_field_updated",
-					userConsoleLogic.userRequired (),
-					"deleted",
-					magicNumber,
-					true);
+				// commit transaction
 
-			}
+				transaction.commit ();
 
-			// commit transaction
+				// messages
 
-			transaction.commit ();
+				if (numDeleted > 0) {
 
-			// messages
+					requestContext.addNotice (
+						stringFormat (
+							"%s magic numbers deleted",
+							integerToDecimalString (
+								numDeleted)));
 
-			if (numDeleted > 0) {
-
-				requestContext.addNotice (
-					stringFormat (
-						"%s magic numbers deleted",
-						integerToDecimalString (
-							numDeleted)));
+				}
 
 			}
+
+			return null;
 
 		}
-
-		return null;
 
 	}
 
