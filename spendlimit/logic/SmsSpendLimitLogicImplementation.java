@@ -98,6 +98,9 @@ class SmsSpendLimitLogicImplementation
 			@NonNull Long threadId,
 			@NonNull String originator) {
 
+		Transaction transaction =
+			database.currentTransaction ();
+
 		SmsSpendLimiterNumberRec spendLimiterNumber =
 			smsSpendLimiterNumberHelper.findOrCreate (
 				spendLimiter,
@@ -380,6 +383,7 @@ class SmsSpendLimitLogicImplementation
 			&& notEarlierThan (
 				spendLimiterNumber.getLastSpendDate (),
 				today)
+
 		) {
 
 			return smsSpendLimiterNumberDayHelper.find (
@@ -396,8 +400,9 @@ class SmsSpendLimitLogicImplementation
 				.setLastSpendDate (
 					today);
 
-			return smsSpendLimiterNumberDayHelper.insert (
-				smsSpendLimiterNumberDayHelper.createInstance ()
+			SmsSpendLimiterNumberDayRec numberDay =
+				smsSpendLimiterNumberDayHelper.insert (
+					smsSpendLimiterNumberDayHelper.createInstance ()
 
 				.setSmsSpendLimiterNumber (
 					spendLimiterNumber)
@@ -415,6 +420,8 @@ class SmsSpendLimitLogicImplementation
 					false)
 
 			);
+
+			return numberDay;
 
 		}
 
