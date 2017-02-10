@@ -79,7 +79,7 @@
 		<name-field/>
 		<description-field/>
 
-		<text-field
+		<timezone-field
 			name="timezone"/>
 
 		<object-field
@@ -126,7 +126,7 @@
 
 		<!-- settings -->
 
-		<text-field
+		<timezone-field
 			name="timezone"/>
 
 		<object-field
@@ -177,7 +177,7 @@
 
 		<!-- settings -->
 
-		<text-field
+		<timezone-field
 			name="timezone"
 			nullable="yes"/>
 
