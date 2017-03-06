@@ -1,13 +1,15 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.ResultUtils.errorResult;
 import static wbs.utils.etc.ResultUtils.errorResultFormat;
 import static wbs.utils.etc.ResultUtils.successResult;
-import static wbs.utils.string.CodeUtils.simplifyToCode;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+import static wbs.utils.string.CodeUtils.simplifyToCodeRelaxed;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsEmpty;
 
@@ -60,8 +62,8 @@ class GazetteerFormFieldInterfaceMapping <Container>
 	public
 	Either <Optional <GazetteerEntryRec>, String> interfaceToGeneric (
 			@NonNull Container container,
-			@NonNull Map<String,Object> hints,
-			@NonNull Optional<String> interfaceValue) {
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <String> interfaceValue) {
 
 		if (
 
@@ -78,15 +80,15 @@ class GazetteerFormFieldInterfaceMapping <Container>
 
 		}
 
-		GazetteerRec gazetteer =
-			(GazetteerRec)
-			objectManager.dereferenceObsolete (
-				container,
-				gazetteerFieldName);
+		Optional <GazetteerRec> gazetteerOptional =
+			genericCastUnchecked (
+				objectManager.dereference (
+					container,
+					gazetteerFieldName));
 
 		if (
-			isNull (
-				gazetteer)
+			isNotPresent (
+				gazetteerOptional)
 		) {
 
 			return errorResultFormat (
@@ -94,25 +96,18 @@ class GazetteerFormFieldInterfaceMapping <Container>
 
 		}
 
-		Optional<String> codeOptional =
-			simplifyToCode (
+		GazetteerRec gazetteer =
+			optionalGetRequired (
+				gazetteerOptional);
+
+		String entryCode =
+			simplifyToCodeRelaxed (
 				interfaceValue.get ());
 
-		if (
-			optionalIsNotPresent (
-				codeOptional)
-		) {
-
-			return errorResult (
-				stringFormat (
-					"Location not found"));
-
-		}
-
-		Optional<GazetteerEntryRec> entryOptional =
+		Optional <GazetteerEntryRec> entryOptional =
 			gazetteerEntryHelper.findByCode (
 				gazetteer,
-				codeOptional.get ());
+				entryCode);
 
 		if (
 			optionalIsNotPresent (
@@ -129,17 +124,24 @@ class GazetteerFormFieldInterfaceMapping <Container>
 			entryOptional.get ();
 
 		return successResult (
-			Optional.of (
+			optionalOf (
 				entry));
 
 	}
 
+	private boolean isNotPresent (
+			Optional <GazetteerRec> gazetteerOptional) {
+
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	@Override
 	public
-	Either<Optional<String>,String> genericToInterface (
+	Either <Optional <String>, String> genericToInterface (
 			@NonNull Container container,
-			@NonNull Map<String,Object> hints,
-			@NonNull Optional<GazetteerEntryRec> genericValue) {
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <GazetteerEntryRec> genericValue) {
 
 		if (
 			optionalIsPresent (
@@ -147,13 +149,13 @@ class GazetteerFormFieldInterfaceMapping <Container>
 		) {
 
 			return successResult (
-				Optional.of (
+				optionalOf (
 					genericValue.get ().getName ()));
 
 		} else {
 
 			return successResult (
-				Optional.<String>absent ());
+				optionalAbsent ());
 
 		}
 

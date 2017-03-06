@@ -252,7 +252,7 @@ class GazetteerFormFieldBuilder {
 
 		// value validators
 
-		List<FormFieldValueValidator> valueValidators =
+		List <FormFieldValueValidator> valueValidators =
 			new ArrayList<> ();
 
 		if (! nullable) {
