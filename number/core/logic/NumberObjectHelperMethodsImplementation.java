@@ -1,8 +1,14 @@
 package wbs.sms.number.core.logic;
 
+import static wbs.utils.collection.CollectionUtils.collectionSize;
+import static wbs.utils.collection.CollectionUtils.listItemAtIndexRequired;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
+import java.util.List;
+
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
 
@@ -64,6 +70,67 @@ class NumberObjectHelperMethodsImplementation
 				defaultNetwork)
 
 		);
+
+	}
+
+	@Override
+	public
+	List <NumberRec> findOrCreateMany (
+			@NonNull List <String> numberStrings) {
+
+		List <Optional <NumberRec>> numbersOptional =
+			numberHelper.findManyByCode (
+				GlobalId.root,
+				numberStrings);
+
+		ImmutableList.Builder <NumberRec> numbersBuilder =
+			ImmutableList.builder ();
+
+		NetworkRec defaultNetwork =
+			networkHelper.findRequired (
+				0l);
+
+		for (
+			long index = 0;
+			index < collectionSize (numberStrings);
+			index ++
+		) {
+
+			Optional <NumberRec> numberOptional =
+				listItemAtIndexRequired (
+					numbersOptional,
+					index);
+
+			if (
+				optionalIsPresent (
+					numberOptional)
+			) {
+
+				numbersBuilder.add (
+					optionalGetRequired (
+						numberOptional));
+
+			} else {
+
+				numbersBuilder.add (
+					numberHelper.insert (
+						numberHelper.createInstance ()
+
+					.setNumber (
+						listItemAtIndexRequired (
+							numberStrings,
+							index))
+
+					.setNetwork (
+						defaultNetwork)
+
+				));
+
+			}
+
+		}
+
+		return numbersBuilder.build ();
 
 	}
 
