@@ -10,15 +10,20 @@ import java.util.stream.Collectors;
 import lombok.Cleanup;
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
+
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+
 import wbs.sms.number.lookup.model.NumberLookupRec;
 import wbs.sms.number.lookup.model.NumberLookupTypeDao;
 import wbs.sms.number.lookup.model.NumberLookupTypeRec;
@@ -31,6 +36,9 @@ class NumberLookupHooks
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectTypeDao objectTypeDao;
@@ -84,6 +92,7 @@ class NumberLookupHooks
 	@Override
 	public
 	void createSingletons (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ObjectHelper<NumberLookupRec> numberLookupHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
@@ -95,6 +104,11 @@ class NumberLookupHooks
 		) {
 			return;
 		}
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createSingletons");
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
@@ -111,6 +125,7 @@ class NumberLookupHooks
 					numberLookupTypeId);
 
 			numberLookupHelper.insert (
+				taskLogger,
 				numberLookupHelper.createInstance ()
 
 				.setParentType (

@@ -3,6 +3,7 @@ package wbs.sms.message.inbox.logic;
 import static wbs.utils.etc.EnumUtils.enumNameSpaces;
 import static wbs.utils.etc.LogicUtils.referenceEqualWithClass;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalOrEmptyString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -11,16 +12,18 @@ import java.util.List;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -55,7 +58,6 @@ import wbs.sms.number.core.logic.NumberLogic;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 
-@Log4j
 @SingletonComponent ("smsInboxLogic")
 public
 class SmsInboxLogicImplementation
@@ -80,6 +82,9 @@ class SmsInboxLogicImplementation
 
 	@SingletonDependency
 	InboxObjectHelper inboxHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
@@ -116,6 +121,7 @@ class SmsInboxLogicImplementation
 	@Override
 	public
 	MessageRec inboxInsert (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Optional <String> otherId,
 			@NonNull TextRec text,
 			@NonNull NumberRec number,
@@ -126,6 +132,11 @@ class SmsInboxLogicImplementation
 			@NonNull List <MediaRec> medias,
 			@NonNull Optional <String> avStatus,
 			@NonNull Optional <String> subject) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"inboxInsert");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -175,22 +186,53 @@ class SmsInboxLogicImplementation
 					|| existingMessage.getNetwork () != network
 				) {
 
-					log.error ("Trying to insert inbox with duplicated other id, but other details don't match");
-					log.error ("Other id: " + otherId);
+					taskLogger.errorFormat (
+						"Trying to insert inbox with duplicated other id, but other details don't match");
 
-					log.error ("Existing text: " + existingMessage.getText ().getText ());
-					log.error ("Existing num from: " + existingMessage.getNumFrom ());
-					log.error ("Existing num to: " + existingMessage.getNumTo ());
-					log.error ("Existing network: " + existingMessage.getNetwork ().getId ());
+					taskLogger.errorFormat (
+						"Other id: %s",
+						optionalOrEmptyString (
+							otherId));
 
-					log.error ("New text: " + text.getText ());
-					log.error ("New num from: " + number.getNumber ());
-					log.error ("New num to: " + numTo);
-					log.error ("New network: " + network.getId ());
+					taskLogger.errorFormat (
+						"Existing text: %s",
+						existingMessage.getText ().getText ());
+
+					taskLogger.errorFormat (
+						"Existing num from: %s",
+						existingMessage.getNumFrom ());
+
+					taskLogger.errorFormat (
+						"Existing num to: %s",
+						existingMessage.getNumTo ());
+
+					taskLogger.errorFormat (
+						"Existing network: %s",
+						integerToDecimalString (
+							existingMessage.getNetwork ().getId ()));
+
+					taskLogger.errorFormat (
+						"New text: %s",
+						text.getText ());
+
+					taskLogger.errorFormat (
+						"New num from: %s",
+						number.getNumber ());
+
+					taskLogger.errorFormat (
+						"New num to: %s",
+						numTo);
+
+					taskLogger.errorFormat (
+						"New network: %s",
+						integerToDecimalString (
+							network.getId ()));
 
 					throw new RuntimeException (
-						"Duplicated other id but message details don't match: "
-						+ otherId);
+						stringFormat (
+							"Duplicated other id but message details don't ",
+							"match: %s",
+							otherId.or ("(none)")));
 
 				}
 
@@ -275,6 +317,7 @@ class SmsInboxLogicImplementation
 			.setSubjectText (
 				subject.isPresent ()
 					? textHelper.findOrCreate (
+						taskLogger,
 						subject.get ())
 					: null);
 
@@ -282,11 +325,13 @@ class SmsInboxLogicImplementation
 			medias);
 
 		messageHelper.insert (
+			taskLogger,
 			message);
 
 		// create the inbox entry
 
 		inboxHelper.insert (
+			taskLogger,
 			inboxHelper.createInstance ()
 
 			.setMessage (
@@ -303,21 +348,21 @@ class SmsInboxLogicImplementation
 
 		);
 
-		log.info (
-			stringFormat (
-				"SMS %s %s %s %s %s %s",
-				integerToDecimalString (
-					message.getId ()),
-				route.getCode (),
-				emptyStringIfNull (
-					message.getOtherId ()),
-				message.getNumFrom (),
-				message.getNumTo (),
-				message.getText ().getText ()));
+		taskLogger.noticeFormat (
+			"SMS %s %s %s %s %s %s",
+			integerToDecimalString (
+				message.getId ()),
+			route.getCode (),
+			emptyStringIfNull (
+				message.getOtherId ()),
+			message.getNumFrom (),
+			message.getNumTo (),
+			message.getText ().getText ());
 
 		// update the number
 
 		setNetworkFromMessage (
+			taskLogger,
 			message);
 
 		// return
@@ -329,10 +374,16 @@ class SmsInboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxProcessed (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull InboxRec inbox,
 			@NonNull Optional<ServiceRec> service,
 			@NonNull Optional<AffiliateRec> affiliate,
 			@NonNull CommandRec command) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"inboxProcessed");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -349,6 +400,7 @@ class SmsInboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
+				taskLogger,
 				inboxAttemptHelper.createInstance ()
 
 			.setInbox (
@@ -384,6 +436,7 @@ class SmsInboxLogicImplementation
 		// update message
 
 		messageLogic.messageStatus (
+			taskLogger,
 			message,
 			MessageStatus.processed);
 
@@ -412,16 +465,21 @@ class SmsInboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxNotProcessed (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull InboxRec inbox,
 			@NonNull Optional<ServiceRec> service,
 			@NonNull Optional<AffiliateRec> affiliate,
 			@NonNull Optional<CommandRec> command,
 			@NonNull String statusMessage) {
 
-		log.info (
-			stringFormat (
-				"Not processed message: %s",
-				statusMessage));
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"inboxNotProcessed");
+
+		taskLogger.noticeFormat (
+			"Not processed message: %s",
+			statusMessage);
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -435,6 +493,7 @@ class SmsInboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
+				taskLogger,
 				inboxAttemptHelper.createInstance ()
 
 			.setInbox (
@@ -477,9 +536,9 @@ class SmsInboxLogicImplementation
 
 		QueueItemRec queueItem =
 			queueLogic.createQueueItem (
-				queueLogic.findQueue (
-					message.getRoute (),
-					"not_processed"),
+				taskLogger,
+				message.getRoute (),
+				"not_processed",
 				message.getNumber (),
 				message,
 				message.getNumFrom (),
@@ -488,6 +547,7 @@ class SmsInboxLogicImplementation
 		// update message
 
 		messageLogic.messageStatus (
+			taskLogger,
 			message,
 			MessageStatus.notProcessed);
 
@@ -521,7 +581,13 @@ class SmsInboxLogicImplementation
 	}
 
 	void setNetworkFromMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setNetworkFromMessage");
 
 		// sanity check
 
@@ -610,6 +676,7 @@ class SmsInboxLogicImplementation
 		// create event
 
 		eventLogic.createEvent (
+			taskLogger,
 			"number_network_from_message",
 			number,
 			oldNetwork,
@@ -621,8 +688,14 @@ class SmsInboxLogicImplementation
 	@Override
 	public
 	InboxAttemptRec inboxProcessingFailed (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull InboxRec inbox,
 			@NonNull String statusMessage) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"inboxProcessingFailed");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -636,6 +709,7 @@ class SmsInboxLogicImplementation
 
 		InboxAttemptRec inboxAttempt =
 			inboxAttemptHelper.insert (
+				taskLogger,
 				inboxAttemptHelper.createInstance ()
 
 			.setInbox (

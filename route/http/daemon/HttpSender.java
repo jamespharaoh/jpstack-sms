@@ -27,6 +27,7 @@ import lombok.extern.log4j.Log4j;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.daemon.AbstractSmsSender1;
@@ -86,7 +87,8 @@ class HttpSender
 	@Override
 	protected
 	HttpOutbox getMessage (
-			OutboxRec outbox)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull OutboxRec outbox)
 		throws SendFailureException {
 
 		HttpRouteRec httpRoute =
@@ -142,6 +144,7 @@ class HttpSender
 	@Override
 	protected
 	Optional <List <String>> sendMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull HttpOutbox httpOutbox)
 		throws SendFailureException {
 

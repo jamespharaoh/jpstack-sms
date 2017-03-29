@@ -94,7 +94,8 @@ class RouterTypeBuilder
 				simplifyToCodeRequired (
 					spec.name ()));
 
-			createRouterType ();
+			createRouterType (
+				taskLogger);
 
 		} catch (Exception exception) {
 
@@ -114,8 +115,14 @@ class RouterTypeBuilder
 	}
 
 	private
-	void createRouterType ()
+	void createRouterType (
+			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createRouterType");
 
 		// begin transaction
 
@@ -141,6 +148,7 @@ class RouterTypeBuilder
 		// create router type
 
 		routerTypeHelper.insert (
+			taskLogger,
 			routerTypeHelper.createInstance ()
 
 			.setParentType (

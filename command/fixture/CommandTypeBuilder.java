@@ -9,13 +9,13 @@ import java.sql.SQLException;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -25,6 +25,8 @@ import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
@@ -32,7 +34,6 @@ import wbs.platform.object.core.model.ObjectTypeRec;
 import wbs.sms.command.metamodel.CommandTypeSpec;
 import wbs.sms.command.model.CommandTypeObjectHelper;
 
-@Log4j
 @PrototypeComponent ("commandTypeBuilder")
 @ModelMetaBuilderHandler
 public
@@ -48,6 +49,9 @@ class CommandTypeBuilder {
 
 	@SingletonDependency
 	EntityHelper entityHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
@@ -68,21 +72,27 @@ class CommandTypeBuilder {
 	@BuildMethod
 	public
 	void build (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"build");
 
 		try {
 
-			log.info (
-				stringFormat (
-					"Create command type %s.%s",
-					camelToUnderscore (
-						ifNull (
-							spec.subject (),
-							parent.name ())),
-					simplifyToCodeRequired (
-						spec.name ())));
+			taskLogger.noticeFormat (
+				"Create command type %s.%s",
+				camelToUnderscore (
+					ifNull (
+						spec.subject (),
+						parent.name ())),
+				simplifyToCodeRequired (
+					spec.name ()));
 
-			createCommandType ();
+			createCommandType (
+				taskLogger);
 
 		} catch (Exception exception) {
 
@@ -102,8 +112,14 @@ class CommandTypeBuilder {
 	}
 
 	private
-	void createCommandType ()
+	void createCommandType (
+			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createCommandType");
 
 		// begin transaction
 
@@ -129,6 +145,7 @@ class CommandTypeBuilder {
 		// create command type
 
 		commandTypeHelper.insert (
+			taskLogger,
 			commandTypeHelper.createInstance ()
 
 			.setParentType (

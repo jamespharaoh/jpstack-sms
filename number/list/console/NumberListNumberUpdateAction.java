@@ -164,10 +164,12 @@ class NumberListNumberUpdateAction
 
 					NumberRec number =
 						numberHelper.findOrCreate (
+							taskLogger,
 							numberString);
 
 					NumberListNumberRec numberListNumber =
 						numberListNumberHelper.findOrCreate (
+							taskLogger,
 							numberList,
 							number);
 
@@ -226,6 +228,7 @@ class NumberListNumberUpdateAction
 
 					NumberRec number =
 						numberHelper.findOrCreate (
+							taskLogger,
 							numberString);
 
 					NumberListNumberRec numberListNumber =
@@ -265,6 +268,7 @@ class NumberListNumberUpdateAction
 			if (numberListUpdate.getNumberCount () > 0) {
 
 				numberListUpdateHelper.insert (
+					taskLogger,
 					numberListUpdate);
 
 			}
@@ -274,6 +278,7 @@ class NumberListNumberUpdateAction
 			if (numAdded > 0) {
 
 				eventLogic.createEvent (
+					taskLogger,
 					"number_list_numbers_added",
 					userConsoleLogic.userRequired (),
 					numAdded,
@@ -284,6 +289,7 @@ class NumberListNumberUpdateAction
 			if (numRemoved > 0) {
 
 				eventLogic.createEvent (
+					taskLogger,
 					"number_list_numbers_removed",
 					userConsoleLogic.userRequired (),
 					numRemoved,

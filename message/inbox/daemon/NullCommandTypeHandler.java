@@ -10,10 +10,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -34,6 +37,9 @@ class NullCommandTypeHandler
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsInboxLogic smsInboxLogic;
@@ -72,9 +78,15 @@ class NullCommandTypeHandler
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handle");
 
 		return smsInboxLogic.inboxNotProcessed (
+			taskLogger,
 			inbox,
 			optionalAbsent (),
 			optionalAbsent (),

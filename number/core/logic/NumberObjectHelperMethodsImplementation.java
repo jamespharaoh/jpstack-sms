@@ -12,8 +12,11 @@ import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
@@ -27,6 +30,9 @@ class NumberObjectHelperMethodsImplementation
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@WeakSingletonDependency
 	NetworkObjectHelper networkHelper;
 
@@ -38,7 +44,13 @@ class NumberObjectHelperMethodsImplementation
 	@Override
 	public
 	NumberRec findOrCreate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String numberString) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreate");
 
 		// find existing
 
@@ -61,6 +73,7 @@ class NumberObjectHelperMethodsImplementation
 				0l);
 
 		return numberHelper.insert (
+			taskLogger,
 			numberHelper.createInstance ()
 
 			.setNumber (
@@ -76,7 +89,13 @@ class NumberObjectHelperMethodsImplementation
 	@Override
 	public
 	List <NumberRec> findOrCreateMany (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull List <String> numberStrings) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreateMany");
 
 		List <Optional <NumberRec>> numbersOptional =
 			numberHelper.findManyByCode (
@@ -114,6 +133,7 @@ class NumberObjectHelperMethodsImplementation
 
 				numbersBuilder.add (
 					numberHelper.insert (
+						taskLogger,
 						numberHelper.createInstance ()
 
 					.setNumber (

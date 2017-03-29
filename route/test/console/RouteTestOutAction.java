@@ -113,6 +113,7 @@ class RouteTestOutAction
 
 			NumberRec number =
 				numberHelper.findOrCreate (
+					taskLogger,
 					(String) params.get ("num_to"));
 
 			ServiceRec testService =
@@ -127,6 +128,7 @@ class RouteTestOutAction
 					number)
 
 				.messageString (
+					taskLogger,
 					requestContext.parameterRequired (
 						"message"))
 
@@ -140,7 +142,8 @@ class RouteTestOutAction
 				.service (
 					testService)
 
-				.send ();
+				.send (
+					taskLogger);
 
 			transaction.commit ();
 

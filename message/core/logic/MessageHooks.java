@@ -4,7 +4,9 @@ import lombok.NonNull;
 
 import org.joda.time.DateTime;
 
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectHooks;
+
 import wbs.sms.message.core.model.MessageRec;
 
 public
@@ -16,6 +18,7 @@ class MessageHooks
 	@Override
 	public
 	void beforeInsert (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
 
 		// set date

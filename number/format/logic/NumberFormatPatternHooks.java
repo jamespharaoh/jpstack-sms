@@ -1,7 +1,10 @@
 package wbs.sms.number.format.logic;
 
 import lombok.NonNull;
+
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectHooks;
+
 import wbs.sms.number.format.model.NumberFormatPatternRec;
 import wbs.sms.number.format.model.NumberFormatRec;
 
@@ -12,6 +15,7 @@ class NumberFormatPatternHooks
 	@Override
 	public
 	void beforeInsert (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull NumberFormatPatternRec numberFormatPattern) {
 
 		NumberFormatRec numberFormat =

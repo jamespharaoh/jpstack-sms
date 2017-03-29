@@ -232,10 +232,15 @@ class GenericSmsSenderService
 				long numAvailable =
 					waitForAvailableSenders ();
 
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"claimAllMessages ()");
+
 				// claim some messages
 
 				long numClaimed =
 					claimSomeMessages (
+						taskLogger,
 						numAvailable);
 
 				synchronized (this) {
@@ -279,7 +284,15 @@ class GenericSmsSenderService
 		}
 
 		long claimSomeMessages (
+				@NonNull TaskLogger parentTaskLogger,
 				long numToGet) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLoggerFormat (
+					parentTaskLogger,
+					"RouteSenderService.claimSomeMessages (%s)",
+					integerToDecimalString (
+						numToGet));
 
 			// begin transaction
 
@@ -348,6 +361,7 @@ class GenericSmsSenderService
 			} catch (Exception exception) {
 
 				exceptionLogger.logThrowable (
+					taskLogger,
 					"daemon",
 					classNameSimple (
 						this.getClass ()),

@@ -1,8 +1,10 @@
 package wbs.sms.message.report.logic;
 
+import com.google.common.base.Optional;
+
 import org.joda.time.ReadableInstant;
 
-import com.google.common.base.Optional;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
@@ -14,6 +16,7 @@ public
 interface SmsDeliveryReportLogic {
 
 	void deliveryReport (
+			TaskLogger parentTaskLogger,
 			MessageRec message,
 			MessageStatus newMessageStatus,
 			Optional <String> theirCode,
@@ -25,6 +28,7 @@ interface SmsDeliveryReportLogic {
 			InvalidMessageStateException;
 
 	MessageRec deliveryReport (
+			TaskLogger parentTaskLogger,
 			RouteRec route,
 			String otherId,
 			MessageStatus newMessageStatus,
@@ -37,6 +41,7 @@ interface SmsDeliveryReportLogic {
 			InvalidMessageStateException;
 
 	void deliveryReport (
+			TaskLogger parentTaskLogger,
 			Long messageId,
 			MessageStatus newMessageStatus,
 			Optional <String> theirCode,

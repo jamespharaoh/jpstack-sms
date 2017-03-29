@@ -70,6 +70,7 @@ class GazetteerFixtureProvider
 				"sms");
 
 		menuItemHelper.insert (
+			taskLogger,
 			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
@@ -112,6 +113,7 @@ class GazetteerFixtureProvider
 
 		GazetteerRec testGazetteer =
 			gazetteerHelper.insert (
+				taskLogger,
 				gazetteerHelper.createInstance ()
 
 			.setSlice (
@@ -139,6 +141,7 @@ class GazetteerFixtureProvider
 		) {
 
 			gazetteerEntryHelper.insert (
+				taskLogger,
 				gazetteerEntryHelper.createInstance ()
 
 				.setGazetteer (

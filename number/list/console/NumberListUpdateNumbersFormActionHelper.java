@@ -14,6 +14,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.web.TextResponder;
 
@@ -41,6 +42,7 @@ class NumberListUpdateNumbersFormActionHelper
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Transaction transaction,
 			@NonNull Object formState) {
 

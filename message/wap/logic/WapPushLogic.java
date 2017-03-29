@@ -9,11 +9,16 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -61,6 +66,9 @@ class WapPushLogic
 	@SingletonDependency
 	Database database;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
@@ -89,8 +97,9 @@ class WapPushLogic
 
 	public
 	MessageRec wapPushSend (
+			@NonNull TaskLogger parentTaskLogger,
 			Long threadId,
-			Object numberObject,
+			NumberRec number,
 			String numFrom,
 			TextRec text,
 			TextRec url,
@@ -104,12 +113,13 @@ class WapPushLogic
 			Set <String> tags,
 			NetworkRec network) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"wapPushSend");
+
 		Transaction transaction =
 			database.currentTransaction ();
-
-		NumberRec number =
-			numberLogic.objectToNumber (
-				numberObject);
 
 		ServiceRec service =
 			NullUtils.<ServiceRec> ifNull (
@@ -155,13 +165,15 @@ class WapPushLogic
 				threadId)
 
 			.setText (
-				textHelper.findOrCreate ("WAP PUSH"))
+				textHelper.findOrCreate (
+					taskLogger,
+					"WAP PUSH"))
 
 			.setNumFrom (
 				numFrom)
 
 			.setNumTo (
-				numberLogic.objectToNumber(number).getNumber())
+				number.getNumber ())
 
 			.setDirection (
 				MessageDirection.out)
@@ -172,7 +184,7 @@ class WapPushLogic
 					: MessageStatus.held)
 
 			.setNumber (
-				numberLogic.objectToNumber (number))
+				number)
 
 			.setRoute (
 				route)
@@ -183,7 +195,7 @@ class WapPushLogic
 			.setNetwork (
 				ifNull (
 					network,
-					numberLogic.objectToNumber (number).getNetwork ()))
+					number.getNetwork ()))
 
 			.setBatch (
 				batch)
@@ -217,9 +229,11 @@ class WapPushLogic
 		}
 
 		messageHelper.insert (
+			taskLogger,
 			message);
 
 		wapPushMessageHelper.insert (
+			taskLogger,
 			wapPushMessageHelper.createInstance ()
 
 			.setMessage (
@@ -236,6 +250,7 @@ class WapPushLogic
 		if (sendNow) {
 
 			outboxHelper.insert (
+				taskLogger,
 				outboxHelper.createInstance ()
 
 				.setMessage (
@@ -274,9 +289,15 @@ class WapPushLogic
 	 */
 	public
 	MessageRec wapPushRetry (
-			MessageRec oldMessage,
-			RouteRec route,
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec oldMessage,
+			@NonNull RouteRec route,
 			TextRec textOrNull) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"wapPushRetry");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -297,7 +318,9 @@ class WapPushLogic
 				oldMessage.getThreadId ())
 
 			.setText (
-				textHelper.findOrCreate ("WAP PUSH"))
+				textHelper.findOrCreate (
+					taskLogger,
+					"WAP PUSH"))
 
 			.setNumFrom (
 				oldMessage.getNumFrom ())
@@ -357,9 +380,11 @@ class WapPushLogic
 		}
 
 		messageHelper.insert (
+			taskLogger,
 			message);
 
 		wapPushMessageHelper.insert (
+			taskLogger,
 			wapPushMessageHelper.createInstance ()
 
 			.setMessage (
@@ -374,6 +399,7 @@ class WapPushLogic
 		);
 
 		outboxHelper.insert (
+			taskLogger,
 			outboxHelper.createInstance ()
 
 			.setMessage (
@@ -399,7 +425,7 @@ class WapPushLogic
 
 	@Override
 	public
-	Map<String,MessageRetrier> getMessageRetriersByMessageTypeCode () {
+	Map <String, MessageRetrier> getMessageRetriersByMessageTypeCode () {
 
 		return ImmutableMap.<String,MessageRetrier>of (
 			"wap_push",
@@ -414,11 +440,13 @@ class WapPushLogic
 		@Override
 		public
 		MessageRec messageRetry (
-				MessageRec rec,
-				RouteRec route,
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull MessageRec rec,
+				@NonNull RouteRec route,
 				TextRec textRec) {
 
 			return wapPushRetry (
+				parentTaskLogger,
 				rec,
 				route,
 				textRec);

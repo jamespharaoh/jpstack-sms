@@ -87,7 +87,13 @@ class SmsSpendLimitFixtureProvider
 	void createMenuItems (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createMenuItems");
+
 		menuItemHelper.insert (
+			taskLogger,
 			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
@@ -122,7 +128,13 @@ class SmsSpendLimitFixtureProvider
 	void createFeatures (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createFeatures");
+
 		featureHelper.insert (
+			taskLogger,
 			featureHelper.createInstance ()
 
 			.setCode (
@@ -142,7 +154,13 @@ class SmsSpendLimitFixtureProvider
 	void createSpendLimiter (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createSpendLimiter");
+
 		smsSpendLimiterHelper.insert (
+			taskLogger,
 			smsSpendLimiterHelper.createInstance ()
 
 			.setSlice (
@@ -178,6 +196,7 @@ class SmsSpendLimitFixtureProvider
 
 			.setDailySpendLimitMessage (
 				textHelper.findOrCreate (
+					taskLogger,
 					"Daily spend limit"))
 
 			.setDailySpendAdviceAmount (
@@ -185,6 +204,7 @@ class SmsSpendLimitFixtureProvider
 
 			.setDailySpendAdviceMessage (
 				textHelper.findOrCreate (
+					taskLogger,
 					"Daily spend advice"))
 
 		);

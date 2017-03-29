@@ -8,10 +8,12 @@ import lombok.NonNull;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.model.TextObjectHelper;
@@ -36,6 +38,9 @@ class RouteTestInAction
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -62,7 +67,12 @@ class RouteTestInAction
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		try (
 
@@ -78,11 +88,14 @@ class RouteTestInAction
 
 			MessageRec message =
 				smsInboxLogic.inboxInsert (
+					taskLogger,
 					optionalAbsent (),
 					textHelper.findOrCreate (
+						taskLogger,
 						requestContext.parameterRequired (
 							"message")),
 					smsNumberHelper.findOrCreate (
+						taskLogger,
 						requestContext.parameterRequired (
 							"num_from")),
 					requestContext.parameterRequired (

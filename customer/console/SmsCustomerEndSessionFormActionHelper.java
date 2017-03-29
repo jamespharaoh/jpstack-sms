@@ -14,9 +14,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
@@ -35,6 +37,9 @@ class SmsCustomerEndSessionFormActionHelper
 	implements ConsoleFormActionHelper <SmsCustomerEndSessionForm> {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
@@ -93,8 +98,14 @@ class SmsCustomerEndSessionFormActionHelper
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Transaction transaction,
 			@NonNull SmsCustomerEndSessionForm formState) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"processFormSubmission ()");
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.findFromContextRequired ();
@@ -110,6 +121,7 @@ class SmsCustomerEndSessionFormActionHelper
 		} else {
 
 			smsCustomerLogic.sessionEndManually (
+				taskLogger,
 				userConsoleLogic.userRequired (),
 				customer,
 				formState.reason ());

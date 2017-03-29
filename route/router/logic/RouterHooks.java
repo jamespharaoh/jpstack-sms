@@ -10,15 +10,20 @@ import java.util.stream.Collectors;
 import lombok.Cleanup;
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
+
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+
 import wbs.sms.route.router.model.RouterRec;
 import wbs.sms.route.router.model.RouterTypeDao;
 import wbs.sms.route.router.model.RouterTypeRec;
@@ -31,6 +36,9 @@ class RouterHooks
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectTypeDao objectTypeDao;
@@ -78,9 +86,10 @@ class RouterHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull ObjectHelper<RouterRec> routerHelper,
-			@NonNull ObjectHelper<?> parentHelper,
-			@NonNull Record<?> parent) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull ObjectHelper <RouterRec> routerHelper,
+			@NonNull ObjectHelper <?> parentHelper,
+			@NonNull Record <?> parent) {
 
 		if (
 			doesNotContain (
@@ -89,6 +98,11 @@ class RouterHooks
 		) {
 			return;
 		}
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createSingletons");
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
@@ -105,6 +119,7 @@ class RouterHooks
 					routerTypeId);
 
 			routerHelper.insert (
+				taskLogger,
 				routerHelper.createInstance ()
 
 				.setRouterType (

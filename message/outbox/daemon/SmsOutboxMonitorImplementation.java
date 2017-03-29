@@ -1,7 +1,6 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,15 +8,17 @@ import java.util.concurrent.CountDownLatch;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
 
@@ -29,7 +30,6 @@ import wbs.sms.message.outbox.model.OutboxObjectHelper;
  * number of messages waiting for a route and also wait for messages to become
  * ready for delivery.
  */
-@Log4j
 @SingletonComponent ("smsOutboxMonitor")
 public
 class SmsOutboxMonitorImplementation
@@ -43,6 +43,9 @@ class SmsOutboxMonitorImplementation
 
 	@SingletonDependency
 	ExceptionLogger exceptionLogger;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
@@ -83,7 +86,7 @@ class SmsOutboxMonitorImplementation
 	@Override
 	public
 	void waitForRoute (
-			long routeId)
+			@NonNull Long routeId)
 		throws InterruptedException {
 
 		CountDownLatch countDownLatch;
@@ -107,13 +110,6 @@ class SmsOutboxMonitorImplementation
 
 		}
 
-		log.debug (
-			stringFormat (
-				"Thread %s is waiting for route %s",
-				Thread.currentThread ().getName (),
-				integerToDecimalString (
-					routeId)));
-
 		countDownLatch.await ();
 
 	}
@@ -128,46 +124,20 @@ class SmsOutboxMonitorImplementation
 
 			for (;;) {
 
+				// run once
+
+				runOnce ();
+
+				// sleep 1 interval
+
 				try {
 
-					runOnce ();
+					Thread.sleep (
+						sleepInterval);
 
-					// sleep 1 interval
+				} catch (InterruptedException exception) {
 
-					try {
-
-						Thread.sleep (
-							sleepInterval);
-
-					} catch (InterruptedException exception) {
-
-						return;
-
-					}
-
-				} catch (Exception exception) {
-
-					// log error
-
-					exceptionLogger.logThrowable (
-						"daemon",
-						"Outbox monitor",
-						exception,
-						Optional.absent (),
-						GenericExceptionResolution.tryAgainLater);
-
-					// sleep 1 minute
-
-					try {
-
-						Thread.sleep (
-							60 * 1000);
-
-					} catch (InterruptedException exception2) {
-
-						return;
-
-					}
+					return;
 
 				}
 
@@ -178,60 +148,80 @@ class SmsOutboxMonitorImplementation
 		public
 		void runOnce () {
 
-			log.debug (
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"runOnce ()");
+
+			taskLogger.debugFormat (
 				"Polling database");
 
 			// query database
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadOnly (
-					"SmsOutboxMonitorImplementation.runOnce ()",
-					this);
+			try (
 
-			Map<Long,Long> routeSummary =
-				outboxHelper.generateRouteSummary (
-					transaction.now ());
+				Transaction transaction =
+					database.beginReadOnly (
+						"SmsOutboxMonitorImplementation.runOnce ()",
+						this);
 
-			transaction.close ();
+			) {
 
-			// now set off and discard all affected latches
+				Map <Long, Long> routeSummary =
+					outboxHelper.generateRouteSummary (
+						transaction.now ());
 
-			synchronized (waitersLock) {
+				transaction.close ();
 
-				for (
-					Map.Entry<Long,Long> routeSummaryEntry
-						: routeSummary.entrySet ()
-				) {
+				// now set off and discard all affected latches
 
-					long routeId =
-						routeSummaryEntry.getKey ();
+				synchronized (waitersLock) {
 
-					long count =
-						routeSummaryEntry.getValue ();
+					for (
+						Map.Entry<Long,Long> routeSummaryEntry
+							: routeSummary.entrySet ()
+					) {
 
-					log.debug (
-						stringFormat (
+						long routeId =
+							routeSummaryEntry.getKey ();
+
+						long count =
+							routeSummaryEntry.getValue ();
+
+						taskLogger.debugFormat (
 							"Route %s has %s messages",
 							integerToDecimalString (
 								routeId),
 							integerToDecimalString (
-								count)));
+								count));
 
-					CountDownLatch countDownLatch =
-						waiters.get (
-							routeId);
+						CountDownLatch countDownLatch =
+							waiters.get (
+								routeId);
 
-					if (countDownLatch != null) {
+						if (countDownLatch != null) {
 
-						countDownLatch.countDown ();
+							countDownLatch.countDown ();
 
-						waiters.remove (
-							routeId);
+							waiters.remove (
+								routeId);
+
+						}
 
 					}
 
 				}
+
+			} catch (Exception exception) {
+
+				// log error
+
+				exceptionLogger.logThrowable (
+					taskLogger,
+					"daemon",
+					"Outbox monitor",
+					exception,
+					Optional.absent (),
+					GenericExceptionResolution.tryAgainLater);
 
 			}
 

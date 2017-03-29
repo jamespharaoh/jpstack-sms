@@ -2,7 +2,6 @@ package wbs.sms.magicnumber.logic;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Collection;
 
@@ -11,13 +10,15 @@ import javax.inject.Provider;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
@@ -37,7 +38,6 @@ import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.router.model.RouterRec;
 
-@Log4j
 @SingletonComponent ("magicNumberLogic")
 public
 class MagicNumberLogicImplementation
@@ -50,6 +50,9 @@ class MagicNumberLogicImplementation
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MagicNumberObjectHelper magicNumberHelper;
@@ -64,28 +67,19 @@ class MagicNumberLogicImplementation
 
 	// implementation
 
-	/**
-	 * Allocate a magic number for a given command from a given magic number set
-	 * for the given recipient. Will reuse an existing allocation if possible.
-	 *
-	 * @param magicNumberSet
-	 *            the magic number set to allocate from.
-	 * @param number
-	 *            the number object representing the recipient.
-	 * @param command
-	 *            the command to associate with the magic number for this
-	 *            recipient.
-	 * @param ref
-	 *            an integer reference to be passed to the command.
-	 * @return the MagicNumber object representing the allocation.
-	 */
 	@Override
 	public
 	MagicNumberRec allocateMagicNumber (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
 			long ref) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"allocateMagicNumber");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -133,6 +127,7 @@ class MagicNumberLogicImplementation
 
 			magicNumberUse =
 				magicNumberUseHelper.insert (
+					taskLogger,
 					magicNumberUseHelper.createInstance ()
 
 				.setNumber (
@@ -165,11 +160,10 @@ class MagicNumberLogicImplementation
 
 		if (magicNumberUse == null) {
 
-			log.fatal (
-				stringFormat (
-					"No magic numbers found for %s",
-					integerToDecimalString (
-						magicNumberSet.getId ())));
+			taskLogger.fatalFormat (
+				"No magic numbers found for %s",
+				integerToDecimalString (
+					magicNumberSet.getId ()));
 
 			return null;
 
@@ -193,22 +187,29 @@ class MagicNumberLogicImplementation
 	@Override
 	public
 	Long sendMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
 			@NonNull Long magicRef,
-			@NonNull Optional<Long> threadId,
-			@NonNull Collection<TextRec> parts,
+			@NonNull Optional <Long> threadId,
+			@NonNull Collection <TextRec> parts,
 			@NonNull RouterRec router,
 			@NonNull ServiceRec service,
-			@NonNull Optional<BatchRec> batch,
+			@NonNull Optional <BatchRec> batch,
 			@NonNull AffiliateRec affiliate,
-			@NonNull Optional<UserRec> user) {
+			@NonNull Optional <UserRec> user) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sendMessage");
 
 		// allocate a magic number
 
 		MagicNumberRec magicNumber =
 			allocateMagicNumber (
+				taskLogger,
 				magicNumberSet,
 				number,
 				magicCommand,
@@ -251,7 +252,8 @@ class MagicNumberLogicImplementation
 				.user (
 					user.orNull ())
 
-				.send ();
+				.send (
+					taskLogger);
 
 			if (
 				optionalIsNotPresent (
@@ -273,6 +275,7 @@ class MagicNumberLogicImplementation
 	@Override
 	public
 	MessageRec sendMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
@@ -285,10 +288,16 @@ class MagicNumberLogicImplementation
 			@NonNull AffiliateRec affiliate,
 			@NonNull Optional<UserRec> user) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sendMessage");
+
 		// allocate a magic number
 
 		MagicNumberRec magicNumber =
 			allocateMagicNumber (
+				taskLogger,
 				magicNumberSet,
 				number,
 				magicCommand,
@@ -322,7 +331,8 @@ class MagicNumberLogicImplementation
 			.affiliate (
 				affiliate)
 
-			.send ();
+			.send (
+				taskLogger);
 
 	}
 

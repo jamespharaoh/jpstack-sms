@@ -5,6 +5,7 @@ import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
 import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
 import static wbs.utils.string.StringUtils.joinWithFullStop;
@@ -31,13 +32,10 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
-import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.daemon.QueueBuffer;
 import wbs.platform.service.model.ServiceObjectHelper;
-import wbs.platform.service.model.ServiceRec;
 
-import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.logic.SmsInboxLogic;
@@ -189,10 +187,11 @@ class ReceivedManager
 			} else {
 
 				smsInboxLogic.inboxNotProcessed (
+					taskLogger,
 					inbox,
-					Optional.<ServiceRec>absent (),
-					Optional.<AffiliateRec>absent (),
-					Optional.<CommandRec>absent (),
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalAbsent (),
 					"No command for route");
 
 			}
@@ -247,15 +246,17 @@ class ReceivedManager
 				message.getRoute ();
 
 			exceptionLogger.logThrowable (
+				taskLogger,
 				"daemon",
 				stringFormat (
 					"Route %s",
 					route.getCode ()),
 				exception,
-				Optional.absent (),
+				optionalAbsent (),
 				GenericExceptionResolution.tryAgainLater);
 
 			smsInboxLogic.inboxProcessingFailed (
+				taskLogger,
 				inbox,
 				stringFormat (
 					"Threw %s: %s",

@@ -19,14 +19,18 @@ import java.util.regex.Pattern;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.text.model.TextObjectHelper;
@@ -49,6 +53,9 @@ class ModemPollDaemon
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ModemPollQueueObjectHelper modemPollQueueHelper;
@@ -147,71 +154,121 @@ class ModemPollDaemon
 		void run () {
 
 			// open the modem
+
 			try {
-				modemIn = new BufferedReader(new InputStreamReader(
-						new FileInputStream(deviceName), "us-ascii"));
-				modemOut = new OutputStreamWriter(new FileOutputStream(
-						deviceName), "us-ascii");
+
+				modemIn =
+					new BufferedReader(
+						new InputStreamReader (
+							new FileInputStream (
+								deviceName),
+								"us-ascii"));
+
+				modemOut =
+					new OutputStreamWriter (
+						new FileOutputStream (
+							deviceName),
+						"us-ascii");
+
 			} catch (IOException e) {
-				log.error("Error opening modem device: " + e.getMessage());
-				if (modemIn != null)
+
+				log.error ("Error opening modem device: " + e.getMessage ());
+
+				if (modemIn != null) {
+
 					try {
-						modemIn.close();
+
+						modemIn.close ();
+
 					} catch (IOException e1) {
 					}
-				if (modemOut != null)
+
+				}
+
+				if (modemOut != null) {
+
 					try {
-						modemOut.close();
+
+						modemOut.close ();
+
 					} catch (IOException e1) {
 					}
+
+				}
+
 				modemIn = null;
+
 				modemOut = null;
+
 				return;
+
 			}
 
 			try {
 
 				// outer loop restarts us after an error
+
 				while (true) {
 
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"RetrieveThread.loop");
+
 					// poll the modem
+
 					try {
 
 						// do like a decent reset of the modem
-						sendCommand("\route\route+++\route\route");
+
+						sendCommand (
+							"\route\route+++\route\route");
 
 						// initialise modem
-						sendCommandOk("at&f0e0+cmgf=0\route");
+
+						sendCommandOk (
+							"at&f0e0+cmgf=0\route");
 
 						// main loop
+
 						while (true) {
 
 							// poll the modem
-							doPoll();
+
+							doPoll (
+								taskLogger);
 
 							// do our normal sleep
-							Thread.sleep(pollSleepTime);
+
+							Thread.sleep (
+								pollSleepTime);
+
 						}
 
 					} catch (IOException e) {
 
-						log.error("Got IO Exception from modem: "
+						log.error (
+							"Got IO Exception from modem: "
 								+ e.getMessage());
 
-						log.error("Going to sleep for a bit");
+						log.error (
+							"Going to sleep for a bit");
 
-						Thread.sleep(errorSleepTime);
+						Thread.sleep (
+							errorSleepTime);
 
 						continue;
 
 					} catch (ModemException e) {
 
-						log.error("Had problem with modem: "
+						log.error (
+							"Had problem with modem: "
 								+ e.getMessage());
 
-						log.error("Going to sleep for a bit");
+						log.error (
+							"Going to sleep for a bit");
 
-						Thread.sleep(errorSleepTime);
+						Thread.sleep (
+							errorSleepTime);
 
 						continue;
 
@@ -220,30 +277,43 @@ class ModemPollDaemon
 				}
 
 			} catch (InterruptedException e) {
+
 				return;
+
 			} finally {
+
 				try {
-					modemIn.close();
+
+					modemIn.close ();
+
 				} catch (IOException e1) {
 				}
+
 				try {
-					modemOut.close();
+
+					modemOut.close ();
+
 				} catch (IOException e1) {
 				}
+
 				modemIn = null;
 				modemOut = null;
+
 			}
+
 		}
 
-		/**
-		 * Polls the modem for each message, calling handlePdu for each one,
-		 * then deletes them.
-		 */
 		private
-		void doPoll ()
+		void doPoll (
+				@NonNull TaskLogger parentTaskLogger)
 			throws
 				InterruptedException,
 				IOException {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"doPoll");
 
 			// get the list
 
@@ -292,6 +362,7 @@ class ModemPollDaemon
 				// store it
 
 				storePdu (
+					taskLogger,
 					pduLine);
 
 				// now delete it
@@ -417,7 +488,13 @@ class ModemPollDaemon
 		 */
 		public
 		void storePdu (
-				String pdu) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull String pdu) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"storePdu");
 
 			@Cleanup
 			Transaction transaction =
@@ -426,6 +503,7 @@ class ModemPollDaemon
 					this);
 
 			modemPollQueueHelper.insert (
+				taskLogger,
 				modemPollQueueHelper.createInstance ()
 
 				.setPdu (
@@ -447,9 +525,14 @@ class ModemPollDaemon
 
 				while (true) {
 
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"ProcessThread.run");
+
 					// process any messages
 
-					processAll ();
+					processAll (
+						taskLogger);
 
 					// wait a bit or until the flag is set
 
@@ -465,8 +548,14 @@ class ModemPollDaemon
 
 		}
 
-		void processAll ()
+		void processAll (
+				@NonNull TaskLogger parentTaskLogger)
 			throws InterruptedException {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processAll");
 
 			while (true) {
 
@@ -490,6 +579,7 @@ class ModemPollDaemon
 					try {
 
 						processOne (
+							taskLogger,
 							modemPollQueue);
 
 						modemPollQueueHelper.remove (
@@ -523,24 +613,42 @@ class ModemPollDaemon
 		}
 
 		void processOne (
-				ModemPollQueueRec mpq) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull ModemPollQueueRec mpq) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processOne");
 
 			Pdu pdu =
 				decodePduString (
 					mpq.getPdu ());
 
 			if (pdu instanceof SmsDeliverPdu) {
-				handlePdu((SmsDeliverPdu) pdu);
+
+				handlePdu (
+					taskLogger,
+					(SmsDeliverPdu) pdu);
+
 			} else {
+
 				throw new RuntimeException("Unknown PDU type "
 						+ pdu.getClass().getName());
+
 			}
 
 		}
 
 		private
 		void handlePdu (
-				SmsDeliverPdu pdu) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull SmsDeliverPdu pdu) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handlePdu");
 
 			@Cleanup
 			Transaction transaction =
@@ -559,10 +667,13 @@ class ModemPollDaemon
 					routeId);
 
 			smsInboxLogic.inboxInsert (
+				taskLogger,
 				optionalAbsent (),
 				textHelper.findOrCreate (
+					taskLogger,
 					pdu.getMessage ()),
 				smsNumberHelper.findOrCreate (
+					taskLogger,
 					pdu.getOriginatingAddress ().getAddressValue ()),
 				destinationNumber,
 				route,

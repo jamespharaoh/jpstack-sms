@@ -166,6 +166,7 @@ class MagicNumberUpdateAction
 						numAdded ++;
 
 						eventLogic.createEvent (
+							taskLogger,
 							"object_field_updated",
 							userConsoleLogic.userRequired (),
 							"deleted",
@@ -176,6 +177,7 @@ class MagicNumberUpdateAction
 
 						MagicNumberRec newMagicNumber =
 							magicNumberHelper.insert (
+								taskLogger,
 								magicNumberHelper.createInstance ()
 
 							.setMagicNumberSet (
@@ -189,6 +191,7 @@ class MagicNumberUpdateAction
 						numAdded ++;
 
 						eventLogic.createEvent (
+							taskLogger,
 							"object_created",
 							userConsoleLogic.userRequired (),
 							newMagicNumber,
@@ -254,6 +257,7 @@ class MagicNumberUpdateAction
 					numDeleted ++;
 
 					eventLogic.createEvent (
+						taskLogger,
 						"object_field_updated",
 						userConsoleLogic.userRequired (),
 						"deleted",

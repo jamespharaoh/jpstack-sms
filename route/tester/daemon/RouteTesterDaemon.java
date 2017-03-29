@@ -7,19 +7,25 @@ import java.util.List;
 import javax.inject.Provider;
 
 import lombok.Cleanup;
+import lombok.NonNull;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.service.model.ServiceObjectHelper;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.number.core.model.NumberObjectHelper;
@@ -37,6 +43,9 @@ final class RouteTesterDaemon
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
@@ -72,7 +81,7 @@ final class RouteTesterDaemon
 
 		while (true) {
 
-			doIt ();
+			runOnce ();
 
 			try {
 				Thread.sleep(10000);
@@ -85,12 +94,16 @@ final class RouteTesterDaemon
 	}
 
 	private
-	void doIt () {
+	void runOnce () {
+
+		TaskLogger taskLogger =
+			logContext.createTaskLogger (
+				"runOnce ()");
 
 		@Cleanup
 		Transaction transaction =
 			database.beginReadWrite (
-				"RouteTesterDaemon.doIt ()",
+				"RouteTesterDaemon.runOnce ()",
 				this);
 
 		// retrieve all route testers
@@ -130,6 +143,7 @@ final class RouteTesterDaemon
 			// ok, do this one
 
 			doOne (
+				taskLogger,
 				routeTester);
 
 		}
@@ -140,7 +154,13 @@ final class RouteTesterDaemon
 
 	private
 	void doOne (
-			RouteTesterRec routeTester) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull RouteTesterRec routeTester) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"doOne");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -149,6 +169,7 @@ final class RouteTesterDaemon
 
 		RouteTestRec routeTest =
 			routeTestHelper.insert (
+				taskLogger,
 				routeTestHelper.createInstance ()
 
 			.setRoute (
@@ -183,9 +204,11 @@ final class RouteTesterDaemon
 
 			.number (
 				numberHelper.findOrCreate (
+					taskLogger,
 					routeTester.getDestNumber ()))
 
 			.messageString (
+				taskLogger,
 				text.toString ())
 
 			.numFrom (
@@ -199,7 +222,8 @@ final class RouteTesterDaemon
 					GlobalId.root,
 					"test"))
 
-			.send ();
+			.send (
+				taskLogger);
 
 		// connect the message to the RouteTest
 

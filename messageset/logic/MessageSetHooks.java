@@ -10,15 +10,20 @@ import java.util.stream.Collectors;
 import lombok.Cleanup;
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectHelper;
 import wbs.framework.object.ObjectHooks;
+
 import wbs.platform.object.core.model.ObjectTypeDao;
 import wbs.platform.object.core.model.ObjectTypeRec;
+
 import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.messageset.model.MessageSetTypeDao;
 import wbs.sms.messageset.model.MessageSetTypeRec;
@@ -31,6 +36,9 @@ class MessageSetHooks
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageSetTypeDao messageSetTypeDao;
@@ -78,6 +86,7 @@ class MessageSetHooks
 	@Override
 	public
 	void createSingletons (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ObjectHelper<MessageSetRec> messageSetHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
@@ -89,6 +98,11 @@ class MessageSetHooks
 		) {
 			return;
 		}
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createSingletons");
 
 		ObjectTypeRec parentType =
 			objectTypeDao.findById (
@@ -105,6 +119,7 @@ class MessageSetHooks
 					messageSetTypeId);
 
 			messageSetHelper.insert (
+				taskLogger,
 				messageSetHelper.createInstance ()
 
 				.setMessageSetType (

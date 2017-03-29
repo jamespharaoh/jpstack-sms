@@ -18,8 +18,11 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
@@ -37,6 +40,9 @@ class SmsMessageLogicImplementation
 	implements SmsMessageLogic {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberLogic numberLogic;
@@ -70,10 +76,17 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	void messageStatus (
-			MessageRec message,
-			MessageStatus newStatus) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message,
+			@NonNull MessageStatus newStatus) {
 
-		message.setStatus (newStatus);
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"messageStatus");
+
+		message.setStatus (
+			newStatus);
 
 		// TODO wtf?
 		// store delivery status for number
@@ -81,6 +94,7 @@ class SmsMessageLogicImplementation
 		if (isChatMessage (message)) {
 
 			numberLogic.updateDeliveryStatusForNumber (
+				taskLogger,
 				message.getNumTo (),
 				newStatus);
 
@@ -91,7 +105,13 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	void blackListMessage (
-			MessageRec message) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"blackListMessage");
 
 		// check message state
 
@@ -115,6 +135,7 @@ class SmsMessageLogicImplementation
 			// blacklist message
 
 			messageStatus (
+				taskLogger,
 				message,
 				MessageStatus.blacklisted);
 
@@ -128,6 +149,7 @@ class SmsMessageLogicImplementation
 			// blacklist message
 
 			messageStatus (
+				taskLogger,
 				message,
 				MessageStatus.blacklisted);
 

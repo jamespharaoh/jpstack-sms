@@ -1,24 +1,30 @@
 package wbs.sms.message.outbox.daemon;
 
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.List;
 
 import lombok.Cleanup;
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.daemon.SleepingDaemonService;
+
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 import wbs.sms.message.outbox.model.OutboxRec;
 
-@Log4j
+import wbs.utils.time.TimeFormatter;
+
 @SingletonComponent ("messageOutboxUnstickDaemon")
 public
 class SmsOutboxUnstickDaemon
@@ -44,8 +50,14 @@ class SmsOutboxUnstickDaemon
 	@SingletonDependency
 	Database database;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
+
+	@SingletonDependency
+	TimeFormatter timeFormatter;
 
 	// details
 
@@ -77,7 +89,13 @@ class SmsOutboxUnstickDaemon
 
 	@Override
 	protected
-	void runOnce () {
+	void runOnce (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"runOnce ()");
 
 		for (;;) {
 
@@ -104,10 +122,11 @@ class SmsOutboxUnstickDaemon
 					: outboxesToUnstick
 			) {
 
-				log.warn (
-					stringFormatObsolete (
-						"Unsticking outbox %s (sending time is %s",
-						outbox.getId (),
+				taskLogger.warningFormat (
+					"Unsticking outbox %s (sending time is %s)",
+					integerToDecimalString (
+						outbox.getId ()),
+					timeFormatter.timestampSecondStringIso (
 						outbox.getSending ()));
 
 				outbox

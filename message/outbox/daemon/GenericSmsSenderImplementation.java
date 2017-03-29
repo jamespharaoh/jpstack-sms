@@ -8,6 +8,7 @@ import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.Misc.todo;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
@@ -188,7 +189,8 @@ class GenericSmsSenderImplementation <StateType>
 				PerformSendStatus.success)
 		) {
 
-			handlePerformSendError ();
+			handlePerformSendError (
+				taskLogger);
 
 			return;
 
@@ -242,6 +244,7 @@ class GenericSmsSenderImplementation <StateType>
 						null);
 
 				smsMessageLogic.blackListMessage (
+					taskLogger,
 					smsOutbox.getMessage ());
 
 				transaction.commit ();
@@ -283,10 +286,11 @@ class GenericSmsSenderImplementation <StateType>
 			} catch (Exception exception) {
 
 				exceptionLogger.logThrowable (
+					taskLogger,
 					"daemon",
 					getClass ().getSimpleName (),
 					exception,
-					Optional.absent (),
+					optionalAbsent (),
 					GenericExceptionResolution.tryAgainLater);
 
 				setupRequestResult =
@@ -319,6 +323,7 @@ class GenericSmsSenderImplementation <StateType>
 				try {
 
 					smsOutboxLogic.messageFailure (
+						taskLogger,
 						smsMessage,
 						setupRequestResult.statusMessage (),
 						ifThenElse (
@@ -333,15 +338,17 @@ class GenericSmsSenderImplementation <StateType>
 				} catch (RuntimeException exception) {
 
 					exceptionLogger.logThrowable (
+						taskLogger,
 						"daemon",
 						getClass ().getSimpleName (),
 						exception,
-						Optional.absent (),
+						optionalAbsent (),
 						GenericExceptionResolution.tryAgainNow);
 
 					transaction.close ();
 
 					handleSetupErrorInSeparateTransaction (
+						taskLogger,
 						smsMessage.getId (),
 						setupRequestResult);
 
@@ -355,6 +362,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			SmsOutboxAttemptRec smsOutboxAttempt =
 				smsOutboxLogic.beginSendAttempt (
+					taskLogger,
 					smsOutbox,
 					optionalMapRequired (
 						optionalFromNullable (
@@ -373,8 +381,14 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	void handleSetupErrorInSeparateTransaction (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long smsMessageId,
 			@NonNull SetupRequestResult <StateType> setupSendResult) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handleSetupErrorInSeparateTransaction");
 
 		try (
 
@@ -393,6 +407,7 @@ class GenericSmsSenderImplementation <StateType>
 					smsMessageId);
 
 			smsOutboxLogic.messageFailure (
+				taskLogger,
 				smsMessage,
 				setupRequestResult.statusMessage (),
 				ifThenElse (
@@ -511,12 +526,19 @@ class GenericSmsSenderImplementation <StateType>
 
 	}
 
-	void handlePerformSendError () {
+	void handlePerformSendError (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handlePerformSendError");
 
 		boolean success =
 			LongStream.range (0, databaseRetriesMax).anyMatch (
 				attemptNumber ->
 					attemptToHandlePerformSendError (
+						taskLogger,
 						attemptNumber));
 
 		if (! success) {
@@ -528,11 +550,18 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	boolean attemptToHandlePerformSendError (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long attemptNumber) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"attemptToHandlePerformSendError");
 
 		try {
 
 			attemptToHandlePerformSendErrorReal (
+				taskLogger,
 				attemptNumber);
 
 			return true;
@@ -540,10 +569,11 @@ class GenericSmsSenderImplementation <StateType>
 		} catch (Throwable exception) {
 
 			exceptionLogger.logThrowable (
+				taskLogger,
 				"daemon",
 				getClass ().getSimpleName (),
 				exception,
-				Optional.absent (),
+				optionalAbsent (),
 				GenericExceptionResolution.tryAgainLater);
 
 			return false;
@@ -553,7 +583,13 @@ class GenericSmsSenderImplementation <StateType>
 	}
 
 	void attemptToHandlePerformSendErrorReal (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long attemptNumber) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"attemptToHandlePerformSendErrorReal");
 
 		@Cleanup
 		Transaction transaction =
@@ -582,6 +618,7 @@ class GenericSmsSenderImplementation <StateType>
 				smsOutboxAttemptId);
 
 		smsOutboxLogic.completeSendAttemptFailure (
+			taskLogger,
 			smsOutboxAttempt,
 			FailureType.temporary,
 			performSendResult.statusMessage (),
@@ -648,10 +685,11 @@ class GenericSmsSenderImplementation <StateType>
 		} catch (Throwable exception) {
 
 			exceptionLogger.logThrowable (
+				taskLogger,
 				"daemon",
 				getClass ().getSimpleName (),
 				exception,
-				Optional.absent (),
+				optionalAbsent (),
 				GenericExceptionResolution.tryAgainLater);
 
 			return false;
@@ -803,6 +841,7 @@ class GenericSmsSenderImplementation <StateType>
 		) {
 
 			smsOutboxLogic.completeSendAttemptSuccess (
+				taskLogger,
 				smsOutboxAttempt,
 				optionalFromNullable (
 					processResponseResult.otherIds ()),
@@ -847,6 +886,7 @@ class GenericSmsSenderImplementation <StateType>
 			}
 
 			smsOutboxLogic.completeSendAttemptFailure (
+				taskLogger,
 				smsOutboxAttempt,
 				processResponseResult.failureType (),
 				processResponseResult.statusMessage (),

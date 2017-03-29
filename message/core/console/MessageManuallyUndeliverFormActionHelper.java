@@ -16,9 +16,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -42,6 +44,9 @@ class MessageManuallyUndeliverFormActionHelper
 
 	@SingletonDependency
 	EventLogic eventLogic;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
@@ -105,8 +110,14 @@ class MessageManuallyUndeliverFormActionHelper
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Transaction transaction,
 			@NonNull Object formState) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"processFormSubmission");
 
 		// load data
 
@@ -137,10 +148,12 @@ class MessageManuallyUndeliverFormActionHelper
 		}
 
 		smsMessageLogic.messageStatus (
+			taskLogger,
 			smsMessage,
 			MessageStatus.manuallyUndelivered);
 
 		eventLogic.createEvent (
+			taskLogger,
 			"message_manually_undelivered",
 			userConsoleLogic.userRequired (),
 			smsMessage);

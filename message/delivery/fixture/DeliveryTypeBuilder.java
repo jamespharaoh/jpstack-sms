@@ -14,6 +14,7 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -22,6 +23,8 @@ import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.delivery.metamodel.DeliveryTypeSpec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
@@ -43,6 +46,9 @@ class DeliveryTypeBuilder {
 	@SingletonDependency
 	EntityHelper entityHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// builder
 
 	@BuilderParent
@@ -59,7 +65,13 @@ class DeliveryTypeBuilder {
 	@BuildMethod
 	public
 	void build (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"build");
 
 		try {
 
@@ -69,7 +81,8 @@ class DeliveryTypeBuilder {
 					simplifyToCodeRequired (
 						spec.name ())));
 
-			createDeliveryType ();
+			createDeliveryType (
+				taskLogger);
 
 		} catch (Exception exception) {
 
@@ -85,8 +98,14 @@ class DeliveryTypeBuilder {
 	}
 
 	private
-	void createDeliveryType ()
+	void createDeliveryType (
+			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createDeliveryType");
 
 		// begin transaction
 
@@ -99,6 +118,7 @@ class DeliveryTypeBuilder {
 		// create delivery type
 
 		deliveryTypeHelper.insert (
+			taskLogger,
 			deliveryTypeHelper.createInstance ()
 
 			.setCode (

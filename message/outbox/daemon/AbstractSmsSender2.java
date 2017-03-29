@@ -5,13 +5,13 @@ import static wbs.utils.collection.MapUtils.mapItemForKeyOrDefault;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
 import static wbs.utils.string.StringUtils.stringFormat;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
 import static wbs.utils.string.StringUtils.stringToBytes;
 import static wbs.utils.string.StringUtils.stringToUtf8;
 
@@ -27,10 +27,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.extern.log4j.Log4j;
 
 import org.json.simple.JSONObject;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
@@ -38,6 +38,8 @@ import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
 
@@ -57,7 +59,6 @@ import wbs.sms.route.sender.model.SenderObjectHelper;
 import wbs.sms.route.sender.model.SenderRec;
 
 @Deprecated
-@Log4j
 public abstract
 class AbstractSmsSender2
 	extends AbstractDaemonService {
@@ -72,6 +73,9 @@ class AbstractSmsSender2
 
 	@SingletonDependency
 	ExceptionLogger exceptionLogger;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsMessageLogic messageLogic;
@@ -273,6 +277,10 @@ class AbstractSmsSender2
 
 		boolean processOneMessage () {
 
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"Worker.processOneMessage");
+
 			OutboxRec outbox;
 			Long messageId;
 			Long smsOutboxAttemptId;
@@ -327,6 +335,7 @@ class AbstractSmsSender2
 					outbox.setSending (null);
 
 					messageLogic.blackListMessage (
+						taskLogger,
 						outbox.getMessage ());
 
 					transaction.commit ();
@@ -350,6 +359,7 @@ class AbstractSmsSender2
 					outbox.setSending (null);
 
 					messageLogic.blackListMessage (
+						taskLogger,
 						outbox.getMessage ());
 
 					transaction.commit ();
@@ -375,10 +385,11 @@ class AbstractSmsSender2
 				} catch (Exception exception) {
 
 					exceptionLogger.logThrowable (
+						taskLogger,
 						"console",
 						getClass ().getSimpleName (),
 						exception,
-						Optional.absent (),
+						optionalAbsent (),
 						GenericExceptionResolution.fatalError);
 
 					setupSendResult =
@@ -409,6 +420,7 @@ class AbstractSmsSender2
 				) {
 
 					outboxLogic.messageFailure (
+						taskLogger,
 						outbox.getMessage (),
 						setupSendResult.message (),
 						SmsOutboxLogic.FailureType.permanent);
@@ -426,6 +438,7 @@ class AbstractSmsSender2
 
 				SmsOutboxAttemptRec smsOutboxAttempt =
 					smsOutboxAttemptHelper.insert (
+						taskLogger,
 						smsOutboxAttemptHelper.createInstance ()
 
 					.setMessage (
@@ -518,6 +531,7 @@ class AbstractSmsSender2
 				}
 
 				reliableOutboxFailure (
+					taskLogger,
 					messageId,
 					smsOutboxAttemptId,
 					performSendResult.message (),
@@ -532,6 +546,7 @@ class AbstractSmsSender2
 			// and save our success
 
 			reliableOutboxSuccess (
+				taskLogger,
 				messageId,
 				smsOutboxAttemptId,
 				performSendResult.otherIds (),
@@ -546,10 +561,16 @@ class AbstractSmsSender2
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxSuccess (
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId,
 				@NonNull Long smsOutboxAttemptId,
 				List<String> otherIds,
 				JSONObject responseTrace) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"reliableOutboxSuccess");
 
 			boolean interrupted = false;
 
@@ -582,6 +603,7 @@ class AbstractSmsSender2
 								: null);
 
 					outboxLogic.messageSuccess (
+						taskLogger,
 						smsOutboxAttempt.getMessage (),
 						optionalOf (
 							otherIds),
@@ -598,21 +620,22 @@ class AbstractSmsSender2
 
 					if (++ tries == maxTries) {
 
-						log.fatal (
-							stringFormatObsolete (
-								"Outbox success for message %s failed %s ",
-								messageId,
-								maxTries,
-								"times, giving up"),
-							updateException);
+						taskLogger.fatalFormatException (
+							updateException,
+							"Outbox success for message %s failed %s ",
+							integerToDecimalString (
+								messageId),
+							integerToDecimalString (
+								maxTries),
+							"times, giving up");
 
 					}
 
-					log.warn (
-						stringFormatObsolete (
-							"Outbox success for message %s failed, retrying",
-							messageId),
-						updateException);
+					taskLogger.warningFormatException (
+						updateException,
+						"Outbox success for message %s failed, retrying",
+						integerToDecimalString (
+							messageId));
 
 					try {
 
@@ -636,12 +659,18 @@ class AbstractSmsSender2
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxFailure (
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId,
 				@NonNull Long smsOutboxAttemptId,
 				String errorMessage,
 				@NonNull SmsOutboxLogic.FailureType failureType,
 				JSONObject responseTrace,
 				JSONObject errorTrace) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"Worker.reliableOutboxFailure");
 
 			boolean interrupted = false;
 
@@ -683,6 +712,7 @@ class AbstractSmsSender2
 							: null);
 
 					outboxLogic.messageFailure (
+						taskLogger,
 						smsOutboxAttempt.getMessage (),
 						emptyStringIfNull (
 							errorMessage),
@@ -699,12 +729,14 @@ class AbstractSmsSender2
 
 					if (++ tries == maxTries) {
 
-						log.fatal (
-							stringFormatObsolete (
-								"Outbox failure for message %s failed %s ",
-								messageId,
-								tries,
-								"times, giving up"));
+						taskLogger.fatalFormat (
+							"Outbox failure for message %s ",
+							integerToDecimalString (
+								messageId),
+							"failed %s ",
+							integerToDecimalString (
+								tries),
+							"times, giving up");
 
 						throw new RuntimeException (
 							"Max tries exceeded",
@@ -712,11 +744,11 @@ class AbstractSmsSender2
 
 					}
 
-					log.warn (
-						stringFormatObsolete (
-							"Outbox failure for message %s failed, retrying",
-							messageId),
-						updateException);
+					taskLogger.warningFormatException (
+						updateException,
+						"Outbox failure for message %s failed, retrying",
+						integerToDecimalString (
+							messageId));
 
 					try {
 

@@ -4,10 +4,13 @@ import java.util.Collection;
 
 import com.google.common.base.Optional;
 
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
 import wbs.platform.text.model.TextRec;
 import wbs.platform.user.model.UserRec;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
@@ -20,12 +23,14 @@ public
 interface MagicNumberLogic {
 
 	MagicNumberRec allocateMagicNumber (
+			TaskLogger parentTaskLogger,
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec command,
 			long ref);
 
 	MessageRec sendMessage (
+			TaskLogger parentTaskLogger,
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,
@@ -39,6 +44,7 @@ interface MagicNumberLogic {
 			Optional<UserRec> user);
 
 	Long sendMessage (
+			TaskLogger parentTaskLogger,
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,

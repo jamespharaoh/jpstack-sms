@@ -1,6 +1,8 @@
 package wbs.sms.route.tester.daemon;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,13 +14,14 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
-import wbs.platform.affiliate.model.AffiliateRec;
-import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -40,14 +43,17 @@ class RouteTesterCommand
 	@SingletonDependency
 	Database database;
 
-	@SingletonDependency
-	SmsInboxLogic smsInboxLogic;
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
 
 	@SingletonDependency
 	RouteTestObjectHelper routeTestHelper;
+
+	@SingletonDependency
+	SmsInboxLogic smsInboxLogic;
 
 	// properties
 
@@ -82,6 +88,11 @@ class RouteTesterCommand
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handle");
+
 		Transaction transaction =
 			database.currentTransaction ();
 
@@ -95,10 +106,12 @@ class RouteTesterCommand
 		if (! matcher.find ()) {
 
 			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
 				inbox,
-				Optional.<ServiceRec>absent (),
-				Optional.<AffiliateRec>absent (),
-				Optional.of (command),
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
 				"No route test info found in message body");
 
 		}
@@ -107,7 +120,7 @@ class RouteTesterCommand
 			Long.parseLong (
 				matcher.group (1));
 
-		Optional<RouteTestRec> routeTestOptional =
+		Optional <RouteTestRec> routeTestOptional =
 			routeTestHelper.find (
 				routeTestId);
 
@@ -117,10 +130,12 @@ class RouteTesterCommand
 		) {
 
 			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
 				inbox,
-				Optional.<ServiceRec>absent (),
-				Optional.<AffiliateRec>absent (),
-				Optional.of (command),
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
 				"Response to unknown route test id");
 
 		}
@@ -134,10 +149,12 @@ class RouteTesterCommand
 		if (routeTest.getReturnedTime () != null) {
 
 			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
 				inbox,
-				Optional.<ServiceRec>absent (),
-				Optional.<AffiliateRec>absent (),
-				Optional.of (command),
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
 				"Duplicate response for route test");
 
 		}
@@ -151,9 +168,10 @@ class RouteTesterCommand
 				message);
 
 		return smsInboxLogic.inboxProcessed (
+			taskLogger,
 			inbox,
-			Optional.<ServiceRec>absent (),
-			Optional.<AffiliateRec>absent (),
+			optionalAbsent (),
+			optionalAbsent (),
 			command);
 
 	}

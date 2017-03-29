@@ -4,12 +4,17 @@ import javax.inject.Provider;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.SmsMessageSender;
 import wbs.sms.messageset.model.MessageSetMessageRec;
@@ -22,6 +27,9 @@ class MessageSetLogicImplementation
 	implements MessageSetLogic {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectManager objectManager;
@@ -36,11 +44,17 @@ class MessageSetLogicImplementation
 	@Override
 	public
 	Long sendMessageSet (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageSetRec messageSet,
 			Long threadId,
 			@NonNull NumberRec number,
 			ServiceRec service,
 			AffiliateRec affiliate) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sendMessageSet");
 
 		for (
 			MessageSetMessageRec messageSetMessage
@@ -57,6 +71,7 @@ class MessageSetLogicImplementation
 					number)
 
 				.messageString (
+					taskLogger,
 					messageSetMessage.getMessage ())
 
 				.numFrom (
@@ -71,7 +86,8 @@ class MessageSetLogicImplementation
 				.affiliate (
 					affiliate)
 
-				.send ();
+				.send (
+					taskLogger);
 
 			if (threadId == null) {
 
@@ -83,23 +99,6 @@ class MessageSetLogicImplementation
 		}
 
 		return threadId;
-
-	}
-
-	@Override
-	public
-	Long sendMessageSet (
-			MessageSetRec messageSet,
-			Long threadId,
-			NumberRec number,
-			ServiceRec service) {
-
-		return sendMessageSet (
-			messageSet,
-			threadId,
-			number,
-			service,
-			null);
 
 	}
 

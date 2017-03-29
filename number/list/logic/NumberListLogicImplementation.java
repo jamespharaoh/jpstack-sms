@@ -1,12 +1,27 @@
 package wbs.sms.number.list.logic;
 
-import java.util.Collections;
+import static wbs.utils.collection.IterableUtils.iterableMapToSet;
+import static wbs.utils.etc.Misc.contains;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import lombok.NonNull;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListNumberObjectHelper;
@@ -25,6 +40,9 @@ class NumberListLogicImplementation
 	@SingletonDependency
 	Database database;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	NumberListObjectHelper numberListHelper;
 
@@ -39,10 +57,16 @@ class NumberListLogicImplementation
 	@Override
 	public
 	void addDueToMessage (
-			NumberListRec numberList,
-			NumberRec number,
-			MessageRec message,
-			ServiceRec service) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull NumberListRec numberList,
+			@NonNull NumberRec number,
+			@NonNull MessageRec message,
+			@NonNull ServiceRec service) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"addDueToMessage");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -51,6 +75,7 @@ class NumberListLogicImplementation
 
 		NumberListNumberRec numberListNumber =
 			numberListNumberHelper.findOrCreate (
+				taskLogger,
 				numberList,
 				number);
 
@@ -72,6 +97,7 @@ class NumberListLogicImplementation
 		// create number list update
 
 		numberListUpdateHelper.insert (
+			taskLogger,
 			numberListUpdateHelper.createInstance ()
 
 			.setNumberList (
@@ -127,11 +153,69 @@ class NumberListLogicImplementation
 
 	@Override
 	public
+	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			@NonNull NumberListRec numberList,
+			@NonNull List <NumberRec> numbers) {
+
+		List <NumberListNumberRec> numberListNumbers =
+			numberListNumberHelper.findMany (
+				numberList,
+				numbers);
+
+		Set <Long> numberIdsPresent =
+			iterableMapToSet (
+				numberListNumber ->
+					numberListNumber.getNumber ().getId (),
+				numberListNumbers);
+
+		List <NumberRec> numbersPresent =
+			new ArrayList<> ();
+
+		List <NumberRec> numbersNotPresent =
+			new ArrayList<> ();
+
+		for (
+			NumberRec number
+				: numbers
+		) {
+
+			if (
+				contains (
+					numberIdsPresent,
+					number.getId ())
+			) {
+
+				numbersPresent.add (
+					number);
+
+			} else {
+
+				numbersNotPresent.add (
+					number);
+
+			}
+
+		}
+
+		return Pair.of (
+			numbersPresent,
+			numbersNotPresent);
+
+	}
+
+	@Override
+	public
 	void removeDueToMessage (
-			NumberListRec numberList,
-			NumberRec number,
-			MessageRec message,
-			ServiceRec service) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull NumberListRec numberList,
+			@NonNull NumberRec number,
+			@NonNull MessageRec message,
+			@NonNull ServiceRec service) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"removeDueToMessage");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -140,6 +224,7 @@ class NumberListLogicImplementation
 
 		NumberListNumberRec numberListNumber =
 			numberListNumberHelper.findOrCreate (
+				taskLogger,
 				numberList,
 				number);
 
@@ -161,6 +246,7 @@ class NumberListLogicImplementation
 		// create number list update
 
 		numberListUpdateHelper.insert (
+			taskLogger,
 			numberListUpdateHelper.createInstance ()
 
 			.setNumberList (

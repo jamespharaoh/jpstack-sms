@@ -19,9 +19,6 @@ import wbs.framework.database.Database;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
-import wbs.platform.affiliate.model.AffiliateRec;
-import wbs.platform.service.model.ServiceRec;
-
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
 import wbs.sms.magicnumber.model.MagicNumberRec;
@@ -114,10 +111,12 @@ class MagicNumberCommandTypeHandler
 		if (magicNumber == null) {
 
 			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
 				inbox,
-				Optional.<ServiceRec>absent (),
-				Optional.<AffiliateRec>absent (),
-				Optional.of (command),
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
 				stringFormat (
 					"Magic number does not exist",
 					message.getNumTo ()));
@@ -134,6 +133,7 @@ class MagicNumberCommandTypeHandler
 		if (magicNumberUse == null) {
 
 			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
 				inbox,
 				optionalAbsent (),
 				optionalAbsent (),

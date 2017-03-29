@@ -2,7 +2,11 @@ package wbs.sms.number.list.logic;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.list.model.NumberListNumberObjectHelper;
 import wbs.sms.number.list.model.NumberListNumberObjectHelperMethods;
@@ -15,6 +19,9 @@ class NumberListNumberObjectHelperMethodsImplementation
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@WeakSingletonDependency
 	NumberListNumberObjectHelper numberListNumberHelper;
 
@@ -23,8 +30,14 @@ class NumberListNumberObjectHelperMethodsImplementation
 	@Override
 	public
 	NumberListNumberRec findOrCreate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreate");
 
 		// find existing
 
@@ -40,6 +53,7 @@ class NumberListNumberObjectHelperMethodsImplementation
 
 		numberListNumber =
 			numberListNumberHelper.insert (
+				taskLogger,
 				numberListNumberHelper.createInstance ()
 
 			.setNumberList (

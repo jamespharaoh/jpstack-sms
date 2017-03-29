@@ -91,10 +91,13 @@ class RouteTestTwoWayAction
 
 			MessageRec messageRecord =
 				smsInboxLogic.inboxInsert (
+					taskLogger,
 					optionalAbsent (),
 					textHelper.findOrCreate (
+						taskLogger,
 						messageString),
 					smsNumberHelper.findOrCreate (
+						taskLogger,
 						numFrom),
 					numTo,
 					route,

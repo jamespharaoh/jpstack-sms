@@ -2,15 +2,20 @@ package wbs.sms.customer.logic;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerObjectHelper;
 import wbs.sms.customer.model.SmsCustomerObjectHelperMethods;
 import wbs.sms.customer.model.SmsCustomerRec;
 import wbs.sms.number.core.model.NumberRec;
+
 import wbs.utils.random.RandomLogic;
 
 public
@@ -21,6 +26,9 @@ class SmsCustomerObjectHelperMethodsImplementation
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	RandomLogic randomLogic;
@@ -33,8 +41,14 @@ class SmsCustomerObjectHelperMethodsImplementation
 	@Override
 	public
 	SmsCustomerRec findOrCreate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerManagerRec manager,
 			@NonNull NumberRec number) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreate");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -49,6 +63,7 @@ class SmsCustomerObjectHelperMethodsImplementation
 
 		customer =
 			smsCustomerHelper.insert (
+				taskLogger,
 				smsCustomerHelper.createInstance ()
 
 			.setSmsCustomerManager (

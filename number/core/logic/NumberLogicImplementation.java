@@ -2,14 +2,16 @@ package wbs.sms.number.core.logic;
 
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalOrElse;
-import static wbs.utils.string.StringUtils.stringFormat;
 
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -19,7 +21,6 @@ import wbs.sms.number.core.model.ChatUserNumberReportRec;
 import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.number.core.model.NumberRec;
 
-@Log4j
 @SingletonComponent ("numberLogic")
 public
 class NumberLogicImplementation
@@ -31,10 +32,13 @@ class NumberLogicImplementation
 	Database database;
 
 	@SingletonDependency
-	NetworkObjectHelper networkHelper;
+	ChatUserNumberReportObjectHelper chatUserNumberReportHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
-	ChatUserNumberReportObjectHelper chatUserNumberReportHelper;
+	NetworkObjectHelper networkHelper;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
@@ -43,39 +47,22 @@ class NumberLogicImplementation
 
 	@Override
 	public
-	NumberRec objectToNumber (
-			Object object) {
-
-		if (object instanceof NumberRec) {
-
-			return
-				(NumberRec)
-				object;
-
-		}
-
-		if (object instanceof String) {
-
-			return numberHelper.findOrCreate (
-				(String) object);
-
-		}
-
-		throw new IllegalArgumentException ();
-
-	}
-
-	@Override
-	public
 	void updateDeliveryStatusForNumber (
-			String numTo,
-			MessageStatus status) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull String numTo,
+			@NonNull MessageStatus status) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"updateDeliveryStatusForNumber");
 
 		Transaction transaction =
 			database.currentTransaction ();
 
 		NumberRec number =
 			numberHelper.findOrCreate (
+				taskLogger,
 				numTo);
 
 		// TODO should not be here
@@ -87,6 +74,7 @@ class NumberLogicImplementation
 				number.getId ()),
 
 			() -> chatUserNumberReportHelper.insert (
+				taskLogger,
 				chatUserNumberReportHelper.createInstance ()
 
 				.setNumber (
@@ -127,7 +115,13 @@ class NumberLogicImplementation
 	@Override
 	public
 	NumberRec archiveNumberFromMessage (
-			MessageRec message) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"archiveNumberFromMessage");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -156,6 +150,7 @@ class NumberLogicImplementation
 
 		NumberRec newNumber =
 			numberHelper.insert (
+				taskLogger,
 				numberHelper.createInstance ()
 
 			.setNumber (
@@ -175,11 +170,10 @@ class NumberLogicImplementation
 
 		database.flush ();
 
-		log.warn (
-			stringFormat (
-				"Archived number %s as %s",
-				currentNumber,
-				oldNumber.getNumber ()));
+		taskLogger.warningFormat (
+			"Archived number %s as %s",
+			currentNumber,
+			oldNumber.getNumber ());
 
 		return newNumber;
 

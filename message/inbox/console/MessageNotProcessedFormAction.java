@@ -111,6 +111,7 @@ class MessageNotProcessedFormAction
 					userConsoleLogic.userRequired ());
 
 				messageLogic.messageStatus (
+					taskLogger,
 					message,
 					MessageStatus.pending);
 
@@ -120,6 +121,7 @@ class MessageNotProcessedFormAction
 						null);
 
 				inboxHelper.insert (
+					taskLogger,
 					inboxHelper.createInstance ()
 
 					.setMessage (
@@ -128,6 +130,7 @@ class MessageNotProcessedFormAction
 				);
 
 				eventLogic.createEvent (
+					taskLogger,
 					"message_processed_again",
 					userConsoleLogic.userRequired (),
 					message);
@@ -153,6 +156,7 @@ class MessageNotProcessedFormAction
 					userConsoleLogic.userRequired ());
 
 				messageLogic.messageStatus (
+					taskLogger,
 					message,
 					MessageStatus.ignored);
 
@@ -162,6 +166,7 @@ class MessageNotProcessedFormAction
 						null);
 
 				eventLogic.createEvent (
+					taskLogger,
 					"message_ignored",
 					userConsoleLogic.userRequired (),
 					message);
@@ -187,6 +192,7 @@ class MessageNotProcessedFormAction
 					userConsoleLogic.userRequired ());
 
 				messageLogic.messageStatus (
+					taskLogger,
 					message,
 					MessageStatus.manuallyProcessed);
 
@@ -196,6 +202,7 @@ class MessageNotProcessedFormAction
 						null);
 
 				eventLogic.createEvent (
+					taskLogger,
 					"message_manually_processed",
 					userConsoleLogic.userRequired (),
 					message);

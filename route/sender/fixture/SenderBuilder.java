@@ -7,13 +7,14 @@ import java.sql.SQLException;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -22,15 +23,17 @@ import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.route.sender.metamodel.SenderSpec;
 import wbs.sms.route.sender.model.SenderObjectHelper;
 
-@Log4j
 @PrototypeComponent ("senderBuilder")
 @ModelMetaBuilderHandler
 public
-class SenderBuilder {
+class SenderBuilder
+	implements BuilderComponent {
 
 	// singleton dependencies
 
@@ -39,6 +42,9 @@ class SenderBuilder {
 
 	@SingletonDependency
 	EntityHelper entityHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SenderObjectHelper senderHelper;
@@ -57,19 +63,26 @@ class SenderBuilder {
 	// build
 
 	@BuildMethod
+	@Override
 	public
 	void build (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"build");
 
 		try {
 
-			log.info (
-				stringFormat (
-					"Create sender %s",
-					simplifyToCodeRequired (
-						spec.name ())));
+			taskLogger.noticeFormat (
+				"Create sender %s",
+				simplifyToCodeRequired (
+					spec.name ()));
 
-			createSender ();
+			createSender (
+				taskLogger);
 
 		} catch (Exception exception) {
 
@@ -85,8 +98,14 @@ class SenderBuilder {
 	}
 
 	private
-	void createSender ()
+	void createSender (
+			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createSender");
 
 		// begin transaction
 
@@ -99,6 +118,7 @@ class SenderBuilder {
 		// create sender
 
 		senderHelper.insert (
+			taskLogger,
 			senderHelper.createInstance ()
 
 			.setCode (

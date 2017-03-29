@@ -11,8 +11,11 @@ import lombok.Setter;
 
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
 
@@ -38,9 +41,10 @@ class GazetteerCodeFormFieldNativeMapping <Container>
 
 	@Override
 	public
-	Optional<String> genericToNative (
+	Optional <String> genericToNative (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Container container,
-			@NonNull Optional<GazetteerEntryRec> genericValue) {
+			@NonNull Optional <GazetteerEntryRec> genericValue) {
 
 		if (
 			optionalIsNotPresent (

@@ -2,10 +2,16 @@ package wbs.sms.keyword.logic;
 
 import java.util.regex.Pattern;
 
+import lombok.NonNull;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.keyword.model.KeywordSetFallbackObjectHelper;
 import wbs.sms.keyword.model.KeywordSetFallbackRec;
@@ -25,6 +31,9 @@ class KeywordLogicImplementation
 	@SingletonDependency
 	KeywordSetFallbackObjectHelper keywordSetFallbackHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// implementation
 
 	@Override
@@ -41,9 +50,15 @@ class KeywordLogicImplementation
 	@Override
 	public
 	void createOrUpdateKeywordSetFallback (
-			KeywordSetRec keywordSet,
-			NumberRec number,
-			CommandRec command) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull KeywordSetRec keywordSet,
+			@NonNull NumberRec number,
+			@NonNull CommandRec command) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createOrUpdateKeywordSetFallback");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -72,6 +87,7 @@ class KeywordLogicImplementation
 		// create a new one
 
 		keywordSetFallbackHelper.insert (
+			taskLogger,
 			keywordSetFallbackHelper.createInstance ()
 
 			.setKeywordSet (

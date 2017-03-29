@@ -1,6 +1,12 @@
 package wbs.sms.number.list.logic;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+
+import java.util.List;
+
 import lombok.NonNull;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -41,13 +47,30 @@ class NumberListNumberLookupHelper
 			@NonNull NumberRec number) {
 
 		NumberListRec numberList =
-			(NumberListRec)
-			objectManager.getParentRequired (
-				numberLookup);
+			genericCastUnchecked (
+				objectManager.getParentRequired (
+					numberLookup));
 
 		return numberListLogic.includesNumber (
 			numberList,
 			number);
+
+	}
+
+	@Override
+	public
+	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			@NonNull NumberLookupRec numberLookup,
+			@NonNull List <NumberRec> numbers) {
+
+		NumberListRec numberList =
+			genericCastUnchecked (
+				objectManager.getParentRequired (
+					numberLookup));
+
+		return numberListLogic.splitNumbersPresent (
+			numberList,
+			numbers);
 
 	}
 

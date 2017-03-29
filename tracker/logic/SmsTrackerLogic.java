@@ -2,9 +2,11 @@ package wbs.sms.tracker.logic;
 
 import java.util.Collection;
 
+import com.google.common.base.Optional;
+
 import org.joda.time.Instant;
 
-import com.google.common.base.Optional;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -28,9 +30,10 @@ interface SmsTrackerLogic {
 	 * @return True if the number should be sent to.
 	 */
 	boolean simpleTrackerConsult (
+			TaskLogger parentTaskLogger,
 			SmsSimpleTrackerRec tracker,
 			NumberRec number,
-			Optional<Instant> date);
+			Optional <Instant> date);
 
 	/**
 	 * This entirely passive function does a scan for a given tracker and number

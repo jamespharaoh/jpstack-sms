@@ -13,10 +13,12 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -30,6 +32,9 @@ class NetworkFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MenuGroupObjectHelper menuGroupHelper;
@@ -47,16 +52,30 @@ class NetworkFixtureProvider
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		createMenuItems ();
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createFixtures");
 
-		createDefaultNetworks ();
+		createMenuItems (
+			taskLogger);
+
+		createDefaultNetworks (
+			taskLogger);
 
 	}
 
 	private
-	void createMenuItems () {
+	void createMenuItems (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createMenuItems");
 
 		menuItemHelper.insert (
+			taskLogger,
 			menuItemHelper.createInstance ()
 
 			.setMenuGroup (
@@ -88,11 +107,18 @@ class NetworkFixtureProvider
 	}
 
 	private
-	void createDefaultNetworks () {
+	void createDefaultNetworks (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createDefaultNetworks");
 
 		defaultNetworks.forEach (
 			defaultNetwork ->
 				networkHelper.insert (
+					taskLogger,
 					networkHelper.createInstance ()
 
 			.setId (

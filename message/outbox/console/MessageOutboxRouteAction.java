@@ -169,9 +169,11 @@ class MessageOutboxRouteAction
 			// cancel message
 
 			outboxLogic.cancelMessage (
+				taskLogger,
 				outbox.getMessage ());
 
 			eventLogic.createEvent (
+				taskLogger,
 				"sms_outbox_cancelled",
 				userConsoleLogic.userRequired (),
 				outbox.getMessage ());
@@ -190,9 +192,11 @@ class MessageOutboxRouteAction
 			// retry message
 
 			outboxLogic.retryMessage (
+				taskLogger,
 				outbox.getMessage ());
 
 			eventLogic.createEvent (
+				taskLogger,
 				"sms_outbox_retried",
 				userConsoleLogic.userRequired (),
 				outbox.getMessage ());

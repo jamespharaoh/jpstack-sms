@@ -9,21 +9,25 @@ import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 import wbs.platform.user.model.UserObjectHelper;
+
 import wbs.sms.number.blacklist.model.BlacklistObjectHelper;
 import wbs.sms.number.blacklist.model.BlacklistRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatRec;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("blacklistAddAction")
@@ -137,6 +141,7 @@ class BlacklistAddAction
 		}
 
 		blacklistHelper.insert (
+			taskLogger,
 			blacklistHelper.createInstance ()
 
 			.setNumber (
@@ -150,6 +155,7 @@ class BlacklistAddAction
 		// create an event
 
 		eventLogic.createEvent (
+			taskLogger,
 			"number_blacklisted",
 			userConsoleLogic.userRequired (),
 			blacklistOptional.get ());

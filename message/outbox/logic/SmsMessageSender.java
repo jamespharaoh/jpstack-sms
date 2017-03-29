@@ -1,6 +1,5 @@
 package wbs.sms.message.outbox.logic;
 
-import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringInSafe;
@@ -17,6 +16,7 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
@@ -24,6 +24,8 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -71,6 +73,9 @@ class SmsMessageSender {
 
 	@SingletonDependency
 	DeliveryTypeObjectHelper deliveryTypeHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
@@ -170,32 +175,52 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender messageString (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String messageString) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"messageString");
 
 		return messageText (
 			textHelper.findOrCreate (
+				taskLogger,
 				messageString));
 
 	}
 
 	public
 	SmsMessageSender subjectString (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Optional <String> subjectString) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"subjectString");
 
 		return subjectText (
 			optionalOrNull (
-				optionalMapRequired (
-					subjectString,
-					textHelper::findOrCreate)));
+				textHelper.findOrCreate (
+					taskLogger,
+					subjectString)));
 
 	}
 
 	public
 	SmsMessageSender subjectString (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String subjectString) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"subjectString");
 
 		return subjectText (
 			textHelper.findOrCreate (
+				taskLogger,
 				subjectString));
 
 	}
@@ -239,7 +264,13 @@ class SmsMessageSender {
 	// implementation
 
 	public
-	MessageRec send () {
+	MessageRec send (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"send");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -463,11 +494,13 @@ class SmsMessageSender {
 		}
 
 		messageHelper.insert (
+			taskLogger,
 			message);
 
 		if (sendNow) {
 
 			outboxHelper.insert (
+				taskLogger,
 				outboxHelper.createInstance ()
 
 				.setMessage (

@@ -13,9 +13,10 @@ import com.google.common.base.Optional;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -23,6 +24,8 @@ import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
 import wbs.platform.text.model.TextObjectHelper;
@@ -37,7 +40,6 @@ import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.route.core.model.RouteObjectHelper;
 
-@Log4j
 @SingletonComponent ("messageDaemon")
 public
 class MessageDaemon
@@ -50,6 +52,9 @@ class MessageDaemon
 
 	@SingletonDependency
 	ExceptionLogger exceptionLogger;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageExpiryObjectHelper messageExpiryHelper;
@@ -83,20 +88,7 @@ class MessageDaemon
 
 		for (;;) {
 
-			try {
-
-				expireMessages ();
-
-			} catch (Exception exception) {
-
-				exceptionLogger.logThrowable (
-					"daemon",
-					"MessageDaemon",
-					exception,
-					Optional.absent (),
-					GenericExceptionResolution.tryAgainLater);
-
-			}
+			runOnce ();
 
 			try {
 
@@ -114,7 +106,39 @@ class MessageDaemon
 	}
 
 	private
-	void expireMessages () {
+	void runOnce () {
+
+		TaskLogger taskLogger =
+			logContext.createTaskLogger (
+				"runOnce ()");
+
+		try {
+
+			expireMessages (
+				taskLogger);
+
+		} catch (Exception exception) {
+
+			exceptionLogger.logThrowable (
+				taskLogger,
+				"daemon",
+				"MessageDaemon",
+				exception,
+				Optional.absent (),
+				GenericExceptionResolution.tryAgainLater);
+
+		}
+
+	}
+
+	private
+	void expireMessages (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"expireMessages");
 
 		@Cleanup
 		Transaction transaction =
@@ -122,7 +146,7 @@ class MessageDaemon
 				"MessageDaemon.expiresMessages ()",
 				this);
 
-		Collection<MessageExpiryRec> messageExpiries =
+		Collection <MessageExpiryRec> messageExpiries =
 			messageExpiryHelper.findPendingLimit (
 				transaction.now (),
 				batchSize);
@@ -151,16 +175,16 @@ class MessageDaemon
 				// perform expiry
 
 				messageLogic.messageStatus (
+					taskLogger,
 					message,
 					MessageStatus.reportTimedOut);
 
-				log.debug (
-					stringFormat (
-						"Message %s expired from state %s",
-						integerToDecimalString (
-							message.getId ()),
-						enumName (
-							oldMessageStatus)));
+				taskLogger.debugFormat (
+					"Message %s expired from state %s",
+					integerToDecimalString (
+						message.getId ()),
+					enumName (
+						oldMessageStatus));
 
 			} else if (
 				enumInSafe (
@@ -173,13 +197,12 @@ class MessageDaemon
 
 				// ignore expiry
 
-				log.debug (
-					stringFormat (
-						"Message %s expiry ignored due to state %s",
-						integerToDecimalString (
-							message.getId ()),
-						enumName (
-							oldMessageStatus)));
+				taskLogger.debugFormat (
+					"Message %s expiry ignored due to state %s",
+					integerToDecimalString (
+						message.getId ()),
+					enumName (
+						oldMessageStatus));
 
 			} else {
 

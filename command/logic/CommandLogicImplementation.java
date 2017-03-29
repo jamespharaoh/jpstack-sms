@@ -4,12 +4,19 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
+
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.command.model.CommandTypeObjectHelper;
@@ -28,6 +35,9 @@ class CommandLogicImplementation
 	@SingletonDependency
 	CommandTypeObjectHelper commandTypeHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	ObjectTypeObjectHelper objectTypeHelper;
 
@@ -39,9 +49,15 @@ class CommandLogicImplementation
 	@Override
 	public
 	CommandRec findOrCreateCommand (
-			Record<?> parent,
-			String typeCode,
-			String code) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Record <?> parent,
+			@NonNull String typeCode,
+			@NonNull String code) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreateCommand");
 
 		// lookup existing command...
 
@@ -70,6 +86,7 @@ class CommandLogicImplementation
 				typeCode);
 
 		return commandHelper.insert (
+			taskLogger,
 			commandHelper.createInstance ()
 
 			.setCode (

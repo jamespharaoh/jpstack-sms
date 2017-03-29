@@ -6,23 +6,24 @@ import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -39,7 +40,6 @@ import wbs.sms.customer.model.SmsCustomerTemplateRec;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.logic.SmsMessageSender;
 
-@Log4j
 @SingletonComponent ("smsCustomerLogic")
 public
 class SmsCustomerLogicImplementation
@@ -55,6 +55,9 @@ class SmsCustomerLogicImplementation
 
 	@SingletonDependency
 	EventLogic eventLogic;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
@@ -72,13 +75,20 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionStart (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerRec customer,
 			@NonNull Optional<Long> threadId) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sessionStart");
 
 		Transaction transaction =
 			database.currentTransaction ();
 
 		sessionTimeoutAuto (
+			taskLogger,
 			customer);
 
 		if (customer.getActiveSession () != null) {
@@ -94,6 +104,7 @@ class SmsCustomerLogicImplementation
 
 		SmsCustomerSessionRec newSession =
 			smsCustomerSessionHelper.insert (
+				taskLogger,
 				smsCustomerSessionHelper.createInstance ()
 
 			.setCustomer (
@@ -119,18 +130,26 @@ class SmsCustomerLogicImplementation
 				customer.getNumSessions () + 1);
 
 		sendWelcomeMessage (
+			taskLogger,
 			newSession,
 			threadId);
 
 		sendWarningMessage (
+			taskLogger,
 			newSession,
 			threadId);
 
 	}
 
 	void sendWelcomeMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerSessionRec session,
-			@NonNull Optional<Long> threadId) {
+			@NonNull Optional <Long> threadId) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sendWelcomeMessage");
 
 		// only send once per session
 
@@ -193,7 +212,8 @@ class SmsCustomerLogicImplementation
 					customerAffiliate (
 						customer)))
 
-			.send ();
+			.send (
+				taskLogger);
 
 		session
 
@@ -205,8 +225,14 @@ class SmsCustomerLogicImplementation
 	}
 
 	void sendWarningMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerSessionRec session,
 			@NonNull Optional<Long> threadId) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sendWarningMessage");
 
 		SmsCustomerRec customer =
 			session.getCustomer ();
@@ -256,7 +282,8 @@ class SmsCustomerLogicImplementation
 					customerAffiliate (
 						customer)))
 
-			.send ();
+			.send (
+				taskLogger);
 
 		session
 
@@ -270,9 +297,15 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionEndManually (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull UserRec user,
 			@NonNull SmsCustomerRec customer,
 			@NonNull String reason) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sessionEndManually");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -302,6 +335,7 @@ class SmsCustomerLogicImplementation
 		;
 
 		eventLogic.createEvent (
+			taskLogger,
 			"sms_customer_session_end_manually",
 			user,
 			customer,
@@ -311,12 +345,19 @@ class SmsCustomerLogicImplementation
 
 	public
 	void sessionTimeoutAuto (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerRec customer) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sessionTimeoutAuto");
 
 		if (customer.getActiveSession () == null)
 			return;
 
 		sessionTimeoutAuto (
+			taskLogger,
 			customer.getActiveSession ());
 
 	}
@@ -324,13 +365,18 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionTimeoutAuto (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerSessionRec session) {
 
-		log.debug (
-			stringFormat (
-				"Automatic session timeout for %s",
-				integerToDecimalString (
-					session.getId ())));
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"sessionTimeoutAuto");
+
+		taskLogger.debugFormat (
+			"Automatic session timeout for %s",
+			integerToDecimalString (
+				session.getId ()));
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -343,12 +389,11 @@ class SmsCustomerLogicImplementation
 
 		if (session.getEndTime () != null) {
 
-			log.debug (
-				stringFormat (
-					"Not timing out session %s ",
-					integerToDecimalString (
-						session.getId ()),
-					"since it has already ended"));
+			taskLogger.debugFormat (
+				"Not timing out session %s ",
+				integerToDecimalString (
+					session.getId ()),
+				"since it has already ended");
 
 			return;
 
@@ -356,15 +401,14 @@ class SmsCustomerLogicImplementation
 
 		if (manager.getSessionTimeout () == null) {
 
-			log.debug (
-				stringFormat (
-					"Not timing out session %s ",
-					integerToDecimalString (
-						session.getId ()),
-					"since manager %s ",
-					integerToDecimalString (
-						manager.getId ()),
-					"has no timeout configured"));
+			taskLogger.debugFormat (
+				"Not timing out session %s ",
+				integerToDecimalString (
+					session.getId ()),
+				"since manager %s ",
+				integerToDecimalString (
+					manager.getId ()),
+				"has no timeout configured");
 
 			return;
 
@@ -378,25 +422,23 @@ class SmsCustomerLogicImplementation
 		if (! session.getStartTime ().isBefore (
 				startTimeBefore)) {
 
-			log.debug (
-				stringFormat (
-					"Not timing out session %s, ",
-					integerToDecimalString (
-						session.getId ()),
-					"which started at %s, ",
-					session.getStartTime ().toString (),
-					"since that is not before %s",
-					startTimeBefore.toString ()));
+			taskLogger.debugFormat (
+				"Not timing out session %s, ",
+				integerToDecimalString (
+					session.getId ()),
+				"which started at %s, ",
+				session.getStartTime ().toString (),
+				"since that is not before %s",
+				startTimeBefore.toString ());
 
 			return;
 
 		}
 
-		log.warn (
-			stringFormat (
-				"Timing out sms customer session %s",
-				integerToDecimalString (
-					session.getId ())));
+		taskLogger.warningFormat (
+			"Timing out sms customer session %s",
+			integerToDecimalString (
+				session.getId ()));
 
 		session
 
@@ -437,9 +479,15 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void customerAffiliateUpdate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerRec customer,
 			@NonNull SmsCustomerAffiliateRec affiliate,
 			@NonNull MessageRec message) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"customerAffiliateUpdate");
 
 		if (
 			isNotNull (
@@ -454,6 +502,7 @@ class SmsCustomerLogicImplementation
 				affiliate);
 
 		eventLogic.createEvent (
+			taskLogger,
 			"sms_customer_affiliate_update_message",
 			customer,
 			affiliate,

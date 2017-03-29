@@ -11,12 +11,15 @@ import java.util.concurrent.Executors;
 import lombok.Cleanup;
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -59,6 +62,9 @@ class LocatorManager {
 
 	@SingletonDependency
 	LocatorTypeObjectHelper locatorTypeHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
@@ -181,9 +187,15 @@ class LocatorManager {
 
 	private
 	void logFailure (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long locatorLogId,
 			@NonNull String error,
 			@NonNull String errorCode) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"logFailure");
 
 		@Cleanup
 		Transaction transaction =
@@ -202,6 +214,7 @@ class LocatorManager {
 
 			.setErrorText (
 				textHelper.findOrCreate (
+					taskLogger,
 					error))
 
 			.setErrorCode (
@@ -213,10 +226,16 @@ class LocatorManager {
 
 	public
 	LongLat locate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long locatorId,
 			@NonNull Long numberId,
 			@NonNull Long serviceId,
 			@NonNull Long affiliateId) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"locate");
 
 		Long locatorTypeId;
 		Long locatorLogId;
@@ -253,6 +272,7 @@ class LocatorManager {
 
 		LocatorLogRec locatorLog =
 			locatorLogHelper.insert (
+				taskLogger,
 				locatorLogHelper.createInstance ()
 
 			.setLocator (
@@ -307,6 +327,7 @@ class LocatorManager {
 		} catch (LocatorException exception) {
 
 			logFailure (
+				taskLogger,
 				locatorLogId,
 				exception.getMessage (),
 				exception.getErrorCode ());
@@ -317,6 +338,7 @@ class LocatorManager {
 		} catch (RuntimeException exception) {
 
 			logFailure (
+				taskLogger,
 				locatorLogId,
 				exception.getMessage (),
 				null);
@@ -327,6 +349,7 @@ class LocatorManager {
 		} catch (Error exception) {
 
 			logFailure (
+				taskLogger,
 				locatorLogId,
 				exception.getMessage (),
 				null);
@@ -374,11 +397,17 @@ class LocatorManager {
 
 	public
 	void locate (
-			final @NonNull Long locatorId,
-			final @NonNull Long numberId,
-			final @NonNull Long serviceId,
-			final @NonNull Long affiliateId,
-			final Callback callback) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Long locatorId,
+			@NonNull Long numberId,
+			@NonNull Long serviceId,
+			@NonNull Long affiliateId,
+			Callback callback) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"locate");
 
 		executor.execute (
 			new Runnable () {
@@ -391,6 +420,7 @@ class LocatorManager {
 
 					LongLat longLat =
 						locate (
+							taskLogger,
 							locatorId,
 							numberId,
 							serviceId,

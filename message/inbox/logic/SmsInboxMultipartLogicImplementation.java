@@ -1,23 +1,29 @@
 package wbs.sms.message.inbox.logic;
 
+import static wbs.utils.collection.CollectionUtils.emptyList;
+import static wbs.utils.etc.LogicUtils.booleanToYesNo;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 
-import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Optional;
-
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
-import wbs.platform.media.model.MediaRec;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.text.model.TextObjectHelper;
+
 import wbs.sms.message.inbox.model.InboxMultipartBufferObjectHelper;
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
 import wbs.sms.message.inbox.model.InboxMultipartLogObjectHelper;
@@ -27,7 +33,6 @@ import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
-@Log4j
 @SingletonComponent ("smsInboxMultipartLogic")
 public
 class SmsInboxMultipartLogicImplementation
@@ -39,19 +44,22 @@ class SmsInboxMultipartLogicImplementation
 	Database database;
 
 	@SingletonDependency
-	SmsInboxLogic smsInboxLogic;
-
-	@SingletonDependency
 	InboxMultipartBufferObjectHelper inboxMultipartBufferHelper;
 
 	@SingletonDependency
 	InboxMultipartLogObjectHelper inboxMultipartLogHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberObjectHelper numberHelper;
 
 	@SingletonDependency
 	RouteObjectHelper routeHelper;
+
+	@SingletonDependency
+	SmsInboxLogic smsInboxLogic;
 
 	@SingletonDependency
 	TextObjectHelper textHelper;
@@ -61,6 +69,7 @@ class SmsInboxMultipartLogicImplementation
 	@Override
 	public
 	InboxMultipartBufferRec insertInboxMultipart (
+			@NonNull TaskLogger parentTaskLogger,
 			RouteRec route,
 			long multipartId,
 			long multipartSegMax,
@@ -72,10 +81,18 @@ class SmsInboxMultipartLogicImplementation
 			String msgOtherId,
 			String msgText) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"insertInboxMultipart");
+
 		Transaction transaction =
 			database.currentTransaction ();
 
-		log.info ("MULTI: IN " + multipartSeg);
+		taskLogger.noticeFormat (
+			"MULTI: IN %s",
+			integerToDecimalString (
+				multipartSeg));
 
 		try {
 
@@ -92,14 +109,14 @@ class SmsInboxMultipartLogicImplementation
 
 			if (msgOtherId != null) {
 
-				List<InboxMultipartBufferRec> list =
+				List <InboxMultipartBufferRec> list =
 					inboxMultipartBufferHelper.findByOtherId (
 						route,
 						msgOtherId);
 
 				if (! list.isEmpty ()) {
 
-					log.error (
+					taskLogger.errorFormat (
 						"ERROR: inboxMultipartBufferExists");
 
 					return null;
@@ -112,6 +129,7 @@ class SmsInboxMultipartLogicImplementation
 
 			InboxMultipartBufferRec inboxMultipartBuffer =
 				inboxMultipartBufferHelper.insert (
+					taskLogger,
 					inboxMultipartBufferHelper.createInstance ()
 
 				.setRoute (
@@ -149,22 +167,29 @@ class SmsInboxMultipartLogicImplementation
 
 			);
 
-			log.info (
-				"MULTI: insert " + multipartSeg);
+			taskLogger.noticeFormat (
+				"MULTI: insert %s",
+				integerToDecimalString (
+					multipartSeg));
 
 			boolean state =
 				insertInboxMultipartMessage (
+					taskLogger,
 					inboxMultipartBuffer);
 
-			log.info (
-				"MULTI: message insert " + state);
+			taskLogger.noticeFormat (
+				"MULTI: message insert %s",
+				booleanToYesNo (
+					state));
 
 			return inboxMultipartBuffer;
 
 		} finally {
 
-			log.info (
-				"MULTI: OUT " + multipartSeg);
+			taskLogger.noticeFormat (
+				"MULTI: OUT %s",
+				integerToDecimalString (
+					multipartSeg));
 
 		}
 
@@ -173,7 +198,13 @@ class SmsInboxMultipartLogicImplementation
 	@Override
 	public
 	boolean insertInboxMultipartMessage (
-			InboxMultipartBufferRec inboxMultipartBuffer) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull InboxMultipartBufferRec inboxMultipartBuffer) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"insertInboxMultipartMessage");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -195,7 +226,7 @@ class SmsInboxMultipartLogicImplementation
 
 		if (! logList.isEmpty ()) {
 
-			log.error (
+			taskLogger.noticeFormat (
 				"ERROR: inboxMultipartLogExistsRecent");
 
 			return false;
@@ -221,8 +252,10 @@ class SmsInboxMultipartLogicImplementation
 				: recentInboxMultipartBuffers
 		) {
 
-			log.info (
-				"MULTI: found " + recentInboxMultipartBuffer.getMultipartSeg ());
+			taskLogger.noticeFormat (
+				"MULTI: found %s",
+				integerToDecimalString (
+					recentInboxMultipartBuffer.getMultipartSeg ()));
 
 			int bitIndex =
 				toJavaIntegerRequired (
@@ -236,36 +269,51 @@ class SmsInboxMultipartLogicImplementation
 		StringBuilder stringBuilder =
 			new StringBuilder ();
 
-		for (int i = 0; i < bits.length; i++) {
+		for (
+			int index = 0;
+			index < bits.length;
+			index ++
+		) {
 
-			if (bits [i] == null) {
-				log.error ("ERROR: InboxMultipartBufferRec " + (i + 1));
+			if (bits [index] == null) {
+
+				taskLogger.errorFormat (
+					"ERROR: InboxMultipartBufferRec %s",
+					integerToDecimalString (
+						index + 1));
+
 				return false;
+
 			}
 
-			stringBuilder.append (bits[i].getMsgText());
+			stringBuilder.append (bits[index].getMsgText());
 
 		}
 
 		// now create the message
 
 		smsInboxLogic.inboxInsert (
-			Optional.of (bits [0].getMsgOtherId ()),
+			taskLogger,
+			optionalOf (
+				bits [0].getMsgOtherId ()),
 			textHelper.findOrCreate (
+				taskLogger,
 				stringBuilder.toString ()),
 			numberHelper.findOrCreate (
+				taskLogger,
 				inboxMultipartBuffer.getMsgFrom ()),
 			inboxMultipartBuffer.getMsgTo (),
 			inboxMultipartBuffer.getRoute (),
-			Optional.<NetworkRec>absent (),
-			Optional.<Instant>absent (),
-			Collections.<MediaRec>emptyList (),
-			Optional.<String>absent (),
-			Optional.<String>absent ());
+			optionalAbsent (),
+			optionalAbsent (),
+			emptyList (),
+			optionalAbsent (),
+			optionalAbsent ());
 
 		// and create log entry
 
 		inboxMultipartLogHelper.insert (
+			taskLogger,
 			inboxMultipartLogHelper.createInstance ()
 
 			.setRoute (

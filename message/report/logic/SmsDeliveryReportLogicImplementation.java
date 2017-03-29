@@ -15,14 +15,16 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.ReadableInstant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.text.model.TextObjectHelper;
@@ -39,7 +41,6 @@ import wbs.sms.message.report.model.MessageReportObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
-@Log4j
 @SingletonComponent ("smsDeliveryReportLogic")
 public
 class SmsDeliveryReportLogicImplementation
@@ -49,6 +50,9 @@ class SmsDeliveryReportLogicImplementation
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageDao messageDao;
@@ -76,6 +80,7 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	void deliveryReport (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newMessageStatus,
 			@NonNull Optional <String> theirCode,
@@ -85,6 +90,11 @@ class SmsDeliveryReportLogicImplementation
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"deliveryReport");
 
 		Transaction transaction =
 			database.currentTransaction ();
@@ -124,6 +134,7 @@ class SmsDeliveryReportLogicImplementation
 		// create message report thingy
 
 		messageReportHelper.insert (
+			taskLogger,
 			messageReportHelper.createInstance ()
 
 			.setMessage (
@@ -136,13 +147,15 @@ class SmsDeliveryReportLogicImplementation
 				newMessageStatus)
 
 			.setTheirCode (
-				textHelper.findOrCreateMapNull (
-					optionalOrNull (
+				optionalOrNull (
+					textHelper.findOrCreate (
+						taskLogger,
 						theirCode)))
 
 			.setTheirDescription (
-				textHelper.findOrCreateMapNull (
-					optionalOrNull (
+				optionalOrNull (
+					textHelper.findOrCreate (
+						taskLogger,
 						theirDescription)))
 
 			.setTheirTimestamp (
@@ -192,6 +205,7 @@ class SmsDeliveryReportLogicImplementation
 				) {
 
 					messageLogic.messageStatus (
+						taskLogger,
 						message,
 						newMessageStatus);
 
@@ -210,6 +224,7 @@ class SmsDeliveryReportLogicImplementation
 				) {
 
 					messageLogic.messageStatus (
+						taskLogger,
 						message,
 						newMessageStatus);
 
@@ -227,6 +242,7 @@ class SmsDeliveryReportLogicImplementation
 				) {
 
 					messageLogic.messageStatus (
+						taskLogger,
 						message,
 						newMessageStatus);
 
@@ -243,6 +259,7 @@ class SmsDeliveryReportLogicImplementation
 				) {
 
 					messageLogic.messageStatus (
+						taskLogger,
 						message,
 						newMessageStatus);
 
@@ -271,17 +288,16 @@ class SmsDeliveryReportLogicImplementation
 
 		// write to log file
 
-		log.info (
-			stringFormat (
-				"DLV %s %s %s %s",
-				integerToDecimalString (
-					message.getId ()),
-				message.getRoute ().getCode (),
-				ifNull (
-					message.getOtherId (),
-					"—"),
-				enumName (
-					message.getStatus ())));
+		taskLogger.noticeFormat (
+			"DLV %s %s %s %s",
+			integerToDecimalString (
+				message.getId ()),
+			message.getRoute ().getCode (),
+			ifNull (
+				message.getOtherId (),
+				"—"),
+			enumName (
+				message.getStatus ()));
 
 		// update simulated multipart messages
 
@@ -294,6 +310,7 @@ class SmsDeliveryReportLogicImplementation
 			.forEach (
 				link ->
 					deliveryReport (
+						taskLogger,
 						link.getMessage (),
 						newMessageStatus,
 						theirCode,
@@ -306,16 +323,22 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	MessageRec deliveryReport (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull RouteRec route,
 			@NonNull String otherId,
 			@NonNull MessageStatus newMessageStatus,
-			@NonNull Optional<String> theirCode,
-			@NonNull Optional<String> theirDescription,
-			@NonNull Optional<String> extraInformation,
-			@NonNull Optional<ReadableInstant> theirTimestamp)
+			@NonNull Optional <String> theirCode,
+			@NonNull Optional <String> theirDescription,
+			@NonNull Optional <String> extraInformation,
+			@NonNull Optional <ReadableInstant> theirTimestamp)
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"deliveryReport");
 
 		// lookup the message
 
@@ -341,6 +364,7 @@ class SmsDeliveryReportLogicImplementation
 		// process the report
 
 		deliveryReport (
+			taskLogger,
 			message,
 			newMessageStatus,
 			theirCode,
@@ -355,6 +379,7 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	void deliveryReport (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long messageId,
 			@NonNull MessageStatus newMessageStatus,
 			@NonNull Optional <String> theirCode,
@@ -364,6 +389,11 @@ class SmsDeliveryReportLogicImplementation
 		throws
 			NoSuchMessageException,
 			InvalidMessageStateException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"deliveryReport");
 
 		// lookup the message
 
@@ -377,6 +407,7 @@ class SmsDeliveryReportLogicImplementation
 		// process the report
 
 		deliveryReport (
+			taskLogger,
 			message,
 			newMessageStatus,
 			theirCode,

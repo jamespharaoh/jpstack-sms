@@ -4,7 +4,10 @@ import static wbs.utils.etc.Misc.isNotNull;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.spendlimit.model.SmsSpendLimiterNumberObjectHelper;
@@ -18,6 +21,9 @@ class SmsSpendLimiterNumberObjectHelperMethodsImplementation
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@WeakSingletonDependency
 	SmsSpendLimiterNumberObjectHelper smsSpendLimiterNumberHelper;
 
@@ -26,8 +32,14 @@ class SmsSpendLimiterNumberObjectHelperMethodsImplementation
 	@Override
 	public
 	SmsSpendLimiterNumberRec findOrCreate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsSpendLimiterRec smsSpendLimiter,
 			@NonNull NumberRec number) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"findOrCreate");
 
 		SmsSpendLimiterNumberRec existingSpendLimiterNumber =
 			smsSpendLimiterNumberHelper.find (
@@ -42,6 +54,7 @@ class SmsSpendLimiterNumberObjectHelperMethodsImplementation
 		}
 
 		return smsSpendLimiterNumberHelper.insert (
+			taskLogger,
 			smsSpendLimiterNumberHelper.createInstance ()
 
 			.setSmsSpendLimiter (

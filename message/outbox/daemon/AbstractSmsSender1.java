@@ -106,11 +106,13 @@ class AbstractSmsSender1 <MessageContainer>
 
 	protected abstract
 	MessageContainer getMessage (
+			TaskLogger parentTaskLogger,
 			OutboxRec smsOutbox)
 		throws SendFailureException;
 
 	protected abstract
 	Optional <List <String>> sendMessage (
+			TaskLogger parentTaskLogger,
 			MessageContainer messageContainer)
 		throws SendFailureException;
 
@@ -299,6 +301,7 @@ class AbstractSmsSender1 <MessageContainer>
 						outbox.setSending (null);
 
 						smsMessageLogic.blackListMessage (
+							taskLogger,
 							outbox.getMessage ());
 
 						transaction.commit ();
@@ -322,6 +325,7 @@ class AbstractSmsSender1 <MessageContainer>
 						outbox.setSending (null);
 
 						smsMessageLogic.blackListMessage (
+							taskLogger,
 							outbox.getMessage ());
 
 						transaction.commit ();
@@ -336,11 +340,13 @@ class AbstractSmsSender1 <MessageContainer>
 
 						messageContainer =
 							getMessage (
+								taskLogger,
 								outbox);
 
 					} catch (SendFailureException exception) {
 
 						smsOutboxLogic.messageFailure (
+							taskLogger,
 							outbox.getMessage (),
 							exception.errorMessage,
 							exception.failureType);
@@ -363,11 +369,13 @@ class AbstractSmsSender1 <MessageContainer>
 
 					otherIds =
 						sendMessage (
+							taskLogger,
 							messageContainer);
 
 				} catch (SendFailureException exception) {
 
 					reliableOutboxFailure (
+						taskLogger,
 						messageId,
 						exception);
 
@@ -378,6 +386,7 @@ class AbstractSmsSender1 <MessageContainer>
 				// and save our success
 
 				reliableOutboxSuccess (
+					taskLogger,
 					messageId,
 					otherIds);
 
@@ -390,8 +399,14 @@ class AbstractSmsSender1 <MessageContainer>
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxSuccess (
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId,
 				@NonNull Optional <List <String>> otherIds) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"reliableOutboxSuccess");
 
 			boolean interrupted = false;
 
@@ -410,6 +425,7 @@ class AbstractSmsSender1 <MessageContainer>
 							messageId);
 
 					smsOutboxLogic.messageSuccess (
+						taskLogger,
 						message,
 						otherIds,
 						optionalAbsent ());
@@ -463,8 +479,14 @@ class AbstractSmsSender1 <MessageContainer>
 		 * retry up to 100 times in case of a DataAcccessException being thrown.
 		 */
 		void reliableOutboxFailure (
+				@NonNull TaskLogger parentTaskLogger,
 				long messageId,
 				SendFailureException sendException) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"reliableOutboxFailure");
 
 			boolean interrupted = false;
 
@@ -483,6 +505,7 @@ class AbstractSmsSender1 <MessageContainer>
 							messageId);
 
 					smsOutboxLogic.messageFailure (
+						taskLogger,
 						message,
 						sendException.errorMessage,
 						sendException.failureType);

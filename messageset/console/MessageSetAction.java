@@ -239,6 +239,7 @@ class MessageSetAction
 //					new Integer (index));
 
 				eventLogic.createEvent (
+					taskLogger,
 					"messageset_message_removed",
 					userConsoleLogic.userRequired (),
 					index,
@@ -287,6 +288,7 @@ class MessageSetAction
 							newMessage);
 
 					messageSetMessageHelper.insert (
+						taskLogger,
 						messageSetMessage);
 
 					messageSet.getMessages ().add (
@@ -295,6 +297,7 @@ class MessageSetAction
 					// and create event
 
 					eventLogic.createEvent (
+						taskLogger,
 						"messageset_message_created",
 						userConsoleLogic.userRequired (),
 						index,
@@ -321,6 +324,7 @@ class MessageSetAction
 								newRoute);
 
 						eventLogic.createEvent (
+							taskLogger,
 							"messageset_message_route",
 							userConsoleLogic.userRequired (),
 							index,
@@ -341,6 +345,7 @@ class MessageSetAction
 								newNumber);
 
 						eventLogic.createEvent (
+							taskLogger,
 							"messageset_message_number",
 							userConsoleLogic.userRequired (),
 							index,
@@ -362,6 +367,7 @@ class MessageSetAction
 								newMessage);
 
 						eventLogic.createEvent (
+							taskLogger,
 							"messageset_message_message",
 							userConsoleLogic.userRequired (),
 							index,

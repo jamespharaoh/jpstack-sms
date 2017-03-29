@@ -1,5 +1,6 @@
 package wbs.sms.message.delivery.daemon;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.HashMap;
@@ -8,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Provider;
-
-import com.google.common.base.Optional;
 
 import lombok.Cleanup;
 import lombok.Getter;
@@ -285,10 +284,11 @@ class DeliveryDaemon
 				} catch (Exception exception) {
 
 					exceptionLogger.logThrowable (
+						taskLogger,
 						"daemon",
 						"Delivery notice daemon",
 						exception,
-						Optional.absent (),
+						optionalAbsent (),
 						GenericExceptionResolution.tryAgainLater);
 
 				}

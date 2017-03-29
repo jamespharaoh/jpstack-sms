@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.google.common.base.Optional;
 
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.text.model.TextRec;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageTypeRec;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -15,29 +18,20 @@ public
 interface SmsOutboxLogic {
 
 	MessageRec resendMessage (
+			TaskLogger parentTaskLogger,
 			MessageRec old,
 			RouteRec route,
 			TextRec textRec,
 			MessageTypeRec msgTypeRec);
 
 	void unholdMessage (
+			TaskLogger parentTaskLogger,
 			MessageRec message);
 
-	/**
-	 * Removes the given message from the outbox and marks it as cancelled.
-	 *
-	 * @param message
-	 */
 	void cancelMessage (
+			TaskLogger parentTaskLogger,
 			MessageRec message);
 
-	/**
-	 * Finds the next pending message on the given route and marks it as
-	 * sending.
-	 *
-	 * @param routeId
-	 * @return
-	 */
 	OutboxRec claimNextMessage (
 			RouteRec route);
 
@@ -45,28 +39,14 @@ interface SmsOutboxLogic {
 			RouteRec route,
 			Long limit);
 
-	/**
-	 * Removes the given message from the outbox and marks it as sent
-	 * successfully. Also associates the given otherId with the message. The
-	 * message must already be marked as sending.
-	 *
-	 * @param messageId
-	 * @param otherId
-	 */
 	void messageSuccess (
+			TaskLogger parentTaskLogger,
 			MessageRec message,
 			Optional <List <String>> otherIds,
 			Optional <Long> simulateMultipart);
 
-	/**
-	 * Removes the given message from the outbox and marks it as failed. The
-	 * message must be marked as sending.
-	 *
-	 * @param messageId
-	 * @param error
-	 * @param failureType
-	 */
 	void messageFailure (
+			TaskLogger parentTaskLogger,
 			MessageRec message,
 			String error,
 			FailureType failureType);
@@ -79,13 +59,16 @@ interface SmsOutboxLogic {
 	}
 
 	void retryMessage (
+			TaskLogger parentTaskLogger,
 			MessageRec message);
 
 	SmsOutboxAttemptRec beginSendAttempt (
+			TaskLogger parentTaskLogger,
 			OutboxRec smsOutbox,
 			Optional <byte[]> requestTrace);
 
 	void completeSendAttemptSuccess (
+			TaskLogger parentTaskLogger,
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			Optional <List <String>> otherIds,
 			Optional <Long> simulateMultipart,
@@ -93,6 +76,7 @@ interface SmsOutboxLogic {
 			Optional <byte[]> responseTrace);
 
 	void completeSendAttemptFailure (
+			TaskLogger parentTaskLogger,
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			FailureType failureType,
 			String errorMessage,

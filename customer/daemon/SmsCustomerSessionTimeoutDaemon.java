@@ -1,29 +1,34 @@
 package wbs.sms.customer.daemon;
 
+import static wbs.utils.collection.IterableUtils.iterableMapToList;
 import static wbs.utils.etc.Misc.isNull;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.List;
 
-import lombok.Cleanup;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.daemon.SleepingDaemonService;
+
 import wbs.sms.customer.logic.SmsCustomerLogic;
 import wbs.sms.customer.model.SmsCustomerManagerObjectHelper;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerSessionObjectHelper;
 import wbs.sms.customer.model.SmsCustomerSessionRec;
 
-@Log4j
+import wbs.utils.time.TimeFormatter;
+
 @SingletonComponent ("smsCustomerSessionTimeoutDaemon")
 public
 class SmsCustomerSessionTimeoutDaemon
@@ -44,6 +49,9 @@ class SmsCustomerSessionTimeoutDaemon
 	@SingletonDependency
 	Database database;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	SmsCustomerLogic smsCustomerLogic;
 
@@ -52,6 +60,9 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@SingletonDependency
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
+
+	@SingletonDependency
+	TimeFormatter timeFormatter;
 
 	// details
 
@@ -85,97 +96,125 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@Override
 	protected
-	void runOnce () {
+	void runOnce (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"SmsCustomerSessionTimeoutDaemon.runOnce ()",
-				this);
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"runOnce ()");
 
-		List<SmsCustomerManagerRec> managers =
-			smsCustomerManagerHelper.findAll ();
+		try (
 
-		transaction.close ();
+			Transaction transaction =
+				database.beginReadOnly (
+					"SmsCustomerSessionTimeoutDaemon.runOnce ()",
+					this);
 
-		for (
-			SmsCustomerManagerRec manager
-				: managers
 		) {
 
-			runOneManager (
-				manager.getId ());
+			List <Long> managerIds =
+				iterableMapToList (
+					SmsCustomerManagerRec::getId,
+					smsCustomerManagerHelper.findAll ());
+
+			transaction.close ();
+
+			managerIds.forEach (
+				managerId ->
+					runOneManager (
+						taskLogger,
+						managerId));
 
 		}
 
 	}
 
 	void runOneManager (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long managerId) {
 
-		log.debug (
-			stringFormatObsolete (
-				"Performing session timeouts for manager %s",
+		TaskLogger taskLogger =
+			logContext.nestTaskLoggerFormat (
+				parentTaskLogger,
+				"runOneManager (%s)",
+				integerToDecimalString (
+					managerId));
+
+		taskLogger.debugFormat (
+			"Performing session timeouts for manager %s",
+			integerToDecimalString (
 				managerId));
 
-		@Cleanup
-		Transaction readTransaction =
-			database.beginReadOnly (
-				"SmsCustomerSessionTimeoutDaemon.runOneManager",
-				this);
+		try (
 
-		SmsCustomerManagerRec manager =
-			smsCustomerManagerHelper.findRequired (
-				managerId);
-
-		if (
-			isNull (
-				manager.getSessionTimeout ())
-		) {
-			return;
-		}
-
-		Instant startTimeBefore =
-			readTransaction.now ()
-				.minus (
-					Duration.standardSeconds (
-						manager.getSessionTimeout ()));
-
-		log.debug (
-			stringFormatObsolete (
-				"Got start time before %s",
-				startTimeBefore));
-
-		List<SmsCustomerSessionRec> sessionsToTimeout =
-			smsCustomerSessionHelper.findToTimeoutLimit (
-				manager,
-				startTimeBefore,
-				batchSize);
-
-		log.debug (
-			stringFormatObsolete (
-				"Found %s sessions",
-				sessionsToTimeout.size ()));
-
-		for (
-			SmsCustomerSessionRec session
-				: sessionsToTimeout
-		) {
-
-			@Cleanup
-			Transaction writeTransaction =
-				database.beginReadWrite (
-					"SmsCustomerSessionTimeoutDaemon.runOneManager (managerId)",
+			Transaction readTransaction =
+				database.beginReadOnly (
+					"SmsCustomerSessionTimeoutDaemon.runOneManager",
 					this);
 
-			session =
-				smsCustomerSessionHelper.findRequired (
-					session.getId ());
+		) {
 
-			smsCustomerLogic.sessionTimeoutAuto (
-				session);
+			SmsCustomerManagerRec manager =
+				smsCustomerManagerHelper.findRequired (
+					managerId);
 
-			writeTransaction.commit ();
+			if (
+				isNull (
+					manager.getSessionTimeout ())
+			) {
+				return;
+			}
+
+			Instant startTimeBefore =
+				readTransaction.now ()
+					.minus (
+						Duration.standardSeconds (
+							manager.getSessionTimeout ()));
+
+			taskLogger.debugFormat (
+				"Got start time before %s",
+				timeFormatter.timestampSecondStringIso (
+					startTimeBefore));
+
+			List <SmsCustomerSessionRec> sessionsToTimeout =
+				smsCustomerSessionHelper.findToTimeoutLimit (
+					manager,
+					startTimeBefore,
+					batchSize);
+
+			taskLogger.debugFormat (
+				"Found %s sessions",
+				integerToDecimalString (
+					sessionsToTimeout.size ()));
+
+			for (
+				SmsCustomerSessionRec session
+					: sessionsToTimeout
+			) {
+
+				try (
+
+					Transaction writeTransaction =
+						database.beginReadWrite (
+							"SmsCustomerSessionTimeoutDaemon.runOneManager (managerId)",
+							this);
+
+				) {
+
+					session =
+						smsCustomerSessionHelper.findRequired (
+							session.getId ());
+
+					smsCustomerLogic.sessionTimeoutAuto (
+						taskLogger,
+						session);
+
+					writeTransaction.commit ();
+
+				}
+
+			}
 
 		}
 

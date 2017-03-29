@@ -166,6 +166,7 @@ class KeywordCommand
 						message.getId ()));
 
 				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
 					inbox,
 					optionalAbsent (),
 					optionalAbsent (),
@@ -196,6 +197,7 @@ class KeywordCommand
 			if (keywordRecord.getSticky ()) {
 
 				keywordLogic.createOrUpdateKeywordSetFallback (
+					taskLogger,
 					keywordSet,
 					message.getNumber (),
 					nextCommand);
@@ -252,6 +254,7 @@ class KeywordCommand
 			"as not processed");
 
 		return smsInboxLogic.inboxNotProcessed (
+			taskLogger,
 			inbox,
 			optionalAbsent (),
 			optionalAbsent (),

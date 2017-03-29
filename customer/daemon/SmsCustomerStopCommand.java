@@ -1,6 +1,7 @@
 package wbs.sms.customer.daemon;
 
 import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 
@@ -13,15 +14,19 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.service.model.ServiceObjectHelper;
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.command.model.CommandObjectHelper;
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.customer.logic.SmsCustomerLogic;
@@ -54,8 +59,8 @@ class SmsCustomerStopCommand
 	@SingletonDependency
 	Database database;
 
-	@SingletonDependency
-	SmsInboxLogic smsInboxLogic;
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
@@ -77,6 +82,9 @@ class SmsCustomerStopCommand
 
 	@SingletonDependency
 	SmsCustomerTemplateObjectHelper smsCustomerTemplateHelper;
+
+	@SingletonDependency
+	SmsInboxLogic smsInboxLogic;
 
 	// prototype dependencies
 
@@ -116,6 +124,11 @@ class SmsCustomerStopCommand
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handle");
+
 		Transaction transaction =
 			database.currentTransaction ();
 
@@ -129,6 +142,7 @@ class SmsCustomerStopCommand
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.findOrCreate (
+				taskLogger,
 				customerManager,
 				inboundMessage.getNumber ());
 
@@ -178,7 +192,8 @@ class SmsCustomerStopCommand
 						smsCustomerLogic.customerAffiliate (
 							customer)))
 
-				.send ();
+				.send (
+					taskLogger);
 
 		}
 
@@ -215,6 +230,7 @@ class SmsCustomerStopCommand
 		) {
 
 			numberListLogic.addDueToMessage (
+				taskLogger,
 				customerManager.getStopNumberList (),
 				inboundMessage.getNumber (),
 				inboundMessage,
@@ -225,8 +241,9 @@ class SmsCustomerStopCommand
 		// process message
 
 		return smsInboxLogic.inboxProcessed (
+			taskLogger,
 			inbox,
-			Optional.of (
+			optionalOf (
 				stopService),
 			smsCustomerLogic.customerAffiliate (
 				customer),
