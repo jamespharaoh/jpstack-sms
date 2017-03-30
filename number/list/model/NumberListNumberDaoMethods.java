@@ -11,7 +11,7 @@ interface NumberListNumberDaoMethods {
 			NumberListRec numberList,
 			NumberRec number);
 
-	List <NumberListNumberRec> findMany (
+	List <NumberListNumberRec> findManyPresent (
 			NumberListRec numberList,
 			List <NumberRec> numbers);
 

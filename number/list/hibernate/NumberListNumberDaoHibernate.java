@@ -48,7 +48,7 @@ class NumberListNumberDaoHibernate
 
 	@Override
 	public
-	List <NumberListNumberRec> findMany (
+	List <NumberListNumberRec> findManyPresent (
 			@NonNull NumberListRec numberList,
 			@NonNull List <NumberRec> numbers) {
 
@@ -69,6 +69,11 @@ class NumberListNumberDaoHibernate
 				Restrictions.in (
 					"_numberListNumber.number",
 					numbers))
+
+			.add (
+				Restrictions.eq (
+					"_numberListNumber.present",
+					true))
 
 		);
 

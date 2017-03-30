@@ -158,7 +158,7 @@ class NumberListLogicImplementation
 			@NonNull List <NumberRec> numbers) {
 
 		List <NumberListNumberRec> numberListNumbers =
-			numberListNumberHelper.findMany (
+			numberListNumberHelper.findManyPresent (
 				numberList,
 				numbers);
 
