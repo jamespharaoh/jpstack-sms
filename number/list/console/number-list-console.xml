@@ -43,6 +43,14 @@
 				<context-tab-action-page
 					name="update"/>
 
+				<!--
+				<object-search-page
+					name="search"
+					object-type="numberListNumber"
+					search-fields="number-search"
+					results-fields="number-results"/>
+				-->
+
 				<context-link
 					name="history"
 					link="numberListUpdate"
