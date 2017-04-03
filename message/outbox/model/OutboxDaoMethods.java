@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
+import wbs.platform.scaffold.model.SliceRec;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -14,6 +16,7 @@ interface OutboxDaoMethods {
 	Long count ();
 
 	Long countOlderThan (
+			SliceRec slice,
 			Instant intant);
 
 	OutboxRec find (

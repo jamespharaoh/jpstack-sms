@@ -181,6 +181,18 @@
 			description="View message statistics for a slice"
 			template="yes"/>
 
+		<priv-type
+			subject="slice"
+			name="SMS outbox view"
+			description="View SMS messages in the outbox for a slice"
+			template="yes"/>
+
+		<priv-type
+			subject="slice"
+			name="SMS inbox view"
+			description="View SMS messages in the inbox for a slice"
+			template="yes"/>
+
 	</priv-types>
 
 	<event-types>

@@ -18,6 +18,8 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 
+import wbs.platform.scaffold.model.SliceRec;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.model.OutboxDao;
 import wbs.sms.message.outbox.model.OutboxRec;
@@ -51,6 +53,7 @@ class OutboxDaoHibernate
 	@Override
 	public
 	Long countOlderThan (
+			@NonNull SliceRec slice,
 			@NonNull Instant instant) {
 
 		return findOneOrNull (
@@ -60,6 +63,15 @@ class OutboxDaoHibernate
 			createCriteria (
 				OutboxRec.class,
 				"_outbox")
+
+			.createAlias (
+				"_outbox.route",
+				"_route")
+
+			.add (
+				Restrictions.eq (
+					"_route.slice",
+					slice))
 
 			.add (
 				Restrictions.lt (

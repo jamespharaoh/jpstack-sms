@@ -4,15 +4,18 @@ import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
-import lombok.NonNull;
-
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
+
+import wbs.platform.scaffold.model.SliceRec;
+
 import wbs.sms.message.inbox.model.InboxDao;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.inbox.model.InboxState;
@@ -50,6 +53,7 @@ class InboxDaoHibernate
 	@Override
 	public
 	Long countPendingOlderThan (
+			@NonNull SliceRec slice,
 			@NonNull Instant instant) {
 
 		return findOneOrNull (
@@ -59,6 +63,19 @@ class InboxDaoHibernate
 			createCriteria (
 				InboxRec.class,
 				"_inbox")
+
+			.createAlias (
+				"_inbox.message",
+				"_message")
+
+			.createAlias (
+				"_message.route",
+				"_route")
+
+			.add (
+				Restrictions.eq (
+					"_route.slice",
+					slice))
 
 			.add (
 				Restrictions.eq (
