@@ -19,6 +19,7 @@ import wbs.platform.scaffold.model.SliceRec;
 import wbs.sms.message.inbox.model.InboxDao;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.inbox.model.InboxState;
+import wbs.sms.route.core.model.RouteRec;
 
 @SingletonComponent ("inboxDao")
 public
@@ -72,6 +73,42 @@ class InboxDaoHibernate
 				Restrictions.eq (
 					"_route.slice",
 					slice))
+
+			.add (
+				Restrictions.eq (
+					"_inbox.state",
+					InboxState.pending))
+
+			.add (
+				Restrictions.lt (
+					"_inbox.createdTime",
+					instant))
+
+			.setProjection (
+				Projections.rowCount ())
+
+		);
+
+	}
+
+	@Override
+	public
+	Long countPendingOlderThan (
+			@NonNull RouteRec route,
+			@NonNull Instant instant) {
+
+		return findOneOrNull (
+			"countPending ()",
+			Long.class,
+
+			createCriteria (
+				InboxRec.class,
+				"_inbox")
+
+			.add (
+				Restrictions.eq (
+					"_inbox.route",
+					route))
 
 			.add (
 				Restrictions.eq (

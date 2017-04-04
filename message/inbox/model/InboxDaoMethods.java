@@ -6,6 +6,8 @@ import org.joda.time.Instant;
 
 import wbs.platform.scaffold.model.SliceRec;
 
+import wbs.sms.route.core.model.RouteRec;
+
 public
 interface InboxDaoMethods {
 
@@ -13,6 +15,10 @@ interface InboxDaoMethods {
 
 	Long countPendingOlderThan (
 			SliceRec slice,
+			Instant instant);
+
+	Long countPendingOlderThan (
+			RouteRec route,
 			Instant instant);
 
 	List <InboxRec> findPendingLimit (
