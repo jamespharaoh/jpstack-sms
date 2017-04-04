@@ -65,11 +65,7 @@ class InboxDaoHibernate
 				"_inbox")
 
 			.createAlias (
-				"_inbox.message",
-				"_message")
-
-			.createAlias (
-				"_message.route",
+				"_inbox.route",
 				"_route")
 
 			.add (
