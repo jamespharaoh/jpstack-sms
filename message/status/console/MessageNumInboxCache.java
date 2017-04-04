@@ -44,7 +44,7 @@ class MessageNumInboxCache
 	public
 	MessageNumInboxCache () {
 
-		super (1000);
+		super (5000);
 
 	}
 

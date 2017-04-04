@@ -63,26 +63,8 @@ class SmsOutboxUnstickDaemon
 
 	@Override
 	protected
-	String getThreadName () {
-		return "SmsOutboxUnstick";
-	}
-
-	@Override
-	protected
-	Duration getSleepDuration () {
-		return sleepDuration;
-	}
-
-	@Override
-	protected
-	String generalErrorSource () {
-		return "message outbox unstick daemon";
-	}
-
-	@Override
-	protected
-	String generalErrorSummary () {
-		return "error checking for stuck message outboxes to unstick";
+	String backgroundProcessName () {
+		return "sms-outbox.unstick";
 	}
 
 	// implementation

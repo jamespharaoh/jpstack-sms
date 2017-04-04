@@ -337,6 +337,9 @@ class SmsInboxLogicImplementation
 			.setMessage (
 				message)
 
+			.setRoute (
+				route)
+
 			.setCreatedTime (
 				transaction.now ())
 

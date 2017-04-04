@@ -43,7 +43,7 @@ class MessageNumOutboxCache
 
 	public
 	MessageNumOutboxCache () {
-		super (1000);
+		super (5000);
 	}
 
 	// implementation

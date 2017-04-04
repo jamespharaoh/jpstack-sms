@@ -68,28 +68,8 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@Override
 	protected
-	String getThreadName () {
-		return "SmsCustomerSessionTimeout";
-	}
-
-	@Override
-	protected
-	Duration getSleepDuration () {
-
-		return sleepDuration;
-
-	}
-
-	@Override
-	protected
-	String generalErrorSource () {
-		return "sms customer session timeout daemon";
-	}
-
-	@Override
-	protected
-	String generalErrorSummary () {
-		return "error checking for sms customer sessions to timeout";
+	String backgroundProcessName () {
+		return "sms-customer.session-timeout";
 	}
 
 	// implementation
