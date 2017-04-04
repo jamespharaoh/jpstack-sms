@@ -111,9 +111,8 @@ class InboxDaoHibernate
 					route))
 
 			.add (
-				Restrictions.eq (
-					"_inbox.state",
-					InboxState.pending))
+				Restrictions.sqlRestriction (
+					"{alias}.\"state\" = 'pending'::inbox_state"))
 
 			.add (
 				Restrictions.lt (
