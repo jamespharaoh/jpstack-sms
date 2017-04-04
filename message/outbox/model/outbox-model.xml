@@ -56,6 +56,16 @@
 
 	</fields>
 
+	<background-processes>
+
+		<background-process
+			object-type="outbox"
+			name="Unstick"
+			description="Unstick outboxes which have been sending for a long time"
+			frequency="10 seconds"/>
+
+	</background-processes>
+
 	<priv-types>
 
 		<priv-type

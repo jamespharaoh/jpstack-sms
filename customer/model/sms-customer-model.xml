@@ -57,6 +57,16 @@
 
 	</fields>
 
+	<background-processes>
+
+		<background-process
+			object-type="sms-customer"
+			name="Session timeout"
+			description="Time out SMS customer sessions"
+			frequency="10 seconds"/>
+
+	</background-processes>
+
 	<event-types>
 
 		<event-type

@@ -64,7 +64,7 @@ class SmsOutboxUnstickDaemon
 	@Override
 	protected
 	String backgroundProcessName () {
-		return "sms-outbox.unstick";
+		return "outbox.unstick";
 	}
 
 	// implementation
