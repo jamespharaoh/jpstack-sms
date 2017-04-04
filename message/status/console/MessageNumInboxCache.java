@@ -1,7 +1,5 @@
 package wbs.sms.message.status.console;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -20,7 +18,6 @@ import wbs.platform.scaffold.model.SliceRec;
 
 import wbs.sms.message.inbox.console.InboxConsoleHelper;
 import wbs.sms.route.core.console.RouteConsoleHelper;
-import wbs.sms.route.core.model.RouteRec;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageNumInboxCache")
@@ -69,14 +66,19 @@ class MessageNumInboxCache
 			sliceHelper.findRequired (
 				sliceId);
 
-		List <RouteRec> routes =
-			routeHelper.findByParent (
-				slice);
-
 		Instant olderThan =
 			transaction.now ().minus (
 				Duration.standardSeconds (
 					5));
+
+		return inboxHelper.countPendingOlderThan (
+			slice,
+			olderThan);
+
+		/*
+		List <RouteRec> routes =
+			routeHelper.findByParent (
+				slice);
 
 		return routes.stream ()
 
@@ -86,7 +88,9 @@ class MessageNumInboxCache
 						route,
 						olderThan))
 
+
 			.sum ();
+		*/
 
 	}
 
