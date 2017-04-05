@@ -12,6 +12,7 @@ import javax.inject.Provider;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -75,7 +76,8 @@ class DeliveryDaemon
 
 	@Override
 	protected
-	void init () {
+	void setupService (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		buffer =
 			new QueueBuffer<> (
@@ -84,35 +86,40 @@ class DeliveryDaemon
 		handlersById =
 			new HashMap<> ();
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"DeliveryDaemon.init ()",
-				this);
+		try (
 
-		for (
-			Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
-				: handlersByBeanName.entrySet ()
+			Transaction transaction =
+				database.beginReadOnly (
+					"DeliveryDaemon.init ()",
+					this);
+
 		) {
 
-			//String beanName = ent.getKey ();
-
-			DeliveryHandler handler =
-				handlerEntry.getValue ().get ();
-
 			for (
-				String deliveryTypeCode
-					: handler.getDeliveryTypeCodes ()
+				Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
+					: handlersByBeanName.entrySet ()
 			) {
 
-				DeliveryTypeRec deliveryType =
-					deliveryTypeHelper.findByCodeRequired (
-						GlobalId.root,
-						deliveryTypeCode);
+				//String beanName = ent.getKey ();
 
-				handlersById.put (
-					deliveryType.getId (),
-					handler);
+				DeliveryHandler handler =
+					handlerEntry.getValue ().get ();
+
+				for (
+					String deliveryTypeCode
+						: handler.getDeliveryTypeCodes ()
+				) {
+
+					DeliveryTypeRec deliveryType =
+						deliveryTypeHelper.findByCodeRequired (
+							GlobalId.root,
+							deliveryTypeCode);
+
+					handlersById.put (
+						deliveryType.getId (),
+						handler);
+
+				}
 
 			}
 
@@ -122,9 +129,13 @@ class DeliveryDaemon
 
 	@Override
 	protected
-	void deinit () {
+	void serviceTeardown (
+			@NonNull TaskLogger parentTaskLogger) {
+
 		buffer = null;
+
 		handlersById = null;
+
 	}
 
 	@Override
