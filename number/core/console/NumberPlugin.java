@@ -5,6 +5,8 @@ import java.util.List;
 import org.joda.time.Instant;
 
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.number.core.model.NumberRec;
 
 public
@@ -28,7 +30,8 @@ interface NumberPlugin {
 		Record <?> getSubscriptionObject ();
 		String getType ();
 
-		boolean canView ();
+		boolean canView (
+				TaskLogger parentTaskLogger);
 
 	}
 

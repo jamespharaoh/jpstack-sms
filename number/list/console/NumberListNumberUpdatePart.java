@@ -15,8 +15,10 @@ import lombok.experimental.Accessors;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.list.model.NumberListRec;
@@ -28,6 +30,9 @@ class NumberListNumberUpdatePart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberListConsoleHelper numberListHelper;
@@ -56,9 +61,15 @@ class NumberListNumberUpdatePart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
+
 		goDetails ();
 
-		goForm ();
+		goForm (
+			taskLogger);
 
 	}
 
@@ -75,7 +86,13 @@ class NumberListNumberUpdatePart
 
 	}
 
-	void goForm () {
+	void goForm (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goForm");
 
 		// form open
 
@@ -105,6 +122,7 @@ class NumberListNumberUpdatePart
 
 		if (
 			privChecker.canRecursive (
+				taskLogger,
 				numberList,
 				"number_list_add")
 		) {
@@ -120,6 +138,7 @@ class NumberListNumberUpdatePart
 
 		if (
 			privChecker.canRecursive (
+				taskLogger,
 				numberList,
 				"number_list_remove")
 		) {

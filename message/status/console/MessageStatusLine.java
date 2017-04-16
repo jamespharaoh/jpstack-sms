@@ -122,6 +122,11 @@ class MessageStatusLine
 	long countInboxes (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"countInboxes");
+
 		Long numInbox = 0l;
 
 		// count inboxes
@@ -134,10 +139,12 @@ class MessageStatusLine
 			if (
 
 				privChecker.canRecursive (
+					taskLogger,
 					GlobalId.root,
 					"inbox_view")
 
 				|| privChecker.canRecursive (
+					taskLogger,
 					slice,
 					"sms_inbox_view")
 
@@ -169,6 +176,11 @@ class MessageStatusLine
 	long countOutboxes (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"countOutboxes");
+
 		Long numOutbox = 0l;
 
 		// count inboxes
@@ -181,10 +193,12 @@ class MessageStatusLine
 			if (
 
 				privChecker.canRecursive (
+					taskLogger,
 					GlobalId.root,
 					"inbox_view")
 
 				|| privChecker.canRecursive (
+					taskLogger,
 					slice,
 					"sms_outbox_view")
 

@@ -153,7 +153,10 @@ class NumberSubscriptionsPart
 				: links
 		) {
 
-			if (! link.canView ()) {
+			if (
+				! link.canView (
+					taskLogger)
+			) {
 				continue;
 			}
 

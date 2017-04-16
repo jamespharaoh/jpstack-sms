@@ -64,7 +64,8 @@ class MessageManuallyUndeliverFormActionHelper
 
 	@Override
 	public
-	Pair <Boolean, Boolean> canBePerformed () {
+	Pair <Boolean, Boolean> canBePerformed (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		MessageRec smsMessage =
 			smsMessageHelper.findFromContextRequired ();

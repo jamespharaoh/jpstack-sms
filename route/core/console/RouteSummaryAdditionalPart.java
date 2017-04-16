@@ -1,6 +1,6 @@
 package wbs.sms.route.core.console;
 
-import java.util.Collections;
+import static wbs.utils.collection.MapUtils.emptyMap;
 
 import lombok.NonNull;
 
@@ -61,7 +61,8 @@ class RouteSummaryAdditionalPart
 		if (summaryAdditionalPart != null) {
 
 			summaryAdditionalPart.setup (
-				Collections.emptyMap ());
+				taskLogger,
+				emptyMap ());
 
 			summaryAdditionalPart.prepare (
 				taskLogger);

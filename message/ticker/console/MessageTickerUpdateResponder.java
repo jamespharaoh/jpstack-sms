@@ -97,14 +97,17 @@ class MessageTickerUpdateResponder
 			if (
 
 				! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.routeGlobalId (),
 					"messages")
 
 				&& ! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.serviceParentGlobalId (),
 					"messages")
 
 				&& ! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.affiliateParentGlobalId (),
 					"messages")
 
@@ -138,14 +141,17 @@ class MessageTickerUpdateResponder
 			if (
 
 				! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.routeGlobalId (),
 					"messages")
 
 				&& ! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.serviceParentGlobalId (),
 					"messages")
 
 				&& ! privChecker.canRecursive (
+					taskLogger,
 					messageTickerMessage.affiliateParentGlobalId (),
 					"messages")
 

@@ -16,9 +16,12 @@ import lombok.extern.log4j.Log4j;
 import wbs.console.helper.core.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -44,6 +47,9 @@ class MessageConsoleHooks
 
 	@SingletonDependency
 	AffiliateObjectHelper affiliateHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ObjectManager objectManager;
@@ -93,7 +99,13 @@ class MessageConsoleHooks
 	@Override
 	public
 	void applySearchFilter (
-			Object searchObject) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Object searchObject) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"applySearchFilter");
 
 		MessageSearch search =
 			(MessageSearch)
@@ -138,6 +150,7 @@ class MessageConsoleHooks
 
 			if (
 			 	! privChecker.canRecursive (
+			 		taskLogger,
 			 		serviceParent,
 			 		"messages")
 			 ) {
@@ -188,6 +201,7 @@ class MessageConsoleHooks
 
 			if (
 				! privChecker.canRecursive (
+					taskLogger,
 					affiliateParent,
 					"messages")
 			) {
@@ -216,6 +230,7 @@ class MessageConsoleHooks
 
 			if (
 				! privChecker.canRecursive (
+					taskLogger,
 					route,
 					"messages")
 			) {

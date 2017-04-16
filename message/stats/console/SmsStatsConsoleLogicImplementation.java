@@ -86,6 +86,7 @@ class SmsStatsConsoleLogicImplementation
 
 		if (
 			privChecker.canRecursive (
+				taskLogger,
 				GlobalId.root,
 				"stats")
 		) {
@@ -107,6 +108,7 @@ class SmsStatsConsoleLogicImplementation
 
 				if (
 					! privChecker.canRecursive (
+						taskLogger,
 						objectManager.getParentRequired (
 							service),
 						"stats")
@@ -146,6 +148,7 @@ class SmsStatsConsoleLogicImplementation
 
 				if (
 					! privChecker.canRecursive (
+						taskLogger,
 						objectManager.getParentRequired (
 							affiliate),
 						"stats")
@@ -183,6 +186,7 @@ class SmsStatsConsoleLogicImplementation
 
 			if (
 				privChecker.canRecursive (
+					taskLogger,
 					route,
 					"stats")
 			) {

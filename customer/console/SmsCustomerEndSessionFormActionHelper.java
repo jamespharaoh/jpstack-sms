@@ -57,7 +57,8 @@ class SmsCustomerEndSessionFormActionHelper
 
 	@Override
 	public
-	Pair <Boolean, Boolean> canBePerformed () {
+	Pair <Boolean, Boolean> canBePerformed (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		SmsCustomerRec customer =
 			smsCustomerHelper.findFromContextRequired ();
