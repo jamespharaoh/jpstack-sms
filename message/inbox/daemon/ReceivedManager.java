@@ -126,8 +126,13 @@ class ReceivedManager
 		}
 
 		void dumpMessageInfo (
-				@NonNull TaskLogger taskLogger,
+				@NonNull TaskLogger parentTaskLogger,
 				@NonNull MessageRec message) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"dumpMessageInfo");
 
 			taskLogger.noticeFormat (
 				"%s %s %s %s",
@@ -152,6 +157,7 @@ class ReceivedManager
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						"ReceivedManager.ReceivedThread.doMessage (messageId)",
 						this);
 
@@ -224,6 +230,7 @@ class ReceivedManager
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						stringFormat (
 							"%s (%s)",
 							joinWithFullStop (
@@ -330,6 +337,10 @@ class ReceivedManager
 
 	boolean doQuery () {
 
+		TaskLogger taskLogger =
+			logContext.createTaskLogger (
+				"doQuery");
+
 		final
 		Set <Long> activeMessageids =
 			buffer.getKeys ();
@@ -338,6 +349,7 @@ class ReceivedManager
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"ReceivedManager.doQuery ()",
 					this);
 
@@ -439,7 +451,8 @@ class ReceivedManager
 	 */
 	@Override
 	protected
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		// create database query thread
 

@@ -111,11 +111,11 @@ class CommandManagerImplementation
 
 	public
 	CommandHandler getHandler (
-			@NonNull TaskLogger taskLogger,
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull CommandTypeRec commandType) {
 
 		return getHandler (
-			taskLogger,
+			parentTaskLogger,
 			commandType.getParentType ().getCode (),
 			commandType.getCode ());
 
@@ -158,11 +158,16 @@ class CommandManagerImplementation
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger taskLogger,
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull InboxRec inbox,
 			@NonNull CommandRec command,
 			@NonNull Optional<Long> ref,
 			@NonNull String rest) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"handle");
 
 		return getHandler (
 			taskLogger,

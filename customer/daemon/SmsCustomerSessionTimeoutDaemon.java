@@ -88,6 +88,7 @@ class SmsCustomerSessionTimeoutDaemon
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"SmsCustomerSessionTimeoutDaemon.runOnce ()",
 					this);
 
@@ -130,6 +131,7 @@ class SmsCustomerSessionTimeoutDaemon
 
 			Transaction readTransaction =
 				database.beginReadOnly (
+					taskLogger,
 					"SmsCustomerSessionTimeoutDaemon.runOneManager",
 					this);
 
@@ -177,6 +179,7 @@ class SmsCustomerSessionTimeoutDaemon
 
 					Transaction writeTransaction =
 						database.beginReadWrite (
+							taskLogger,
 							"SmsCustomerSessionTimeoutDaemon.runOneManager (managerId)",
 							this);
 

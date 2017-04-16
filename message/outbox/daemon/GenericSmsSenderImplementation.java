@@ -214,6 +214,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"GenericSmsSenderImplementation.setupSend ()",
 					this);
 
@@ -393,6 +394,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					stringFormat (
 						"%s.%s ()",
 						"GenericSmsSenderImplementation",
@@ -517,6 +519,7 @@ class GenericSmsSenderImplementation <StateType>
 
 				performSendResult.errorTrace (
 					exceptionUtils.throwableDumpJson (
+						taskLogger,
 						performSendResult.exception ()));
 
 			}
@@ -594,6 +597,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					stringFormat (
 						"%s.%s (%s)",
 						"GenericSmsSenderImplementation",
@@ -718,6 +722,7 @@ class GenericSmsSenderImplementation <StateType>
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					stringFormat (
 						"%s.%s (%s)",
 						"GenericSmsSenderImplementation",
@@ -833,6 +838,7 @@ class GenericSmsSenderImplementation <StateType>
 
 					processResponseResult.errorTrace (
 						exceptionUtils.throwableDumpJson (
+							taskLogger,
 							processResponseResult.exception ()));
 
 				}

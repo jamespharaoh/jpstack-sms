@@ -162,7 +162,8 @@ class MessageStatusLine
 				));
 
 				numInbox +=
-					numInboxCache.get ();
+					numInboxCache.get (
+						taskLogger);
 
 			}
 
@@ -216,7 +217,8 @@ class MessageStatusLine
 				));
 
 				numOutbox +=
-					numOutboxCache.get ();
+					numOutboxCache.get (
+						taskLogger);
 
 			}
 

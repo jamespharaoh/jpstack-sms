@@ -332,7 +332,12 @@ class KeywordCommand
 	}
 
 	Optional <InboxAttemptRec> tryKeywordSetFallback (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"tryKeywordSetFallback");
 
 		Transaction transaction =
 			database.currentTransaction ();

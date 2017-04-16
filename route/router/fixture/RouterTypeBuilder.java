@@ -129,6 +129,7 @@ class RouterTypeBuilder
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"RouterTypeBuilder.createRouterType ()",
 					this);
 

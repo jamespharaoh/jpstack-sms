@@ -78,6 +78,11 @@ class DeliveryDaemon
 	void setupService (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setupService");
+
 		buffer =
 			new QueueBuffer<> (
 				bufferSize);
@@ -89,6 +94,7 @@ class DeliveryDaemon
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"DeliveryDaemon.init ()",
 					this);
 
@@ -145,7 +151,8 @@ class DeliveryDaemon
 
 	@Override
 	protected
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		Thread thread = threadManager.makeThread (new QueryThread ());
 		thread.setName ("DelivQ");
@@ -201,12 +208,17 @@ class DeliveryDaemon
 		int pollDatabase (
 				@NonNull Set <Long> activeIds) {
 
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"pollDatabase");
+
 			int numFound = 0;
 
 			try (
 
 				Transaction transaction =
 					database.beginReadOnly (
+						taskLogger,
 						"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
 						this);
 

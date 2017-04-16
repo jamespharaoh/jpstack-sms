@@ -13,10 +13,12 @@ import lombok.experimental.Accessors;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -46,6 +48,9 @@ class NumberListNumberUpdateAction
 	@SingletonDependency
 	EventLogic eventLogic;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	NumberFormatLogic numberFormatLogic;
 
@@ -71,7 +76,8 @@ class NumberListNumberUpdateAction
 
 	@Override
 	protected
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder (
 			"numberListNumberUpdateResponder");
@@ -83,8 +89,13 @@ class NumberListNumberUpdateAction
 	@Override
 	protected
 	Responder goReal (
-			@NonNull TaskLogger taskLogger)
+			@NonNull TaskLogger parentTaskLogger)
 		throws ServletException {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		// start transaction
 
@@ -92,6 +103,7 @@ class NumberListNumberUpdateAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"NumberListNumberUpdateAction.goReal ()",
 					this);
 

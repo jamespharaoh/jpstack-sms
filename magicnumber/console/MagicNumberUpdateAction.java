@@ -8,17 +8,17 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 
-import javax.servlet.ServletException;
-
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -44,6 +44,9 @@ class MagicNumberUpdateAction
 	@SingletonDependency
 	EventLogic eventLogic;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MagicNumberConsoleHelper magicNumberHelper;
 
@@ -63,7 +66,8 @@ class MagicNumberUpdateAction
 
 	@Override
 	protected
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder (
 			"magicNumberUpdateResponder");
@@ -75,8 +79,12 @@ class MagicNumberUpdateAction
 	@Override
 	protected
 	Responder goReal (
-			@NonNull TaskLogger taskLogger)
-		throws ServletException {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		// start transaction
 
@@ -84,6 +92,7 @@ class MagicNumberUpdateAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MagicNumberUpdateAction.goReal ()",
 					this);
 

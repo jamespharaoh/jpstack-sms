@@ -8,10 +8,12 @@ import lombok.NonNull;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -41,6 +43,9 @@ class MessageNotProcessedFormAction
 	@SingletonDependency
 	InboxConsoleHelper inboxHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
 
@@ -60,7 +65,8 @@ class MessageNotProcessedFormAction
 
 	@Override
 	protected
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder (
 			"messageNotProcessedFormResponder");
@@ -72,7 +78,12 @@ class MessageNotProcessedFormAction
 	@Override
 	protected
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		// begin transaction
 
@@ -80,6 +91,7 @@ class MessageNotProcessedFormAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageNotProcessedFormAction.goReal ()",
 					this);
 

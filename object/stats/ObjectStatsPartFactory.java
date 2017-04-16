@@ -18,12 +18,14 @@ import wbs.console.part.PagePart;
 import wbs.console.part.PagePartFactory;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
@@ -41,6 +43,9 @@ class ObjectStatsPartFactory
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -74,10 +79,16 @@ class ObjectStatsPartFactory
 	PagePart buildPagePart (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"buildPagePart");
+
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"ObjectStatsPartFactory.get ()",
 					this);
 

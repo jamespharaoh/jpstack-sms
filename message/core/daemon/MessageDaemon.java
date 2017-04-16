@@ -143,6 +143,7 @@ class MessageDaemon
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageDaemon.expiresMessages ()",
 					this);
 

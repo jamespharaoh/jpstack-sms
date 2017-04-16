@@ -22,10 +22,12 @@ import wbs.console.action.ConsoleAction;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleManager;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -58,6 +60,9 @@ class MessageSetAction
 	@SingletonDependency
 	EventLogic eventLogic;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MessageSetMessageObjectHelper messageSetMessageHelper;
 
@@ -82,8 +87,11 @@ class MessageSetAction
 
 	@Override
 	public
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
+
 		return responder.get ();
+
 	}
 
 	public
@@ -100,7 +108,12 @@ class MessageSetAction
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		// check privs
 
@@ -122,6 +135,7 @@ class MessageSetAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageSetAction.goReal ()",
 					this);
 

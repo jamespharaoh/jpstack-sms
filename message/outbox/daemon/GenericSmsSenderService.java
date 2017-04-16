@@ -111,12 +111,19 @@ class GenericSmsSenderService
 
 	@Override
 	protected
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createThreads");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					stringFormat (
 						"%s.createThreads ()",
 						getClass ().getSimpleName ()),
@@ -147,7 +154,8 @@ class GenericSmsSenderService
 					.smsRouteId (
 						smsRoute.getId ())
 
-					.start ();
+					.start (
+						taskLogger);
 
 				routeSenderServices.add (
 					routeSenderService);
@@ -169,12 +177,19 @@ class GenericSmsSenderService
 		Queue <Long> messageQueue =
 			new LinkedList<> ();
 
-		RouteSenderService start () {
+		RouteSenderService start (
+				@NonNull TaskLogger parentTaskLogger) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"start");
 
 			try (
 
 				Transaction transaction =
 					database.beginReadOnly (
+						taskLogger,
 						stringFormat (
 							"%s.start ()",
 							joinWithFullStop (
@@ -309,6 +324,7 @@ class GenericSmsSenderService
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						stringFormat (
 							"%s.claimMessages ()",
 							joinWithFullStop (

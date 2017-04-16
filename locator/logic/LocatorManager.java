@@ -89,12 +89,19 @@ class LocatorManager {
 
 	@NormalLifecycleSetup
 	public
-	void afterPropertiesSet () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setup");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"LocatorManager.afterPropertiesSet ()",
 					this);
 
@@ -161,13 +168,20 @@ class LocatorManager {
 
 	private
 	void logSuccess (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long locatorLogId,
 			@NonNull LongLat longLat) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"logSuccess");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"LocatorManager.logSuccess (locatorLogId, longLat)",
 					this);
 
@@ -210,6 +224,7 @@ class LocatorManager {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"LocatorManager.logFailure (locatorLogId, error, errorCode)",
 					this);
 
@@ -260,6 +275,7 @@ class LocatorManager {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"LocatorManager.locate (...)",
 					this);
 
@@ -332,10 +348,12 @@ class LocatorManager {
 
 				LongLat longLat =
 					locator.lookup (
+						taskLogger,
 						locatorId,
 						numberString);
 
 				logSuccess (
+					taskLogger,
 					locatorLogId,
 					longLat);
 

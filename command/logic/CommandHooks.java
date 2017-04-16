@@ -54,12 +54,19 @@ class CommandHooks
 
 	@NormalLifecycleSetup
 	public
-	void init () {
+	void init (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"init");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"commandHooks.init ()",
 					this);
 

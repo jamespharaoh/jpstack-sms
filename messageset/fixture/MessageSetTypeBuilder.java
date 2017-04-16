@@ -117,6 +117,7 @@ class MessageSetTypeBuilder {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageSetTypeBuilder.createMessageSetType ()",
 					this);
 

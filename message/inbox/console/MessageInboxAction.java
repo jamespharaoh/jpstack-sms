@@ -11,10 +11,12 @@ import wbs.console.action.ConsoleAction;
 import wbs.console.notice.ConsoleNotices;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
@@ -41,23 +43,36 @@ class MessageInboxAction
 	@SingletonDependency
 	InboxObjectHelper inboxHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// details
 
 	@Override
 	public
-	Responder backupResponder () {
-		return responder ("messageInboxSummaryResponder");
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		return responder (
+			"messageInboxSummaryResponder");
+
 	}
 
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageInboxAction.goReal ()",
 					this);
 

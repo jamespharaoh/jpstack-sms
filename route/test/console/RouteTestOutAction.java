@@ -17,12 +17,14 @@ import wbs.console.param.ParamCheckerSet;
 import wbs.console.param.RegexpParamChecker;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.console.ServiceConsoleHelper;
@@ -45,16 +47,19 @@ class RouteTestOutAction
 	// singleton dependencies
 
 	@SingletonDependency
+	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	@SingletonDependency
+	NumberObjectHelper numberHelper;
+
+	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
-
-	@SingletonDependency
-	Database database;
-
-	@SingletonDependency
-	NumberObjectHelper numberHelper;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -71,7 +76,8 @@ class RouteTestOutAction
 
 	@Override
 	public
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder (
 			"routeTestOutResponder");
@@ -83,7 +89,12 @@ class RouteTestOutAction
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		MessageRec message = null;
 
@@ -91,6 +102,7 @@ class RouteTestOutAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"RouteTestOutAction.goReal ()",
 					this);
 

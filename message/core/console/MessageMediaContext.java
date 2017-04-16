@@ -137,6 +137,7 @@ class MessageMediaContext
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"MessageMediaContext.initContext (pathParts, stuff)",
 					this);
 

@@ -112,6 +112,7 @@ class DeliveryTypeBuilder {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"DeliveryTypeBuilder.createDeliveryType ()",
 					this);
 

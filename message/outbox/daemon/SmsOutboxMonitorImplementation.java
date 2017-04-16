@@ -75,7 +75,8 @@ class SmsOutboxMonitorImplementation
 
 	@Override
 	protected
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		createThread (
 			"OutboxMonitor",
@@ -161,6 +162,7 @@ class SmsOutboxMonitorImplementation
 
 				Transaction transaction =
 					database.beginReadOnly (
+						taskLogger,
 						"SmsOutboxMonitorImplementation.runOnce ()",
 						this);
 

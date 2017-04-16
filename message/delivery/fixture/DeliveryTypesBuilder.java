@@ -47,8 +47,13 @@ class DeliveryTypesBuilder
 	@Override
 	public
 	void build (
-			@NonNull TaskLogger taskLogger,
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"build");
 
 		builder.descend (
 			taskLogger,

@@ -72,8 +72,12 @@ class MessageOutboxRouteAction
 
 	@Override
 	public
-	Responder backupResponder () {
-		return responder ("messageOutboxRouteResponder");
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		return responder (
+			"messageOutboxRouteResponder");
+
 	}
 
 	// implementation
@@ -92,6 +96,7 @@ class MessageOutboxRouteAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"MessageOutboxRouteAction.goReal ()",
 					this);
 

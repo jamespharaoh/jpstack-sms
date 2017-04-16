@@ -3,6 +3,7 @@ package wbs.sms.message.status.console;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -13,6 +14,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.misc.CachedGetter;
 import wbs.platform.scaffold.console.SliceConsoleHelper;
@@ -51,16 +53,15 @@ class MessageNumInboxCache
 
 	public
 	MessageNumInboxCache () {
-
-		super (5000);
-
+		super (5000l);
 	}
 
 	// implementation
 
 	@Override
 	public
-	Long refresh () {
+	Long refresh (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		Transaction transaction =
 			database.currentTransaction ();

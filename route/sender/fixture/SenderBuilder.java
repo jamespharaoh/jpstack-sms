@@ -112,6 +112,7 @@ class SenderBuilder
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"SenderBuilder.createSender ()",
 					this);
 

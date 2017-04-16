@@ -54,13 +54,20 @@ class RouterHooks
 
 	@NormalLifecycleSetup
 	public
-	void init () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setup");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
-					"routerHooks.init ()",
+					taskLogger,
+					"routerHooks.setup ()",
 					this);
 
 		) {

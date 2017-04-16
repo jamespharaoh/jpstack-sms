@@ -31,12 +31,14 @@ import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -62,6 +64,9 @@ class ObjectSmsMessagesPageBuilder <
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -160,10 +165,16 @@ class ObjectSmsMessagesPageBuilder <
 			PagePart buildPagePart (
 					@NonNull TaskLogger parentTaskLogger) {
 
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"buildPagePart");
+
 				try (
 
 					Transaction transaction =
 						database.beginReadOnly (
+							taskLogger,
 							"ObjectSmsMessagesPartFactory.get ()",
 							this);
 

@@ -58,8 +58,12 @@ class RouteTestInAction
 
 	@Override
 	public
-	Responder backupResponder () {
-		return responder ("routeTestInResponder");
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		return responder (
+			"routeTestInResponder");
+
 	}
 
 	// implementation
@@ -78,6 +82,7 @@ class RouteTestInAction
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"RouteTestInAction.goReal ()",
 					this);
 

@@ -126,6 +126,7 @@ class CommandTypeBuilder {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"CommandTypeBuilder.createCommandType ()",
 					this);
 

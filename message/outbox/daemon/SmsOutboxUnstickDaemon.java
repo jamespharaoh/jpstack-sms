@@ -84,6 +84,7 @@ class SmsOutboxUnstickDaemon
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						"SmsOutboxUnstickDaemon.runOnce ()",
 						this);
 

@@ -129,6 +129,7 @@ class NumberLookupTypeBuilder {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"NumberLookupTypeBuilder.createNumberLookupType ()",
 					this);
 

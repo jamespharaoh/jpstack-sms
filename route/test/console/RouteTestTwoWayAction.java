@@ -9,10 +9,12 @@ import lombok.NonNull;
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.model.TextObjectHelper;
@@ -33,10 +35,13 @@ class RouteTestTwoWayAction
 	// singleton dependencies
 
 	@SingletonDependency
-	ConsoleRequestContext requestContext;
+	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
-	Database database;
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -54,8 +59,12 @@ class RouteTestTwoWayAction
 
 	@Override
 	public
-	Responder backupResponder () {
-		return responder ("routeTestTwoWayResponder");
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		return responder (
+			"routeTestTwoWayResponder");
+
 	}
 
 	// implementation
@@ -63,12 +72,18 @@ class RouteTestTwoWayAction
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"RouteTestTwoWayAction.goReal ()",
 					this);
 

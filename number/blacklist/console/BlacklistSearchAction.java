@@ -15,12 +15,14 @@ import wbs.console.action.ConsoleAction;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.model.EventLinkObjectHelper;
@@ -54,6 +56,9 @@ class BlacklistSearchAction
 	@SingletonDependency
 	EventLinkObjectHelper eventLinkHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	NumberFormatObjectHelper numberFormatHelper;
 
@@ -70,7 +75,8 @@ class BlacklistSearchAction
 
 	@Override
 	public
-	Responder backupResponder () {
+	Responder backupResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder (
 			"blacklistNewResponder");
@@ -82,12 +88,18 @@ class BlacklistSearchAction
 	@Override
 	public
 	Responder goReal (
-			@NonNull TaskLogger taskLogger) {
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"goReal");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"BlacklistSearchAction.goReal ()",
 					this);
 

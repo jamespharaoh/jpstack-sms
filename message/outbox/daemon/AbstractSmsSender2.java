@@ -141,12 +141,19 @@ class AbstractSmsSender2
 
 	@Override
 	protected
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createThreads");
 
 		try (
 
 			Transaction transaction =
 				database.beginReadOnly (
+					taskLogger,
 					"AbstractSmsSender2.createThreads ()",
 					this);
 
@@ -294,6 +301,7 @@ class AbstractSmsSender2
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						"AbstractSmsSender2.Worker.processOneMessage ()",
 						this);
 
@@ -584,6 +592,7 @@ class AbstractSmsSender2
 
 					Transaction transaction =
 						database.beginReadWrite (
+							taskLogger,
 							"AbstractSmsSender2.Worker.reliableOutboxSuccess (...)",
 							this);
 
@@ -687,6 +696,7 @@ class AbstractSmsSender2
 
 					Transaction transaction =
 						database.beginReadWrite (
+							taskLogger,
 							"AbstractSmsSender2.Worker.reliableOutboxFailure (...)",
 							this);
 

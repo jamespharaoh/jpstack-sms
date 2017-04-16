@@ -129,6 +129,7 @@ class BatchTypeBuilder {
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"BatchTypeBuilder.createBatchType ()",
 					this);
 

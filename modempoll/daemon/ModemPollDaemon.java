@@ -111,7 +111,8 @@ class ModemPollDaemon
 
 	@Override
 	public
-	void createThreads () {
+	void createThreads (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		Thread threadA =
 			threadManager.makeThread (
@@ -537,6 +538,7 @@ class ModemPollDaemon
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
 						this);
 
@@ -607,6 +609,7 @@ class ModemPollDaemon
 
 					Transaction transaction =
 						database.beginReadWrite (
+							taskLogger,
 							"ModemPollDaemon.ProcessThread.processAll ()",
 							this);
 
@@ -707,6 +710,7 @@ class ModemPollDaemon
 
 				Transaction transaction =
 					database.beginReadWrite (
+						taskLogger,
 						"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
 						this);
 

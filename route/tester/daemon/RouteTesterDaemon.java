@@ -103,6 +103,7 @@ final class RouteTesterDaemon
 
 			Transaction transaction =
 				database.beginReadWrite (
+					taskLogger,
 					"RouteTesterDaemon.runOnce ()",
 					this);
 
