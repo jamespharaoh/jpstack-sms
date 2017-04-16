@@ -11,8 +11,11 @@ import lombok.NonNull;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 
@@ -27,6 +30,9 @@ class MessageContentHtmlFormFieldInterfaceMapping
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
@@ -35,14 +41,21 @@ class MessageContentHtmlFormFieldInterfaceMapping
 	@Override
 	public
 	Either <Optional <String>, String> genericToInterface (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec container,
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <MessageRec> genericValue) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"genericToInterface");
 
 		StringFormatWriter formatWriter =
 			new StringFormatWriter ();
 
 		messageConsoleLogic.writeMessageContentHtml (
+			taskLogger,
 			formatWriter,
 			container);
 

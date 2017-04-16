@@ -82,6 +82,9 @@ class GenericMessageStatsPart
 	@PrototypeDependency
 	Provider <SmsStatsFormatter> statsFormatterProvider;
 
+	@PrototypeDependency
+	Provider <TabList> tabListProvider;
+
 	// properties
 
 	@Getter @Setter
@@ -98,14 +101,7 @@ class GenericMessageStatsPart
 
 	SmsStatsViewMode viewMode;
 
-	TabList viewTabs =
-		new TabList ();
-
 	TabList.Prepared viewTabsPrepared;
-
-	TabList splitTabs =
-		new TabList ();
-
 	TabList.Prepared splitTabsPrepared;
 
 	Map <SmsStatsCriteria, Set <Long>> criteriaMap =
@@ -231,9 +227,18 @@ class GenericMessageStatsPart
 	}
 
 	public
-	void prepareTabs () {
+	void prepareTabs (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepareTabs");
 
 		// prepare split tabs
+
+		TabList splitTabs =
+			tabListProvider.get ();
 
 		Tab splitTab;
 
@@ -263,9 +268,13 @@ class GenericMessageStatsPart
 
 		splitTabsPrepared =
 			splitTabs.prepare (
+				taskLogger,
 				splitTab);
 
 		// prepare view tabs
+
+		TabList viewTabs =
+			tabListProvider.get ();
 
 		Tab viewTab = null;
 
@@ -289,6 +298,7 @@ class GenericMessageStatsPart
 
 		viewTabsPrepared =
 			viewTabs.prepare (
+				taskLogger,
 				viewTab);
 
 	}
@@ -298,13 +308,19 @@ class GenericMessageStatsPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
+
 		// process page params
 
 		prepareParams ();
 
 		// prepre tabs
 
-		prepareTabs ();
+		prepareTabs (
+			taskLogger);
 
 		// check inputs
 
@@ -595,7 +611,8 @@ class GenericMessageStatsPart
 
 		@Override
 		public
-		String getUrl () {
+		String getUrl (
+				@NonNull TaskLogger parentTaskLogger) {
 
 			UrlParams myUrlParams =
 				new UrlParams (urlParams);
@@ -626,7 +643,8 @@ class GenericMessageStatsPart
 
 		@Override
 		public
-		String getUrl () {
+		String getUrl (
+				@NonNull TaskLogger parentTaskLogger) {
 
 			UrlParams urlParams =
 				new UrlParams ();
@@ -686,7 +704,8 @@ class GenericMessageStatsPart
 
 		@Override
 		public
-		String getUrl () {
+		String getUrl (
+				@NonNull TaskLogger parentTaskLogger) {
 
 			UrlParams urlParams =
 				new UrlParams ();

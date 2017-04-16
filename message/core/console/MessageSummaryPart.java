@@ -137,6 +137,7 @@ class MessageSummaryPart
 		htmlTableDetailsRowWriteHtml (
 			"Message",
 			() -> messageConsoleLogic.writeMessageContentHtml (
+				taskLogger,
 				formatWriter,
 				message));
 
@@ -321,6 +322,7 @@ class MessageSummaryPart
 								integerToDecimalString (
 									mediaIndex)),
 							() -> mediaConsoleLogic.writeMediaThumb100 (
+								taskLogger,
 								media));
 
 						formatWriter.writeLineFormatDecreaseIndent (

@@ -12,8 +12,11 @@ import lombok.NonNull;
 
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
@@ -31,6 +34,9 @@ class MessageConsoleLogicImplementation
 	implements MessageConsoleLogic {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -77,8 +83,14 @@ class MessageConsoleLogicImplementation
 	@Override
 	public
 	void writeMessageContentHtml (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"writeMessageContentHtml");
 
 		MessageConsolePlugin messageConsolePlugin =
 			messageConsolePluginManager.getPlugin (
@@ -128,6 +140,7 @@ class MessageConsoleLogicImplementation
 				) {
 
 					mediaConsoleLogic.writeMediaThumb32OrText (
+						taskLogger,
 						formatWriter,
 						media);
 
@@ -146,6 +159,7 @@ class MessageConsoleLogicImplementation
 								integerToDecimalString (
 									index ++))),
 						() -> mediaConsoleLogic.writeMediaThumb32OrText (
+							taskLogger,
 							formatWriter,
 							media));
 

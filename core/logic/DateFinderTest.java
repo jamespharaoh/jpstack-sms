@@ -1,8 +1,9 @@
 package wbs.sms.core.logic;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.localDateNotEqual;
 
 import java.util.List;
@@ -10,19 +11,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import lombok.Value;
+import lombok.experimental.Accessors;
+
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import junit.framework.TestCase;
-import lombok.Value;
-import lombok.experimental.Accessors;
 
 @RunWith (Parameterized.class)
 public
@@ -76,13 +78,14 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormatObsolete (
+				stringFormat (
 					"Expected '%s' ",
 					example.input (),
 					"to fail but matched '%s' ",
 					actual.get ().toString (),
 					"(base year %s)",
-					example.baseYear ()));
+					integerToDecimalString (
+						example.baseYear ())));
 
 		}
 
@@ -99,13 +102,14 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormatObsolete (
+				stringFormat (
 					"Expected '%s' ",
 					example.input (),
 					"to find '%s' ",
 					example.result ().get ().toString (),
 					"but failed (base year %s)",
-					example.baseYear ()));
+					integerToDecimalString (
+						example.baseYear ())));
 
 		}
 
@@ -118,7 +122,7 @@ class DateFinderTest
 		) {
 
 			fail (
-				stringFormatObsolete (
+				stringFormat (
 					"Expected '%s' ",
 					example.input (),
 					"to find '%s' ",
@@ -126,7 +130,8 @@ class DateFinderTest
 					"but found '%s' ",
 					actual.get ().toString (),
 					"(base year %s)",
-					example.baseYear ()));
+					integerToDecimalString (
+						example.baseYear ())));
 
 		}
 
@@ -355,9 +360,10 @@ class DateFinderTest
 
 				.mapToObj (day ->
 					passingExample (
-						stringFormatObsolete (
+						stringFormat (
 							"%s/01/1980",
-							day),
+							integerToDecimalString (
+								day)),
 						1900,
 						date (1980, 1, day)))
 
@@ -368,10 +374,12 @@ class DateFinderTest
 
 				.mapToObj (day ->
 					passingExample (
-						stringFormatObsolete (
+						stringFormat (
 							"%s%s/01/1980",
-							day,
-							suffixes.get (day)),
+							integerToDecimalString (
+								day),
+							suffixes.get (
+								day)),
 						1900,
 						date (1980, 1, day)))
 

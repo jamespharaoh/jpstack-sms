@@ -91,6 +91,11 @@ class MessageMediaSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
+
 		htmlTableOpenDetails ();
 
 		htmlTableDetailsRowWrite (
@@ -132,6 +137,7 @@ class MessageMediaSummaryPart
 		htmlTableDetailsRowWriteHtml (
 			"Content",
 			() -> mediaConsoleLogic.writeMediaContentScaled (
+				taskLogger,
 				media,
 				600,
 				600));

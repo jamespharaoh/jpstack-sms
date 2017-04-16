@@ -40,8 +40,10 @@ import wbs.console.part.AbstractPagePart;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
@@ -62,6 +64,9 @@ class ObjectSmsMessagesPart
 
 	@SingletonDependency
 	ConsoleObjectManager consoleObjectManager;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -96,6 +101,11 @@ class ObjectSmsMessagesPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
+
 		requestContext.request (
 			"localName",
 			localName);
@@ -112,6 +122,7 @@ class ObjectSmsMessagesPart
 
 		viewTabsPrepared =
 			viewTabs.prepare (
+				taskLogger,
 				viewMode.viewTab);
 
 		// get date
@@ -145,6 +156,11 @@ class ObjectSmsMessagesPart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		/*
 		viewTabsPrepared.go (
@@ -298,6 +314,7 @@ class ObjectSmsMessagesPart
 					continue;
 
 				mediaConsoleLogic.writeMediaThumb32 (
+					taskLogger,
 					formatWriter,
 					media);
 
@@ -315,6 +332,7 @@ class ObjectSmsMessagesPart
 
 				.href (
 					consoleObjectManager.localLink (
+						taskLogger,
 						message))
 
 				.columnSpan (
@@ -358,7 +376,8 @@ class ObjectSmsMessagesPart
 
 		@Override
 		public
-		String getUrl () {
+		String getUrl (
+				@NonNull TaskLogger parentTaskLogger) {
 
 			return stringFormat (
 				"%s",

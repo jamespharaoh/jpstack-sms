@@ -24,8 +24,10 @@ import lombok.NonNull;
 import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
@@ -40,6 +42,9 @@ class MessageThreadPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -78,6 +83,11 @@ class MessageThreadPart
 	public
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
 
 		htmlTableOpenList ();
 
@@ -160,6 +170,7 @@ class MessageThreadPart
 				} else {
 
 					mediaConsoleLogic.writeMediaThumb32OrText (
+						taskLogger,
 						media);
 
 				}
@@ -193,6 +204,7 @@ class MessageThreadPart
 					formatWriter);
 
 			messageConsoleLogic.writeMessageContentHtml (
+				taskLogger,
 				formatWriter,
 				message);
 

@@ -207,6 +207,7 @@ class BlacklistSearchAction
 							text.replaceAll (
 								"%" + eventLink.getIndex (),
 								objectManager.htmlForObject (
+									taskLogger,
 									object,
 									optionalAbsent (),
 									false));

@@ -82,7 +82,8 @@ class MessageMediaContext
 	@Override
 	public
 	String localPathForStuff (
-			ConsoleContextStuff contextStuff) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull ConsoleContextStuff contextStuff) {
 
 		return stringFormat (
 			"/%u",
@@ -101,7 +102,7 @@ class MessageMediaContext
 	@Override
 	public
 	String titleForStuff (
-			ConsoleContextStuff contextStuff) {
+			@NonNull ConsoleContextStuff contextStuff) {
 
 		return stringFormat (
 			"Media %s",

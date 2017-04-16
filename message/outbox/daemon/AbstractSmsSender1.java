@@ -1,9 +1,10 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 
@@ -452,19 +453,22 @@ class AbstractSmsSender1 <MessageContainer>
 					if (++ tries == maxTries) {
 
 						log.fatal (
-							stringFormatObsolete (
+							stringFormat (
 								"Outbox success for message %s failed %s ",
-								messageId,
-								maxTries,
+								integerToDecimalString (
+									messageId),
+								integerToDecimalString (
+									maxTries),
 								"times, giving up"),
 							updateException);
 
 					}
 
 					log.warn (
-						stringFormatObsolete (
+						stringFormat (
 							"Outbox success for message %s failed, retrying",
-							messageId),
+							integerToDecimalString (
+								messageId)),
 						updateException);
 
 					try {

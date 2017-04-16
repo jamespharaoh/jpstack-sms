@@ -1,7 +1,8 @@
 package wbs.sms.network.logic;
 
 import static wbs.utils.etc.Misc.isNotNull;
-import static wbs.utils.string.StringUtils.stringFormatObsolete;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.laterThan;
 import static wbs.utils.time.TimeUtils.millisToInstant;
 
@@ -17,6 +18,7 @@ import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
 import wbs.sms.network.model.NetworkPrefixRec;
@@ -131,10 +133,11 @@ class NetworkPrefixCache {
 			) {
 
 				log.debug (
-					stringFormatObsolete (
+					stringFormat (
 						"Found %s, networkId = %s for %s",
 						prefixToTry,
-						networkId,
+						integerToDecimalString (
+							networkId),
 						number));
 
 				return networkHelper.findRequired (

@@ -1,8 +1,11 @@
 package wbs.sms.message.core.console;
 
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
+
 import wbs.utils.string.FormatWriter;
 
 public
@@ -13,6 +16,7 @@ interface MessageConsoleLogic {
 			MessageRec message);
 
 	void writeMessageContentHtml (
+			TaskLogger parentTaskLogger,
 			FormatWriter formatWriter,
 			MessageRec message);
 

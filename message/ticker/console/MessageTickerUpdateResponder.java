@@ -15,8 +15,10 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleResponder;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleHelper;
@@ -36,8 +38,8 @@ class MessageTickerUpdateResponder
 
 	// singleton dependencies
 
-	@SingletonDependency
-	ConsoleRequestContext requestContext;
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -55,6 +57,9 @@ class MessageTickerUpdateResponder
 	UserPrivChecker privChecker;
 
 	@SingletonDependency
+	ConsoleRequestContext requestContext;
+
+	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
 	// state
@@ -70,6 +75,11 @@ class MessageTickerUpdateResponder
 	public
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
 
 		Collection<MessageTickerMessage> messageTickerMessages =
 			messageTickerManager.getMessages ();
@@ -106,7 +116,9 @@ class MessageTickerUpdateResponder
 					> generation) {
 
 				commands.add (
-					doMessage (messageTickerMessage));
+					doMessage (
+						taskLogger,
+						messageTickerMessage));
 
 			}
 
@@ -194,7 +206,13 @@ class MessageTickerUpdateResponder
 
 	private
 	String doMessage (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageTickerMessage messageTickerMessage) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"doMessage");
 
 		String rowClass;
 
@@ -282,6 +300,7 @@ class MessageTickerUpdateResponder
 					formatWriterConsumerToString (
 						formatWriter ->
 							mediaConsoleLogic.writeMediaThumb32OrText (
+								taskLogger,
 								formatWriter,
 								media))));
 

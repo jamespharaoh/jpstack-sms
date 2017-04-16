@@ -27,8 +27,10 @@ import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
@@ -42,6 +44,9 @@ class MessageMediasPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MediaConsoleLogic mediaConsoleLogic;
@@ -95,6 +100,11 @@ class MessageMediasPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"renderHtmlBodyContent");
+
 		htmlTableOpenList ();
 
 		htmlTableHeaderRowWrite (
@@ -138,6 +148,7 @@ class MessageMediasPart
 				htmlTableCellOpen ();
 
 				mediaConsoleLogic.writeMediaThumb100 (
+					taskLogger,
 					media);
 
 				htmlTableCellClose ();
