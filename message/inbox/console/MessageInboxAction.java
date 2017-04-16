@@ -5,22 +5,24 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.notice.ConsoleNotices;
 import wbs.console.request.ConsoleRequestContext;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
 import wbs.sms.message.inbox.model.InboxState;
+
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("messageInboxAction")
@@ -52,78 +54,83 @@ class MessageInboxAction
 	Responder goReal (
 			@NonNull TaskLogger taskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MessageInboxAction.goReal ()",
-				this);
+		try (
 
-		ConsoleNotices notices =
-			new ConsoleNotices ();
+			Transaction transaction =
+				database.beginReadWrite (
+					"MessageInboxAction.goReal ()",
+					this);
 
-		for (
-			String paramName
-				: requestContext.parameterMap ().keySet ()
 		) {
 
-			Matcher matcher =
-				ignorePattern.matcher (
-					paramName);
+			ConsoleNotices notices =
+				new ConsoleNotices ();
 
-			if (! matcher.matches ())
-				continue;
+			for (
+				String paramName
+					: requestContext.parameterMap ().keySet ()
+			) {
 
-			Long messageId =
-				Long.parseLong (
-					matcher.group (
-						1));
+				Matcher matcher =
+					ignorePattern.matcher (
+						paramName);
 
-			InboxRec inbox =
-				inboxHelper.findRequired (
-					messageId);
+				if (! matcher.matches ())
+					continue;
 
-			MessageRec message =
-				inbox.getMessage ();
+				Long messageId =
+					Long.parseLong (
+						matcher.group (
+							1));
 
-			// check state
+				InboxRec inbox =
+					inboxHelper.findRequired (
+						messageId);
 
-			if (inbox.getState () != InboxState.pending) {
+				MessageRec message =
+					inbox.getMessage ();
 
-				requestContext.addErrorFormat (
-					"Inbox message %s ",
+				// check state
+
+				if (inbox.getState () != InboxState.pending) {
+
+					requestContext.addErrorFormat (
+						"Inbox message %s ",
+						integerToDecimalString (
+							messageId),
+						"is not pending");
+
+				}
+
+				// update inbox
+
+				inbox
+
+					.setState (
+						InboxState.ignored);
+
+				// update message
+
+				message
+
+					.setStatus (
+						MessageStatus.ignored);
+
+				notices.noticeFormat (
+					"Ignored inbox message %s",
 					integerToDecimalString (
-						messageId),
-					"is not pending");
+						messageId));
 
 			}
 
-			// update inbox
+			transaction.commit ();
 
-			inbox
+			requestContext.addNotices (
+				notices);
 
-				.setState (
-					InboxState.ignored);
-
-			// update message
-
-			message
-
-				.setStatus (
-					MessageStatus.ignored);
-
-			notices.noticeFormat (
-				"Ignored inbox message %s",
-				integerToDecimalString (
-					messageId));
+			return null;
 
 		}
-
-		transaction.commit ();
-
-		requestContext.addNotices (
-			notices);
-
-		return null;
 
 	}
 

@@ -7,7 +7,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
@@ -126,46 +125,51 @@ class NumberLookupTypeBuilder {
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"NumberLookupTypeBuilder.createNumberLookupType ()",
-				this);
+		try (
 
-		// lookup parent type
+			Transaction transaction =
+				database.beginReadWrite (
+					"NumberLookupTypeBuilder.createNumberLookupType ()",
+					this);
 
-		String parentTypeCode =
-			camelToUnderscore (
-				ifNull (
-					spec.subject (),
-					parent.name ()));
+		) {
 
-		ObjectTypeRec parentType =
-			objectTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				parentTypeCode);
+			// lookup parent type
 
-		// create number lookup type
+			String parentTypeCode =
+				camelToUnderscore (
+					ifNull (
+						spec.subject (),
+						parent.name ()));
 
-		numberLookupTypeHelper.insert (
-			taskLogger,
-			numberLookupTypeHelper.createInstance ()
+			ObjectTypeRec parentType =
+				objectTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					parentTypeCode);
 
-			.setParentType (
-				parentType)
+			// create number lookup type
 
-			.setCode (
-				simplifyToCodeRequired (
-					spec.name ()))
+			numberLookupTypeHelper.insert (
+				taskLogger,
+				numberLookupTypeHelper.createInstance ()
 
-			.setDescription (
-				spec.description ())
+				.setParentType (
+					parentType)
 
-		);
+				.setCode (
+					simplifyToCodeRequired (
+						spec.name ()))
 
-		// commit transaction
+				.setDescription (
+					spec.description ())
 
-		transaction.commit ();
+			);
+
+			// commit transaction
+
+			transaction.commit ();
+
+		}
 
 	}
 

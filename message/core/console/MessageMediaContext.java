@@ -6,7 +6,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -133,32 +132,37 @@ class MessageMediaContext
 			Integer.parseInt (
 				pathParts.next ());
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"MessageMediaContext.initContext (pathParts, stuff)",
-				this);
+		try (
 
-		MessageRec message =
-			messageHelper.findRequired (
-				messageId);
+			Transaction transaction =
+				database.beginReadOnly (
+					"MessageMediaContext.initContext (pathParts, stuff)",
+					this);
 
-		MediaRec media =
-			message.getMedias ().get (
+		) {
+
+			MessageRec message =
+				messageHelper.findRequired (
+					messageId);
+
+			MediaRec media =
+				message.getMedias ().get (
+					mediaIndex);
+
+			stuff.set (
+				"messageMediaIndex",
 				mediaIndex);
 
-		stuff.set (
-			"messageMediaIndex",
-			mediaIndex);
+			stuff.set (
+				"mediaId",
+				media.getId ());
 
-		stuff.set (
-			"mediaId",
-			media.getId ());
+			consoleManager.runPostProcessors (
+				taskLogger,
+				"message",
+				stuff);
 
-		consoleManager.runPostProcessors (
-			taskLogger,
-			"message",
-			stuff);
+		}
 
 	}
 

@@ -7,7 +7,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
@@ -123,49 +122,54 @@ class CommandTypeBuilder {
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"CommandTypeBuilder.createCommandType ()",
-				this);
+		try (
 
-		// lookup parent type
+			Transaction transaction =
+				database.beginReadWrite (
+					"CommandTypeBuilder.createCommandType ()",
+					this);
 
-		String parentTypeCode =
-			camelToUnderscore (
-				ifNull (
-					spec.subject (),
-					parent.name ()));
+		) {
 
-		ObjectTypeRec parentType =
-			objectTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				parentTypeCode);
+			// lookup parent type
 
-		// create command type
+			String parentTypeCode =
+				camelToUnderscore (
+					ifNull (
+						spec.subject (),
+						parent.name ()));
 
-		commandTypeHelper.insert (
-			taskLogger,
-			commandTypeHelper.createInstance ()
+			ObjectTypeRec parentType =
+				objectTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					parentTypeCode);
 
-			.setParentType (
-				parentType)
+			// create command type
 
-			.setCode (
-				simplifyToCodeRequired (
-					spec.name ()))
+			commandTypeHelper.insert (
+				taskLogger,
+				commandTypeHelper.createInstance ()
 
-			.setDescription (
-				spec.description ())
+				.setParentType (
+					parentType)
 
-			.setDeleted (
-				false)
+				.setCode (
+					simplifyToCodeRequired (
+						spec.name ()))
 
-		);
+				.setDescription (
+					spec.description ())
 
-		// commit transaction
+				.setDeleted (
+					false)
 
-		transaction.commit ();
+			);
+
+			// commit transaction
+
+			transaction.commit ();
+
+		}
 
 	}
 

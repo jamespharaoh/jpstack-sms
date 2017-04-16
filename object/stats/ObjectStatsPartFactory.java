@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -75,77 +74,82 @@ class ObjectStatsPartFactory
 	PagePart buildPagePart (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"ObjectStatsPartFactory.get ()",
-				this);
+		try (
 
-		// lookup object
+			Transaction transaction =
+				database.beginReadOnly (
+					"ObjectStatsPartFactory.get ()",
+					this);
 
-		Record <?> parent =
-			objectLookup.lookupObject (
-				requestContext.consoleContextStuffRequired ());
-
-		// find its services
-
-		List <SmsStatsSource> statsSources =
-			new ArrayList<> ();
-
-		for (
-			ObjectStatsSourceBuilder objectStatsSourceBuilder
-				: objectStatsSourceBuilders
 		) {
 
+			// lookup object
+
+			Record <?> parent =
+				objectLookup.lookupObject (
+					requestContext.consoleContextStuffRequired ());
+
+			// find its services
+
+			List <SmsStatsSource> statsSources =
+				new ArrayList<> ();
+
+			for (
+				ObjectStatsSourceBuilder objectStatsSourceBuilder
+					: objectStatsSourceBuilders
+			) {
+
+				SmsStatsSource statsSource =
+					objectStatsSourceBuilder.buildStatsSource (
+						parent);
+
+				if (statsSource == null)
+					continue;
+
+				statsSources.add (
+					statsSource);
+
+			}
+
+			if (statsSources.isEmpty ()) {
+
+				throw new RuntimeException (
+					"No stats sources found");
+
+			}
+
+			if (statsSources.size () > 1) {
+
+				throw new RuntimeException (
+					"Multiple stats sources found");
+
+			}
+
 			SmsStatsSource statsSource =
-				objectStatsSourceBuilder.buildStatsSource (
-					parent);
+				statsSources.get (0);
 
-			if (statsSource == null)
-				continue;
+			// set up exclusions
 
-			statsSources.add (
-				statsSource);
+			Set<SmsStatsCriteria> excludes =
+				new HashSet<SmsStatsCriteria> ();
+
+			// excludes.add (SmsStatsCriteria.service);
+
+			// now create the stats part
+
+			return smsStatsPartProvider.get ()
+
+				.url (
+					requestContext.resolveLocalUrl (
+						localName))
+
+				.statsSource (
+					statsSource)
+
+				.excludeCriteria (
+					excludes);
 
 		}
-
-		if (statsSources.isEmpty ()) {
-
-			throw new RuntimeException (
-				"No stats sources found");
-
-		}
-
-		if (statsSources.size () > 1) {
-
-			throw new RuntimeException (
-				"Multiple stats sources found");
-
-		}
-
-		SmsStatsSource statsSource =
-			statsSources.get (0);
-
-		// set up exclusions
-
-		Set<SmsStatsCriteria> excludes =
-			new HashSet<SmsStatsCriteria> ();
-
-		// excludes.add (SmsStatsCriteria.service);
-
-		// now create the stats part
-
-		return smsStatsPartProvider.get ()
-
-			.url (
-				requestContext.resolveLocalUrl (
-					localName))
-
-			.statsSource (
-				statsSource)
-
-			.excludeCriteria (
-				excludes);
 
 	}
 

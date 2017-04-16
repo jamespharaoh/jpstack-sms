@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -92,62 +91,67 @@ class LocatorManager {
 	public
 	void afterPropertiesSet () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"LocatorManager.afterPropertiesSet ()",
-				this);
+		try (
 
-		// index locators by type
+			Transaction transaction =
+				database.beginReadOnly (
+					"LocatorManager.afterPropertiesSet ()",
+					this);
 
-		for (
-			Map.Entry<String,Locator> locatorEntry
-				: locatorFactoriesByBeanName.entrySet ()
 		) {
 
-			String beanName =
-				locatorEntry.getKey ();
-
-			Locator locator =
-				locatorEntry.getValue ();
+			// index locators by type
 
 			for (
-				String code
-					: locator.getTypeCodes ()
+				Map.Entry<String,Locator> locatorEntry
+					: locatorFactoriesByBeanName.entrySet ()
 			) {
 
-				String[] codeParts =
-					code.split ("\\.", 2);
+				String beanName =
+					locatorEntry.getKey ();
 
-				String parentTypeCode =
-					codeParts [0];
+				Locator locator =
+					locatorEntry.getValue ();
 
-				String locatorTypeCode =
-					codeParts [1];
+				for (
+					String code
+						: locator.getTypeCodes ()
+				) {
 
-				ObjectTypeRec parentType =
-					objectTypeHelper.findByCodeRequired (
-						GlobalId.root,
-						parentTypeCode);
+					String[] codeParts =
+						code.split ("\\.", 2);
 
-				LocatorTypeRec locatorType =
-					locatorTypeHelper.findByCodeRequired (
-						parentType,
-						locatorTypeCode);
+					String parentTypeCode =
+						codeParts [0];
 
-				if (locatorsByTypeId.containsKey (locatorType.getId ())) {
+					String locatorTypeCode =
+						codeParts [1];
 
-					throw new RuntimeException (
-						stringFormat (
-							"Duplicated locator type code %s from %s",
-							code,
-							beanName));
+					ObjectTypeRec parentType =
+						objectTypeHelper.findByCodeRequired (
+							GlobalId.root,
+							parentTypeCode);
+
+					LocatorTypeRec locatorType =
+						locatorTypeHelper.findByCodeRequired (
+							parentType,
+							locatorTypeCode);
+
+					if (locatorsByTypeId.containsKey (locatorType.getId ())) {
+
+						throw new RuntimeException (
+							stringFormat (
+								"Duplicated locator type code %s from %s",
+								code,
+								beanName));
+
+					}
+
+					locatorsByTypeId.put (
+						locatorType.getId (),
+						locator);
 
 				}
-
-				locatorsByTypeId.put (
-					locatorType.getId (),
-					locator);
 
 			}
 
@@ -160,28 +164,33 @@ class LocatorManager {
 			@NonNull Long locatorLogId,
 			@NonNull LongLat longLat) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"LocatorManager.logSuccess (locatorLogId, longLat)",
-				this);
+		try (
 
-		LocatorLogRec locatorLog =
-			locatorLogHelper.findRequired (
-				locatorLogId);
+			Transaction transaction =
+				database.beginReadWrite (
+					"LocatorManager.logSuccess (locatorLogId, longLat)",
+					this);
 
-		locatorLog
+		) {
 
-			.setEndTime (
-				transaction.now ())
+			LocatorLogRec locatorLog =
+				locatorLogHelper.findRequired (
+					locatorLogId);
 
-			.setSuccess (
-				true)
+			locatorLog
 
-			.setLongLat (
-				longLat);
+				.setEndTime (
+					transaction.now ())
 
-		transaction.commit ();
+				.setSuccess (
+					true)
+
+				.setLongLat (
+					longLat);
+
+			transaction.commit ();
+
+		}
 
 	}
 
@@ -197,30 +206,35 @@ class LocatorManager {
 				parentTaskLogger,
 				"logFailure");
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"LocatorManager.logFailure (locatorLogId, error, errorCode)",
-				this);
+		try (
 
-		LocatorLogRec locatorLog =
-			locatorLogHelper.findRequired (
-				locatorLogId);
+			Transaction transaction =
+				database.beginReadWrite (
+					"LocatorManager.logFailure (locatorLogId, error, errorCode)",
+					this);
 
-		locatorLog
+		) {
 
-			.setSuccess (
-				false)
+			LocatorLogRec locatorLog =
+				locatorLogHelper.findRequired (
+					locatorLogId);
 
-			.setErrorText (
-				textHelper.findOrCreate (
-					taskLogger,
-					error))
+			locatorLog
 
-			.setErrorCode (
-				errorCode);
+				.setSuccess (
+					false)
 
-		transaction.commit ();
+				.setErrorText (
+					textHelper.findOrCreate (
+						taskLogger,
+						error))
+
+				.setErrorCode (
+					errorCode);
+
+			transaction.commit ();
+
+		}
 
 	}
 
@@ -242,119 +256,124 @@ class LocatorManager {
 
 		String numberString;
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"LocatorManager.locate (...)",
-				this);
+		try (
 
-		LocatorRec locatorRec =
-			locatorHelper.findRequired (
-				locatorId);
+			Transaction transaction =
+				database.beginReadWrite (
+					"LocatorManager.locate (...)",
+					this);
 
-		NumberRec number =
-			numberHelper.findRequired (
-				numberId);
+		) {
 
-		ServiceRec service =
-			serviceHelper.findRequired (
-				serviceId);
+			LocatorRec locatorRec =
+				locatorHelper.findRequired (
+					locatorId);
 
-		AffiliateRec affiliate =
-			affiliateHelper.findRequired (
-				affiliateId);
+			NumberRec number =
+				numberHelper.findRequired (
+					numberId);
 
-		locatorTypeId =
-			locatorRec.getLocatorType ().getId ();
+			ServiceRec service =
+				serviceHelper.findRequired (
+					serviceId);
 
-		numberString =
-			number.getNumber ();
+			AffiliateRec affiliate =
+				affiliateHelper.findRequired (
+					affiliateId);
 
-		LocatorLogRec locatorLog =
-			locatorLogHelper.insert (
-				taskLogger,
-				locatorLogHelper.createInstance ()
+			locatorTypeId =
+				locatorRec.getLocatorType ().getId ();
 
-			.setLocator (
-				locatorRec)
+			numberString =
+				number.getNumber ();
 
-			.setNumber (
-				number)
+			LocatorLogRec locatorLog =
+				locatorLogHelper.insert (
+					taskLogger,
+					locatorLogHelper.createInstance ()
 
-			.setStartTime (
-				transaction.now ())
+				.setLocator (
+					locatorRec)
 
-			.setService (
-				service)
+				.setNumber (
+					number)
 
-			.setAffiliate (
-				affiliate)
+				.setStartTime (
+					transaction.now ())
 
-		);
+				.setService (
+					service)
 
-		locatorLogId =
-			locatorLog.getId ();
+				.setAffiliate (
+					affiliate)
 
-		transaction.commit ();
+			);
 
-		try {
+			locatorLogId =
+				locatorLog.getId ();
 
-			Locator locator =
-				locatorsByTypeId.get (
-					locatorTypeId);
+			transaction.commit ();
 
-			if (locator == null) {
+			try {
+
+				Locator locator =
+					locatorsByTypeId.get (
+						locatorTypeId);
+
+				if (locator == null) {
+
+					throw new RuntimeException (
+						stringFormat (
+							"Locator not found for type %s",
+							integerToDecimalString (
+								locatorTypeId)));
+
+				}
+
+				LongLat longLat =
+					locator.lookup (
+						locatorId,
+						numberString);
+
+				logSuccess (
+					locatorLogId,
+					longLat);
+
+				return longLat;
+
+			} catch (LocatorException exception) {
+
+				logFailure (
+					taskLogger,
+					locatorLogId,
+					exception.getMessage (),
+					exception.getErrorCode ());
+
+				throw new LocatorException (
+					exception);
+
+			} catch (RuntimeException exception) {
+
+				logFailure (
+					taskLogger,
+					locatorLogId,
+					exception.getMessage (),
+					null);
 
 				throw new RuntimeException (
-					stringFormat (
-						"Locator not found for type %s",
-						integerToDecimalString (
-							locatorTypeId)));
+					exception);
+
+			} catch (Error exception) {
+
+				logFailure (
+					taskLogger,
+					locatorLogId,
+					exception.getMessage (),
+					null);
+
+				throw new Error (exception);
 
 			}
-
-			LongLat longLat =
-				locator.lookup (
-					locatorId,
-					numberString);
-
-			logSuccess (
-				locatorLogId,
-				longLat);
-
-			return longLat;
-
-		} catch (LocatorException exception) {
-
-			logFailure (
-				taskLogger,
-				locatorLogId,
-				exception.getMessage (),
-				exception.getErrorCode ());
-
-			throw new LocatorException (
-				exception);
-
-		} catch (RuntimeException exception) {
-
-			logFailure (
-				taskLogger,
-				locatorLogId,
-				exception.getMessage (),
-				null);
-
-			throw new RuntimeException (
-				exception);
-
-		} catch (Error exception) {
-
-			logFailure (
-				taskLogger,
-				locatorLogId,
-				exception.getMessage (),
-				null);
-
-			throw new Error (exception);
 
 		}
 

@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -120,57 +119,62 @@ class AbstractSmsSender1 <MessageContainer>
 	protected
 	void createThreads () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"AbstractSmsSender1.createThreads ()",
-				this);
+		try (
 
-		// get a list of routes
+			Transaction transaction =
+				database.beginReadOnly (
+					"AbstractSmsSender1.createThreads ()",
+					this);
 
-		SenderRec sender =
-			smsSenderHelper.findByCodeRequired (
-				GlobalId.root,
-				getSenderCode ());
-
-		// and for each one...
-
-		String threadName =
-			getThreadName ();
-
-		for (
-			RouteRec route
-				: sender.getRoutes ()
 		) {
 
-			Object routeLock =
-				new Object ();
+			// get a list of routes
 
-			for (int i = 0; i < threadsPerRoute; i++) {
+			SenderRec sender =
+				smsSenderHelper.findByCodeRequired (
+					GlobalId.root,
+					getSenderCode ());
 
-				Worker worker =
-					new Worker (
-						route.getId (),
-						routeLock);
+			// and for each one...
 
-				Thread thread =
-					threadManager.makeThread (worker);
+			String threadName =
+				getThreadName ();
 
-				if (threadName != null)
+			for (
+				RouteRec route
+					: sender.getRoutes ()
+			) {
 
-					thread.setName (
-						joinWithoutSeparator (
-							threadName,
-							Long.toString (
-								route.getId ()),
-							new String (
-								Character.toChars (
-									'a' + i))));
+				Object routeLock =
+					new Object ();
 
-				thread.start ();
+				for (int i = 0; i < threadsPerRoute; i++) {
 
-				registerThread (
-					thread);
+					Worker worker =
+						new Worker (
+							route.getId (),
+							routeLock);
+
+					Thread thread =
+						threadManager.makeThread (worker);
+
+					if (threadName != null)
+
+						thread.setName (
+							joinWithoutSeparator (
+								threadName,
+								Long.toString (
+									route.getId ()),
+								new String (
+									Character.toChars (
+										'a' + i))));
+
+					thread.start ();
+
+					registerThread (
+						thread);
+
+				}
 
 			}
 
@@ -253,111 +257,116 @@ class AbstractSmsSender1 <MessageContainer>
 
 				synchronized (routeLock) {
 
-					@Cleanup
-					Transaction transaction =
-						database.beginReadWrite (
-							"AbstractSmsSender1.Worker.processMessages ()",
-							this);
+					try (
 
-					RouteRec route =
-						smsRouteHelper.findRequired (
-							routeId);
-
-					// get the next message
-
-					outbox =
-						smsOutboxLogic.claimNextMessage (
-							route);
-
-					if (outbox == null) {
-
-						return;
-
-					}
-
-					messageId =
-						outbox.getMessage ().getId ();
-
-					String number =
-						outbox
-							.getMessage ()
-							.getNumber ()
-							.getNumber ();
-
-					// check block number list
-
-					// TODO right place for this..?
-
-					if (
-
-						route.getBlockNumberLookup () != null
-
-						&& numberLookupManager.lookupNumber (
-							route.getBlockNumberLookup (),
-							outbox.getMessage ().getNumber ())
+						Transaction transaction =
+							database.beginReadWrite (
+								"AbstractSmsSender1.Worker.processMessages ()",
+								this);
 
 					) {
 
-						outbox.setSending (null);
+						RouteRec route =
+							smsRouteHelper.findRequired (
+								routeId);
 
-						smsMessageLogic.blackListMessage (
-							taskLogger,
-							outbox.getMessage ());
+						// get the next message
 
-						transaction.commit ();
+						outbox =
+							smsOutboxLogic.claimNextMessage (
+								route);
 
-						continue;
+						if (outbox == null) {
 
-					}
+							return;
 
-					// TODO aaargh
+						}
 
-					Optional<BlacklistRec> blacklistOptional =
-						smsBlacklistHelper.findByCode (
-							GlobalId.root,
-							number);
+						messageId =
+							outbox.getMessage ().getId ();
 
-					if (
-						optionalIsPresent (
-							blacklistOptional)
-					) {
+						String number =
+							outbox
+								.getMessage ()
+								.getNumber ()
+								.getNumber ();
 
-						outbox.setSending (null);
+						// check block number list
 
-						smsMessageLogic.blackListMessage (
-							taskLogger,
-							outbox.getMessage ());
+						// TODO right place for this..?
 
-						transaction.commit ();
+						if (
 
-						continue;
+							route.getBlockNumberLookup () != null
 
-					}
+							&& numberLookupManager.lookupNumber (
+								route.getBlockNumberLookup (),
+								outbox.getMessage ().getNumber ())
 
-					// run the getMessage hook also
+						) {
 
-					try {
+							outbox.setSending (null);
 
-						messageContainer =
-							getMessage (
+							smsMessageLogic.blackListMessage (
 								taskLogger,
-								outbox);
+								outbox.getMessage ());
 
-					} catch (SendFailureException exception) {
+							transaction.commit ();
 
-						smsOutboxLogic.messageFailure (
-							taskLogger,
-							outbox.getMessage (),
-							exception.errorMessage,
-							exception.failureType);
+							continue;
+
+						}
+
+						// TODO aaargh
+
+						Optional<BlacklistRec> blacklistOptional =
+							smsBlacklistHelper.findByCode (
+								GlobalId.root,
+								number);
+
+						if (
+							optionalIsPresent (
+								blacklistOptional)
+						) {
+
+							outbox.setSending (null);
+
+							smsMessageLogic.blackListMessage (
+								taskLogger,
+								outbox.getMessage ());
+
+							transaction.commit ();
+
+							continue;
+
+						}
+
+						// run the getMessage hook also
+
+						try {
+
+							messageContainer =
+								getMessage (
+									taskLogger,
+									outbox);
+
+						} catch (SendFailureException exception) {
+
+							smsOutboxLogic.messageFailure (
+								taskLogger,
+								outbox.getMessage (),
+								exception.errorMessage,
+								exception.failureType);
+
+							transaction.commit ();
+
+							continue;
+
+						}
 
 						transaction.commit ();
 
-						continue;
-
 					}
-
-					transaction.commit ();
 
 				}
 
@@ -412,13 +421,14 @@ class AbstractSmsSender1 <MessageContainer>
 
 			for (int tries = 0;;) {
 
-				try {
+				try (
 
-					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
 							"AbstractSmsSender1.Worker.reliableOutboxSuccess (...)",
 							this);
+
+				) {
 
 					MessageRec message =
 						smsMessageHelper.findRequired (
@@ -492,13 +502,14 @@ class AbstractSmsSender1 <MessageContainer>
 
 			for (int tries = 0;;) {
 
-				try {
+				try (
 
-					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
 							"AbstractSmsSender1.Worker.reliableOutboxFailure (...)",
 							this);
+
+				) {
 
 					MessageRec message =
 						smsMessageHelper.findRequired (

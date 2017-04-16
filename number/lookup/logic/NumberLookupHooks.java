@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -57,23 +56,24 @@ class NumberLookupHooks
 	public
 	void init () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"numberLookupHooks.init ()",
-				this);
+		try (
 
-		// preload object types
+			Transaction transaction =
+				database.beginReadOnly (
+					"numberLookupHooks.init ()",
+					this);
 
-		objectTypeDao.findAll ();
+		) {
 
-		// load number lookup types and construct index
+			// preload object types
 
-		numberLookupTypeIdsByParentTypeId =
-			numberLookupTypeDao.findAll ().stream ()
+			objectTypeDao.findAll ();
 
-			.collect (
-				Collectors.groupingBy (
+			// load number lookup types and construct index
+
+			numberLookupTypeIdsByParentTypeId =
+				numberLookupTypeDao.findAll ().stream ().collect (
+					Collectors.groupingBy (
 
 				numberLookupType ->
 					numberLookupType.getParentType ().getId (),
@@ -84,6 +84,8 @@ class NumberLookupHooks
 					Collectors.toList ())
 
 			));
+
+		}
 
 	}
 

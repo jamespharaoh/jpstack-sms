@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
@@ -161,173 +160,178 @@ class ObjectSmsMessagesPageBuilder <
 			PagePart buildPagePart (
 					@NonNull TaskLogger parentTaskLogger) {
 
-				@Cleanup
-				Transaction transaction =
-					database.beginReadOnly (
-						"ObjectSmsMessagesPartFactory.get ()",
-						this);
+				try (
 
-				Record <?> object =
-					consoleHelper.lookupObject (
-						requestContext.consoleContextStuffRequired ());
+					Transaction transaction =
+						database.beginReadOnly (
+							"ObjectSmsMessagesPartFactory.get ()",
+							this);
 
-				MessageSearch search =
-					new MessageSearch ();
-
-				List<AffiliateRec> affiliates =
-					Collections.<AffiliateRec>emptyList ();
-
-				List<ServiceRec> services =
-					Collections.<ServiceRec>emptyList ();
-
-				List<BatchRec> batches =
-					Collections.<BatchRec>emptyList ();
-
-				List<RouteRec> routes =
-					Collections.<RouteRec>emptyList ();
-
-				if (object instanceof AffiliateRec) {
-
-					affiliates =
-						Collections.singletonList (
-							(AffiliateRec)
-							object);
-
-				} else if (object instanceof ServiceRec) {
-
-					services =
-						Collections.singletonList (
-							(ServiceRec)
-							object);
-
-				} else if (object instanceof BatchRec) {
-
-					batches =
-						Collections.singletonList (
-							(BatchRec)
-							object);
-
-				} else if (object instanceof RouteRec) {
-
-					routes =
-						Collections.singletonList (
-							(RouteRec)
-							object);
-
-				} else {
-
-					affiliates =
-						objectManager.getChildren (
-							object,
-							AffiliateRec.class);
-
-					services =
-						objectManager.getChildren (
-							object,
-							ServiceRec.class);
-
-					batches =
-						objectManager.getChildren (
-							object,
-							BatchRec.class);
-
-				}
-
-				if (
-					affiliates.isEmpty ()
-					&& services.isEmpty ()
-					&& batches.isEmpty ()
-					&& routes.isEmpty ()
 				) {
 
-					throw new RuntimeException (
-						stringFormat (
-							"No affiliates, services, batches or routes for %s",
-							objectManager.objectPath (
-								object)));
+					Record <?> object =
+						consoleHelper.lookupObject (
+							requestContext.consoleContextStuffRequired ());
+
+					MessageSearch search =
+						new MessageSearch ();
+
+					List<AffiliateRec> affiliates =
+						Collections.<AffiliateRec>emptyList ();
+
+					List<ServiceRec> services =
+						Collections.<ServiceRec>emptyList ();
+
+					List<BatchRec> batches =
+						Collections.<BatchRec>emptyList ();
+
+					List<RouteRec> routes =
+						Collections.<RouteRec>emptyList ();
+
+					if (object instanceof AffiliateRec) {
+
+						affiliates =
+							Collections.singletonList (
+								(AffiliateRec)
+								object);
+
+					} else if (object instanceof ServiceRec) {
+
+						services =
+							Collections.singletonList (
+								(ServiceRec)
+								object);
+
+					} else if (object instanceof BatchRec) {
+
+						batches =
+							Collections.singletonList (
+								(BatchRec)
+								object);
+
+					} else if (object instanceof RouteRec) {
+
+						routes =
+							Collections.singletonList (
+								(RouteRec)
+								object);
+
+					} else {
+
+						affiliates =
+							objectManager.getChildren (
+								object,
+								AffiliateRec.class);
+
+						services =
+							objectManager.getChildren (
+								object,
+								ServiceRec.class);
+
+						batches =
+							objectManager.getChildren (
+								object,
+								BatchRec.class);
+
+					}
+
+					if (
+						affiliates.isEmpty ()
+						&& services.isEmpty ()
+						&& batches.isEmpty ()
+						&& routes.isEmpty ()
+					) {
+
+						throw new RuntimeException (
+							stringFormat (
+								"No affiliates, services, batches or routes for %s",
+								objectManager.objectPath (
+									object)));
+
+					}
+
+					if (
+						(
+						  (affiliates.isEmpty () ? 0 : 1)
+						+ (services.isEmpty () ? 0 : 1)
+						+ (batches.isEmpty () ? 0 : 1)
+						+ (routes.isEmpty () ? 0 : 1)
+						) > 1
+					) {
+
+						throw new RuntimeException ();
+
+					}
+
+					if (! affiliates.isEmpty ()) {
+
+						search.affiliateIdIn (
+							affiliates.stream ()
+
+							.map (
+								AffiliateRec::getId)
+
+							.collect (
+								Collectors.toList ())
+
+						);
+
+					}
+
+					if (! services.isEmpty ()) {
+
+						search.serviceIdIn (
+							services.stream ()
+
+							.map (
+								ServiceRec::getId)
+
+							.collect (
+								Collectors.toList ())
+
+						);
+
+					}
+
+					if (! batches.isEmpty ()) {
+
+						search.batchIdIn (
+							batches.stream ()
+
+							.map (
+								BatchRec::getId)
+
+							.collect (
+								Collectors.toList ())
+
+						);
+
+					}
+
+					if (! routes.isEmpty ()) {
+
+						search.routeIdIn (
+							routes.stream ()
+
+							.map (
+								RouteRec::getId)
+
+							.collect (
+								Collectors.toList ())
+
+						);
+
+					}
+
+					MessageSource source =
+						messageSourceProvider.get ()
+							.searchTemplate (search);
+
+					return messageBrowserPartProvider.get ()
+						.localName ("/" + fileName)
+						.messageSource (source);
 
 				}
-
-				if (
-					(
-					  (affiliates.isEmpty () ? 0 : 1)
-					+ (services.isEmpty () ? 0 : 1)
-					+ (batches.isEmpty () ? 0 : 1)
-					+ (routes.isEmpty () ? 0 : 1)
-					) > 1
-				) {
-
-					throw new RuntimeException ();
-
-				}
-
-				if (! affiliates.isEmpty ()) {
-
-					search.affiliateIdIn (
-						affiliates.stream ()
-
-						.map (
-							AffiliateRec::getId)
-
-						.collect (
-							Collectors.toList ())
-
-					);
-
-				}
-
-				if (! services.isEmpty ()) {
-
-					search.serviceIdIn (
-						services.stream ()
-
-						.map (
-							ServiceRec::getId)
-
-						.collect (
-							Collectors.toList ())
-
-					);
-
-				}
-
-				if (! batches.isEmpty ()) {
-
-					search.batchIdIn (
-						batches.stream ()
-
-						.map (
-							BatchRec::getId)
-
-						.collect (
-							Collectors.toList ())
-
-					);
-
-				}
-
-				if (! routes.isEmpty ()) {
-
-					search.routeIdIn (
-						routes.stream ()
-
-						.map (
-							RouteRec::getId)
-
-						.collect (
-							Collectors.toList ())
-
-					);
-
-				}
-
-				MessageSource source =
-					messageSourceProvider.get ()
-						.searchTemplate (search);
-
-				return messageBrowserPartProvider.get ()
-					.localName ("/" + fileName)
-					.messageSource (source);
 
 			}
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -57,17 +56,18 @@ class RouterHooks
 	public
 	void init () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"routerHooks.init ()",
-				this);
+		try (
 
-		routerTypeIdsByParentTypeId =
-			routerTypeDao.findAll ().stream ()
+			Transaction transaction =
+				database.beginReadOnly (
+					"routerHooks.init ()",
+					this);
 
-			.collect (
-				Collectors.groupingBy (
+		) {
+
+			routerTypeIdsByParentTypeId =
+				routerTypeDao.findAll ().stream ().collect (
+					Collectors.groupingBy (
 
 				routerType ->
 					routerType.getParentType ().getId (),
@@ -78,6 +78,8 @@ class RouterHooks
 					Collectors.toList ())
 
 			));
+
+		}
 
 	}
 

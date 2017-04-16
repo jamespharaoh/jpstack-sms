@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -119,260 +118,265 @@ class MessageSetAction
 
 		// get relevant dao objects
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MessageSetAction.goReal ()",
-				this);
+		try (
 
-		// lookup the message set
+			Transaction transaction =
+				database.beginReadWrite (
+					"MessageSetAction.goReal ()",
+					this);
 
-		MessageSetRec messageSet =
-			messageSetFinder.findMessageSet (
-				requestContext);
-
-		// iterate over the input and check them
-
-		long numMessages =
-			requestContext.parameterIntegerRequired (
-				"num_messages");
-
-		for (
-			long index = 0;
-			index < numMessages;
-			index ++
 		) {
 
-			if (
-				optionalIsNotPresent (
-					requestContext.parameter (
-						"enabled_" + index))
-			) {
-				continue;
-			}
+			// lookup the message set
 
-			if (
-				! Pattern.matches (
-					"\\d+",
-					requestContext.parameterRequired (
-						"route_" + index))
-			) {
+			MessageSetRec messageSet =
+				messageSetFinder.findMessageSet (
+					requestContext);
 
-				requestContext.addErrorFormat (
-					"Message %s has no route",
-					integerToDecimalString (
-						index + 1));
+			// iterate over the input and check them
 
-				return null;
+			long numMessages =
+				requestContext.parameterIntegerRequired (
+					"num_messages");
 
-			}
-
-			if (
-				stringIsEmpty (
-					requestContext.parameterRequired (
-						"number_" + index))
+			for (
+				long index = 0;
+				index < numMessages;
+				index ++
 			) {
 
-				requestContext.addErrorFormat (
-					"Message %s has no number",
-					integerToDecimalString (
-						index + 1));
+				if (
+					optionalIsNotPresent (
+						requestContext.parameter (
+							"enabled_" + index))
+				) {
+					continue;
+				}
 
-				return null;
+				if (
+					! Pattern.matches (
+						"\\d+",
+						requestContext.parameterRequired (
+							"route_" + index))
+				) {
 
-			}
+					requestContext.addErrorFormat (
+						"Message %s has no route",
+						integerToDecimalString (
+							index + 1));
 
-			String message =
-				requestContext.parameterRequired (
-					"message_" + index);
+					return null;
 
-			if (! GsmUtils.gsmStringIsValid (message)) {
+				}
 
-				requestContext.addErrorFormat (
-					"Message %s has invalid characters",
-					integerToDecimalString (
-						index + 1));
+				if (
+					stringIsEmpty (
+						requestContext.parameterRequired (
+							"number_" + index))
+				) {
 
-				return null;
+					requestContext.addErrorFormat (
+						"Message %s has no number",
+						integerToDecimalString (
+							index + 1));
 
-			}
+					return null;
 
-			if (GsmUtils.gsmStringLength (message) > 160) {
+				}
 
-				requestContext.addError (
-					"Message " + (index + 1) + " is too long");
-
-				return null;
-
-			}
-
-		}
-
-		// iterate over the input and do it
-
-		for (
-			long index = 0;
-			index < numMessages;
-			index ++
-		) {
-
-			boolean enabled =
-				optionalIsPresent (
-					requestContext.parameter (
-						"enabled_" + index));
-
-			MessageSetMessageRec messageSetMessage =
-				index < messageSet.getMessages ().size ()
-					? messageSet.getMessages ().get (
-						toJavaIntegerRequired (
-							index))
-					: null;
-
-			if (messageSetMessage != null && ! enabled) {
-
-				// delete existing message
-
-				messageSetMessageHelper.remove (
-					messageSetMessage);
-
-//				messageSet.getMessages ().remove (
-//					new Integer (index));
-
-				eventLogic.createEvent (
-					taskLogger,
-					"messageset_message_removed",
-					userConsoleLogic.userRequired (),
-					index,
-					messageSet);
-
-			} else if (enabled) {
-
-				// set up some handy variables
-
-				RouteRec newRoute =
-					routeHelper.findRequired (
-						requestContext.parameterIntegerRequired (
-							"route_" + index));
-
-				String newNumber =
-					requestContext.parameterRequired (
-						"number_" + index);
-
-				String newMessage =
+				String message =
 					requestContext.parameterRequired (
 						"message_" + index);
 
-				if (
-					isNull (
-						messageSetMessage)
-				) {
+				if (! GsmUtils.gsmStringIsValid (message)) {
 
-					// create new message
+					requestContext.addErrorFormat (
+						"Message %s has invalid characters",
+						integerToDecimalString (
+							index + 1));
 
-					messageSetMessage =
-						messageSetMessageHelper.createInstance ()
+					return null;
 
-						.setMessageSet (
-							messageSet)
+				}
 
-						.setIndex (
-							index)
+				if (GsmUtils.gsmStringLength (message) > 160) {
 
-						.setRoute (
-							newRoute)
+					requestContext.addError (
+						"Message " + (index + 1) + " is too long");
 
-						.setNumber (
-							newNumber)
+					return null;
 
-						.setMessage (
-							newMessage);
+				}
 
-					messageSetMessageHelper.insert (
-						taskLogger,
+			}
+
+			// iterate over the input and do it
+
+			for (
+				long index = 0;
+				index < numMessages;
+				index ++
+			) {
+
+				boolean enabled =
+					optionalIsPresent (
+						requestContext.parameter (
+							"enabled_" + index));
+
+				MessageSetMessageRec messageSetMessage =
+					index < messageSet.getMessages ().size ()
+						? messageSet.getMessages ().get (
+							toJavaIntegerRequired (
+								index))
+						: null;
+
+				if (messageSetMessage != null && ! enabled) {
+
+					// delete existing message
+
+					messageSetMessageHelper.remove (
 						messageSetMessage);
 
-					messageSet.getMessages ().add (
-						messageSetMessage);
-
-					// and create event
+	//				messageSet.getMessages ().remove (
+	//					new Integer (index));
 
 					eventLogic.createEvent (
 						taskLogger,
-						"messageset_message_created",
+						"messageset_message_removed",
 						userConsoleLogic.userRequired (),
 						index,
-						messageSet,
-						newRoute,
-						newNumber,
-						0,
-						newMessage);
+						messageSet);
 
-				} else {
+				} else if (enabled) {
 
-					// update existing message
+					// set up some handy variables
+
+					RouteRec newRoute =
+						routeHelper.findRequired (
+							requestContext.parameterIntegerRequired (
+								"route_" + index));
+
+					String newNumber =
+						requestContext.parameterRequired (
+							"number_" + index);
+
+					String newMessage =
+						requestContext.parameterRequired (
+							"message_" + index);
 
 					if (
-						referenceNotEqualWithClass (
-							RouteRec.class,
-							messageSetMessage.getRoute (),
-							newRoute)
+						isNull (
+							messageSetMessage)
 					) {
 
-						messageSetMessage
+						// create new message
+
+						messageSetMessage =
+							messageSetMessageHelper.createInstance ()
+
+							.setMessageSet (
+								messageSet)
+
+							.setIndex (
+								index)
 
 							.setRoute (
-								newRoute);
-
-						eventLogic.createEvent (
-							taskLogger,
-							"messageset_message_route",
-							userConsoleLogic.userRequired (),
-							index,
-							messageSet,
-							newRoute);
-
-					}
-
-					if (
-						stringNotEqualSafe (
-							messageSetMessage.getNumber (),
-							newNumber)
-					) {
-
-						messageSetMessage
+								newRoute)
 
 							.setNumber (
-								newNumber);
-
-						eventLogic.createEvent (
-							taskLogger,
-							"messageset_message_number",
-							userConsoleLogic.userRequired (),
-							index,
-							messageSet,
-							newNumber);
-
-					}
-
-					if (
-						referenceNotEqualWithClass (
-							MessageRec.class,
-							messageSetMessage.getMessage (),
-							newMessage)
-					) {
-
-						messageSetMessage
+								newNumber)
 
 							.setMessage (
 								newMessage);
 
+						messageSetMessageHelper.insert (
+							taskLogger,
+							messageSetMessage);
+
+						messageSet.getMessages ().add (
+							messageSetMessage);
+
+						// and create event
+
 						eventLogic.createEvent (
 							taskLogger,
-							"messageset_message_message",
+							"messageset_message_created",
 							userConsoleLogic.userRequired (),
 							index,
 							messageSet,
+							newRoute,
+							newNumber,
+							0,
 							newMessage);
+
+					} else {
+
+						// update existing message
+
+						if (
+							referenceNotEqualWithClass (
+								RouteRec.class,
+								messageSetMessage.getRoute (),
+								newRoute)
+						) {
+
+							messageSetMessage
+
+								.setRoute (
+									newRoute);
+
+							eventLogic.createEvent (
+								taskLogger,
+								"messageset_message_route",
+								userConsoleLogic.userRequired (),
+								index,
+								messageSet,
+								newRoute);
+
+						}
+
+						if (
+							stringNotEqualSafe (
+								messageSetMessage.getNumber (),
+								newNumber)
+						) {
+
+							messageSetMessage
+
+								.setNumber (
+									newNumber);
+
+							eventLogic.createEvent (
+								taskLogger,
+								"messageset_message_number",
+								userConsoleLogic.userRequired (),
+								index,
+								messageSet,
+								newNumber);
+
+						}
+
+						if (
+							referenceNotEqualWithClass (
+								MessageRec.class,
+								messageSetMessage.getMessage (),
+								newMessage)
+						) {
+
+							messageSetMessage
+
+								.setMessage (
+									newMessage);
+
+							eventLogic.createEvent (
+								taskLogger,
+								"messageset_message_message",
+								userConsoleLogic.userRequired (),
+								index,
+								messageSet,
+								newMessage);
+
+						}
 
 					}
 
@@ -380,16 +384,16 @@ class MessageSetAction
 
 			}
 
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Messages updated");
+
+			requestContext.setEmptyFormData ();
+
+			return null;
+
 		}
-
-		transaction.commit ();
-
-		requestContext.addNotice (
-			"Messages updated");
-
-		requestContext.setEmptyFormData ();
-
-		return null;
 
 	}
 

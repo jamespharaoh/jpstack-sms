@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -57,17 +56,18 @@ class CommandHooks
 	public
 	void init () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"commandHooks.init ()",
-				this);
+		try (
 
-		commandTypeIdsByParentTypeId =
-			commandTypeDao.findAll ().stream ()
+			Transaction transaction =
+				database.beginReadOnly (
+					"commandHooks.init ()",
+					this);
 
-			.collect (
-				Collectors.groupingBy (
+		) {
+
+			commandTypeIdsByParentTypeId =
+				commandTypeDao.findAll ().stream ().collect (
+					Collectors.groupingBy (
 
 				commandType ->
 					commandType.getParentType ().getId (),
@@ -78,6 +78,8 @@ class CommandHooks
 					Collectors.toList ())
 
 			));
+
+		}
 
 	}
 

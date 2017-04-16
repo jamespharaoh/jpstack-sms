@@ -7,7 +7,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
@@ -126,61 +125,66 @@ class BatchTypeBuilder {
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"BatchTypeBuilder.createBatchType ()",
-				this);
+		try (
 
-		// lookup subject
+			Transaction transaction =
+				database.beginReadWrite (
+					"BatchTypeBuilder.createBatchType ()",
+					this);
 
-		String subjectTypeCode =
-			camelToUnderscore (
-				ifNull (
-					spec.subject (),
-					parent.name ()));
+		) {
 
-		ObjectTypeRec subjectType =
-			objectTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				subjectTypeCode);
+			// lookup subject
 
-		// lookup batch
+			String subjectTypeCode =
+				camelToUnderscore (
+					ifNull (
+						spec.subject (),
+						parent.name ()));
 
-		String batchTypeCode =
-			camelToUnderscore (
-				spec.batch ());
+			ObjectTypeRec subjectType =
+				objectTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					subjectTypeCode);
 
-		ObjectTypeRec batchType =
-			objectTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				batchTypeCode);
+			// lookup batch
 
-		// create batch type
+			String batchTypeCode =
+				camelToUnderscore (
+					spec.batch ());
 
-		batchTypeHelper.insert (
-			taskLogger,
-			batchTypeHelper.createInstance ()
+			ObjectTypeRec batchType =
+				objectTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					batchTypeCode);
 
-			.setSubjectType (
-				subjectType)
+			// create batch type
 
-			.setCode (
-				simplifyToCodeRequired (
-					spec.name ()))
+			batchTypeHelper.insert (
+				taskLogger,
+				batchTypeHelper.createInstance ()
 
-			.setName (
-				spec.name ())
+				.setSubjectType (
+					subjectType)
 
-			.setDescription (
-				spec.description ())
+				.setCode (
+					simplifyToCodeRequired (
+						spec.name ()))
 
-			.setBatchType (
-				batchType)
+				.setName (
+					spec.name ())
 
-		);
+				.setDescription (
+					spec.description ())
 
-		transaction.commit ();
+				.setBatchType (
+					batchType)
+
+			);
+
+			transaction.commit ();
+
+		}
 
 	}
 

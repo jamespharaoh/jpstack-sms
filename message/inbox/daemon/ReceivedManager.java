@@ -16,7 +16,6 @@ import java.util.Set;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -149,54 +148,59 @@ class ReceivedManager
 					parentTaskLogger,
 					"doMessage");
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
-					"ReceivedManager.ReceivedThread.doMessage (messageId)",
-					this);
+			try (
 
-			InboxRec inbox =
-				inboxHelper.findRequired (
-					messageId);
+				Transaction transaction =
+					database.beginReadWrite (
+						"ReceivedManager.ReceivedThread.doMessage (messageId)",
+						this);
 
-			MessageRec message =
-				messageHelper.findRequired (
-					messageId);
+			) {
 
-			dumpMessageInfo (
-				taskLogger,
-				message);
+				InboxRec inbox =
+					inboxHelper.findRequired (
+						messageId);
 
-			RouteRec route =
-				message.getRoute ();
+				MessageRec message =
+					messageHelper.findRequired (
+						messageId);
 
-			if (route.getCommand () != null) {
+				dumpMessageInfo (
+					taskLogger,
+					message);
 
-				InboxAttemptRec inboxAttempt =
-					commandManager.handle (
+				RouteRec route =
+					message.getRoute ();
+
+				if (route.getCommand () != null) {
+
+					InboxAttemptRec inboxAttempt =
+						commandManager.handle (
+							taskLogger,
+							inbox,
+							route.getCommand (),
+							Optional.fromNullable (
+								message.getRef ()),
+							message.getText ().getText ());
+
+					if (inboxAttempt == null)
+						throw new NullPointerException ();
+
+				} else {
+
+					smsInboxLogic.inboxNotProcessed (
 						taskLogger,
 						inbox,
-						route.getCommand (),
-						Optional.fromNullable (
-							message.getRef ()),
-						message.getText ().getText ());
+						optionalAbsent (),
+						optionalAbsent (),
+						optionalAbsent (),
+						"No command for route");
 
-				if (inboxAttempt == null)
-					throw new NullPointerException ();
+				}
 
-			} else {
-
-				smsInboxLogic.inboxNotProcessed (
-					taskLogger,
-					inbox,
-					optionalAbsent (),
-					optionalAbsent (),
-					optionalAbsent (),
-					"No command for route");
+				transaction.commit ();
 
 			}
-
-			transaction.commit ();
 
 		}
 
@@ -216,55 +220,60 @@ class ReceivedManager
 				integerToDecimalString (
 					messageId));
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
+			try (
+
+				Transaction transaction =
+					database.beginReadWrite (
+						stringFormat (
+							"%s (%s)",
+							joinWithFullStop (
+								"ReceivedManager",
+								"ReceivedThread",
+								"doError"),
+							joinWithCommaAndSpace (
+								stringFormat (
+									"messageId = %s",
+									integerToDecimalString (
+										messageId)),
+								stringFormat (
+									"exception = %s",
+									exception.getClass ().getSimpleName ()))),
+						this);
+
+			) {
+
+				InboxRec inbox =
+					inboxHelper.findRequired (
+						messageId);
+
+				MessageRec message =
+					inbox.getMessage ();
+
+				RouteRec route =
+					message.getRoute ();
+
+				exceptionLogger.logThrowable (
+					taskLogger,
+					"daemon",
 					stringFormat (
-						"%s (%s)",
-						joinWithFullStop (
-							"ReceivedManager",
-							"ReceivedThread",
-							"doError"),
-						joinWithCommaAndSpace (
-							stringFormat (
-								"messageId = %s",
-								integerToDecimalString (
-									messageId)),
-							stringFormat (
-								"exception = %s",
-								exception.getClass ().getSimpleName ()))),
-					this);
+						"Route %s",
+						route.getCode ()),
+					exception,
+					optionalAbsent (),
+					GenericExceptionResolution.tryAgainLater);
 
-			InboxRec inbox =
-				inboxHelper.findRequired (
-					messageId);
+				smsInboxLogic.inboxProcessingFailed (
+					taskLogger,
+					inbox,
+					stringFormat (
+						"Threw %s: %s",
+						exception.getClass ().getSimpleName (),
+						emptyStringIfNull (
+							exception.getMessage ())));
 
-			MessageRec message =
-				inbox.getMessage ();
+				transaction.commit ();
 
-			RouteRec route =
-				message.getRoute ();
-
-			exceptionLogger.logThrowable (
-				taskLogger,
-				"daemon",
-				stringFormat (
-					"Route %s",
-					route.getCode ()),
-				exception,
-				optionalAbsent (),
-				GenericExceptionResolution.tryAgainLater);
-
-			smsInboxLogic.inboxProcessingFailed (
-				taskLogger,
-				inbox,
-				stringFormat (
-					"Threw %s: %s",
-					exception.getClass ().getSimpleName (),
-					emptyStringIfNull (
-						exception.getMessage ())));
-
-			transaction.commit ();
+			}
 
 		}
 
@@ -325,36 +334,41 @@ class ReceivedManager
 		Set <Long> activeMessageids =
 			buffer.getKeys ();
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"ReceivedManager.doQuery ()",
-				this);
+		try (
 
-		List <InboxRec> inboxes =
-			inboxHelper.findPendingLimit (
-				transaction.now (),
-				buffer.getFullSize ());
+			Transaction transaction =
+				database.beginReadOnly (
+					"ReceivedManager.doQuery ()",
+					this);
 
-		for (
-			InboxRec inbox
-				: inboxes
 		) {
 
-			MessageRec message =
-				inbox.getMessage ();
+			List <InboxRec> inboxes =
+				inboxHelper.findPendingLimit (
+					transaction.now (),
+					buffer.getFullSize ());
 
-			if (activeMessageids.contains (
-					message.getId ()))
-				continue;
+			for (
+				InboxRec inbox
+					: inboxes
+			) {
 
-			buffer.add (
-				message.getId (),
-				message.getId ());
+				MessageRec message =
+					inbox.getMessage ();
+
+				if (activeMessageids.contains (
+						message.getId ()))
+					continue;
+
+				buffer.add (
+					message.getId (),
+					message.getId ());
+
+			}
+
+			return inboxes.size () == buffer.getFullSize ();
 
 		}
-
-		return inboxes.size () == buffer.getFullSize ();
 
 	}
 

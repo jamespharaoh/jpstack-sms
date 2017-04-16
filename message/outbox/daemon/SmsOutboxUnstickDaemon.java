@@ -4,7 +4,6 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.List;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import org.joda.time.Duration;
@@ -81,50 +80,55 @@ class SmsOutboxUnstickDaemon
 
 		for (;;) {
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
-					"SmsOutboxUnstickDaemon.runOnce ()",
-					this);
+			try (
 
-			Instant sendingBefore =
-				transaction.now ().minus (
-					timeoutDuration);
+				Transaction transaction =
+					database.beginReadWrite (
+						"SmsOutboxUnstickDaemon.runOnce ()",
+						this);
 
-			List<OutboxRec> outboxesToUnstick =
-				outboxHelper.findSendingBeforeLimit (
-					sendingBefore,
-					batchSize);
-
-			if (outboxesToUnstick.isEmpty ())
-				return;
-
-			for (
-				OutboxRec outbox
-					: outboxesToUnstick
 			) {
 
-				taskLogger.warningFormat (
-					"Unsticking outbox %s (sending time is %s)",
-					integerToDecimalString (
-						outbox.getId ()),
-					timeFormatter.timestampSecondStringIso (
-						outbox.getSending ()));
+				Instant sendingBefore =
+					transaction.now ().minus (
+						timeoutDuration);
 
-				outbox
+				List<OutboxRec> outboxesToUnstick =
+					outboxHelper.findSendingBeforeLimit (
+						sendingBefore,
+						batchSize);
 
-					.setSending (
-						null)
+				if (outboxesToUnstick.isEmpty ())
+					return;
 
-					.setTries (
-						outbox.getTries () + 1)
+				for (
+					OutboxRec outbox
+						: outboxesToUnstick
+				) {
 
-					.setError (
-						"Send process never completed (stuck outbox)");
+					taskLogger.warningFormat (
+						"Unsticking outbox %s (sending time is %s)",
+						integerToDecimalString (
+							outbox.getId ()),
+						timeFormatter.timestampSecondStringIso (
+							outbox.getSending ()));
+
+					outbox
+
+						.setSending (
+							null)
+
+						.setTries (
+							outbox.getTries () + 1)
+
+						.setError (
+							"Send process never completed (stuck outbox)");
+
+				}
+
+				transaction.commit ();
 
 			}
-
-			transaction.commit ();
 
 		}
 

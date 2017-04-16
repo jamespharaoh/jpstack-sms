@@ -21,7 +21,6 @@ import java.util.concurrent.Callable;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
@@ -144,62 +143,67 @@ class AbstractSmsSender2
 	protected
 	void createThreads () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"AbstractSmsSender2.createThreads ()",
-				this);
+		try (
 
-		// get a list of routes
+			Transaction transaction =
+				database.beginReadOnly (
+					"AbstractSmsSender2.createThreads ()",
+					this);
 
-		SenderRec sender =
-			senderHelper.findByCodeRequired (
-				GlobalId.root,
-				senderCode ());
+		) {
 
-		Set<RouteRec> routes =
-			sender.getRoutes ();
+			// get a list of routes
 
-		// and for each one...
+			SenderRec sender =
+				senderHelper.findByCodeRequired (
+					GlobalId.root,
+					senderCode ());
 
-		String threadName =
-			getThreadName ();
+			Set<RouteRec> routes =
+				sender.getRoutes ();
 
-		for (RouteRec route : routes) {
+			// and for each one...
 
-			Object routeLock =
-				new Object ();
+			String threadName =
+				getThreadName ();
 
-			for (
-				int index = 0;
-				index < threadsPerRoute;
-				index ++
-			) {
+			for (RouteRec route : routes) {
 
-				Worker worker =
-					new Worker (
-						route.getId (),
-						routeLock);
+				Object routeLock =
+					new Object ();
 
-				Thread thread =
-					threadManager.makeThread (
-						worker);
+				for (
+					int index = 0;
+					index < threadsPerRoute;
+					index ++
+				) {
 
-				if (threadName != null)
+					Worker worker =
+						new Worker (
+							route.getId (),
+							routeLock);
 
-					thread.setName (
-						joinWithoutSeparator (
-							threadName,
-							Long.toString (
-								route.getId ()),
-							new String (
-								Character.toChars (
-									'a' + index))));
+					Thread thread =
+						threadManager.makeThread (
+							worker);
 
-				thread.start ();
+					if (threadName != null)
 
-				registerThread (
-					thread);
+						thread.setName (
+							joinWithoutSeparator (
+								threadName,
+								Long.toString (
+									route.getId ()),
+								new String (
+									Character.toChars (
+										'a' + index))));
+
+					thread.start ();
+
+					registerThread (
+						thread);
+
+				}
 
 			}
 
@@ -576,13 +580,14 @@ class AbstractSmsSender2
 
 			for (int tries = 0;;) {
 
-				try {
+				try (
 
-					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
 							"AbstractSmsSender2.Worker.reliableOutboxSuccess (...)",
 							this);
+
+				) {
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
 						smsOutboxAttemptHelper.findRequired (
@@ -678,13 +683,14 @@ class AbstractSmsSender2
 
 			for (;;) {
 
-				try {
+				try (
 
-					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
 							"AbstractSmsSender2.Worker.reliableOutboxFailure (...)",
 							this);
+
+				) {
 
 					SmsOutboxAttemptRec smsOutboxAttempt =
 						smsOutboxAttemptHelper.findRequired (

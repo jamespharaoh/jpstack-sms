@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -140,90 +139,95 @@ class MessageDaemon
 				parentTaskLogger,
 				"expireMessages");
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MessageDaemon.expiresMessages ()",
-				this);
+		try (
 
-		Collection <MessageExpiryRec> messageExpiries =
-			messageExpiryHelper.findPendingLimit (
-				transaction.now (),
-				batchSize);
+			Transaction transaction =
+				database.beginReadWrite (
+					"MessageDaemon.expiresMessages ()",
+					this);
 
-		if (messageExpiries.size () == 0)
-			return;
-
-		for (
-			MessageExpiryRec messageExpiry
-				: messageExpiries
 		) {
 
-			MessageRec message =
-				messageExpiry.getMessage ();
+			Collection <MessageExpiryRec> messageExpiries =
+				messageExpiryHelper.findPendingLimit (
+					transaction.now (),
+					batchSize);
 
-			MessageStatus oldMessageStatus =
-				message.getStatus ();
+			if (messageExpiries.size () == 0)
+				return;
 
-			if (
-				enumInSafe (
-					oldMessageStatus,
-					MessageStatus.sent,
-					MessageStatus.submitted)
+			for (
+				MessageExpiryRec messageExpiry
+					: messageExpiries
 			) {
 
-				// perform expiry
+				MessageRec message =
+					messageExpiry.getMessage ();
 
-				messageLogic.messageStatus (
-					taskLogger,
-					message,
-					MessageStatus.reportTimedOut);
+				MessageStatus oldMessageStatus =
+					message.getStatus ();
 
-				taskLogger.debugFormat (
-					"Message %s expired from state %s",
-					integerToDecimalString (
-						message.getId ()),
-					enumName (
-						oldMessageStatus));
+				if (
+					enumInSafe (
+						oldMessageStatus,
+						MessageStatus.sent,
+						MessageStatus.submitted)
+				) {
 
-			} else if (
-				enumInSafe (
-					oldMessageStatus,
-					MessageStatus.delivered,
-					MessageStatus.undelivered,
-					MessageStatus.manuallyUndelivered,
-					MessageStatus.manuallyDelivered)
-			) {
+					// perform expiry
 
-				// ignore expiry
+					messageLogic.messageStatus (
+						taskLogger,
+						message,
+						MessageStatus.reportTimedOut);
 
-				taskLogger.debugFormat (
-					"Message %s expiry ignored due to state %s",
-					integerToDecimalString (
-						message.getId ()),
-					enumName (
-						oldMessageStatus));
-
-			} else {
-
-				// error
-
-				throw new RuntimeException (
-					stringFormat (
-						"Cannot expire message %s in state %s",
+					taskLogger.debugFormat (
+						"Message %s expired from state %s",
 						integerToDecimalString (
 							message.getId ()),
 						enumName (
-							oldMessageStatus)));
+							oldMessageStatus));
+
+				} else if (
+					enumInSafe (
+						oldMessageStatus,
+						MessageStatus.delivered,
+						MessageStatus.undelivered,
+						MessageStatus.manuallyUndelivered,
+						MessageStatus.manuallyDelivered)
+				) {
+
+					// ignore expiry
+
+					taskLogger.debugFormat (
+						"Message %s expiry ignored due to state %s",
+						integerToDecimalString (
+							message.getId ()),
+						enumName (
+							oldMessageStatus));
+
+				} else {
+
+					// error
+
+					throw new RuntimeException (
+						stringFormat (
+							"Cannot expire message %s in state %s",
+							integerToDecimalString (
+								message.getId ()),
+							enumName (
+								oldMessageStatus)));
+
+				}
+
+				messageExpiryHelper.remove (
+					messageExpiry);
 
 			}
 
-			messageExpiryHelper.remove (
-				messageExpiry);
+			transaction.commit ();
 
 		}
-
-		transaction.commit ();
 
 	}
 

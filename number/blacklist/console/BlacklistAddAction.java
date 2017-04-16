@@ -4,7 +4,6 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import com.google.common.base.Optional;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -78,94 +77,99 @@ class BlacklistAddAction
 	Responder goReal (
 			@NonNull TaskLogger taskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"BlacklistAddAction.goReal ()",
-				this);
+		try (
 
-		// TODO this is messy
+			Transaction transaction =
+				database.beginReadWrite (
+					"BlacklistAddAction.goReal ()",
+					this);
 
-		NumberFormatRec ukNumberFormat =
-			numberFormatHelper.findByCodeRequired (
-				GlobalId.root,
-				"uk");
-
-		String number;
-
-		try {
-
-			number =
-				numberFormatLogic.parse (
-					ukNumberFormat,
-					requestContext.parameterRequired (
-						"number"));
-
-		} catch (WbsNumberFormatException exception) {
-
-			requestContext.addError (
-				"Invalid mobile number");
-
-			return null;
-
-		}
-
-		Optional<BlacklistRec> blacklistOptional =
-			blacklistHelper.findByCode (
-				GlobalId.root,
-				number);
-
-		if (
-			optionalIsPresent (
-				blacklistOptional)
 		) {
 
-			requestContext.addError (
-				"Number is already blacklisted");
+			// TODO this is messy
+
+			NumberFormatRec ukNumberFormat =
+				numberFormatHelper.findByCodeRequired (
+					GlobalId.root,
+					"uk");
+
+			String number;
+
+			try {
+
+				number =
+					numberFormatLogic.parse (
+						ukNumberFormat,
+						requestContext.parameterRequired (
+							"number"));
+
+			} catch (WbsNumberFormatException exception) {
+
+				requestContext.addError (
+					"Invalid mobile number");
+
+				return null;
+
+			}
+
+			Optional<BlacklistRec> blacklistOptional =
+				blacklistHelper.findByCode (
+					GlobalId.root,
+					number);
+
+			if (
+				optionalIsPresent (
+					blacklistOptional)
+			) {
+
+				requestContext.addError (
+					"Number is already blacklisted");
+
+				return null;
+
+			}
+
+			String reason =
+				requestContext.parameterRequired (
+					"reason");
+
+			if (reason.length() < 5) {
+
+				requestContext.addError (
+					"You must provide a substantial reason");
+
+				return null;
+
+			}
+
+			blacklistHelper.insert (
+				taskLogger,
+				blacklistHelper.createInstance ()
+
+				.setNumber (
+					number)
+
+				.setReason (
+					reason)
+
+			);
+
+			// create an event
+
+			eventLogic.createEvent (
+				taskLogger,
+				"number_blacklisted",
+				userConsoleLogic.userRequired (),
+				blacklistOptional.get ());
+
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Added to blacklist");
 
 			return null;
 
 		}
-
-		String reason =
-			requestContext.parameterRequired (
-				"reason");
-
-		if (reason.length() < 5) {
-
-			requestContext.addError (
-				"You must provide a substantial reason");
-
-			return null;
-
-		}
-
-		blacklistHelper.insert (
-			taskLogger,
-			blacklistHelper.createInstance ()
-
-			.setNumber (
-				number)
-
-			.setReason (
-				reason)
-
-		);
-
-		// create an event
-
-		eventLogic.createEvent (
-			taskLogger,
-			"number_blacklisted",
-			userConsoleLogic.userRequired (),
-			blacklistOptional.get ());
-
-		transaction.commit ();
-
-		requestContext.addNotice (
-			"Added to blacklist");
-
-		return null;
 
 	}
 

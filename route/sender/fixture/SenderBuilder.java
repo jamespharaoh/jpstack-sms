@@ -5,7 +5,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
@@ -109,30 +108,35 @@ class SenderBuilder
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"SenderBuilder.createSender ()",
-				this);
+		try (
 
-		// create sender
+			Transaction transaction =
+				database.beginReadWrite (
+					"SenderBuilder.createSender ()",
+					this);
 
-		senderHelper.insert (
-			taskLogger,
-			senderHelper.createInstance ()
+		) {
 
-			.setCode (
-				simplifyToCodeRequired (
-					spec.name ()))
+			// create sender
 
-			.setDescription (
-				spec.description ())
+			senderHelper.insert (
+				taskLogger,
+				senderHelper.createInstance ()
 
-		);
+				.setCode (
+					simplifyToCodeRequired (
+						spec.name ()))
 
-		// commit transaction
+				.setDescription (
+					spec.description ())
 
-		transaction.commit ();
+			);
+
+			// commit transaction
+
+			transaction.commit ();
+
+		}
 
 	}
 

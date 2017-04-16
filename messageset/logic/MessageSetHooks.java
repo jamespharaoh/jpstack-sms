@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -57,17 +56,18 @@ class MessageSetHooks
 	public
 	void init () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				"privHooks.init ()",
-				this);
+		try (
 
-		messageSetTypeIdsByParentTypeId =
-			messageSetTypeDao.findAll ().stream ()
+			Transaction transaction =
+				database.beginReadOnly (
+					"privHooks.init ()",
+					this);
 
-			.collect (
-				Collectors.groupingBy (
+		) {
+
+			messageSetTypeIdsByParentTypeId =
+				messageSetTypeDao.findAll ().stream ().collect (
+					Collectors.groupingBy (
 
 				messageSetType ->
 					messageSetType.getParentType ().getId (),
@@ -78,6 +78,8 @@ class MessageSetHooks
 					Collectors.toList ())
 
 			));
+
+		}
 
 	}
 

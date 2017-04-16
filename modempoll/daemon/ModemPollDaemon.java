@@ -2,7 +2,6 @@ package wbs.sms.modempoll.daemon;
 
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -17,11 +16,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Duration;
 
@@ -44,7 +41,6 @@ import wbs.sms.number.core.model.NumberObjectHelper;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
-@Log4j
 public
 class ModemPollDaemon
 	extends AbstractDaemonService {
@@ -153,56 +149,7 @@ class ModemPollDaemon
 		public
 		void run () {
 
-			// open the modem
-
-			try {
-
-				modemIn =
-					new BufferedReader(
-						new InputStreamReader (
-							new FileInputStream (
-								deviceName),
-								"us-ascii"));
-
-				modemOut =
-					new OutputStreamWriter (
-						new FileOutputStream (
-							deviceName),
-						"us-ascii");
-
-			} catch (IOException e) {
-
-				log.error ("Error opening modem device: " + e.getMessage ());
-
-				if (modemIn != null) {
-
-					try {
-
-						modemIn.close ();
-
-					} catch (IOException e1) {
-					}
-
-				}
-
-				if (modemOut != null) {
-
-					try {
-
-						modemOut.close ();
-
-					} catch (IOException e1) {
-					}
-
-				}
-
-				modemIn = null;
-
-				modemOut = null;
-
-				return;
-
-			}
+			openModem ();
 
 			try {
 
@@ -221,11 +168,13 @@ class ModemPollDaemon
 						// do like a decent reset of the modem
 
 						sendCommand (
+							taskLogger,
 							"\route\route+++\route\route");
 
 						// initialise modem
 
 						sendCommandOk (
+							taskLogger,
 							"at&f0e0+cmgf=0\route");
 
 						// main loop
@@ -246,11 +195,11 @@ class ModemPollDaemon
 
 					} catch (IOException e) {
 
-						log.error (
-							"Got IO Exception from modem: "
-								+ e.getMessage());
+						taskLogger.errorFormat (
+							"Got IO Exception from modem: %s",
+							e.getMessage ());
 
-						log.error (
+						taskLogger.errorFormat (
 							"Going to sleep for a bit");
 
 						Thread.sleep (
@@ -260,11 +209,11 @@ class ModemPollDaemon
 
 					} catch (ModemException e) {
 
-						log.error (
-							"Had problem with modem: "
-								+ e.getMessage());
+						taskLogger.errorFormat (
+							"Had problem with modem: %s",
+							e.getMessage ());
 
-						log.error (
+						taskLogger.errorFormat (
 							"Going to sleep for a bit");
 
 						Thread.sleep (
@@ -304,6 +253,66 @@ class ModemPollDaemon
 		}
 
 		private
+		void openModem () {
+
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"RetrieveThread.openModem ()");
+
+			try {
+
+				modemIn =
+					new BufferedReader (
+						new InputStreamReader (
+							new FileInputStream (
+								deviceName),
+								"us-ascii"));
+
+				modemOut =
+					new OutputStreamWriter (
+						new FileOutputStream (
+							deviceName),
+						"us-ascii");
+
+			} catch (IOException e) {
+
+				taskLogger.errorFormat (
+					"Error opening modem device: %s",
+					e.getMessage ());
+
+				if (modemIn != null) {
+
+					try {
+
+						modemIn.close ();
+
+					} catch (IOException e1) {
+					}
+
+				}
+
+				if (modemOut != null) {
+
+					try {
+
+						modemOut.close ();
+
+					} catch (IOException e1) {
+					}
+
+				}
+
+				modemIn = null;
+
+				modemOut = null;
+
+				return;
+
+			}
+
+		}
+
+		private
 		void doPoll (
 				@NonNull TaskLogger parentTaskLogger)
 			throws
@@ -317,8 +326,9 @@ class ModemPollDaemon
 
 			// get the list
 
-			List<String> lines =
+			List <String> lines =
 				sendCommand (
+					taskLogger,
 					"at+cmgl=4\route");
 
 			// then go through it
@@ -368,6 +378,7 @@ class ModemPollDaemon
 				// now delete it
 
 				sendCommandOk (
+					taskLogger,
 					"at+cmgd=" + matcher.group (1) + "\route");
 
 			}
@@ -378,21 +389,26 @@ class ModemPollDaemon
 		 * Send a command and collect the response.
 		 */
 		private
-		List<String> sendCommand (
-				String command)
+		List <String> sendCommand (
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull String command)
 			throws
 				InterruptedException,
 				IOException {
 
-			log.debug (
-				stringFormat (
-					"Sent: %s",
-					command.replaceAll (
-						"\\route",
-						"\\\\route")));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendCommand");
 
-			List<String> ret =
-				new ArrayList<String> ();
+			taskLogger.debugFormat (
+				"Sent: %s",
+				command.replaceAll (
+					"\\route",
+					"\\\\route"));
+
+			List <String> ret =
+				new ArrayList<> ();
 
 			// send the command
 
@@ -413,9 +429,9 @@ class ModemPollDaemon
 					String line =
 						modemIn.readLine ();
 
-					log.debug (
-						stringFormat (
-							"Got: " + line));
+					taskLogger.debugFormat (
+						"Got: %s",
+						line);
 
 					ret.add (
 						line);
@@ -443,13 +459,20 @@ class ModemPollDaemon
 		 */
 		public
 		void sendCommandOk (
-				String command)
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull String command)
 			throws
 				InterruptedException,
 				IOException {
 
-			List<String> lines =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendCommandOk");
+
+			List <String> lines =
 				sendCommand (
+					taskLogger,
 					command);
 
 			for (
@@ -473,13 +496,27 @@ class ModemPollDaemon
 		@SuppressWarnings ("unused")
 		public
 		void sendCommandsOk (
-				List<String> commands)
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull List <String> commands)
 			throws
 				InterruptedException,
 				IOException {
 
-			for (String command : commands)
-				sendCommandOk (command);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendCommandsOk");
+
+			for (
+				String command
+					: commands
+			) {
+
+				sendCommandOk (
+					taskLogger,
+					command);
+
+			}
 
 		}
 
@@ -496,20 +533,25 @@ class ModemPollDaemon
 					parentTaskLogger,
 					"storePdu");
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
-					"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
-					this);
+			try (
 
-			modemPollQueueHelper.insert (
-				taskLogger,
-				modemPollQueueHelper.createInstance ()
+				Transaction transaction =
+					database.beginReadWrite (
+						"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
+						this);
 
-				.setPdu (
-					pdu)
+			) {
 
-			);
+				modemPollQueueHelper.insert (
+					taskLogger,
+					modemPollQueueHelper.createInstance ()
+
+					.setPdu (
+						pdu)
+
+				);
+
+			}
 
 		}
 
@@ -561,13 +603,14 @@ class ModemPollDaemon
 
 				flagWaiter.clear();
 
-				try {
+				try (
 
-					@Cleanup
 					Transaction transaction =
 						database.beginReadWrite (
 							"ModemPollDaemon.ProcessThread.processAll ()",
 							this);
+
+				) {
 
 					ModemPollQueueRec modemPollQueue =
 						modemPollQueueHelper.findNext (
@@ -605,11 +648,20 @@ class ModemPollDaemon
 					transaction.commit();
 
 				} catch (Exception e) {
-					log.error("Unhandled exception: " + e.getMessage());
-					log.error("Sleeping for a bit...");
-					Thread.sleep(5000);
+
+					taskLogger.errorFormat (
+						"Unhandled exception: %s",
+						e.getMessage ());
+
+					taskLogger.errorFormat (
+						"Sleeping for a bit...");
+
+					Thread.sleep (5000);
+
 				}
+
 			}
+
 		}
 
 		void processOne (
@@ -623,6 +675,7 @@ class ModemPollDaemon
 
 			Pdu pdu =
 				decodePduString (
+					taskLogger,
 					mpq.getPdu ());
 
 			if (pdu instanceof SmsDeliverPdu) {
@@ -650,40 +703,44 @@ class ModemPollDaemon
 					parentTaskLogger,
 					"handlePdu");
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadWrite (
-					"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
-					this);
+			try (
 
-			log.info (
-				stringFormat (
+				Transaction transaction =
+					database.beginReadWrite (
+						"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
+						this);
+
+			) {
+
+				taskLogger.noticeFormat (
 					"Got message from %s: %s",
 					pdu.getOriginatingAddress ().getAddressValue (),
-					pdu.getMessage ()));
+					pdu.getMessage ());
 
-			RouteRec route =
-				routeHelper.findRequired (
-					routeId);
+				RouteRec route =
+					routeHelper.findRequired (
+						routeId);
 
-			smsInboxLogic.inboxInsert (
-				taskLogger,
-				optionalAbsent (),
-				textHelper.findOrCreate (
+				smsInboxLogic.inboxInsert (
 					taskLogger,
-					pdu.getMessage ()),
-				smsNumberHelper.findOrCreate (
-					taskLogger,
-					pdu.getOriginatingAddress ().getAddressValue ()),
-				destinationNumber,
-				route,
-				optionalAbsent (),
-				optionalAbsent (),
-				emptyList (),
-				optionalAbsent (),
-				optionalAbsent ());
+					optionalAbsent (),
+					textHelper.findOrCreate (
+						taskLogger,
+						pdu.getMessage ()),
+					smsNumberHelper.findOrCreate (
+						taskLogger,
+						pdu.getOriginatingAddress ().getAddressValue ()),
+					destinationNumber,
+					route,
+					optionalAbsent (),
+					optionalAbsent (),
+					emptyList (),
+					optionalAbsent (),
+					optionalAbsent ());
 
-			transaction.commit ();
+				transaction.commit ();
+
+			}
 
 		}
 
@@ -692,16 +749,37 @@ class ModemPollDaemon
 		 */
 		public
 		Pdu decodePduString (
-				String str) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull String str) {
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"decodePduString");
 
 			try {
-				ByteBuffer bb = ByteBuffer.wrap(Pdu.hexToByteArray(str));
-				Pdu.skipSmsc(bb);
-				return Pdu.decode(bb);
+
+				ByteBuffer bb =
+					ByteBuffer.wrap (
+						Pdu.hexToByteArray (
+							str));
+
+				Pdu.skipSmsc (
+					bb);
+
+				return Pdu.decode (
+					bb);
+
 			} catch (RuntimeException e) {
-				log.error("PDU string caused exception: " + str);
+
+				taskLogger.errorFormat(
+					"PDU string caused exception: %s",
+					str);
+
 				throw new RuntimeException (e);
+
 			}
+
 		}
 
 	}

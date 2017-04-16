@@ -9,7 +9,6 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -79,140 +78,145 @@ class MessageOutboxRouteAction
 	Responder goReal (
 			@NonNull TaskLogger taskLogger) {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"MessageOutboxRouteAction.goReal ()",
-				this);
+		try (
 
-		OutboxRec outbox =
-			outboxHelper.findRequired (
-				requestContext.parameterIntegerRequired (
-					"messageId"));
+			Transaction transaction =
+				database.beginReadWrite (
+					"MessageOutboxRouteAction.goReal ()",
+					this);
 
-		if (outbox == null) {
+		) {
 
-			requestContext.addError (
-				"Outbox not found");
+			OutboxRec outbox =
+				outboxHelper.findRequired (
+					requestContext.parameterIntegerRequired (
+						"messageId"));
+
+			if (outbox == null) {
+
+				requestContext.addError (
+					"Outbox not found");
+
+				return null;
+
+			}
+
+			MessageRec message =
+				outbox.getMessage ();
+
+			// check privs
+
+			if (
+
+				! privChecker.canRecursive (
+					ImmutableMap.<Object, Collection <String>> builder ()
+
+					.put (
+						objectManager.getParentRequired (
+							message.getService ()),
+						ImmutableSet.of ("manage"))
+
+					.put (
+						message.getRoute (),
+						ImmutableSet.of ("manage"))
+
+					.build ()
+
+				)
+
+			) {
+
+				requestContext.addError (
+					"Access denied");
+
+				return null;
+
+			}
+
+			// check message state
+
+			if (
+				enumNotEqualSafe (
+					message.getStatus (),
+					MessageStatus.pending)
+			) {
+
+				requestContext.addError (
+					"Message is not pending");
+
+				return null;
+
+			}
+
+			// check message is not being sent
+
+			if (
+				isNotNull (
+					outbox.getSending ())
+			) {
+
+				requestContext.addError (
+					"Message is being sent");
+
+				return null;
+
+			}
+
+			if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"cancel"))
+			) {
+
+				// cancel message
+
+				outboxLogic.cancelMessage (
+					taskLogger,
+					outbox.getMessage ());
+
+				eventLogic.createEvent (
+					taskLogger,
+					"sms_outbox_cancelled",
+					userConsoleLogic.userRequired (),
+					outbox.getMessage ());
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Message cancelled");
+
+			} else if (
+				optionalIsPresent (
+					requestContext.parameter (
+						"retry"))
+			) {
+
+				// retry message
+
+				outboxLogic.retryMessage (
+					taskLogger,
+					outbox.getMessage ());
+
+				eventLogic.createEvent (
+					taskLogger,
+					"sms_outbox_retried",
+					userConsoleLogic.userRequired (),
+					outbox.getMessage ());
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Message retried");
+
+			} else {
+
+				throw new RuntimeException ();
+
+			}
 
 			return null;
 
 		}
-
-		MessageRec message =
-			outbox.getMessage ();
-
-		// check privs
-
-		if (
-
-			! privChecker.canRecursive (
-				ImmutableMap.<Object, Collection <String>> builder ()
-
-				.put (
-					objectManager.getParentRequired (
-						message.getService ()),
-					ImmutableSet.of ("manage"))
-
-				.put (
-					message.getRoute (),
-					ImmutableSet.of ("manage"))
-
-				.build ()
-
-			)
-
-		) {
-
-			requestContext.addError (
-				"Access denied");
-
-			return null;
-
-		}
-
-		// check message state
-
-		if (
-			enumNotEqualSafe (
-				message.getStatus (),
-				MessageStatus.pending)
-		) {
-
-			requestContext.addError (
-				"Message is not pending");
-
-			return null;
-
-		}
-
-		// check message is not being sent
-
-		if (
-			isNotNull (
-				outbox.getSending ())
-		) {
-
-			requestContext.addError (
-				"Message is being sent");
-
-			return null;
-
-		}
-
-		if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"cancel"))
-		) {
-
-			// cancel message
-
-			outboxLogic.cancelMessage (
-				taskLogger,
-				outbox.getMessage ());
-
-			eventLogic.createEvent (
-				taskLogger,
-				"sms_outbox_cancelled",
-				userConsoleLogic.userRequired (),
-				outbox.getMessage ());
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message cancelled");
-
-		} else if (
-			optionalIsPresent (
-				requestContext.parameter (
-					"retry"))
-		) {
-
-			// retry message
-
-			outboxLogic.retryMessage (
-				taskLogger,
-				outbox.getMessage ());
-
-			eventLogic.createEvent (
-				taskLogger,
-				"sms_outbox_retried",
-				userConsoleLogic.userRequired (),
-				outbox.getMessage ());
-
-			transaction.commit ();
-
-			requestContext.addNotice (
-				"Message retried");
-
-		} else {
-
-			throw new RuntimeException ();
-
-		}
-
-		return null;
 
 	}
 

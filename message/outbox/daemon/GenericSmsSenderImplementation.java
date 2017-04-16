@@ -21,7 +21,6 @@ import java.util.stream.LongStream;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -591,51 +590,56 @@ class GenericSmsSenderImplementation <StateType>
 				parentTaskLogger,
 				"attemptToHandlePerformSendErrorReal");
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				stringFormat (
-					"%s.%s (%s)",
-					"GenericSmsSenderImplementation",
-					"attemptToHandlePerformSendErrorReal",
-					joinWithCommaAndSpace (
-						stringFormat (
-							"smsMessageId = %s",
-							integerToDecimalString (
-								smsMessageId)),
-						stringFormat (
-							"smsOutboxAttemptId = %s",
-							integerToDecimalString (
-								smsOutboxAttemptId)),
-						stringFormat (
-							"attemptNUmber = %s",
-							integerToDecimalString (
-								attemptNumber)))),
-				this);
+		try (
 
-		SmsOutboxAttemptRec smsOutboxAttempt =
-			smsOutboxAttemptHelper.findRequired (
-				smsOutboxAttemptId);
+			Transaction transaction =
+				database.beginReadWrite (
+					stringFormat (
+						"%s.%s (%s)",
+						"GenericSmsSenderImplementation",
+						"attemptToHandlePerformSendErrorReal",
+						joinWithCommaAndSpace (
+							stringFormat (
+								"smsMessageId = %s",
+								integerToDecimalString (
+									smsMessageId)),
+							stringFormat (
+								"smsOutboxAttemptId = %s",
+								integerToDecimalString (
+									smsOutboxAttemptId)),
+							stringFormat (
+								"attemptNUmber = %s",
+								integerToDecimalString (
+									attemptNumber)))),
+					this);
 
-		smsOutboxLogic.completeSendAttemptFailure (
-			taskLogger,
-			smsOutboxAttempt,
-			FailureType.temporary,
-			performSendResult.statusMessage (),
-			optionalMapRequired (
-				Optional.fromNullable (
-					performSendResult.requestTrace ()),
-				JsonUtils::jsonToBytes),
-			optionalMapRequired (
-				Optional.fromNullable (
-					performSendResult.responseTrace ()),
-				JsonUtils::jsonToBytes),
-			optionalMapRequired (
-				Optional.fromNullable (
-					performSendResult.errorTrace ()),
-				JsonUtils::jsonToBytes));
+		) {
 
-		transaction.commit ();
+			SmsOutboxAttemptRec smsOutboxAttempt =
+				smsOutboxAttemptHelper.findRequired (
+					smsOutboxAttemptId);
+
+			smsOutboxLogic.completeSendAttemptFailure (
+				taskLogger,
+				smsOutboxAttempt,
+				FailureType.temporary,
+				performSendResult.statusMessage (),
+				optionalMapRequired (
+					Optional.fromNullable (
+						performSendResult.requestTrace ()),
+					JsonUtils::jsonToBytes),
+				optionalMapRequired (
+					Optional.fromNullable (
+						performSendResult.responseTrace ()),
+					JsonUtils::jsonToBytes),
+				optionalMapRequired (
+					Optional.fromNullable (
+						performSendResult.errorTrace ()),
+					JsonUtils::jsonToBytes));
+
+			transaction.commit ();
+
+		}
 
 	}
 
@@ -710,204 +714,209 @@ class GenericSmsSenderImplementation <StateType>
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				stringFormat (
-					"%s.%s (%s)",
-					"GenericSmsSenderImplementation",
-					"attemptToProcessResponseReal",
-					joinWithCommaAndSpace (
-						stringFormat (
-							"smsMessageId = %s",
-							integerToDecimalString (
-								smsMessageId)),
-						stringFormat (
-							"smsOutboxAttemptId = %s",
-							integerToDecimalString (
-								smsOutboxAttemptId)),
-						stringFormat (
-							"attemptNUmber = %s",
-							integerToDecimalString (
-								attemptNumber)))),
-				this);
+		try (
 
-		SmsOutboxAttemptRec smsOutboxAttempt =
-			smsOutboxAttemptHelper.findRequired (
-				smsOutboxAttemptId);
+			Transaction transaction =
+				database.beginReadWrite (
+					stringFormat (
+						"%s.%s (%s)",
+						"GenericSmsSenderImplementation",
+						"attemptToProcessResponseReal",
+						joinWithCommaAndSpace (
+							stringFormat (
+								"smsMessageId = %s",
+								integerToDecimalString (
+									smsMessageId)),
+							stringFormat (
+								"smsOutboxAttemptId = %s",
+								integerToDecimalString (
+									smsOutboxAttemptId)),
+							stringFormat (
+								"attemptNUmber = %s",
+								integerToDecimalString (
+									attemptNumber)))),
+					this);
 
-		// process response
-
-		try {
-
-			processResponseResult =
-				smsSenderHelper.processSend (
-					taskLogger,
-					state);
-
-			if (
-
-				isNull (
-					processResponseResult)
-
-				|| isNull (
-					processResponseResult.status ())
-
-			) {
-				throw new NullPointerException ();
-			}
-
-		} catch (Exception exception) {
-
-			processResponseResult =
-				new ProcessResponseResult ()
-
-				.status (
-					ProcessResponseStatus.unknownError)
-
-				.exception (
-					exception)
-
-				.failureType (
-					FailureType.temporary);
-
-		}
-
-		if (
-			enumNotEqualSafe (
-				processResponseResult.status (),
-				ProcessResponseStatus.success)
 		) {
 
-			// set status message from exception if not present
+			SmsOutboxAttemptRec smsOutboxAttempt =
+				smsOutboxAttemptHelper.findRequired (
+					smsOutboxAttemptId);
+
+			// process response
+
+			try {
+
+				processResponseResult =
+					smsSenderHelper.processSend (
+						taskLogger,
+						state);
+
+				if (
+
+					isNull (
+						processResponseResult)
+
+					|| isNull (
+						processResponseResult.status ())
+
+				) {
+					throw new NullPointerException ();
+				}
+
+			} catch (Exception exception) {
+
+				processResponseResult =
+					new ProcessResponseResult ()
+
+					.status (
+						ProcessResponseStatus.unknownError)
+
+					.exception (
+						exception)
+
+					.failureType (
+						FailureType.temporary);
+
+			}
 
 			if (
-
-				isNotNull (
-					processResponseResult.exception ())
-
-				&& isNull (
-					processResponseResult.statusMessage ())
-
+				enumNotEqualSafe (
+					processResponseResult.status (),
+					ProcessResponseStatus.success)
 			) {
 
-				Throwable exception =
-					processResponseResult.exception ();
+				// set status message from exception if not present
 
-				processResponseResult.statusMessage (
-					ifThenElse (
-						isNotNull (
+				if (
+
+					isNotNull (
+						processResponseResult.exception ())
+
+					&& isNull (
+						processResponseResult.statusMessage ())
+
+				) {
+
+					Throwable exception =
+						processResponseResult.exception ();
+
+					processResponseResult.statusMessage (
+						ifThenElse (
+							isNotNull (
+								exception.getMessage ()),
+
+						() -> stringFormat (
+							"Error sending message: %s: %s",
+							exception.getClass ().getSimpleName (),
 							exception.getMessage ()),
 
-					() -> stringFormat (
-						"Error sending message: %s: %s",
-						exception.getClass ().getSimpleName (),
-						exception.getMessage ()),
+						() -> stringFormat (
+							"Error sending message: %s",
+							exception.getClass ().getSimpleName ())
 
-					() -> stringFormat (
-						"Error sending message: %s",
-						exception.getClass ().getSimpleName ())
+					));
 
-				));
+				}
+
+				// set error trace from exception if not present
+
+				if (
+
+					isNotNull (
+						processResponseResult.exception)
+
+					&& isNull (
+						processResponseResult.errorTrace ())
+
+				) {
+
+					processResponseResult.errorTrace (
+						exceptionUtils.throwableDumpJson (
+							processResponseResult.exception ()));
+
+				}
 
 			}
 
-			// set error trace from exception if not present
+			// store result
 
 			if (
-
-				isNotNull (
-					processResponseResult.exception)
-
-				&& isNull (
-					processResponseResult.errorTrace ())
-
+				enumEqualSafe (
+					processResponseResult.status (),
+					ProcessResponseStatus.success)
 			) {
 
-				processResponseResult.errorTrace (
-					exceptionUtils.throwableDumpJson (
-						processResponseResult.exception ()));
+				smsOutboxLogic.completeSendAttemptSuccess (
+					taskLogger,
+					smsOutboxAttempt,
+					optionalFromNullable (
+						processResponseResult.otherIds ()),
+					optionalFromNullable (
+						processResponseResult.simulateMessageParts ()),
+					optionalMapRequired (
+						optionalFromNullable (
+							performSendResult.requestTrace ()),
+						JsonUtils::jsonToBytes),
+					optionalMapRequired (
+						optionalFromNullable (
+							performSendResult.responseTrace ()),
+						JsonUtils::jsonToBytes));
+
+			} else {
+
+				if (
+					isNull (
+						processResponseResult.failureType ())
+				) {
+
+					taskLogger.warningFormat (
+						"No failure type for send attempt %s ",
+						integerToDecimalString (
+							smsOutboxAttemptId),
+						"(defaulting to temporary)");
+
+					processResponseResult.failureType (
+						FailureType.temporary);
+
+				}
+
+				if (
+					isNull (
+						processResponseResult.statusMessage ())
+				) {
+
+					processResponseResult.statusMessage (
+						defaultStatusMessages.get (
+							processResponseResult.failureType ()));
+
+				}
+
+				smsOutboxLogic.completeSendAttemptFailure (
+					taskLogger,
+					smsOutboxAttempt,
+					processResponseResult.failureType (),
+					processResponseResult.statusMessage (),
+					optionalMapRequired (
+						Optional.fromNullable (
+							performSendResult.requestTrace ()),
+						JsonUtils::jsonToBytes),
+					optionalMapRequired (
+						Optional.fromNullable (
+							performSendResult.responseTrace ()),
+						JsonUtils::jsonToBytes),
+					optionalMapRequired (
+						Optional.fromNullable (
+							processResponseResult.errorTrace ()),
+						JsonUtils::jsonToBytes));
 
 			}
+
+			// commit and return
+
+			transaction.commit ();
 
 		}
-
-		// store result
-
-		if (
-			enumEqualSafe (
-				processResponseResult.status (),
-				ProcessResponseStatus.success)
-		) {
-
-			smsOutboxLogic.completeSendAttemptSuccess (
-				taskLogger,
-				smsOutboxAttempt,
-				optionalFromNullable (
-					processResponseResult.otherIds ()),
-				optionalFromNullable (
-					processResponseResult.simulateMessageParts ()),
-				optionalMapRequired (
-					optionalFromNullable (
-						performSendResult.requestTrace ()),
-					JsonUtils::jsonToBytes),
-				optionalMapRequired (
-					optionalFromNullable (
-						performSendResult.responseTrace ()),
-					JsonUtils::jsonToBytes));
-
-		} else {
-
-			if (
-				isNull (
-					processResponseResult.failureType ())
-			) {
-
-				taskLogger.warningFormat (
-					"No failure type for send attempt %s ",
-					integerToDecimalString (
-						smsOutboxAttemptId),
-					"(defaulting to temporary)");
-
-				processResponseResult.failureType (
-					FailureType.temporary);
-
-			}
-
-			if (
-				isNull (
-					processResponseResult.statusMessage ())
-			) {
-
-				processResponseResult.statusMessage (
-					defaultStatusMessages.get (
-						processResponseResult.failureType ()));
-
-			}
-
-			smsOutboxLogic.completeSendAttemptFailure (
-				taskLogger,
-				smsOutboxAttempt,
-				processResponseResult.failureType (),
-				processResponseResult.statusMessage (),
-				optionalMapRequired (
-					Optional.fromNullable (
-						performSendResult.requestTrace ()),
-					JsonUtils::jsonToBytes),
-				optionalMapRequired (
-					Optional.fromNullable (
-						performSendResult.responseTrace ()),
-					JsonUtils::jsonToBytes),
-				optionalMapRequired (
-					Optional.fromNullable (
-						processResponseResult.errorTrace ()),
-					JsonUtils::jsonToBytes));
-
-		}
-
-		// commit and return
-
-		transaction.commit ();
 
 	}
 

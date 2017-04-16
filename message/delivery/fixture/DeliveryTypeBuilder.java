@@ -5,7 +5,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.sql.SQLException;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
@@ -109,30 +108,35 @@ class DeliveryTypeBuilder {
 
 		// begin transaction
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"DeliveryTypeBuilder.createDeliveryType ()",
-				this);
+		try (
 
-		// create delivery type
+			Transaction transaction =
+				database.beginReadWrite (
+					"DeliveryTypeBuilder.createDeliveryType ()",
+					this);
 
-		deliveryTypeHelper.insert (
-			taskLogger,
-			deliveryTypeHelper.createInstance ()
+		) {
 
-			.setCode (
-				simplifyToCodeRequired (
-					spec.name ()))
+			// create delivery type
 
-			.setDescription (
-				spec.description ())
+			deliveryTypeHelper.insert (
+				taskLogger,
+				deliveryTypeHelper.createInstance ()
 
-		);
+				.setCode (
+					simplifyToCodeRequired (
+						spec.name ()))
 
-		// commit transaction
+				.setDescription (
+					spec.description ())
 
-		transaction.commit ();
+			);
+
+			// commit transaction
+
+			transaction.commit ();
+
+		}
 
 	}
 

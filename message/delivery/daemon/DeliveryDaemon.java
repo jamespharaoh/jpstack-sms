@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -200,49 +199,54 @@ class DeliveryDaemon
 		}
 
 		int pollDatabase (
-				Set<Long> activeIds) {
+				@NonNull Set <Long> activeIds) {
 
 			int numFound = 0;
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadOnly (
-					"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
-					this);
+			try (
 
-			List <DeliveryRec> deliveries =
-				deliveryHelper.findAllLimit (
-					buffer.getFullSize ());
+				Transaction transaction =
+					database.beginReadOnly (
+						"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
+						this);
 
-			for (
-				DeliveryRec delivery
-					: deliveries
 			) {
 
-				numFound ++;
+				List <DeliveryRec> deliveries =
+					deliveryHelper.findAllLimit (
+						buffer.getFullSize ());
 
-				// if this one is already being worked on, skip it
+				for (
+					DeliveryRec delivery
+						: deliveries
+				) {
 
-				if (activeIds.contains (
-						delivery.getId ()))
-					continue;
+					numFound ++;
 
-				// make sure the delivery notice type is not a proxy
+					// if this one is already being worked on, skip it
 
-				transaction.fetch (
-					delivery,
-					delivery.getMessage (),
-					delivery.getMessage ().getDeliveryType ());
+					if (activeIds.contains (
+							delivery.getId ()))
+						continue;
 
-				// and add this to the buffer
+					// make sure the delivery notice type is not a proxy
 
-				buffer.add (
-					delivery.getId (),
-					delivery);
+					transaction.fetch (
+						delivery,
+						delivery.getMessage (),
+						delivery.getMessage ().getDeliveryType ());
+
+					// and add this to the buffer
+
+					buffer.add (
+						delivery.getId (),
+						delivery);
+
+				}
+
+				return numFound;
 
 			}
-
-			return numFound;
 
 		}
 

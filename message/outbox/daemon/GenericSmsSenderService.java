@@ -20,7 +20,6 @@ import java.util.stream.LongStream;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -114,41 +113,46 @@ class GenericSmsSenderService
 	protected
 	void createThreads () {
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadOnly (
-				stringFormat (
-					"%s.createThreads ()",
-					getClass ().getSimpleName ()),
-				this);
+		try (
 
-		// get a list of routes
+			Transaction transaction =
+				database.beginReadOnly (
+					stringFormat (
+						"%s.createThreads ()",
+						getClass ().getSimpleName ()),
+					this);
 
-		SenderRec sender =
-			senderHelper.findByCodeRequired (
-				GlobalId.root,
-				smsSenderHelper.senderCode ());
-
-		Set <RouteRec> smsRoutes =
-			sender.getRoutes ();
-
-		// and for each one...
-
-		for (
-			RouteRec smsRoute
-				: smsRoutes
 		) {
 
-			RouteSenderService routeSenderService =
-				new RouteSenderService ()
+			// get a list of routes
 
-				.smsRouteId (
-					smsRoute.getId ())
+			SenderRec sender =
+				senderHelper.findByCodeRequired (
+					GlobalId.root,
+					smsSenderHelper.senderCode ());
 
-				.start ();
+			Set <RouteRec> smsRoutes =
+				sender.getRoutes ();
 
-			routeSenderServices.add (
-				routeSenderService);
+			// and for each one...
+
+			for (
+				RouteRec smsRoute
+					: smsRoutes
+			) {
+
+				RouteSenderService routeSenderService =
+					new RouteSenderService ()
+
+					.smsRouteId (
+						smsRoute.getId ())
+
+					.start ();
+
+				routeSenderServices.add (
+					routeSenderService);
+
+			}
 
 		}
 
@@ -167,39 +171,44 @@ class GenericSmsSenderService
 
 		RouteSenderService start () {
 
-			@Cleanup
-			Transaction transaction =
-				database.beginReadOnly (
-					stringFormat (
-						"%s.start ()",
-						joinWithFullStop (
-							"GenericSmsSenderService",
-							"RouteSenderService")),
-					this);
+			try (
 
-			RouteRec smsRoute =
-				smsRouteHelper.findRequired (
-					smsRouteId);
-
-			createThread (
-				stringFormat (
-					"sms-route-%s-claim",
-					underscoreToHyphen (
-						smsRoute.getCode ())),
-				this::messageClaimLoop);
-
-			LongStream.range (0, threadsPerRoute).forEach (
-				threadIndex ->
-					createThread (
+				Transaction transaction =
+					database.beginReadOnly (
 						stringFormat (
-							"sms-route-%s-send-%s",
-							underscoreToHyphen (
-								smsRoute.getCode ()),
-							integerToDecimalString (
-								threadIndex)),
-						this::messageSendLoop));
+							"%s.start ()",
+							joinWithFullStop (
+								"GenericSmsSenderService",
+								"RouteSenderService")),
+						this);
 
-			return this;
+			) {
+
+				RouteRec smsRoute =
+					smsRouteHelper.findRequired (
+						smsRouteId);
+
+				createThread (
+					stringFormat (
+						"sms-route-%s-claim",
+						underscoreToHyphen (
+							smsRoute.getCode ())),
+					this::messageClaimLoop);
+
+				LongStream.range (0, threadsPerRoute).forEach (
+					threadIndex ->
+						createThread (
+							stringFormat (
+								"sms-route-%s-send-%s",
+								underscoreToHyphen (
+									smsRoute.getCode ()),
+								integerToDecimalString (
+									threadIndex)),
+							this::messageSendLoop));
+
+				return this;
+
+			}
 
 		}
 

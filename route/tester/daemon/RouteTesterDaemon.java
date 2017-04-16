@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.inject.Provider;
 
-import lombok.Cleanup;
 import lombok.NonNull;
 
 import org.joda.time.Duration;
@@ -100,55 +99,60 @@ final class RouteTesterDaemon
 			logContext.createTaskLogger (
 				"runOnce ()");
 
-		@Cleanup
-		Transaction transaction =
-			database.beginReadWrite (
-				"RouteTesterDaemon.runOnce ()",
-				this);
+		try (
 
-		// retrieve all route testers
+			Transaction transaction =
+				database.beginReadWrite (
+					"RouteTesterDaemon.runOnce ()",
+					this);
 
-		List<RouteTesterRec> routeTesters =
-			routeTesterHelper.findAll ();
-
-		// for each one...
-
-		for (
-			RouteTesterRec routeTester
-				: routeTesters
 		) {
 
-			// if it's had a test recently skip it
+			// retrieve all route testers
 
-			if (routeTester.getLastTest () != null) {
+			List<RouteTesterRec> routeTesters =
+				routeTesterHelper.findAll ();
 
-				Instant lastTest =
-					routeTester.getLastTest ();
+			// for each one...
 
-				Instant nextTest =
-					lastTest.plus (
-						Duration.standardSeconds (
-							routeTester.getIntervalSecs ()));
+			for (
+				RouteTesterRec routeTester
+					: routeTesters
+			) {
 
-				if (
-					laterThan (
-						nextTest,
-						transaction.now ())
-				) {
-					continue;
+				// if it's had a test recently skip it
+
+				if (routeTester.getLastTest () != null) {
+
+					Instant lastTest =
+						routeTester.getLastTest ();
+
+					Instant nextTest =
+						lastTest.plus (
+							Duration.standardSeconds (
+								routeTester.getIntervalSecs ()));
+
+					if (
+						laterThan (
+							nextTest,
+							transaction.now ())
+					) {
+						continue;
+					}
+
 				}
+
+				// ok, do this one
+
+				doOne (
+					taskLogger,
+					routeTester);
 
 			}
 
-			// ok, do this one
-
-			doOne (
-				taskLogger,
-				routeTester);
+			transaction.commit ();
 
 		}
-
-		transaction.commit ();
 
 	}
 
