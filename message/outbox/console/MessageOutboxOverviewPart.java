@@ -25,14 +25,17 @@ import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.module.ConsoleModule;
 import wbs.console.part.AbstractPagePart;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
+
 import wbs.utils.time.TimeFormatter;
 
 @PrototypeComponent ("messageOutboxOverviewPart")
@@ -90,7 +93,7 @@ class MessageOutboxOverviewPart
 			@NonNull TaskLogger parentTaskLogger) {
 
 		fields =
-			messageOutboxConsoleModule.formFieldSet (
+			messageOutboxConsoleModule.formFieldSetRequired (
 				"routeOutboxSummary",
 				RouteOutboxSummaryRec.class);
 
