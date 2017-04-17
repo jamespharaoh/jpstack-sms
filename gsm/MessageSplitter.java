@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import lombok.NonNull;
+
 public
 class MessageSplitter {
 
@@ -94,17 +96,19 @@ class MessageSplitter {
 	 */
 	private
 	static String[] splitOne (
-			String message,
-			String template,
+			@NonNull String originalMessage,
+			@NonNull String originalTemplate,
 			int page,
 			int pages) {
 
-		message = message.trim ();
+		String message =
+			stringTrim (
+				originalMessage);
 
 		// put page numbers in
 
-		template =
-			template
+		String template =
+			originalTemplate
 
 			.replaceFirst (
 				"\\{page}",

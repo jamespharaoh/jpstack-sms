@@ -21,8 +21,8 @@ interface SmsOutboxLogic {
 			TaskLogger parentTaskLogger,
 			MessageRec old,
 			RouteRec route,
-			TextRec textRec,
-			MessageTypeRec msgTypeRec);
+			Optional <TextRec> newText,
+			Optional <MessageTypeRec> newMessageType);
 
 	void unholdMessage (
 			TaskLogger parentTaskLogger,

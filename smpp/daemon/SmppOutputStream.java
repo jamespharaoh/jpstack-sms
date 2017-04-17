@@ -1,12 +1,14 @@
 package wbs.sms.smpp.daemon;
 
+import static wbs.utils.etc.IoUtils.writeByte;
+import static wbs.utils.etc.IoUtils.writeBytes;
+import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringToBytes;
 
 import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 public
 class SmppOutputStream
@@ -23,37 +25,34 @@ class SmppOutputStream
 
 	public
 	void writeCOctetString (
-			String string,
-			int maxLen)
-		throws IOException {
+			String originalString,
+			int maxLen) {
 
-		try {
+		String string =
+			ifNull (
+				originalString,
+				"");
 
-			if (string == null)
-				string = "";
-
-			if (string.length() + 1 > maxLen)
-				throw new IllegalArgumentException ();
-
-			out.write (
-				string.getBytes ("us-ascii"));
-
-			out.write (
-				0);
-
-		} catch (UnsupportedEncodingException exception) {
-
-			throw new IOException ();
-
+		if (string.length () + 1 > maxLen) {
+			throw new IllegalArgumentException ();
 		}
+
+		writeBytes (
+			out,
+			stringToBytes (
+				string,
+				"us-ascii"));
+
+		writeByte (
+			out,
+			0);
 
 	}
 
 	public
 	void writeInteger (
 			Integer value,
-			int length)
-		throws IOException {
+			int originalLength) {
 
 		// handle nulls
 
@@ -64,7 +63,7 @@ class SmppOutputStream
 
 		// nudge up to the left
 
-		switch (length) {
+		switch (originalLength) {
 
 		case 1:
 
@@ -74,7 +73,7 @@ class SmppOutputStream
 					stringFormat (
 						"Integer too big for length %s: %s",
 						integerToDecimalString (
-							length),
+							originalLength),
 						integerToDecimalString (
 							value)));
 
@@ -92,7 +91,7 @@ class SmppOutputStream
 					stringFormat (
 						"Integer too big for length %s: %s",
 						integerToDecimalString (
-							length),
+							originalLength),
 						integerToDecimalString (
 							value)));
 
@@ -108,13 +107,13 @@ class SmppOutputStream
 
 		default:
 
-			if (length < 1 || length > 4) {
+			if (originalLength < 1 || originalLength > 4) {
 
 				throw new IllegalArgumentException (
 					stringFormat (
 						"Invalid integer size: %s",
 						integerToDecimalString (
-							length)));
+							originalLength)));
 
 			}
 
@@ -122,9 +121,14 @@ class SmppOutputStream
 
 		// write bytes
 
-		for (; length > 0; length--) {
+		for (
+			int length = originalLength;
+			length > 0;
+			length --
+		) {
 
-			out.write (
+			writeByte (
+				out,
 				(newValue & 0xff000000) >> 0x18);
 
 			newValue <<= 8;

@@ -12,6 +12,7 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThanOne;
 import static wbs.utils.etc.NumberUtils.notMoreThanZero;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOr;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.earliest;
@@ -102,10 +103,10 @@ class SmsOutboxLogicImplementation
 	public
 	MessageRec resendMessage (
 			@NonNull TaskLogger parentTaskLogger,
-			MessageRec old,
-			RouteRec route,
-			TextRec textRec,
-			MessageTypeRec messageTypeRec) {
+			@NonNull MessageRec originalMessage,
+			@NonNull RouteRec newRoute,
+			@NonNull Optional <TextRec> newTextOptional,
+			@NonNull Optional <MessageTypeRec> newMessageTypeOptional) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -115,19 +116,15 @@ class SmsOutboxLogicImplementation
 		Transaction transaction =
 			database.currentTransaction ();
 
-		if (textRec == null) {
+		TextRec textRec =
+			optionalOr (
+				newTextOptional,
+				originalMessage.getText ());
 
-			textRec =
-				old.getText ();
-
-		}
-
-		if (messageTypeRec == null) {
-
-			messageTypeRec =
-				old.getMessageType ();
-
-		}
+		MessageTypeRec messageType =
+			optionalOr (
+				newMessageTypeOptional,
+				originalMessage.getMessageType ());
 
 		MessageRec message =
 			messageHelper.insert (
@@ -135,16 +132,16 @@ class SmsOutboxLogicImplementation
 				messageHelper.createInstance ()
 
 			.setThreadId (
-				old.getThreadId ())
+				originalMessage.getThreadId ())
 
 			.setText (
 				textRec) // old.getText ()
 
 			.setNumFrom (
-				old.getNumFrom ())
+				originalMessage.getNumFrom ())
 
 			.setNumTo (
-				old.getNumTo ())
+				originalMessage.getNumTo ())
 
 			.setDirection (
 				MessageDirection.out)
@@ -153,48 +150,48 @@ class SmsOutboxLogicImplementation
 				MessageStatus.pending)
 
 			.setNumber (
-				old.getNumber ())
+				originalMessage.getNumber ())
 
 			.setRoute (
-				route) // old.getRoute ()
+				newRoute) // old.getRoute ()
 
 			.setService (
-				old.getService ())
+				originalMessage.getService ())
 
 			.setNetwork (
-				old.getNetwork ())
+				originalMessage.getNetwork ())
 
 			.setBatch (
-				old.getBatch ())
+				originalMessage.getBatch ())
 
 			.setCharge (
-				old.getCharge ())
+				originalMessage.getCharge ())
 
 			.setAffiliate (
-				old.getAffiliate ())
+				originalMessage.getAffiliate ())
 
 			.setCreatedTime (
 				transaction.now ())
 
 			.setDeliveryType (
-				old.getDeliveryType ())
+				originalMessage.getDeliveryType ())
 
 			.setRef (
-				old.getRef ())
+				originalMessage.getRef ())
 
 			.setSubjectText (
-				old.getSubjectText ())
+				originalMessage.getSubjectText ())
 
 			.setMessageType (
-				messageTypeRec)
+				messageType)
 
 			.setMedias (
 				ImmutableList.copyOf (
-					old.getMedias ()))
+					originalMessage.getMedias ()))
 
 			.setTags (
 				ImmutableSet.copyOf (
-					old.getTags ()))
+					originalMessage.getTags ()))
 
 			.setNumAttempts (
 				0l)
