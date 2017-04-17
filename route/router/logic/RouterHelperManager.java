@@ -8,16 +8,23 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
-@Log4j
 @SingletonComponent ("routerHelperManager")
 public
 class RouterHelperManager {
+
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// collection dependencies
 
@@ -32,7 +39,13 @@ class RouterHelperManager {
 
 	@NormalLifecycleSetup
 	public
-	void init () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"setup");
 
 		int errorCount = 0;
 
@@ -59,16 +72,17 @@ class RouterHelperManager {
 
 			// make sure they're unique
 
-			if (beanNamesByTypeCode.containsKey (
-					routerTypeCode)) {
+			if (
+				beanNamesByTypeCode.containsKey (
+					routerTypeCode)
+			) {
 
-				log.error (
-					stringFormat (
-						"Router type helper for %s from both %s and %s",
-						routerTypeCode,
-						beanNamesByTypeCode.get (
-							routerTypeCode),
-						beanName));
+				taskLogger.errorFormat (
+					"Router type helper for %s from both %s and %s",
+					routerTypeCode,
+					beanNamesByTypeCode.get (
+						routerTypeCode),
+					beanName);
 
 				errorCount ++;
 

@@ -25,7 +25,7 @@ import wbs.web.responder.Responder;
 @PrototypeComponent ("numberListUpdateNumbersFormActionHelper")
 public
 class NumberListUpdateNumbersFormActionHelper
-	implements ConsoleFormActionHelper <Object> {
+	implements ConsoleFormActionHelper <Object, Object> {
 
 	// singleton dependencies
 

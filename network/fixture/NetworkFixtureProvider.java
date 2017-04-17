@@ -16,6 +16,7 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -50,7 +51,8 @@ class NetworkFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -58,16 +60,19 @@ class NetworkFixtureProvider
 				"createFixtures");
 
 		createMenuItems (
-			taskLogger);
+			taskLogger,
+			transaction);
 
 		createDefaultNetworks (
-			taskLogger);
+			taskLogger,
+			transaction);
 
 	}
 
 	private
 	void createMenuItems (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -104,11 +109,14 @@ class NetworkFixtureProvider
 
 		);
 
+		transaction.flush ();
+
 	}
 
 	private
 	void createDefaultNetworks (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -142,6 +150,8 @@ class NetworkFixtureProvider
 						networkHelper::findRequired)))
 
 		));
+
+		transaction.flush ();
 
 	}
 

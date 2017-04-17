@@ -5,6 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -63,7 +64,8 @@ class SmsSpendLimitFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -71,13 +73,16 @@ class SmsSpendLimitFixtureProvider
 				"createFixtures");
 
 		createMenuItems (
-			taskLogger);
+			taskLogger,
+			transaction);
 
 		createFeatures (
-			taskLogger);
+			taskLogger,
+			transaction);
 
 		createSpendLimiter (
-			taskLogger);
+			taskLogger,
+			transaction);
 
 	}
 
@@ -85,7 +90,8 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createMenuItems (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -126,7 +132,8 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createFeatures (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -152,7 +159,8 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createSpendLimiter (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (

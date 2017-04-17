@@ -9,6 +9,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -56,7 +57,8 @@ class GazetteerFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (

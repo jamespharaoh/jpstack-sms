@@ -26,7 +26,7 @@ import lombok.NonNull;
 
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
-import wbs.console.responder.HtmlResponder;
+import wbs.console.responder.ConsoleHtmlResponder;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.logging.LogContext;
@@ -35,7 +35,7 @@ import wbs.framework.logging.TaskLogger;
 @PrototypeComponent ("messageTickerResponder")
 public
 class MessageTickerResponder
-	extends HtmlResponder {
+	extends ConsoleHtmlResponder {
 
 	// constants
 

@@ -9,8 +9,6 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.console.request.ConsoleRequestContext;
 
@@ -36,7 +34,7 @@ import wbs.web.responder.Responder;
 @PrototypeComponent ("messageManuallyUnholdFormActionHelper")
 public
 class MessageManuallyUnholdFormActionHelper
-	implements ConsoleFormActionHelper <Object> {
+	implements ConsoleFormActionHelper <Object, Object> {
 
 	// singleton dependencies
 
@@ -62,7 +60,7 @@ class MessageManuallyUnholdFormActionHelper
 
 	@Override
 	public
-	Pair <Boolean, Boolean> canBePerformed (
+	Permissions canBePerformed (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		MessageRec smsMessage =
@@ -80,9 +78,9 @@ class MessageManuallyUnholdFormActionHelper
 
 		);
 
-		return Pair.of (
-			show,
-			show);
+		return new Permissions ()
+			.canView (show)
+			.canPerform (show);
 
 	}
 

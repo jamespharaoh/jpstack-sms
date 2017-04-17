@@ -264,7 +264,7 @@ class OutboxDaoHibernate
 
 	@Override
 	public
-	Map<Long,Long> generateRouteSummary (
+	Map <Long, Long> generateRouteSummary (
 			@NonNull Instant now) {
 
 		List <Object> list =

@@ -9,8 +9,6 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.console.request.ConsoleRequestContext;
 
@@ -34,7 +32,7 @@ import wbs.web.responder.Responder;
 @SingletonComponent ("smsCustomerEndSessionFormActionHelper")
 public
 class SmsCustomerEndSessionFormActionHelper
-	implements ConsoleFormActionHelper <SmsCustomerEndSessionForm> {
+	implements ConsoleFormActionHelper <SmsCustomerEndSessionForm, Object> {
 
 	// singleton dependencies
 
@@ -57,7 +55,7 @@ class SmsCustomerEndSessionFormActionHelper
 
 	@Override
 	public
-	Pair <Boolean, Boolean> canBePerformed (
+	Permissions canBePerformed (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		SmsCustomerRec customer =
@@ -68,9 +66,9 @@ class SmsCustomerEndSessionFormActionHelper
 				customer.getActiveSession ())
 		);
 
-		return Pair.of (
-			show,
-			show);
+		return new Permissions ()
+			.canView (show)
+			.canPerform (show);
 
 	}
 
