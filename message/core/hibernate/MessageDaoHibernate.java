@@ -25,6 +25,7 @@ import org.hibernate.sql.JoinType;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -207,7 +208,8 @@ class MessageDaoHibernate
 	@Override
 	public
 	List <Long> searchIds (
-			MessageSearch search) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageSearch search) {
 
 		Criteria criteria =
 			createCriteria (

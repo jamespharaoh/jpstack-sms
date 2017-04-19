@@ -64,11 +64,17 @@ class NumberSubscriptionsPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
+
 		NumberRec number =
 			numberHelper.findFromContextRequired ();
 
 		links =
 			numberLinkManager.findLinks (
+				taskLogger,
 				number,
 				activeOnly);
 

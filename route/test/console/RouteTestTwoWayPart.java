@@ -27,8 +27,10 @@ import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.console.MessageConsoleHelper;
@@ -45,6 +47,9 @@ class RouteTestTwoWayPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
@@ -64,6 +69,11 @@ class RouteTestTwoWayPart
 	public
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"prepare");
 
 		route =
 			routeHelper.findFromContextRequired ();
@@ -93,6 +103,7 @@ class RouteTestTwoWayPart
 
 		messages =
 			messageHelper.search (
+				taskLogger,
 				search);
 
 	}

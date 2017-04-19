@@ -145,6 +145,7 @@ class ObjectSmsMessagesPart
 
 		messages =
 			messageSource.findMessages (
+				taskLogger,
 				dateField.date.toInterval (),
 				viewMode.viewMode);
 

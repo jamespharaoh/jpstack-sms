@@ -15,6 +15,7 @@ interface NumberPlugin {
 	String getName ();
 
 	List <Link> findLinks (
+			TaskLogger parentTaskLogger,
 			NumberRec number,
 			boolean active);
 

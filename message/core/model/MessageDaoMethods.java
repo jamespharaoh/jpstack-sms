@@ -2,7 +2,10 @@ package wbs.sms.message.core.model;
 
 import java.util.List;
 
+import wbs.framework.logging.TaskLogger;
+
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -28,6 +31,7 @@ interface MessageDaoMethods {
 			NumberRec number);
 
 	List <Long> searchIds (
+			TaskLogger parentTaskLogger,
 			MessageSearch search);
 
 }
