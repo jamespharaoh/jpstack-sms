@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 
 import wbs.console.context.ConsoleApplicationScriptRef;
-import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
 
@@ -26,19 +25,6 @@ import wbs.framework.logging.TaskLogger;
 public
 class MessageStatusLinePart
 	extends AbstractPagePart {
-
-	@Override
-	public
-	Set <HtmlLink> links () {
-
-		return ImmutableSet.<HtmlLink> of (
-
-			HtmlLink.applicationCssStyle (
-				"/style/sms-messages-status.css")
-
-		);
-
-	}
 
 	@Override
 	public
