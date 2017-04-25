@@ -7,10 +7,12 @@ import static wbs.utils.time.TimeUtils.earlierThan;
 import static wbs.utils.time.TimeUtils.millisToInstant;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -91,9 +93,13 @@ class MessageTickerManagerImplementation
 
 		// update the info
 
-		List <MessageRec> newMessages =
+		List <MessageRec> recentMessages =
 			messageHelper.findRecentLimit (
 				generations);
+
+		Collections.sort (
+			recentMessages,
+			Ordering.natural ().reverse ());
 
 		ImmutableMap.Builder <Long, MessageTickerMessage>
 			messageTickerMessagesBuilder =
@@ -101,7 +107,7 @@ class MessageTickerManagerImplementation
 
 		for (
 			MessageRec message
-				: newMessages
+				: recentMessages
 		) {
 
 			MessageTickerMessage messageTickerMessage =

@@ -69,33 +69,69 @@ function messageTickerAddMessage (messageData) {
 
 	var tableRow =
 		$("<tr>")
+			.css ("cursor", "pointer")
+			.addClass ("message-ticker-message")
 			.addClass ("message-id-" + messageData.messageId)
 			.addClass (messageData.rowClass);
+
+	// colour
 
 	tableRow.append (
 		$("<td>")
 			.addClass ("message-ticker-colour")
 			.css ("background-color", messageData.colour));
 
+	// timestamp
+
 	tableRow.append (
 		$("<td>")
 			.addClass ("message-ticker-timestamp")
 			.text (messageData.timestamp));
+
+	// number from
 
 	tableRow.append (
 		$("<td>")
 			.addClass ("message-ticker-number-from")
 			.text (messageData.numberFrom));
 
+	// number to
+
 	tableRow.append (
 		$("<td>")
 			.addClass ("message-ticker-number-to")
 			.text (messageData.numberTo));
 
-	tableRow.append (
+	// body
+
+	var bodyCell =
 		$("<td>")
 			.addClass ("message-ticker-body")
-			.text (messageData.body));
+			.text (messageData.body);
+
+	if (messageData.media.length) {
+
+		var bodyMediaDiv =
+			$("<div>")
+				.addClass ("floatRightThumb");
+
+		messageData.media.forEach (function (media) {
+
+			bodyMediaDiv.append (
+				$("<span>")
+					.html (media));
+
+		});
+
+		bodyCell.append (
+			bodyMediaDiv);
+
+	}
+
+	tableRow.append (
+		bodyCell);
+
+	// status
 
 	tableRow.append (
 		$("<td>")
@@ -103,8 +139,6 @@ function messageTickerAddMessage (messageData) {
 			.addClass (messageData.statusClass)
 			.css ("text-align", "center")
 			.text (messageData.statusCharacter));
-
-	// TODO media
 
 	tableRow.click (function () {
 		top.frames.main.location = messageData.link;
@@ -141,83 +175,6 @@ function messageTickerUpdateStatus (statusData) {
 		.text (statusData.statusCharacter);
 
 };
-
-/*
-				var floatDiv =
-					document.createElement ('div');
-
-				floatDiv.className =
-					'floatRightThumb';
-
-				cell.appendChild (floatDiv);
-
-				for (var j = 0; j < mediaUrls.length; j++) {
-
-					floatDiv.innerHTML +=
-						mediaUrls [j];
-
-				}
-
-			}
-
-	updateStatus: function updateStatus (
-			messageId,
-			statusClass,
-			statusChar) {
-
-		var cell =
-			document.getElementById ('status-' + messageId);
-
-		if (! cell)
-			return;
-
-		cell.className =
-			statusClass;
-
-		textNode =
-			document.createTextNode (statusChar);
-
-		cell.replaceChild (
-			textNode,
-			cell.firstChild);
-
-	},
-
-	handler: {
-
-		onSuccess: function onSuccess (req) {
-
-			eval (req.responseText);
-
-			window.setTimeout (
-				messageTicker.doUpdate,
-				messageTickerParams.reloadMs);
-
-		},
-
-		onFailure: function onFailure (req) {
-
-			window.setTimeout (
-				messageTicker.doUpdate,
-				messageTickerParams.reloadMs);
-
-		}
-
-	},
-
-	generation: 0,
-
-	doUpdate: function doUpdate () {
-
-		rpc_simpleGet (
-			'messageTicker.update' +
-			'?gen=' + messageTicker.generation,
-			messageTicker.handler);
-
-	}
-
-}
-*/
 
 $(messageTicker._init);
 
