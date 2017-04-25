@@ -136,6 +136,7 @@ function messageTickerUpdateStatus (statusData) {
 
 	statusCell
 		.removeClass ()
+		.addClass ("message-ticker-status")
 		.addClass (statusData.statusClass)
 		.text (statusData.statusCharacter);
 
