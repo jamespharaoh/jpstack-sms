@@ -1,12 +1,9 @@
 package wbs.sms.message.ticker.console;
 
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlIdAttribute;
 import static wbs.web.utils.HtmlBlockUtils.htmlHeadingTwoWrite;
-import static wbs.web.utils.HtmlScriptUtils.htmlScriptBlockClose;
-import static wbs.web.utils.HtmlScriptUtils.htmlScriptBlockOpen;
-import static wbs.web.utils.HtmlScriptUtils.htmlScriptBlockWrite;
 import static wbs.web.utils.HtmlTableUtils.htmlTableBodyClose;
 import static wbs.web.utils.HtmlTableUtils.htmlTableBodyOpen;
 import static wbs.web.utils.HtmlTableUtils.htmlTableCellWrite;
@@ -26,7 +23,9 @@ import lombok.NonNull;
 
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
+import wbs.console.misc.JqueryScriptRef;
 import wbs.console.responder.ConsoleHtmlResponder;
+
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.logging.LogContext;
@@ -59,49 +58,21 @@ class MessageTickerResponder
 				super.scriptRefs ())
 
 			.add (
+				JqueryScriptRef.instance)
+
+			.add (
 				ConsoleApplicationScriptRef.javascript (
-					"/js/rpc.js"))
+					"/js/js-cookie-2.0.4.js"))
+
+			.add (
+				ConsoleApplicationScriptRef.javascript (
+					"/js/async.js"))
 
 			.add (
 				ConsoleApplicationScriptRef.javascript (
 					"/js/message-ticker.js"))
 
 			.build ();
-
-	}
-
-	@Override
-	protected
-	void renderHtmlHeadContents (
-			@NonNull TaskLogger parentTaskLogger) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlHeadContents");
-
-		super.renderHtmlHeadContents (
-			taskLogger);
-
-		htmlScriptBlockOpen ();
-
-		formatWriter.writeLineFormatIncreaseIndent (
-			"var messageTickerParams = {");
-
-		formatWriter.writeLineFormat (
-			"reloadMs: %s,",
-			integerToDecimalString (
-				reloadMs));
-
-		formatWriter.writeLineFormat (
-			"maxEntries: %s",
-			integerToDecimalString (
-				maxEntries));
-
-		formatWriter.writeLineFormatDecreaseIndent (
-			"}");
-
-		htmlScriptBlockClose ();
 
 	}
 
@@ -135,7 +106,9 @@ class MessageTickerResponder
 
 		htmlTableBodyOpen ();
 
-		htmlTableRowOpen ();
+		htmlTableRowOpen (
+			htmlClassAttribute (
+				"message-ticker-loading"));
 
 		htmlTableCellWrite (
 			"Loading, please wait...",
@@ -146,11 +119,6 @@ class MessageTickerResponder
 		htmlTableBodyClose ();
 
 		htmlTableClose ();
-
-		// script
-
-		htmlScriptBlockWrite (
-			"messageTicker.doUpdate ();");
 
 	}
 

@@ -8,9 +8,6 @@
 			name="ticker"
 			bean-name=""/>
 
-		<context-responder-page
-			name="update"/>
-
 	</simple-context>
 
 </console-module>

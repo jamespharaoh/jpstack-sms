@@ -1,61 +1,137 @@
 var messageTicker = {
+};
 
-	addRow: function addRow (
-			rowClass,
-			threadColor,
-			url,
-			cells,
-			mediaUrls,
-			messageId,
-			statusClass,
-			statusChar) {
+messageTicker._init =
+function messageTickerInit () {
 
-		var table =
-			document.getElementById ('tickerTable');
+	async.onConnect (
+		messageTicker._handleConnect);
 
-		var row =
-			table.insertRow (1);
+	async.onDisconnect (
+		messageTicker._handleError);
 
-		row.className =
-			rowClass;
+	async._keepaliveLoop ();
 
-		try {
+};
 
-			row.addEventListener ('click', {
-				url: url,
+messageTicker._handleConnect =
+function messageTickerHandleConnect () {
 
-				handleEvent: function (evt) {
+	async.subscribe (
+		"/sms-message-ticker/update",
+		messageTicker._handleUpdate);
 
-					top.frames ['main'].location =
-						this.url;
+};
 
-				}
+messageTicker._handleError =
+function messageTickerHandleConnect () {
 
-			}, false);
+	var tableBody =
+		$("#tickerTable tbody");
 
-		} catch (exception) {
+	tableBody.find ("tr").remove ();
 
-		}
+	var loadingRow =
+		$("<tr>")
+			.addClass ("message-ticker-loading");
 
-		var cell =
-			row.insertCell (0);
+	tableBody.append (
+		loadingRow);
 
-		cell.style.background =
-			threadColor;
+	var loadingCell =
+		$("<td>")
+			.attr ("colspan", "6")
+			.text ("Loading, please wait...");
 
-		var textNode =
-			document.createTextNode (' ');
+	loadingRow.append (
+		loadingCell);
 
-		cell.appendChild (textNode);
+};
 
-		for (var i = 0; i < cells.length; i++) {
+messageTicker._handleUpdate =
+function messageTickerHandleUpdate (data) {
 
-			cell =
-				row.insertCell (i + 1);
+	$("#tickerTable tbody tr.message-ticker-loading").remove ();
 
-			if (i == cells.length - 1
-					&& mediaUrls.length > 0) {
+	data.messages.forEach (
+		messageTicker._addMessage);
 
+	data.statuses.forEach (
+		messageTicker._updateStatus);
+
+};
+
+messageTicker._addMessage =
+function messageTickerAddMessage (messageData) {
+
+	var tableBody =
+		$("#tickerTable tbody");
+
+	var tableRow =
+		$("<tr>")
+			.addClass ("message-id-" + messageData.messageId)
+			.addClass (messageData.rowClass);
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-colour")
+			.css ("background-color", messageData.colour));
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-timestamp")
+			.text (messageData.timestamp));
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-number-from")
+			.text (messageData.numberFrom));
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-number-to")
+			.text (messageData.numberTo));
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-body")
+			.text (messageData.body));
+
+	tableRow.append (
+		$("<td>")
+			.addClass ("message-ticker-status")
+			.addClass (messageData.statusClass)
+			.css ("text-align", "center")
+			.text (messageData.statusCharacter));
+
+	// TODO media
+
+	tableRow.click (function () {
+		top.frames.main.location = messageData.link;
+	});
+
+	tableBody.prepend (tableRow);
+
+	tableBody.slice (100, 0).remove ();
+
+};
+
+messageTicker._updateStatus =
+function messageTickerUpdateStatus (statusData) {
+
+	var statusCell =
+		$("#tickerTable tbody")
+			.find ("tr.message-id-" + statusData.messageId)
+			.find ("td.message-ticker-status");
+
+	statusCell
+		.removeClass ()
+		.addClass (statusData.statusClass)
+		.text (statusData.statusCharacter);
+
+};
+
+/*
 				var floatDiv =
 					document.createElement ('div');
 
@@ -72,40 +148,6 @@ var messageTicker = {
 				}
 
 			}
-
-			var textNode =
-				document.createTextNode (cells [i]);
-
-			cell.appendChild (textNode);
-
-		}
-
-		cell =
-			row.insertCell (i + 1);
-
-		cell.id =
-			'status-' + messageId;
-
-		cell.className =
-			statusClass;
-
-		cell.align =
-			'center';
-
-		textNode =
-			document.createTextNode (statusChar);
-
-		cell.appendChild (textNode);
-
-		if (table.rows.length
-				> messageTickerParams.maxEntries + 1) {
-
-			table.deleteRow (
-				table.rows.length - 1);
-
-		}
-
-	},
 
 	updateStatus: function updateStatus (
 			messageId,
@@ -164,3 +206,8 @@ var messageTicker = {
 	}
 
 }
+*/
+
+$(messageTicker._init);
+
+// ex: noet ts=4 filetype=javascript

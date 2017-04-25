@@ -43,6 +43,22 @@ class MessageFixtureProvider
 				parentTaskLogger,
 				"createFixtures");
 
+		createMenuItems (
+			taskLogger,
+			transaction);
+
+	}
+
+	private
+	void createMenuItems (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction transaction) {
+
+		TaskLogger taskLogger =
+			logContext.nestTaskLogger (
+				parentTaskLogger,
+				"createMenuItems");
+
 		menuItemHelper.insert (
 			taskLogger,
 			menuItemHelper.createInstance ()
@@ -72,6 +88,38 @@ class MessageFixtureProvider
 				"main")
 
 		);
+
+		menuItemHelper.insert (
+			taskLogger,
+			menuItemHelper.createInstance ()
+
+			.setMenuGroup (
+				menuGroupHelper.findByCodeRequired (
+					GlobalId.root,
+					"test",
+					"panel"))
+
+			.setCode (
+				"message_ticker")
+
+			.setName (
+				"Message ticker")
+
+			.setDescription (
+				"")
+
+			.setLabel (
+				"Message ticker")
+
+			.setTargetPath (
+				"/messageTicker/messageTicker.ticker")
+
+			.setTargetFrame (
+				"inbox")
+
+		);
+
+		transaction.flush ();
 
 	}
 
