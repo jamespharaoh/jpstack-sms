@@ -175,11 +175,6 @@ class MessageTickerUpdateAsyncHelper
 
 				}
 
-				newGeneration =
-					max (
-						state.generation (),
-						messageTickerMessage.messageGeneration ());
-
 			} else if (
 				lessThan (
 					state.generation (),
@@ -200,12 +195,13 @@ class MessageTickerUpdateAsyncHelper
 
 				}
 
-				newGeneration =
-					max (
-						state.generation (),
-						messageTickerMessage.statusGeneration ());
-
 			}
+
+			newGeneration =
+				max (
+					newGeneration,
+					messageTickerMessage.messageGeneration (),
+					messageTickerMessage.statusGeneration ());
 
 		}
 

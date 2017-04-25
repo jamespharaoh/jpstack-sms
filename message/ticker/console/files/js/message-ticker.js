@@ -119,6 +119,16 @@ function messageTickerAddMessage (messageData) {
 messageTicker._updateStatus =
 function messageTickerUpdateStatus (statusData) {
 
+	console.log ([
+		"Status update message ",
+		String (statusData.messageId),
+		" to ",
+		statusData.statusClass,
+		" (",
+		statusData.statusClass,
+		")",
+	].join (""));
+
 	var statusCell =
 		$("#tickerTable tbody")
 			.find ("tr.message-id-" + statusData.messageId)

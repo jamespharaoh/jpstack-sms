@@ -1,5 +1,6 @@
 package wbs.sms.message.ticker.console;
 
+import static wbs.utils.collection.MapUtils.emptyMap;
 import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 import static wbs.utils.string.StringUtils.spacify;
 import static wbs.utils.time.TimeUtils.earlierThan;
@@ -8,7 +9,8 @@ import static wbs.utils.time.TimeUtils.millisToInstant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+
+import com.google.common.collect.ImmutableMap;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +21,9 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.object.ObjectManager;
+
 import wbs.platform.media.model.MediaRec;
+
 import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -45,7 +49,7 @@ class MessageTickerManagerImplementation
 	@Getter @Setter
 	Duration updateDuration =
 		Duration.millis (
-			1000);
+			500);
 
 	// state
 
@@ -54,11 +58,11 @@ class MessageTickerManagerImplementation
 	Instant lastUpdate =
 		millisToInstant (0);
 
-	Long generations = 1000l;
+	Long generations = 2000l;
 
 	private
 	Map <Long, MessageTickerMessage> messageTickerMessages =
-		new TreeMap<> ();
+		emptyMap ();
 
 	// implementation
 
@@ -89,10 +93,11 @@ class MessageTickerManagerImplementation
 
 		List <MessageRec> newMessages =
 			messageHelper.findRecentLimit (
-				1000l);
+				generations);
 
-		Map <Long,MessageTickerMessage> newMessageTickerMessages =
-			new TreeMap<> ();
+		ImmutableMap.Builder <Long, MessageTickerMessage>
+			messageTickerMessagesBuilder =
+				ImmutableMap.builder ();
 
 		for (
 			MessageRec message
@@ -188,20 +193,20 @@ class MessageTickerManagerImplementation
 
 			}
 
-			newMessageTickerMessages.put (
+			messageTickerMessagesBuilder.put (
 				message.getId (),
 				messageTickerMessage);
 
 		}
 
 		messageTickerMessages =
-			newMessageTickerMessages;
+			messageTickerMessagesBuilder.build ();
 
 	}
 
 	@Override
 	public
-	synchronized Collection<MessageTickerMessage> getMessages () {
+	synchronized Collection <MessageTickerMessage> getMessages () {
 
 		update ();
 
