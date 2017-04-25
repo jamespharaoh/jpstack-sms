@@ -1,8 +1,6 @@
 package wbs.sms.message.status.console;
 
 import static wbs.utils.collection.MapUtils.mapItemForKeyOrElseSet;
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.thread.ConcurrentUtils.futureValue;
 
 import java.util.HashMap;
@@ -10,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.inject.Provider;
+
+import com.google.gson.JsonObject;
 
 import lombok.NonNull;
 
@@ -40,9 +40,6 @@ class MessageStatusLine
 	LogContext logContext;
 
 	@SingletonDependency
-	UserPrivChecker privChecker;
-
-	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
@@ -71,15 +68,15 @@ class MessageStatusLine
 
 	@Override
 	public
-	String getName () {
-		return "message";
+	String typeName () {
+		return "sms-messages";
 	}
 
 	// implementation
 
 	@Override
 	public
-	PagePart get (
+	PagePart createPagePart (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		return messageStatusLinePartProvider.get ();
@@ -88,31 +85,32 @@ class MessageStatusLine
 
 	@Override
 	public
-	Future <String> getUpdateScript (
-			@NonNull TaskLogger parentTaskLogger) {
+	Future <JsonObject> getUpdateData (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull UserPrivChecker privChecker) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
 				parentTaskLogger,
-				"getUpdateScript");
+				"getUpdateData");
 
-		Long numInbox =
+		JsonObject jsonObject =
+			new JsonObject ();
+
+		jsonObject.addProperty (
+			"inbox",
 			countInboxes (
-				taskLogger);
+				taskLogger,
+				privChecker));
 
-		Long numOutbox =
+		jsonObject.addProperty (
+			"outbox",
 			countOutboxes (
-				taskLogger);
-
-		// return
+				taskLogger,
+				privChecker));
 
 		return futureValue (
-			stringFormat (
-				"updateMessage (%s, %s);\n",
-				integerToDecimalString (
-					numInbox),
-				integerToDecimalString (
-					numOutbox)));
+			jsonObject);
 
 	}
 
@@ -120,7 +118,8 @@ class MessageStatusLine
 
 	private synchronized
 	long countInboxes (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull UserPrivChecker privChecker) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (
@@ -175,7 +174,8 @@ class MessageStatusLine
 
 	private synchronized
 	long countOutboxes (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull UserPrivChecker privChecker) {
 
 		TaskLogger taskLogger =
 			logContext.nestTaskLogger (

@@ -3,20 +3,22 @@ package wbs.sms.message.status.console;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttributeFormat;
 import static wbs.web.utils.HtmlAttributeUtils.htmlIdAttribute;
-import static wbs.web.utils.HtmlScriptUtils.htmlScriptBlockClose;
-import static wbs.web.utils.HtmlScriptUtils.htmlScriptBlockOpen;
-import static wbs.web.utils.HtmlStyleUtils.htmlStyleBlockClose;
-import static wbs.web.utils.HtmlStyleUtils.htmlStyleBlockOpen;
-import static wbs.web.utils.HtmlStyleUtils.htmlStyleRuleClose;
 import static wbs.web.utils.HtmlStyleUtils.htmlStyleRuleEntry;
-import static wbs.web.utils.HtmlStyleUtils.htmlStyleRuleWrite;
 import static wbs.web.utils.HtmlTableUtils.htmlTableCellWrite;
 import static wbs.web.utils.HtmlTableUtils.htmlTableRowClose;
 import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
 
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+
 import lombok.NonNull;
 
+import wbs.console.context.ConsoleApplicationScriptRef;
+import wbs.console.html.HtmlLink;
+import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.logging.TaskLogger;
 
@@ -27,94 +29,27 @@ class MessageStatusLinePart
 
 	@Override
 	public
-	void renderHtmlHeadContent (
-			@NonNull TaskLogger parentTaskLogger) {
+	Set <HtmlLink> links () {
 
-		renderStyleBlock ();
-		renderScriptBlock ();
+		return ImmutableSet.<HtmlLink> of (
 
-	}
+			HtmlLink.applicationCssStyle (
+				"/style/sms-messages-status.css")
 
-	private
-	void renderStyleBlock () {
-
-		htmlStyleBlockOpen ();
-
-		htmlStyleRuleWrite (
-			"#inboxRow",
-			"#outboxRow",
-			htmlStyleRuleEntry (
-				"cursor",
-				"pointer"));
-
-		htmlStyleRuleClose ();
-
-		htmlStyleBlockClose ();
+		);
 
 	}
 
-	private
-	void renderScriptBlock () {
+	@Override
+	public
+	Set <ScriptRef> scriptRefs () {
 
-		// script block open
+		return ImmutableSet.<ScriptRef> of (
 
-		htmlScriptBlockOpen ();
+			ConsoleApplicationScriptRef.javascript (
+				"/js/sms-messages-status.js")
 
-		// function open
-
-		formatWriter.writeLineFormatIncreaseIndent (
-			"function updateMessage (numInbox, numOutbox, numNotPro) {");
-
-		// variables
-
-		formatWriter.writeLineFormat (
-			"var inboxCell = document.getElementById ('inboxCell');");
-
-		formatWriter.writeLineFormat (
-			"var outboxCell = document.getElementById ('outboxCell');");
-
-		formatWriter.writeLineFormat (
-			"var inboxRow = document.getElementById ('inboxRow');");
-
-		formatWriter.writeLineFormat (
-			"var outboxRow = document.getElementById ('outboxRow');");
-
-		// inbox items
-
-		formatWriter.writeLineFormatIncreaseIndent (
-			"if (numInbox > 0) {");
-
-		formatWriter.writeLineFormat (
-			"inboxCell.firstChild.data = '' + numInbox + ' items in inbox';");
-
-		formatWriter.writeLineFormatDecreaseIndent (
-			"}");
-
-		formatWriter.writeLineFormat (
-			"showTableRow (inboxRow, numInbox > 0);");
-
-		// outbox items
-
-		formatWriter.writeLineFormatIncreaseIndent (
-			"if (numOutbox > 0) {");
-
-		formatWriter.writeLineFormat (
-			"outboxCell.firstChild.data = '' + numOutbox + ' items in outbox';");
-
-		formatWriter.writeLineFormatDecreaseIndent (
-			"}");
-
-		formatWriter.writeLineFormat (
-			"showTableRow (outboxRow, numOutbox > 0);");
-
-		// function close
-
-		formatWriter.writeLineFormatDecreaseIndent (
-			"}");
-
-		// script block close
-
-		htmlScriptBlockClose ();
+		);
 
 	}
 
