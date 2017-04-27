@@ -30,7 +30,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
@@ -114,14 +114,14 @@ class GenericSmsSenderService
 	void createThreads (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createThreads");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createThreads");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					stringFormat (
@@ -187,7 +187,7 @@ class GenericSmsSenderService
 
 			try (
 
-				Transaction transaction =
+				OwnedTransaction transaction =
 					database.beginReadOnly (
 						taskLogger,
 						stringFormat (
@@ -256,31 +256,37 @@ class GenericSmsSenderService
 				long numAvailable =
 					waitForAvailableSenders ();
 
-				TaskLogger taskLogger =
-					logContext.createTaskLogger (
-						"claimAllMessages ()");
+				try (
 
-				// claim some messages
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"claimAllMessages ()");
 
-				long numClaimed =
-					claimSomeMessages (
-						taskLogger,
-						numAvailable);
-
-				synchronized (this) {
-
-					claimedMessages +=
-						numClaimed;
-
-					notifyAll ();
-
-				}
-
-				if (
-					equalToZero (
-						numClaimed)
 				) {
-					return;
+
+					// claim some messages
+
+					long numClaimed =
+						claimSomeMessages (
+							taskLogger,
+							numAvailable);
+
+					synchronized (this) {
+
+						claimedMessages +=
+							numClaimed;
+
+						notifyAll ();
+
+					}
+
+					if (
+						equalToZero (
+							numClaimed)
+					) {
+						return;
+					}
+
 				}
 
 			}
@@ -311,90 +317,96 @@ class GenericSmsSenderService
 				@NonNull TaskLogger parentTaskLogger,
 				long numToGet) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLoggerFormat (
-					parentTaskLogger,
-					"RouteSenderService.claimSomeMessages (%s)",
-					integerToDecimalString (
-						numToGet));
-
-			// begin transaction
-
 			try (
 
-				Transaction transaction =
-					database.beginReadWrite (
-						taskLogger,
-						stringFormat (
-							"%s.claimMessages ()",
-							joinWithFullStop (
-								"GenericSmsSenderService",
-								"RouteSenderService")),
-						this);
+				TaskLogger taskLogger =
+					logContext.nestTaskLoggerFormat (
+						parentTaskLogger,
+						"RouteSenderService.claimSomeMessages (%s)",
+						integerToDecimalString (
+							numToGet));
 
 			) {
 
-				// get some messages
+				// begin transaction
 
-				RouteRec route =
-					smsRouteHelper.findRequired (
-						smsRouteId);
+				try (
 
-				List <OutboxRec> smsOutboxes =
-					smsOutboxHelper.findNextLimit (
-						transaction.now (),
-						route,
-						numToGet);
+					OwnedTransaction transaction =
+						database.beginReadWrite (
+							taskLogger,
+							stringFormat (
+								"%s.claimMessages ()",
+								joinWithFullStop (
+									"GenericSmsSenderService",
+									"RouteSenderService")),
+							this);
 
-				// return if empty
-
-				if (
-					collectionIsEmpty (
-						smsOutboxes)
 				) {
+
+					// get some messages
+
+					RouteRec route =
+						smsRouteHelper.findRequired (
+							smsRouteId);
+
+					List <OutboxRec> smsOutboxes =
+						smsOutboxHelper.findNextLimit (
+							transaction.now (),
+							route,
+							numToGet);
+
+					// return if empty
+
+					if (
+						collectionIsEmpty (
+							smsOutboxes)
+					) {
+						return 0l;
+					}
+
+					// mark them as sending
+
+					smsOutboxes.forEach (
+						smsOutbox -> {
+
+						smsOutbox
+
+							.setSending (
+								transaction.now ());
+
+					});
+
+					// store their ids
+
+					List <Long> messageIds =
+						iterableMapToList (
+							OutboxRec::getId,
+							smsOutboxes);
+
+					// commit and add them to the queue
+
+					transaction.commit ();
+
+					messageQueue.addAll (
+						messageIds);
+
+					return messageIds.size ();
+
+				} catch (Exception exception) {
+
+					exceptionLogger.logThrowable (
+						taskLogger,
+						"daemon",
+						classNameSimple (
+							this.getClass ()),
+						exception,
+						optionalAbsent (),
+						GenericExceptionResolution.tryAgainLater);
+
 					return 0l;
+
 				}
-
-				// mark them as sending
-
-				smsOutboxes.forEach (
-					smsOutbox -> {
-
-					smsOutbox
-
-						.setSending (
-							transaction.now ());
-
-				});
-
-				// store their ids
-
-				List <Long> messageIds =
-					iterableMapToList (
-						OutboxRec::getId,
-						smsOutboxes);
-
-				// commit and add them to the queue
-
-				transaction.commit ();
-
-				messageQueue.addAll (
-					messageIds);
-
-				return messageIds.size ();
-
-			} catch (Exception exception) {
-
-				exceptionLogger.logThrowable (
-					taskLogger,
-					"daemon",
-					classNameSimple (
-						this.getClass ()),
-					exception,
-					optionalAbsent (),
-					GenericExceptionResolution.tryAgainLater);
-
-				return 0l;
 
 			}
 
@@ -415,19 +427,25 @@ class GenericSmsSenderService
 					return;
 				}
 
-				TaskLogger taskLogger =
-					logContext.createTaskLogger (
-						"messageSendLoop");
+				try (
 
-				sendOneMessage (
-					taskLogger,
-					smsMessageId);
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"messageSendLoop");
 
-				synchronized (this) {
+				) {
 
-					claimedMessages --;
+					sendOneMessage (
+						taskLogger,
+						smsMessageId);
 
-					notifyAll ();
+					synchronized (this) {
+
+						claimedMessages --;
+
+						notifyAll ();
+
+					}
 
 				}
 
@@ -459,21 +477,27 @@ class GenericSmsSenderService
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"sendOneMessage");
+			try (
 
-			genericSmsSenderProvider.get ()
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"sendOneMessage");
 
-				.smsSenderHelper (
-					smsSenderHelper)
+			) {
 
-				.smsMessageId (
-					messageId)
+				genericSmsSenderProvider.get ()
 
-				.send (
-					taskLogger);
+					.smsSenderHelper (
+						smsSenderHelper)
+
+					.smsMessageId (
+						messageId)
+
+					.send (
+						taskLogger);
+
+			}
 
 		}
 

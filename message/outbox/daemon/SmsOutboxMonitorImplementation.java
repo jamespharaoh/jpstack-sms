@@ -14,7 +14,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
@@ -149,81 +149,87 @@ class SmsOutboxMonitorImplementation
 		public
 		void runOnce () {
 
-			TaskLogger taskLogger =
-				logContext.createTaskLogger (
-					"runOnce ()");
-
-			taskLogger.debugFormat (
-				"Polling database");
-
-			// query database
-
 			try (
 
-				Transaction transaction =
-					database.beginReadOnly (
-						taskLogger,
-						"SmsOutboxMonitorImplementation.runOnce ()",
-						this);
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"runOnce ()");
 
 			) {
 
-				Map <Long, Long> routeSummary =
-					outboxHelper.generateRouteSummary (
-						transaction.now ());
+				taskLogger.debugFormat (
+					"Polling database");
 
-				transaction.close ();
+				// query database
 
-				// now set off and discard all affected latches
+				try (
 
-				synchronized (waitersLock) {
+					OwnedTransaction transaction =
+						database.beginReadOnly (
+							taskLogger,
+							"SmsOutboxMonitorImplementation.runOnce ()",
+							this);
 
-					for (
-						Map.Entry<Long,Long> routeSummaryEntry
-							: routeSummary.entrySet ()
-					) {
+				) {
 
-						long routeId =
-							routeSummaryEntry.getKey ();
+					Map <Long, Long> routeSummary =
+						outboxHelper.generateRouteSummary (
+							transaction.now ());
 
-						long count =
-							routeSummaryEntry.getValue ();
+					transaction.close ();
 
-						taskLogger.debugFormat (
-							"Route %s has %s messages",
-							integerToDecimalString (
-								routeId),
-							integerToDecimalString (
-								count));
+					// now set off and discard all affected latches
 
-						CountDownLatch countDownLatch =
-							waiters.get (
-								routeId);
+					synchronized (waitersLock) {
 
-						if (countDownLatch != null) {
+						for (
+							Map.Entry<Long,Long> routeSummaryEntry
+								: routeSummary.entrySet ()
+						) {
 
-							countDownLatch.countDown ();
+							long routeId =
+								routeSummaryEntry.getKey ();
 
-							waiters.remove (
-								routeId);
+							long count =
+								routeSummaryEntry.getValue ();
+
+							taskLogger.debugFormat (
+								"Route %s has %s messages",
+								integerToDecimalString (
+									routeId),
+								integerToDecimalString (
+									count));
+
+							CountDownLatch countDownLatch =
+								waiters.get (
+									routeId);
+
+							if (countDownLatch != null) {
+
+								countDownLatch.countDown ();
+
+								waiters.remove (
+									routeId);
+
+							}
 
 						}
 
 					}
 
+				} catch (Exception exception) {
+
+					// log error
+
+					exceptionLogger.logThrowable (
+						taskLogger,
+						"daemon",
+						"Outbox monitor",
+						exception,
+						Optional.absent (),
+						GenericExceptionResolution.tryAgainLater);
+
 				}
-
-			} catch (Exception exception) {
-
-				// log error
-
-				exceptionLogger.logThrowable (
-					taskLogger,
-					"daemon",
-					"Outbox monitor",
-					exception,
-					Optional.absent (),
-					GenericExceptionResolution.tryAgainLater);
 
 			}
 

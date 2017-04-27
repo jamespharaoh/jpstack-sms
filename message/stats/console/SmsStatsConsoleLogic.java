@@ -18,6 +18,7 @@ interface SmsStatsConsoleLogic {
 			TaskLogger parentTaskLogger);
 
 	String lookupGroupName (
+			TaskLogger parentTaskLogger,
 			SmsStatsCriteria crit,
 			Long id);
 

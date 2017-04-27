@@ -21,8 +21,8 @@ import org.joda.time.ReadableInstant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
@@ -91,232 +91,238 @@ class SmsDeliveryReportLogicImplementation
 			NoSuchMessageException,
 			InvalidMessageStateException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"deliveryReport");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
-
-		// check arguments
-
-		if (
-			enumNotInSafe (
-				newMessageStatus,
-				MessageStatus.sent,
-				MessageStatus.submitted,
-				MessageStatus.undelivered,
-				MessageStatus.delivered)
-		) {
-
-			throw new IllegalArgumentException (
-				stringFormat (
-					"Invalid new message status \"%s\" for message %s",
-					enumNameSpaces (
-						newMessageStatus),
-					integerToDecimalString (
-						message.getId ())));
-
-		}
-
-		// check delivery reports are enabled
-
-		if (! message.getRoute ().getDeliveryReports ()) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Not expecting delivery reports on %s",
-					objectManager.objectPath (message.getRoute ())));
-
-		}
-
-		// create message report thingy
-
-		messageReportHelper.insert (
-			taskLogger,
-			messageReportHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setReceivedTime (
-				transaction.now ())
-
-			.setNewMessageStatus (
-				newMessageStatus)
-
-			.setTheirCode (
-				optionalOrNull (
-					textHelper.findOrCreate (
-						taskLogger,
-						theirCode)))
-
-			.setTheirDescription (
-				optionalOrNull (
-					textHelper.findOrCreate (
-						taskLogger,
-						theirDescription)))
-
-			.setTheirTimestamp (
-				optionalOrNull (
-					theirTimestamp))
-
-		);
-
-		// update received time if appropriate
-
-		if (
-
-			enumEqualSafe (
-				newMessageStatus,
-				MessageStatus.delivered)
-
-			&& isNull (
-				message.getProcessedTime ())
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"deliveryReport");
 
 		) {
 
-			message
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-				.setProcessedTime (
-					transaction.now ());
+			// check arguments
 
-		}
+			if (
+				enumNotInSafe (
+					newMessageStatus,
+					MessageStatus.sent,
+					MessageStatus.submitted,
+					MessageStatus.undelivered,
+					MessageStatus.delivered)
+			) {
 
-		// depending on the new and old status, update it
-
-		if (
-			isNotNull (
-				newMessageStatus != null)
-		) {
-
-			switch (message.getStatus ()) {
-
-			case sent:
-
-				if (
-					enumInSafe (
-						newMessageStatus,
-						MessageStatus.sent,
-						MessageStatus.submitted,
-						MessageStatus.undelivered,
-						MessageStatus.delivered)
-				) {
-
-					messageLogic.messageStatus (
-						taskLogger,
-						message,
-						newMessageStatus);
-
-				}
-
-				break;
-
-			case submitted:
-
-				if (
-					enumInSafe (
-						newMessageStatus,
-						MessageStatus.submitted,
-						MessageStatus.delivered,
-						MessageStatus.undelivered)
-				) {
-
-					messageLogic.messageStatus (
-						taskLogger,
-						message,
-						newMessageStatus);
-
-				}
-
-				break;
-
-			case reportTimedOut:
-
-				if (
-					enumInSafe (
-						newMessageStatus,
-						MessageStatus.delivered,
-						MessageStatus.undelivered)
-				) {
-
-					messageLogic.messageStatus (
-						taskLogger,
-						message,
-						newMessageStatus);
-
-				}
-
-				break;
-
-			case undelivered:
-
-				if (
-					enumInSafe (
-						newMessageStatus,
-						MessageStatus.delivered)
-				) {
-
-					messageLogic.messageStatus (
-						taskLogger,
-						message,
-						newMessageStatus);
-
-				}
-
-				break;
-
-			case delivered:
-			case manuallyUndelivered:
-
-				break;
-
-			default:
-
-				throw new InvalidMessageStateException (
+				throw new IllegalArgumentException (
 					stringFormat (
-						"Message %s has status \"%s\"",
-						integerToDecimalString (
-							message.getId ()),
+						"Invalid new message status \"%s\" for message %s",
 						enumNameSpaces (
-							message.getStatus ())));
+							newMessageStatus),
+						integerToDecimalString (
+							message.getId ())));
 
 			}
 
+			// check delivery reports are enabled
+
+			if (! message.getRoute ().getDeliveryReports ()) {
+
+				throw new RuntimeException (
+					stringFormat (
+						"Not expecting delivery reports on %s",
+						objectManager.objectPath (message.getRoute ())));
+
+			}
+
+			// create message report thingy
+
+			messageReportHelper.insert (
+				taskLogger,
+				messageReportHelper.createInstance ()
+
+				.setMessage (
+					message)
+
+				.setReceivedTime (
+					transaction.now ())
+
+				.setNewMessageStatus (
+					newMessageStatus)
+
+				.setTheirCode (
+					optionalOrNull (
+						textHelper.findOrCreate (
+							taskLogger,
+							theirCode)))
+
+				.setTheirDescription (
+					optionalOrNull (
+						textHelper.findOrCreate (
+							taskLogger,
+							theirDescription)))
+
+				.setTheirTimestamp (
+					optionalOrNull (
+						theirTimestamp))
+
+			);
+
+			// update received time if appropriate
+
+			if (
+
+				enumEqualSafe (
+					newMessageStatus,
+					MessageStatus.delivered)
+
+				&& isNull (
+					message.getProcessedTime ())
+
+			) {
+
+				message
+
+					.setProcessedTime (
+						transaction.now ());
+
+			}
+
+			// depending on the new and old status, update it
+
+			if (
+				isNotNull (
+					newMessageStatus != null)
+			) {
+
+				switch (message.getStatus ()) {
+
+				case sent:
+
+					if (
+						enumInSafe (
+							newMessageStatus,
+							MessageStatus.sent,
+							MessageStatus.submitted,
+							MessageStatus.undelivered,
+							MessageStatus.delivered)
+					) {
+
+						messageLogic.messageStatus (
+							taskLogger,
+							message,
+							newMessageStatus);
+
+					}
+
+					break;
+
+				case submitted:
+
+					if (
+						enumInSafe (
+							newMessageStatus,
+							MessageStatus.submitted,
+							MessageStatus.delivered,
+							MessageStatus.undelivered)
+					) {
+
+						messageLogic.messageStatus (
+							taskLogger,
+							message,
+							newMessageStatus);
+
+					}
+
+					break;
+
+				case reportTimedOut:
+
+					if (
+						enumInSafe (
+							newMessageStatus,
+							MessageStatus.delivered,
+							MessageStatus.undelivered)
+					) {
+
+						messageLogic.messageStatus (
+							taskLogger,
+							message,
+							newMessageStatus);
+
+					}
+
+					break;
+
+				case undelivered:
+
+					if (
+						enumInSafe (
+							newMessageStatus,
+							MessageStatus.delivered)
+					) {
+
+						messageLogic.messageStatus (
+							taskLogger,
+							message,
+							newMessageStatus);
+
+					}
+
+					break;
+
+				case delivered:
+				case manuallyUndelivered:
+
+					break;
+
+				default:
+
+					throw new InvalidMessageStateException (
+						stringFormat (
+							"Message %s has status \"%s\"",
+							integerToDecimalString (
+								message.getId ()),
+							enumNameSpaces (
+								message.getStatus ())));
+
+				}
+
+			}
+
+			// write to log file
+
+			taskLogger.noticeFormat (
+				"DLV %s %s %s %s",
+				integerToDecimalString (
+					message.getId ()),
+				message.getRoute ().getCode (),
+				ifNull (
+					message.getOtherId (),
+					"—"),
+				enumName (
+					message.getStatus ()));
+
+			// update simulated multipart messages
+
+			message.getMultipartCompanionLinks ().stream ()
+
+				.filter (
+					link ->
+						link.getSimulated ())
+
+				.forEach (
+					link ->
+						deliveryReport (
+							taskLogger,
+							link.getMessage (),
+							newMessageStatus,
+							theirCode,
+							theirDescription,
+							extraInformation,
+							theirTimestamp));
+
 		}
-
-		// write to log file
-
-		taskLogger.noticeFormat (
-			"DLV %s %s %s %s",
-			integerToDecimalString (
-				message.getId ()),
-			message.getRoute ().getCode (),
-			ifNull (
-				message.getOtherId (),
-				"—"),
-			enumName (
-				message.getStatus ()));
-
-		// update simulated multipart messages
-
-		message.getMultipartCompanionLinks ().stream ()
-
-			.filter (
-				link ->
-					link.getSimulated ())
-
-			.forEach (
-				link ->
-					deliveryReport (
-						taskLogger,
-						link.getMessage (),
-						newMessageStatus,
-						theirCode,
-						theirDescription,
-						extraInformation,
-						theirTimestamp));
 
 	}
 
@@ -335,44 +341,50 @@ class SmsDeliveryReportLogicImplementation
 			NoSuchMessageException,
 			InvalidMessageStateException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"deliveryReport");
+		try (
 
-		// lookup the message
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"deliveryReport");
 
-		MessageRec message =
-			messageHelper.findByOtherId (
-				MessageDirection.out,
-				route,
-				otherId);
+		) {
 
-		if (message == null) {
+			// lookup the message
 
-			throw new NoSuchMessageException (
-				stringFormat (
-					"Delivery report for unrecognised message id %s ",
-					otherId,
-					"on route %s (%s)",
-					route.getCode (),
-					integerToDecimalString (
-						route.getId ())));
+			MessageRec message =
+				messageHelper.findByOtherId (
+					MessageDirection.out,
+					route,
+					otherId);
+
+			if (message == null) {
+
+				throw new NoSuchMessageException (
+					stringFormat (
+						"Delivery report for unrecognised message id %s ",
+						otherId,
+						"on route %s (%s)",
+						route.getCode (),
+						integerToDecimalString (
+							route.getId ())));
+
+			}
+
+			// process the report
+
+			deliveryReport (
+				taskLogger,
+				message,
+				newMessageStatus,
+				theirCode,
+				theirDescription,
+				extraInformation,
+				theirTimestamp);
+
+			return message;
 
 		}
-
-		// process the report
-
-		deliveryReport (
-			taskLogger,
-			message,
-			newMessageStatus,
-			theirCode,
-			theirDescription,
-			extraInformation,
-			theirTimestamp);
-
-		return message;
 
 	}
 
@@ -390,30 +402,36 @@ class SmsDeliveryReportLogicImplementation
 			NoSuchMessageException,
 			InvalidMessageStateException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"deliveryReport");
+		try (
 
-		// lookup the message
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"deliveryReport");
 
-		MessageRec message =
-			messageHelper.findOrThrow (
-				messageId,
-				() -> new NoSuchMessageException (
-					stringFormat (
-						"Message ID: %s")));
+		) {
 
-		// process the report
+			// lookup the message
 
-		deliveryReport (
-			taskLogger,
-			message,
-			newMessageStatus,
-			theirCode,
-			theirDescription,
-			extraInformation,
-			theirTimestamp);
+			MessageRec message =
+				messageHelper.findOrThrow (
+					messageId,
+					() -> new NoSuchMessageException (
+						stringFormat (
+							"Message ID: %s")));
+
+			// process the report
+
+			deliveryReport (
+				taskLogger,
+				message,
+				newMessageStatus,
+				theirCode,
+				theirDescription,
+				extraInformation,
+				theirTimestamp);
+
+		}
 
 	}
 

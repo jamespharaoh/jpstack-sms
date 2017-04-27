@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -57,62 +57,68 @@ class SmsCustomerManagerFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		smsCustomerManagerHelper.insert (
-			taskLogger,
-			smsCustomerManagerHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
+		) {
 
-			.setCode (
-				"customer_manager")
+			smsCustomerManagerHelper.insert (
+				taskLogger,
+				smsCustomerManagerHelper.createInstance ()
 
-			.setName (
-				"Customer manager")
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
 
-			.setDescription (
-				"Test customer manager")
+				.setCode (
+					"customer_manager")
 
-		);
+				.setName (
+					"Customer manager")
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+				.setDescription (
+					"Test customer manager")
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+			);
 
-			.setCode (
-				"customer")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Customer")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"")
+				.setCode (
+					"customer")
 
-			.setLabel (
-				"Customers")
+				.setName (
+					"Customer")
 
-			.setTargetPath (
-				"/smsCustomerManagers")
+				.setDescription (
+					"")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Customers")
 
-		);
+				.setTargetPath (
+					"/smsCustomerManagers")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
 

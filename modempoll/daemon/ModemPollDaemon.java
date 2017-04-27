@@ -25,7 +25,7 @@ import org.joda.time.Duration;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -256,58 +256,64 @@ class ModemPollDaemon
 		private
 		void openModem () {
 
-			TaskLogger taskLogger =
-				logContext.createTaskLogger (
-					"RetrieveThread.openModem ()");
+			try (
 
-			try {
+				TaskLogger taskLogger =
+					logContext.createTaskLogger (
+						"RetrieveThread.openModem ()");
 
-				modemIn =
-					new BufferedReader (
-						new InputStreamReader (
-							new FileInputStream (
+			) {
+
+				try {
+
+					modemIn =
+						new BufferedReader (
+							new InputStreamReader (
+								new FileInputStream (
+									deviceName),
+									"us-ascii"));
+
+					modemOut =
+						new OutputStreamWriter (
+							new FileOutputStream (
 								deviceName),
-								"us-ascii"));
+							"us-ascii");
 
-				modemOut =
-					new OutputStreamWriter (
-						new FileOutputStream (
-							deviceName),
-						"us-ascii");
+				} catch (IOException e) {
 
-			} catch (IOException e) {
+					taskLogger.errorFormat (
+						"Error opening modem device: %s",
+						e.getMessage ());
 
-				taskLogger.errorFormat (
-					"Error opening modem device: %s",
-					e.getMessage ());
+					if (modemIn != null) {
 
-				if (modemIn != null) {
+						try {
 
-					try {
+							modemIn.close ();
 
-						modemIn.close ();
+						} catch (IOException e1) {
+						}
 
-					} catch (IOException e1) {
 					}
 
-				}
+					if (modemOut != null) {
 
-				if (modemOut != null) {
+						try {
 
-					try {
+							modemOut.close ();
 
-						modemOut.close ();
+						} catch (IOException e1) {
+						}
 
-					} catch (IOException e1) {
 					}
 
+					modemIn = null;
+
+					modemOut = null;
+
+					return;
+
 				}
-
-				modemIn = null;
-
-				modemOut = null;
-
-				return;
 
 			}
 
@@ -320,67 +326,73 @@ class ModemPollDaemon
 				InterruptedException,
 				IOException {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"doPoll");
+			try (
 
-			// get the list
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"doPoll");
 
-			List <String> lines =
-				sendCommand (
-					taskLogger,
-					"at+cmgl=4\route");
+			) {
 
-			// then go through it
+				// get the list
 
-			Iterator<String> iterator =
-				lines.iterator ();
+				List <String> lines =
+					sendCommand (
+						taskLogger,
+						"at+cmgl=4\route");
 
-			while (iterator.hasNext ()) {
+				// then go through it
 
-				String line =
-					iterator.next ();
+				Iterator<String> iterator =
+					lines.iterator ();
 
-				// if its not a +cmgl line skip it
+				while (iterator.hasNext ()) {
 
-				Matcher matcher =
-					cmglPattern.matcher (
-						line);
+					String line =
+						iterator.next ();
 
-				if (! matcher.matches ())
-					continue;
+					// if its not a +cmgl line skip it
 
-				// ok get the pdu line and decode it
+					Matcher matcher =
+						cmglPattern.matcher (
+							line);
 
-				if (! iterator.hasNext ()) {
+					if (! matcher.matches ())
+						continue;
 
-					throw new ModemException (
-						"Missing PDU data");
+					// ok get the pdu line and decode it
+
+					if (! iterator.hasNext ()) {
+
+						throw new ModemException (
+							"Missing PDU data");
+
+					}
+
+					String pduLine =
+						iterator.next ();
+
+					if (! pduPattern.matcher (pduLine).matches ()) {
+
+						throw new ModemException (
+							"Invalid or missing PDU data");
+
+					}
+
+					// store it
+
+					storePdu (
+						taskLogger,
+						pduLine);
+
+					// now delete it
+
+					sendCommandOk (
+						taskLogger,
+						"at+cmgd=" + matcher.group (1) + "\route");
 
 				}
-
-				String pduLine =
-					iterator.next ();
-
-				if (! pduPattern.matcher (pduLine).matches ()) {
-
-					throw new ModemException (
-						"Invalid or missing PDU data");
-
-				}
-
-				// store it
-
-				storePdu (
-					taskLogger,
-					pduLine);
-
-				// now delete it
-
-				sendCommandOk (
-					taskLogger,
-					"at+cmgd=" + matcher.group (1) + "\route");
 
 			}
 
@@ -397,61 +409,67 @@ class ModemPollDaemon
 				InterruptedException,
 				IOException {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"sendCommand");
+			try (
 
-			taskLogger.debugFormat (
-				"Sent: %s",
-				command.replaceAll (
-					"\\route",
-					"\\\\route"));
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"sendCommand");
 
-			List <String> ret =
-				new ArrayList<> ();
+			) {
 
-			// send the command
+				taskLogger.debugFormat (
+					"Sent: %s",
+					command.replaceAll (
+						"\\route",
+						"\\\\route"));
 
-			modemOut.write (
-				command);
+				List <String> ret =
+					new ArrayList<> ();
 
-			modemOut.flush ();
+				// send the command
 
-			// give the modem 0.1s to responde
-			Thread.sleep(modemSleepTime1);
+				modemOut.write (
+					command);
 
-			for (;;) {
+				modemOut.flush ();
 
-				// read any data and add it to the list
+				// give the modem 0.1s to responde
+				Thread.sleep(modemSleepTime1);
 
-				while (modemIn.ready ()) {
+				for (;;) {
 
-					String line =
-						modemIn.readLine ();
+					// read any data and add it to the list
 
-					taskLogger.debugFormat (
-						"Got: %s",
-						line);
+					while (modemIn.ready ()) {
 
-					ret.add (
-						line);
+						String line =
+							modemIn.readLine ();
+
+						taskLogger.debugFormat (
+							"Got: %s",
+							line);
+
+						ret.add (
+							line);
+
+					}
+
+					// wait a second, if there's no more data then stop
+
+					Thread.sleep (
+						modemSleepTime2);
+
+					if (! modemIn.ready ())
+						break;
 
 				}
 
-				// wait a second, if there's no more data then stop
+				// and return
 
-				Thread.sleep (
-					modemSleepTime2);
-
-				if (! modemIn.ready ())
-					break;
+				return ret;
 
 			}
-
-			// and return
-
-			return ret;
 
 		}
 
@@ -466,28 +484,34 @@ class ModemPollDaemon
 				InterruptedException,
 				IOException {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"sendCommandOk");
+			try (
 
-			List <String> lines =
-				sendCommand (
-					taskLogger,
-					command);
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"sendCommandOk");
 
-			for (
-				String line
-					: lines
 			) {
 
-				if (line.equals("OK"))
-					return;
+				List <String> lines =
+					sendCommand (
+						taskLogger,
+						command);
+
+				for (
+					String line
+						: lines
+				) {
+
+					if (line.equals("OK"))
+						return;
+
+				}
+
+				throw new ModemException (
+					"Command failed: " + command);
 
 			}
-
-			throw new ModemException (
-				"Command failed: " + command);
 
 		}
 
@@ -503,19 +527,25 @@ class ModemPollDaemon
 				InterruptedException,
 				IOException {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"sendCommandsOk");
+			try (
 
-			for (
-				String command
-					: commands
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"sendCommandsOk");
+
 			) {
 
-				sendCommandOk (
-					taskLogger,
-					command);
+				for (
+					String command
+						: commands
+				) {
+
+					sendCommandOk (
+						taskLogger,
+						command);
+
+				}
 
 			}
 
@@ -529,14 +559,14 @@ class ModemPollDaemon
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull String pdu) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"storePdu");
-
 			try (
 
-				Transaction transaction =
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"storePdu");
+
+				OwnedTransaction transaction =
 					database.beginReadWrite (
 						taskLogger,
 						"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
@@ -565,23 +595,31 @@ class ModemPollDaemon
 		@Override
 		public
 		void run() {
+
 			try {
 
 				while (true) {
 
-					TaskLogger taskLogger =
-						logContext.createTaskLogger (
-							"ProcessThread.run");
+					try (
 
-					// process any messages
+						TaskLogger taskLogger =
+							logContext.createTaskLogger (
+								"ProcessThread.run");
 
-					processAll (
-						taskLogger);
+					) {
 
-					// wait a bit or until the flag is set
+						// process any messages
 
-					flagWaiter.waitTrue (
-						processSleepTime);
+						processAll (
+							taskLogger);
+
+						// wait a bit or until the flag is set
+
+						flagWaiter.waitTrue (
+							processSleepTime);
+
+					}
+
 				}
 
 			} catch (InterruptedException exception) {
@@ -607,7 +645,7 @@ class ModemPollDaemon
 
 				try (
 
-					Transaction transaction =
+					OwnedTransaction transaction =
 						database.beginReadWrite (
 							taskLogger,
 							"ModemPollDaemon.ProcessThread.processAll ()",
@@ -671,26 +709,32 @@ class ModemPollDaemon
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull ModemPollQueueRec mpq) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"processOne");
+			try (
 
-			Pdu pdu =
-				decodePduString (
-					taskLogger,
-					mpq.getPdu ());
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"processOne");
 
-			if (pdu instanceof SmsDeliverPdu) {
+			) {
 
-				handlePdu (
-					taskLogger,
-					(SmsDeliverPdu) pdu);
+				Pdu pdu =
+					decodePduString (
+						taskLogger,
+						mpq.getPdu ());
 
-			} else {
+				if (pdu instanceof SmsDeliverPdu) {
 
-				throw new RuntimeException("Unknown PDU type "
-						+ pdu.getClass().getName());
+					handlePdu (
+						taskLogger,
+						(SmsDeliverPdu) pdu);
+
+				} else {
+
+					throw new RuntimeException("Unknown PDU type "
+							+ pdu.getClass().getName());
+
+				}
 
 			}
 
@@ -701,14 +745,14 @@ class ModemPollDaemon
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull SmsDeliverPdu pdu) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"handlePdu");
-
 			try (
 
-				Transaction transaction =
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"handlePdu");
+
+				OwnedTransaction transaction =
 					database.beginReadWrite (
 						taskLogger,
 						"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
@@ -756,31 +800,37 @@ class ModemPollDaemon
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull String str) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"decodePduString");
+			try (
 
-			try {
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"decodePduString");
 
-				ByteBuffer bb =
-					ByteBuffer.wrap (
-						Pdu.hexToByteArray (
-							str));
+			) {
 
-				Pdu.skipSmsc (
-					bb);
+				try {
 
-				return Pdu.decode (
-					bb);
+					ByteBuffer bb =
+						ByteBuffer.wrap (
+							Pdu.hexToByteArray (
+								str));
 
-			} catch (RuntimeException e) {
+					Pdu.skipSmsc (
+						bb);
 
-				taskLogger.errorFormat(
-					"PDU string caused exception: %s",
-					str);
+					return Pdu.decode (
+						bb);
 
-				throw new RuntimeException (e);
+				} catch (RuntimeException e) {
+
+					taskLogger.errorFormat(
+						"PDU string caused exception: %s",
+						str);
+
+					throw new RuntimeException (e);
+
+				}
 
 			}
 

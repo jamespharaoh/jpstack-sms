@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -36,44 +36,49 @@ class NumberFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+		) {
 
-			.setCode (
-				"number")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Number")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"Manage individual telephony subscriber numbers")
+				.setCode (
+					"number")
 
-			.setLabel (
-				"Numbers")
+				.setName (
+					"Number")
 
-			.setTargetPath (
-				"/numbers")
+				.setDescription (
+					"Manage individual telephony subscriber numbers")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Numbers")
 
-		);
+				.setTargetPath (
+					"/numbers")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
-
 
 }

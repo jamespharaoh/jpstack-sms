@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -46,65 +46,71 @@ class KeywordFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		keywordSetHelper.insert (
-			taskLogger,
-			keywordSetHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
+		) {
 
-			.setCode (
-				"inbound")
+			keywordSetHelper.insert (
+				taskLogger,
+				keywordSetHelper.createInstance ()
 
-			.setName (
-				"inbound")
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
 
-			.setDescription (
-				"Inbound")
+				.setCode (
+					"inbound")
 
-			.setType (
-				KeywordSetType.keyword)
+				.setName (
+					"inbound")
 
-		);
+				.setDescription (
+					"Inbound")
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+				.setType (
+					KeywordSetType.keyword)
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+			);
 
-			.setCode (
-				"keyword_set")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Keyword Set")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"Route inbound messages based on keyword")
+				.setCode (
+					"keyword_set")
 
-			.setLabel (
-				"Keyword sets")
+				.setName (
+					"Keyword Set")
 
-			.setTargetPath (
-				"/keywordSets")
+				.setDescription (
+					"Route inbound messages based on keyword")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Keyword sets")
 
-		);
+				.setTargetPath (
+					"/keywordSets")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
 

@@ -55,86 +55,92 @@ class MessageSourceImplementation
 			@NonNull Interval interval,
 			@NonNull ViewMode viewMode) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findMessages");
+		try (
 
-		MessageSearch search =
-			new MessageSearch (
-				searchTemplate)
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findMessages");
 
-			.createdTime (
-				TextualInterval.forInterval (
-					DateTimeZone.UTC,
-					interval))
+		) {
 
-			.orderBy (
-				MessageSearchOrder.createdTime);
+			MessageSearch search =
+				new MessageSearch (
+					searchTemplate)
 
-		switch (viewMode) {
+				.createdTime (
+					TextualInterval.forInterval (
+						DateTimeZone.UTC,
+						interval))
 
-		case in:
+				.orderBy (
+					MessageSearchOrder.createdTime);
 
-			search.direction (
-				MessageDirection.in);
+			switch (viewMode) {
 
-			break;
+			case in:
 
-		case out:
+				search.direction (
+					MessageDirection.in);
 
-			search.direction (
-				MessageDirection.out);
+				break;
 
-			break;
+			case out:
 
-		case sent:
+				search.direction (
+					MessageDirection.out);
 
-			search.direction (
-				MessageDirection.out);
+				break;
 
-			search.statusNotIn (
-				ImmutableSet.<MessageStatus>builder ()
+			case sent:
 
-				.addAll (
-					MessageStatus.goodStatus)
+				search.direction (
+					MessageDirection.out);
 
-				.addAll (
-					MessageStatus.badStatus)
+				search.statusNotIn (
+					ImmutableSet.<MessageStatus>builder ()
 
-				.build ());
+					.addAll (
+						MessageStatus.goodStatus)
 
-			break;
+					.addAll (
+						MessageStatus.badStatus)
 
-		case delivered:
+					.build ());
 
-			search.direction (
-				MessageDirection.out);
+				break;
 
-			search.statusIn (
-				MessageStatus.goodStatus);
+			case delivered:
 
-			break;
+				search.direction (
+					MessageDirection.out);
 
-		case undelivered:
+				search.statusIn (
+					MessageStatus.goodStatus);
 
-			search.direction (
-				MessageDirection.out);
+				break;
 
-			search.statusIn (
-				MessageStatus.badStatus);
+			case undelivered:
 
-			break;
+				search.direction (
+					MessageDirection.out);
 
-		default:
+				search.statusIn (
+					MessageStatus.badStatus);
 
-			// do nothing
+				break;
+
+			default:
+
+				// do nothing
+
+			}
+
+			return messageHelper.search (
+				taskLogger,
+				search);
 
 		}
-
-		return messageHelper.search (
-			taskLogger,
-			search);
 
 	}
 

@@ -18,7 +18,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
@@ -74,37 +74,43 @@ class CommandTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"build");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-			taskLogger.noticeFormat (
-				"Create command type %s.%s",
-				camelToUnderscore (
-					ifNull (
-						spec.subject (),
-						parent.name ())),
-				simplifyToCodeRequired (
-					spec.name ()));
+		) {
 
-			createCommandType (
-				taskLogger);
+			try {
 
-		} catch (Exception exception) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Error creating command type %s.%s",
+				taskLogger.noticeFormat (
+					"Create command type %s.%s",
 					camelToUnderscore (
 						ifNull (
 							spec.subject (),
 							parent.name ())),
 					simplifyToCodeRequired (
-						spec.name ())),
-				exception);
+						spec.name ()));
+
+				createCommandType (
+					taskLogger);
+
+			} catch (Exception exception) {
+
+				throw new RuntimeException (
+					stringFormat (
+						"Error creating command type %s.%s",
+						camelToUnderscore (
+							ifNull (
+								spec.subject (),
+								parent.name ())),
+						simplifyToCodeRequired (
+							spec.name ())),
+					exception);
+
+			}
 
 		}
 
@@ -115,16 +121,14 @@ class CommandTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createCommandType");
-
-		// begin transaction
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createCommandType");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"CommandTypeBuilder.createCommandType ()",

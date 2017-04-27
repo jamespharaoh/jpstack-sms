@@ -7,10 +7,12 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.Duration;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.misc.CachedGetter;
@@ -29,6 +31,9 @@ class MessageNumOutboxCache
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	OutboxConsoleHelper outboxHelper;
@@ -55,18 +60,29 @@ class MessageNumOutboxCache
 	Long refresh (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		Transaction transaction =
-			database.currentTransaction ();
+		try (
 
-		SliceRec slice =
-			sliceHelper.findRequired (
-				sliceId);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"refresh");
 
-		return outboxHelper.countOlderThan (
-			slice,
-			transaction.now ().minus (
-				Duration.standardSeconds (
-					5)));
+		) {
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			SliceRec slice =
+				sliceHelper.findRequired (
+					sliceId);
+
+			return outboxHelper.countOlderThan (
+				slice,
+				transaction.now ().minus (
+					Duration.standardSeconds (
+						5)));
+
+		}
 
 	}
 

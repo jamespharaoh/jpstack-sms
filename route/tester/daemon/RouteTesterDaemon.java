@@ -15,8 +15,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -95,13 +96,13 @@ final class RouteTesterDaemon
 	private
 	void runOnce () {
 
-		TaskLogger taskLogger =
-			logContext.createTaskLogger (
-				"runOnce ()");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"runOnce ()");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"RouteTesterDaemon.runOnce ()",
@@ -162,87 +163,93 @@ final class RouteTesterDaemon
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull RouteTesterRec routeTester) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"doOne");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"doOne");
 
-		// create the RouteTest
+		) {
 
-		RouteTestRec routeTest =
-			routeTestHelper.insert (
-				taskLogger,
-				routeTestHelper.createInstance ()
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			.setRoute (
-				routeTester.getRoute ())
+			// create the RouteTest
 
-			.setSentTime (
-				transaction.now ())
+			RouteTestRec routeTest =
+				routeTestHelper.insert (
+					taskLogger,
+					routeTestHelper.createInstance ()
 
-		);
+				.setRoute (
+					routeTester.getRoute ())
 
-		// construct the message text
+				.setSentTime (
+					transaction.now ())
 
-		StringBuilder text =
-			new StringBuilder ();
+			);
 
-		if (routeTester.getDestKeyword ().length () > 0) {
+			// construct the message text
 
-			text.append (
-				routeTester.getDestKeyword ());
+			StringBuilder text =
+				new StringBuilder ();
 
-			text.append (
-				' ');
+			if (routeTester.getDestKeyword ().length () > 0) {
+
+				text.append (
+					routeTester.getDestKeyword ());
+
+				text.append (
+					' ');
+
+			}
+
+			text.append ("ROUTETEST ID=" + routeTest.getId ());
+
+			// send the message
+
+			MessageRec message =
+				messageSender.get ()
+
+				.number (
+					numberHelper.findOrCreate (
+						taskLogger,
+						routeTester.getDestNumber ()))
+
+				.messageString (
+					taskLogger,
+					text.toString ())
+
+				.numFrom (
+					routeTester.getRouteNumber ())
+
+				.route (
+					routeTester.getRoute ())
+
+				.service (
+					serviceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
+
+				.send (
+					taskLogger);
+
+			// connect the message to the RouteTest
+
+			routeTest
+
+				.setSentMessage (
+					message);
+
+			// and update the tester's last test time
+
+			routeTester
+
+				.setLastTest (
+					transaction.now ());
 
 		}
-
-		text.append ("ROUTETEST ID=" + routeTest.getId ());
-
-		// send the message
-
-		MessageRec message =
-			messageSender.get ()
-
-			.number (
-				numberHelper.findOrCreate (
-					taskLogger,
-					routeTester.getDestNumber ()))
-
-			.messageString (
-				taskLogger,
-				text.toString ())
-
-			.numFrom (
-				routeTester.getRouteNumber ())
-
-			.route (
-				routeTester.getRoute ())
-
-			.service (
-				serviceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
-
-			.send (
-				taskLogger);
-
-		// connect the message to the RouteTest
-
-		routeTest
-
-			.setSentMessage (
-				message);
-
-		// and update the tester's last test time
-
-		routeTester
-
-			.setLastTest (
-				transaction.now ());
 
 	}
 

@@ -13,7 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -57,14 +57,14 @@ class CommandHooks
 	void init (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"init");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"init");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"commandHooks.init ()",
@@ -108,42 +108,48 @@ class CommandHooks
 			return;
 		}
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createSingletons");
+		try (
 
-		ObjectTypeRec parentType =
-			objectTypeDao.findById (
-				parentHelper.objectTypeId ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createSingletons");
 
-		for (
-			Long commandTypeId
-				: commandTypeIdsByParentTypeId.get (
-					parentHelper.objectTypeId ())
 		) {
 
-			CommandTypeRec commandType =
-				commandTypeDao.findRequired (
-					commandTypeId);
+			ObjectTypeRec parentType =
+				objectTypeDao.findById (
+					parentHelper.objectTypeId ());
 
-			commandHelper.insert (
-				taskLogger,
-				commandHelper.createInstance ()
+			for (
+				Long commandTypeId
+					: commandTypeIdsByParentTypeId.get (
+						parentHelper.objectTypeId ())
+			) {
 
-				.setCommandType (
-					commandType)
+				CommandTypeRec commandType =
+					commandTypeDao.findRequired (
+						commandTypeId);
 
-				.setCode (
-					commandType.getCode ())
+				commandHelper.insert (
+					taskLogger,
+					commandHelper.createInstance ()
 
-				.setParentType (
-					parentType)
+					.setCommandType (
+						commandType)
 
-				.setParentId (
-					parent.getId ())
+					.setCode (
+						commandType.getCode ())
 
-			);
+					.setParentType (
+						parentType)
+
+					.setParentId (
+						parent.getId ())
+
+				);
+
+			}
 
 		}
 

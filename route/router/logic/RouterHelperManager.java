@@ -42,76 +42,82 @@ class RouterHelperManager {
 	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setup");
+		try (
 
-		int errorCount = 0;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
 
-		Map <String, String> beanNamesByTypeCode =
-			new HashMap<> ();
-
-		ImmutableMap.Builder <String, RouterHelper>
-		byParentObjectTypeCodeBuilder =
-			ImmutableMap.builder ();
-
-		for (
-			Map.Entry <String, RouterHelper> routerHelperEntry
-				: routerHelpersByBeanName.entrySet ()
 		) {
 
-			String beanName =
-				routerHelperEntry.getKey ();
+			int errorCount = 0;
 
-			RouterHelper routerHelper =
-				routerHelperEntry.getValue ();
+			Map <String, String> beanNamesByTypeCode =
+				new HashMap<> ();
 
-			String routerTypeCode =
-				routerHelper.routerTypeCode ();
+			ImmutableMap.Builder <String, RouterHelper>
+			byParentObjectTypeCodeBuilder =
+				ImmutableMap.builder ();
 
-			// make sure they're unique
-
-			if (
-				beanNamesByTypeCode.containsKey (
-					routerTypeCode)
+			for (
+				Map.Entry <String, RouterHelper> routerHelperEntry
+					: routerHelpersByBeanName.entrySet ()
 			) {
 
-				taskLogger.errorFormat (
-					"Router type helper for %s from both %s and %s",
+				String beanName =
+					routerHelperEntry.getKey ();
+
+				RouterHelper routerHelper =
+					routerHelperEntry.getValue ();
+
+				String routerTypeCode =
+					routerHelper.routerTypeCode ();
+
+				// make sure they're unique
+
+				if (
+					beanNamesByTypeCode.containsKey (
+						routerTypeCode)
+				) {
+
+					taskLogger.errorFormat (
+						"Router type helper for %s from both %s and %s",
+						routerTypeCode,
+						beanNamesByTypeCode.get (
+							routerTypeCode),
+						beanName);
+
+					errorCount ++;
+
+					continue;
+
+				}
+
+				// add it to the list
+
+				byParentObjectTypeCodeBuilder.put (
 					routerTypeCode,
-					beanNamesByTypeCode.get (
-						routerTypeCode),
-					beanName);
-
-				errorCount ++;
-
-				continue;
+					routerHelper);
 
 			}
 
-			// add it to the list
+			// abort if there were errors
 
-			byParentObjectTypeCodeBuilder.put (
-				routerTypeCode,
-				routerHelper);
+			if (errorCount > 0) {
 
-		}
+				throw new RuntimeException (
+					stringFormat (
+						"Aborting due to %s errors",
+						integerToDecimalString (
+							errorCount)));
 
-		// abort if there were errors
+			}
 
-		if (errorCount > 0) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Aborting due to %s errors",
-					integerToDecimalString (
-						errorCount)));
+			byParentObjectTypeCode =
+				byParentObjectTypeCodeBuilder.build ();
 
 		}
-
-		byParentObjectTypeCode =
-			byParentObjectTypeCodeBuilder.build ();
 
 	}
 

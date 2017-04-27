@@ -7,8 +7,8 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -55,54 +55,60 @@ class KeywordLogicImplementation
 			@NonNull NumberRec number,
 			@NonNull CommandRec command) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createOrUpdateKeywordSetFallback");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createOrUpdateKeywordSetFallback");
 
-		// try and update an existing one
+		) {
 
-		KeywordSetFallbackRec keywordSetFallback =
-			keywordSetFallbackHelper.find (
-				keywordSet,
-				number);
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		if (keywordSetFallback != null) {
+			// try and update an existing one
 
-			keywordSetFallback
+			KeywordSetFallbackRec keywordSetFallback =
+				keywordSetFallbackHelper.find (
+					keywordSet,
+					number);
+
+			if (keywordSetFallback != null) {
+
+				keywordSetFallback
+
+					.setTimestamp (
+						transaction.now ())
+
+					.setCommand (
+						command);
+
+				return;
+
+			}
+
+			// create a new one
+
+			keywordSetFallbackHelper.insert (
+				taskLogger,
+				keywordSetFallbackHelper.createInstance ()
+
+				.setKeywordSet (
+					keywordSet)
+
+				.setNumber (
+					number)
 
 				.setTimestamp (
 					transaction.now ())
 
 				.setCommand (
-					command);
+					command)
 
-			return;
+			);
 
 		}
-
-		// create a new one
-
-		keywordSetFallbackHelper.insert (
-			taskLogger,
-			keywordSetFallbackHelper.createInstance ()
-
-			.setKeywordSet (
-				keywordSet)
-
-			.setNumber (
-				number)
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setCommand (
-				command)
-
-		);
 
 	}
 

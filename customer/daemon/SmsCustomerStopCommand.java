@@ -18,8 +18,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
@@ -124,130 +124,136 @@ class SmsCustomerStopCommand
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
 
-		MessageRec inboundMessage =
-			inbox.getMessage ();
-
-		SmsCustomerManagerRec customerManager =
-			genericCastUnchecked (
-				objectManager.getParentRequired (
-					command));
-
-		SmsCustomerRec customer =
-			smsCustomerHelper.findOrCreate (
-				taskLogger,
-				customerManager,
-				inboundMessage.getNumber ());
-
-		ServiceRec stopService =
-			serviceHelper.findByCodeRequired (
-				customerManager,
-				"stop");
-
-		// send stop message
-
-		SmsCustomerTemplateRec stopTemplate =
-			smsCustomerTemplateHelper.findByCodeRequired (
-				customerManager,
-				"stop");
-
-		MessageRec outboundMessage;
-
-		if (stopTemplate == null) {
-
-			outboundMessage = null;
-
-		} else {
-
-			outboundMessage =
-				messageSenderProvider.get ()
-
-				.threadId (
-					inboundMessage.getThreadId ())
-
-				.number (
-					customer.getNumber ())
-
-				.messageText (
-					stopTemplate.getText ())
-
-				.numFrom (
-					stopTemplate.getNumber ())
-
-				.routerResolve (
-					stopTemplate.getRouter ())
-
-				.service (
-					stopService)
-
-				.affiliate (
-					optionalOrNull (
-						smsCustomerLogic.customerAffiliate (
-							customer)))
-
-				.send (
-					taskLogger);
-
-		}
-
-		// update session
-
-		SmsCustomerSessionRec activeSession =
-			customer.getActiveSession ();
-
-		if (activeSession != null) {
-
-			activeSession
-
-				.setEndTime (
-					transaction.now ())
-
-				.setStopMessage (
-					outboundMessage);
-
-		}
-
-		customer
-
-			.setLastActionTime (
-				transaction.now ())
-
-			.setActiveSession (
-				null);
-
-		// add to number list
-
-		if (
-			isNotNull (
-				customerManager.getStopNumberList ())
 		) {
 
-			numberListLogic.addDueToMessage (
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			MessageRec inboundMessage =
+				inbox.getMessage ();
+
+			SmsCustomerManagerRec customerManager =
+				genericCastUnchecked (
+					objectManager.getParentRequired (
+						command));
+
+			SmsCustomerRec customer =
+				smsCustomerHelper.findOrCreate (
+					taskLogger,
+					customerManager,
+					inboundMessage.getNumber ());
+
+			ServiceRec stopService =
+				serviceHelper.findByCodeRequired (
+					customerManager,
+					"stop");
+
+			// send stop message
+
+			SmsCustomerTemplateRec stopTemplate =
+				smsCustomerTemplateHelper.findByCodeRequired (
+					customerManager,
+					"stop");
+
+			MessageRec outboundMessage;
+
+			if (stopTemplate == null) {
+
+				outboundMessage = null;
+
+			} else {
+
+				outboundMessage =
+					messageSenderProvider.get ()
+
+					.threadId (
+						inboundMessage.getThreadId ())
+
+					.number (
+						customer.getNumber ())
+
+					.messageText (
+						stopTemplate.getText ())
+
+					.numFrom (
+						stopTemplate.getNumber ())
+
+					.routerResolve (
+						stopTemplate.getRouter ())
+
+					.service (
+						stopService)
+
+					.affiliate (
+						optionalOrNull (
+							smsCustomerLogic.customerAffiliate (
+								customer)))
+
+					.send (
+						taskLogger);
+
+			}
+
+			// update session
+
+			SmsCustomerSessionRec activeSession =
+				customer.getActiveSession ();
+
+			if (activeSession != null) {
+
+				activeSession
+
+					.setEndTime (
+						transaction.now ())
+
+					.setStopMessage (
+						outboundMessage);
+
+			}
+
+			customer
+
+				.setLastActionTime (
+					transaction.now ())
+
+				.setActiveSession (
+					null);
+
+			// add to number list
+
+			if (
+				isNotNull (
+					customerManager.getStopNumberList ())
+			) {
+
+				numberListLogic.addDueToMessage (
+					taskLogger,
+					customerManager.getStopNumberList (),
+					inboundMessage.getNumber (),
+					inboundMessage,
+					stopService);
+
+			}
+
+			// process message
+
+			return smsInboxLogic.inboxProcessed (
 				taskLogger,
-				customerManager.getStopNumberList (),
-				inboundMessage.getNumber (),
-				inboundMessage,
-				stopService);
+				inbox,
+				optionalOf (
+					stopService),
+				smsCustomerLogic.customerAffiliate (
+					customer),
+				command);
 
 		}
-
-		// process message
-
-		return smsInboxLogic.inboxProcessed (
-			taskLogger,
-			inbox,
-			optionalOf (
-				stopService),
-			smsCustomerLogic.customerAffiliate (
-				customer),
-			command);
 
 	}
 

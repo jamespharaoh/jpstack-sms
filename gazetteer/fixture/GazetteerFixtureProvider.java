@@ -9,7 +9,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -58,118 +58,124 @@ class GazetteerFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		MenuGroupRec smsMenuGroup =
-			menuGroupHelper.findByCodeRequired (
-				GlobalId.root,
-				"test",
-				"sms");
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
-
-			.setMenuGroup (
-				smsMenuGroup)
-
-			.setCode (
-				"gazetteer")
-
-			.setName (
-				"Gazetteer")
-
-			.setDescription (
-				"Gazetteer")
-
-			.setLabel (
-				"Gazetteer")
-
-			.setTargetPath (
-				"/gazetteers")
-
-			.setTargetFrame (
-				"main")
-
-		);
-
-		DataFromXml gazetteerReader =
-			new DataFromXmlBuilder ()
-
-			.registerBuilderClasses (
-				GazetteerData.class,
-				GazetteerEntryData.class)
-
-			.build ();
-
-		GazetteerData gazetteerData =
-			(GazetteerData)
-			gazetteerReader.readClasspath (
-				taskLogger,
-				"/wbs/sms/gazetteer/fixture/gazetteer-test-data.xml");
-
-		GazetteerRec testGazetteer =
-			gazetteerHelper.insert (
-				taskLogger,
-				gazetteerHelper.createInstance ()
-
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
-
-			.setCode (
-				"test")
-
-			.setName (
-				"Test")
-
-			.setDescription (
-				"Leeds postcodes for test purposes")
-
-			.setDeleted (
-				false)
-
-		);
-
-		for (
-			GazetteerEntryData entryData
-				: gazetteerData.entries ()
 		) {
 
-			gazetteerEntryHelper.insert (
-				taskLogger,
-				gazetteerEntryHelper.createInstance ()
+			MenuGroupRec smsMenuGroup =
+				menuGroupHelper.findByCodeRequired (
+					GlobalId.root,
+					"test",
+					"sms");
 
-				.setGazetteer (
-					testGazetteer)
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
+
+				.setMenuGroup (
+					smsMenuGroup)
 
 				.setCode (
-					simplifyToCodeRequired (
-						entryData.name ()))
+					"gazetteer")
 
 				.setName (
-					entryData.name ())
+					"Gazetteer")
 
 				.setDescription (
-					"")
+					"Gazetteer")
+
+				.setLabel (
+					"Gazetteer")
+
+				.setTargetPath (
+					"/gazetteers")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+			DataFromXml gazetteerReader =
+				new DataFromXmlBuilder ()
+
+				.registerBuilderClasses (
+					GazetteerData.class,
+					GazetteerEntryData.class)
+
+				.build ();
+
+			GazetteerData gazetteerData =
+				(GazetteerData)
+				gazetteerReader.readClasspath (
+					taskLogger,
+					"/wbs/sms/gazetteer/fixture/gazetteer-test-data.xml");
+
+			GazetteerRec testGazetteer =
+				gazetteerHelper.insert (
+					taskLogger,
+					gazetteerHelper.createInstance ()
+
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
+
+				.setCode (
+					"test")
+
+				.setName (
+					"Test")
+
+				.setDescription (
+					"Leeds postcodes for test purposes")
 
 				.setDeleted (
 					false)
 
-				.setLongLat (
-					LongLat.parseRequired (
-						entryData.value ()))
-
-				.setCanonical (
-					entryData.canonical ())
-
 			);
+
+			for (
+				GazetteerEntryData entryData
+					: gazetteerData.entries ()
+			) {
+
+				gazetteerEntryHelper.insert (
+					taskLogger,
+					gazetteerEntryHelper.createInstance ()
+
+					.setGazetteer (
+						testGazetteer)
+
+					.setCode (
+						simplifyToCodeRequired (
+							entryData.name ()))
+
+					.setName (
+						entryData.name ())
+
+					.setDescription (
+						"")
+
+					.setDeleted (
+						false)
+
+					.setLongLat (
+						LongLat.parseRequired (
+							entryData.value ()))
+
+					.setCanonical (
+						entryData.canonical ())
+
+				);
+
+			}
 
 		}
 

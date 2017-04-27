@@ -20,7 +20,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -120,49 +120,55 @@ class MessageMediaContext
 			@NonNull PathSupply pathParts,
 			@NonNull ConsoleContextStuff stuff) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"initContext");
-
-		Long messageId =
-			Long.parseLong (
-				pathParts.next ());
-
-		Integer mediaIndex =
-			Integer.parseInt (
-				pathParts.next ());
-
 		try (
 
-			Transaction transaction =
-				database.beginReadOnly (
-					taskLogger,
-					"MessageMediaContext.initContext (pathParts, stuff)",
-					this);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"initContext");
 
 		) {
 
-			MessageRec message =
-				messageHelper.findRequired (
-					messageId);
+			Long messageId =
+				Long.parseLong (
+					pathParts.next ());
 
-			MediaRec media =
-				message.getMedias ().get (
+			Integer mediaIndex =
+				Integer.parseInt (
+					pathParts.next ());
+
+			try (
+
+				OwnedTransaction transaction =
+					database.beginReadOnly (
+						taskLogger,
+						"MessageMediaContext.initContext (pathParts, stuff)",
+						this);
+
+			) {
+
+				MessageRec message =
+					messageHelper.findRequired (
+						messageId);
+
+				MediaRec media =
+					message.getMedias ().get (
+						mediaIndex);
+
+				stuff.set (
+					"messageMediaIndex",
 					mediaIndex);
 
-			stuff.set (
-				"messageMediaIndex",
-				mediaIndex);
+				stuff.set (
+					"mediaId",
+					media.getId ());
 
-			stuff.set (
-				"mediaId",
-				media.getId ());
+				consoleManager.runPostProcessors (
+					taskLogger,
+					"message",
+					stuff);
 
-			consoleManager.runPostProcessors (
-				taskLogger,
-				"message",
-				stuff);
+			}
 
 		}
 

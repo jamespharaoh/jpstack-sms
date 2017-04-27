@@ -34,42 +34,49 @@ class NumberListNumberObjectHelperMethodsImplementation
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreate");
+		try (
 
-		// find existing
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreate");
 
-		NumberListNumberRec numberListNumber =
-			numberListNumberHelper.find (
-				numberList,
-				number);
+		) {
 
-		if (numberListNumber != null)
+			// find existing
+
+			NumberListNumberRec numberListNumber =
+				numberListNumberHelper.find (
+					numberList,
+					number);
+
+			if (numberListNumber != null) {
+				return numberListNumber;
+			}
+
+			// create new
+
+			numberListNumber =
+				numberListNumberHelper.insert (
+					taskLogger,
+					numberListNumberHelper.createInstance ()
+
+				.setNumberList (
+					numberList)
+
+				.setNumber (
+					number)
+
+				.setPresent (
+					false)
+
+			);
+
+			// return
+
 			return numberListNumber;
 
-		// create new
-
-		numberListNumber =
-			numberListNumberHelper.insert (
-				taskLogger,
-				numberListNumberHelper.createInstance ()
-
-			.setNumberList (
-				numberList)
-
-			.setNumber (
-				number)
-
-			.setPresent (
-				false)
-
-		);
-
-		// return
-
-		return numberListNumber;
+		}
 
 	}
 

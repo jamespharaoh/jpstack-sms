@@ -20,8 +20,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
@@ -178,15 +178,21 @@ class SmsMessageSender {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String messageString) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"messageString");
+		try (
 
-		return messageText (
-			textHelper.findOrCreate (
-				taskLogger,
-				messageString));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"messageString");
+
+		) {
+
+			return messageText (
+				textHelper.findOrCreate (
+					taskLogger,
+					messageString));
+
+		}
 
 	}
 
@@ -195,16 +201,22 @@ class SmsMessageSender {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Optional <String> subjectString) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"subjectString");
+		try (
 
-		return subjectText (
-			optionalOrNull (
-				textHelper.findOrCreate (
-					taskLogger,
-					subjectString)));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"subjectString");
+
+		) {
+
+			return subjectText (
+				optionalOrNull (
+					textHelper.findOrCreate (
+						taskLogger,
+						subjectString)));
+
+		}
 
 	}
 
@@ -213,15 +225,21 @@ class SmsMessageSender {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String subjectString) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"subjectString");
+		try (
 
-		return subjectText (
-			textHelper.findOrCreate (
-				taskLogger,
-				subjectString));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"subjectString");
+
+		) {
+
+			return subjectText (
+				textHelper.findOrCreate (
+					taskLogger,
+					subjectString));
+
+		}
 
 	}
 
@@ -267,260 +285,266 @@ class SmsMessageSender {
 	MessageRec send (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"send");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"send");
 
-		if (affiliate == null) {
-
-			affiliate =
-				affiliateHelper.findByCodeRequired (
-					GlobalId.root,
-					"system");
-
-		}
-
-		if (batch == null) {
-
-			batch =
-				batchHelper.findRequired (
-					0l);
-
-		}
-
-		if (sendNow) {
-
-			sendTime =
-				transaction.now ();
-
-		}
-
-		if (! route.getCanSend ()) {
-
-			throw new RuntimeException (
-				"Cannot send on route " + route.getId ());
-
-		}
-
-		if (network == null)
-			network = number.getNetwork ();
-
-		// TODO remove big hacky route mapping
-
-		if (
-			stringInSafe (
-				network.getCode (),
-				"uk_o2",
-				"uk_three",
-				"uk_tmobile",
-				"uk_virgin",
-				"uk_vodafone")
 		) {
 
-			if (
-				stringEqualSafe (
-					route.getCode (),
-					"cutemedia_84232_100")
-			) {
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			if (affiliate == null) {
+
+				affiliate =
+					affiliateHelper.findByCodeRequired (
+						GlobalId.root,
+						"system");
+
+			}
+
+			if (batch == null) {
+
+				batch =
+					batchHelper.findRequired (
+						0l);
+
+			}
+
+			if (sendNow) {
+
+				sendTime =
+					transaction.now ();
+
+			}
+
+			if (! route.getCanSend ()) {
 
 				throw new RuntimeException (
-					"Hack to update route to oxygen8_84232_100 removed");
-
-				/*
-				route =
-					routeHelper.findByCodeOrNull (
-						defaultSlice,
-						"oxygen8_84232_100");
-				*/
+					"Cannot send on route " + route.getId ());
 
 			}
+
+			if (network == null)
+				network = number.getNetwork ();
+
+			// TODO remove big hacky route mapping
 
 			if (
-				stringEqualSafe (
-					route.getCode (),
-					"dialogue_89505_500")
+				stringInSafe (
+					network.getCode (),
+					"uk_o2",
+					"uk_three",
+					"uk_tmobile",
+					"uk_virgin",
+					"uk_vodafone")
 			) {
 
-				throw new RuntimeException (
-					"Hack to update route to oxygen8_89505_500 removed");
+				if (
+					stringEqualSafe (
+						route.getCode (),
+						"cutemedia_84232_100")
+				) {
 
-				/*
-				route =
-					routeHelper.findByCodeOrNull (
-						defaultSlice,
-						"oxygen8_89505_500");
-				*/
+					throw new RuntimeException (
+						"Hack to update route to oxygen8_84232_100 removed");
 
-			}
+					/*
+					route =
+						routeHelper.findByCodeOrNull (
+							defaultSlice,
+							"oxygen8_84232_100");
+					*/
 
-			if (
-				stringEqualSafe (
-					route.getCode (),
-					"dialogue_88211_500")
-			) {
+				}
 
-				throw new RuntimeException (
-					"Hack to update route to oxygen8_88211_500 removed");
+				if (
+					stringEqualSafe (
+						route.getCode (),
+						"dialogue_89505_500")
+				) {
 
-				/*
-				route =
-					routeHelper.findByCodeOrNull (
-						defaultSlice,
-						"oxygen8_88211_500");
-				*/
+					throw new RuntimeException (
+						"Hack to update route to oxygen8_89505_500 removed");
 
-			}
+					/*
+					route =
+						routeHelper.findByCodeOrNull (
+							defaultSlice,
+							"oxygen8_89505_500");
+					*/
 
-			if (
-				stringEqualSafe (
-					route.getCode (),
-					"dialogue_85722_500")
-			) {
+				}
 
-				throw new RuntimeException (
-					"Hack to update route to oxygen8_85722_500 removed");
+				if (
+					stringEqualSafe (
+						route.getCode (),
+						"dialogue_88211_500")
+				) {
 
-				/*
-				route =
-					routeHelper.findByCodeOrNull (
-						defaultSlice,
-						"oxygen8_85722_500");
-				*/
+					throw new RuntimeException (
+						"Hack to update route to oxygen8_88211_500 removed");
 
-			}
+					/*
+					route =
+						routeHelper.findByCodeOrNull (
+							defaultSlice,
+							"oxygen8_88211_500");
+					*/
 
-		}
+				}
 
-		MessageRec message =
-			messageHelper.createInstance ()
+				if (
+					stringEqualSafe (
+						route.getCode (),
+						"dialogue_85722_500")
+				) {
 
-			.setThreadId (
-				threadId)
+					throw new RuntimeException (
+						"Hack to update route to oxygen8_85722_500 removed");
 
-			.setText (
-				messageText)
+					/*
+					route =
+						routeHelper.findByCodeOrNull (
+							defaultSlice,
+							"oxygen8_85722_500");
+					*/
 
-			.setNumFrom (
-				numFrom)
-
-			.setNumTo (
-				number.getNumber ())
-
-			.setDirection (
-				MessageDirection.out)
-
-			.setStatus (
-				sendNow
-					? MessageStatus.pending
-					: MessageStatus.held)
-
-			.setNumber (
-				number)
-
-			.setRoute (
-				route)
-
-			.setService (
-				service)
-
-			.setNetwork (
-				network)
-
-			.setBatch (
-				batch)
-
-			.setCharge (
-				route.getOutCharge ())
-
-			.setAffiliate (
-				affiliate)
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setDate (
-				transaction.now ().toDateTime ().toLocalDate ())
-
-			.setDeliveryType (
-				deliveryType.orNull ())
-
-			.setRef (
-				ref)
-
-			.setSubjectText (
-				subjectText)
-
-			.setMessageType (
-				messageTypeHelper.findByCodeRequired (
-					GlobalId.root,
-					medias != null
-						? "mms"
-						: "sms"))
-
-			.setUser (
-				user)
-
-			.setNumAttempts (
-				0l);
-
-		if (medias != null) {
-
-			for (MediaRec media
-					: medias) {
-
-				message.getMedias ().add (
-					media);
+				}
 
 			}
 
-		}
+			MessageRec message =
+				messageHelper.createInstance ()
 
-		if (tags != null) {
+				.setThreadId (
+					threadId)
 
-			for (
-				String tag
-					: tags
-			) {
+				.setText (
+					messageText)
 
-				message.getTags ().add (
-					tag);
+				.setNumFrom (
+					numFrom)
 
-			}
+				.setNumTo (
+					number.getNumber ())
 
-		}
+				.setDirection (
+					MessageDirection.out)
 
-		messageHelper.insert (
-			taskLogger,
-			message);
+				.setStatus (
+					sendNow
+						? MessageStatus.pending
+						: MessageStatus.held)
 
-		if (sendNow) {
-
-			outboxHelper.insert (
-				taskLogger,
-				outboxHelper.createInstance ()
-
-				.setMessage (
-					message)
+				.setNumber (
+					number)
 
 				.setRoute (
 					route)
 
+				.setService (
+					service)
+
+				.setNetwork (
+					network)
+
+				.setBatch (
+					batch)
+
+				.setCharge (
+					route.getOutCharge ())
+
+				.setAffiliate (
+					affiliate)
+
 				.setCreatedTime (
 					transaction.now ())
 
-				.setRetryTime (
-					sendTime)
+				.setDate (
+					transaction.now ().toDateTime ().toLocalDate ())
 
-				.setRemainingTries (
-					route.getMaxTries ()));
+				.setDeliveryType (
+					deliveryType.orNull ())
+
+				.setRef (
+					ref)
+
+				.setSubjectText (
+					subjectText)
+
+				.setMessageType (
+					messageTypeHelper.findByCodeRequired (
+						GlobalId.root,
+						medias != null
+							? "mms"
+							: "sms"))
+
+				.setUser (
+					user)
+
+				.setNumAttempts (
+					0l);
+
+			if (medias != null) {
+
+				for (MediaRec media
+						: medias) {
+
+					message.getMedias ().add (
+						media);
+
+				}
+
+			}
+
+			if (tags != null) {
+
+				for (
+					String tag
+						: tags
+				) {
+
+					message.getTags ().add (
+						tag);
+
+				}
+
+			}
+
+			messageHelper.insert (
+				taskLogger,
+				message);
+
+			if (sendNow) {
+
+				outboxHelper.insert (
+					taskLogger,
+					outboxHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+					.setRoute (
+						route)
+
+					.setCreatedTime (
+						transaction.now ())
+
+					.setRetryTime (
+						sendTime)
+
+					.setRemainingTries (
+						route.getMaxTries ()));
+
+			}
+
+			return message;
 
 		}
-
-		return message;
 
 	}
 

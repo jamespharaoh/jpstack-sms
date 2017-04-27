@@ -21,11 +21,13 @@ import lombok.NonNull;
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.responder.ConsoleHtmlResponder;
+
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -80,29 +82,35 @@ class MessageNotProcessedFormResponder
 	void renderHtmlHeadContents (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlHeadContents");
+		try (
 
-		super.renderHtmlHeadContents (
-			taskLogger);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlHeadContents");
 
-		htmlScriptBlockOpen ();
+		) {
 
-		formatWriter.writeLineFormat (
-			"top.show_inbox (true);");
+			super.renderHtmlHeadContents (
+				taskLogger);
 
-		formatWriter.writeLineFormat (
-			"top.frames ['main'].location = '%j';",
-			requestContext.resolveApplicationUrlFormat (
-				"/message.notProcessed",
-				"/%u",
-				integerToDecimalString (
-					message.getId ()),
-				"/message.notProcessed.summary"));
+			htmlScriptBlockOpen ();
 
-		htmlScriptBlockClose ();
+			formatWriter.writeLineFormat (
+				"top.show_inbox (true);");
+
+			formatWriter.writeLineFormat (
+				"top.frames ['main'].location = '%j';",
+				requestContext.resolveApplicationUrlFormat (
+					"/message.notProcessed",
+					"/%u",
+					integerToDecimalString (
+						message.getId ()),
+					"/message.notProcessed.summary"));
+
+			htmlScriptBlockClose ();
+
+		}
 
 	}
 

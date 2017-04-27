@@ -51,54 +51,60 @@ class MessageSetLogicImplementation
 			ServiceRec service,
 			AffiliateRec affiliate) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sendMessageSet");
+		try (
 
-		for (
-			MessageSetMessageRec messageSetMessage
-				: messageSet.getMessages ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendMessageSet");
+
 		) {
 
-			MessageRec message =
-				messageSender.get ()
+			for (
+				MessageSetMessageRec messageSetMessage
+					: messageSet.getMessages ()
+			) {
 
-				.threadId (
-					threadId)
+				MessageRec message =
+					messageSender.get ()
 
-				.number (
-					number)
+					.threadId (
+						threadId)
 
-				.messageString (
-					taskLogger,
-					messageSetMessage.getMessage ())
+					.number (
+						number)
 
-				.numFrom (
-					messageSetMessage.getNumber ())
+					.messageString (
+						taskLogger,
+						messageSetMessage.getMessage ())
 
-				.route (
-					messageSetMessage.getRoute ())
+					.numFrom (
+						messageSetMessage.getNumber ())
 
-				.service (
-					service)
+					.route (
+						messageSetMessage.getRoute ())
 
-				.affiliate (
-					affiliate)
+					.service (
+						service)
 
-				.send (
-					taskLogger);
+					.affiliate (
+						affiliate)
 
-			if (threadId == null) {
+					.send (
+						taskLogger);
 
-				threadId =
-					message.getId ();
+				if (threadId == null) {
+
+					threadId =
+						message.getId ();
+
+				}
 
 			}
 
-		}
+			return threadId;
 
-		return threadId;
+		}
 
 	}
 

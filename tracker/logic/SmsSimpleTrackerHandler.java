@@ -51,20 +51,26 @@ class SmsSimpleTrackerHandler
 			@NonNull NumberRec number,
 			@NonNull Optional<Instant> timestamp) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"canSend");
+		try (
 
-		SmsSimpleTrackerRec simpleTracker =
-			smsSimpleTrackerHelper.findRequired (
-				tracker.getParentId ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"canSend");
 
-		return smsTrackerLogic.simpleTrackerConsult (
-			taskLogger,
-			simpleTracker,
-			number,
-			timestamp);
+		) {
+
+			SmsSimpleTrackerRec simpleTracker =
+				smsSimpleTrackerHelper.findRequired (
+					tracker.getParentId ());
+
+			return smsTrackerLogic.simpleTrackerConsult (
+				taskLogger,
+				simpleTracker,
+				number,
+				timestamp);
+
+		}
 
 	}
 

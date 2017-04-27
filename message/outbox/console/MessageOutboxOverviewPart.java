@@ -26,10 +26,12 @@ import wbs.console.misc.JqueryScriptRef;
 import wbs.console.module.ConsoleModule;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
@@ -47,6 +49,9 @@ class MessageOutboxOverviewPart
 
 	@SingletonDependency
 	Database database;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	@Named
@@ -107,52 +112,63 @@ class MessageOutboxOverviewPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		Transaction transaction =
-			database.currentTransaction ();
+		try (
 
-		htmlTableOpenList ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableHeaderRowWrite (
-			"Route",
-			"Messages",
-			"Oldest");
-
-		for (
-			RouteOutboxSummaryRec routeOutboxSummary
-				: routeOutboxSummaries
 		) {
 
-			RouteRec route =
-				routeOutboxSummary.getRoute ();
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			htmlTableRowOpen (
-				htmlClassAttribute (
-					"magic-table-row"),
-				htmlDataAttribute (
-					"target-href",
-					requestContext.resolveLocalUrlFormat (
-						"/outbox.route",
-						"?routeId=%u",
-						integerToDecimalString (
-							route.getId ()))));
+			htmlTableOpenList ();
 
-			htmlTableCellWrite (
-				route.getCode ());
+			htmlTableHeaderRowWrite (
+				"Route",
+				"Messages",
+				"Oldest");
 
-			htmlTableCellWrite (
-				integerToDecimalString (
-					routeOutboxSummary.getNumMessages ()));
+			for (
+				RouteOutboxSummaryRec routeOutboxSummary
+					: routeOutboxSummaries
+			) {
 
-			htmlTableCellWrite (
-				timeFormatter.prettyDuration (
-					routeOutboxSummary.getOldestTime (),
-					transaction.now ()));
+				RouteRec route =
+					routeOutboxSummary.getRoute ();
 
-			htmlTableRowClose ();
+				htmlTableRowOpen (
+					htmlClassAttribute (
+						"magic-table-row"),
+					htmlDataAttribute (
+						"target-href",
+						requestContext.resolveLocalUrlFormat (
+							"/outbox.route",
+							"?routeId=%u",
+							integerToDecimalString (
+								route.getId ()))));
+
+				htmlTableCellWrite (
+					route.getCode ());
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						routeOutboxSummary.getNumMessages ()));
+
+				htmlTableCellWrite (
+					timeFormatter.prettyDuration (
+						routeOutboxSummary.getOldestTime (),
+						transaction.now ()));
+
+				htmlTableRowClose ();
+
+			}
+
+			htmlTableClose ();
 
 		}
-
-		htmlTableClose ();
 
 	}
 

@@ -6,6 +6,7 @@ import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.ResultUtils.getError;
 import static wbs.utils.etc.ResultUtils.isError;
 import static wbs.utils.etc.ResultUtils.resultValueRequired;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -102,150 +103,156 @@ class MessageConsoleHooks
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Object searchObject) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"applySearchFilter");
+		try (
 
-		MessageSearch search =
-			(MessageSearch)
-			searchObject;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"applySearchFilter");
 
-		search
-
-			.filter (
-				true);
-
-		// services
-
-		ImmutableList.Builder<Long> servicesBuilder =
-			ImmutableList.builder ();
-
-		for (
-			ServiceRec service
-				: serviceHelper.findAll ()
 		) {
 
-			Either <Optional <Record <?>>, String> serviceParentOrError =
-				objectManager.getParentOrError (
-					service);
+			MessageSearch search =
+				genericCastUnchecked (
+					searchObject);
 
-			if (
-				isError (
-					serviceParentOrError)
+			search
+
+				.filter (
+					true);
+
+			// services
+
+			ImmutableList.Builder<Long> servicesBuilder =
+				ImmutableList.builder ();
+
+			for (
+				ServiceRec service
+					: serviceHelper.findAll ()
 			) {
 
-				log.warn (
-					getError (
-						serviceParentOrError));
+				Either <Optional <Record <?>>, String> serviceParentOrError =
+					objectManager.getParentOrError (
+						service);
 
-				continue;
+				if (
+					isError (
+						serviceParentOrError)
+				) {
+
+					log.warn (
+						getError (
+							serviceParentOrError));
+
+					continue;
+
+				}
+
+				Record <?> serviceParent =
+					optionalGetRequired (
+						resultValueRequired (
+							serviceParentOrError));
+
+				if (
+				 	! privChecker.canRecursive (
+				 		taskLogger,
+				 		serviceParent,
+				 		"messages")
+				 ) {
+				 	continue;
+				 }
+
+				servicesBuilder.add (
+					service.getId ());
 
 			}
 
-			Record <?> serviceParent =
-				optionalGetRequired (
-					resultValueRequired (
-						serviceParentOrError));
+			search
 
-			if (
-			 	! privChecker.canRecursive (
-			 		taskLogger,
-			 		serviceParent,
-			 		"messages")
-			 ) {
-			 	continue;
-			 }
+				.filterServiceIds (
+					servicesBuilder.build ());
 
-			servicesBuilder.add (
-				service.getId ());
+			// affiliates
+
+			ImmutableList.Builder<Long> affiliatesBuilder =
+				ImmutableList.builder ();
+
+			for (
+				AffiliateRec affiliate
+					: affiliateHelper.findAll ()
+			) {
+
+				Either <Optional <Record <?>>, String> affiliateParentOrError =
+					objectManager.getParentOrError (
+						affiliate);
+
+				if (
+					isError (
+						affiliateParentOrError)
+				) {
+
+					log.warn (
+						getError (
+							affiliateParentOrError));
+
+					continue;
+
+				}
+
+				Record <?> affiliateParent =
+					optionalGetRequired (
+						resultValueRequired (
+							affiliateParentOrError));
+
+				if (
+					! privChecker.canRecursive (
+						taskLogger,
+						affiliateParent,
+						"messages")
+				) {
+					continue;
+				}
+
+				affiliatesBuilder.add (
+					affiliate.getId ());
+
+			}
+
+			search
+
+				.filterAffiliateIds (
+					affiliatesBuilder.build ());
+
+			// routes
+
+			ImmutableList.Builder<Long> routesBuilder =
+				ImmutableList.builder ();
+
+			for (
+				RouteRec route
+					: routeHelper.findAll ()
+			) {
+
+				if (
+					! privChecker.canRecursive (
+						taskLogger,
+						route,
+						"messages")
+				) {
+					continue;
+				}
+
+				routesBuilder.add (
+					route.getId ());
+
+			}
+
+			search
+
+				.filterRouteIds (
+					routesBuilder.build ());
 
 		}
-
-		search
-
-			.filterServiceIds (
-				servicesBuilder.build ());
-
-		// affiliates
-
-		ImmutableList.Builder<Long> affiliatesBuilder =
-			ImmutableList.builder ();
-
-		for (
-			AffiliateRec affiliate
-				: affiliateHelper.findAll ()
-		) {
-
-			Either <Optional <Record <?>>, String> affiliateParentOrError =
-				objectManager.getParentOrError (
-					affiliate);
-
-			if (
-				isError (
-					affiliateParentOrError)
-			) {
-
-				log.warn (
-					getError (
-						affiliateParentOrError));
-
-				continue;
-
-			}
-
-			Record <?> affiliateParent =
-				optionalGetRequired (
-					resultValueRequired (
-						affiliateParentOrError));
-
-			if (
-				! privChecker.canRecursive (
-					taskLogger,
-					affiliateParent,
-					"messages")
-			) {
-				continue;
-			}
-
-			affiliatesBuilder.add (
-				affiliate.getId ());
-
-		}
-
-		search
-
-			.filterAffiliateIds (
-				affiliatesBuilder.build ());
-
-		// routes
-
-		ImmutableList.Builder<Long> routesBuilder =
-			ImmutableList.builder ();
-
-		for (
-			RouteRec route
-				: routeHelper.findAll ()
-		) {
-
-			if (
-				! privChecker.canRecursive (
-					taskLogger,
-					route,
-					"messages")
-			) {
-				continue;
-			}
-
-			routesBuilder.add (
-				route.getId ());
-
-		}
-
-		search
-
-			.filterRouteIds (
-				routesBuilder.build ());
 
 	}
 

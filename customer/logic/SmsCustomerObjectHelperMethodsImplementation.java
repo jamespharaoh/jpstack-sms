@@ -5,8 +5,8 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -45,42 +45,48 @@ class SmsCustomerObjectHelperMethodsImplementation
 			@NonNull SmsCustomerManagerRec manager,
 			@NonNull NumberRec number) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreate");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreate");
 
-		SmsCustomerRec customer =
-			smsCustomerHelper.find (
-				manager,
-				number);
+		) {
 
-		if (customer != null)
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			SmsCustomerRec customer =
+				smsCustomerHelper.find (
+					manager,
+					number);
+
+			if (customer != null)
+				return customer;
+
+			customer =
+				smsCustomerHelper.insert (
+					taskLogger,
+					smsCustomerHelper.createInstance ()
+
+				.setSmsCustomerManager (
+					manager)
+
+				.setNumber (
+					number)
+
+				.setCode (
+					randomLogic.generateNumericNoZero (6))
+
+				.setCreatedTime (
+					transaction.now ())
+
+			);
+
 			return customer;
 
-		customer =
-			smsCustomerHelper.insert (
-				taskLogger,
-				smsCustomerHelper.createInstance ()
-
-			.setSmsCustomerManager (
-				manager)
-
-			.setNumber (
-				number)
-
-			.setCode (
-				randomLogic.generateNumericNoZero (6))
-
-			.setCreatedTime (
-				transaction.now ())
-
-		);
-
-		return customer;
+		}
 
 	}
 

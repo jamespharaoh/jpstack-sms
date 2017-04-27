@@ -42,30 +42,36 @@ class RouteSummaryAdditionalPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		route =
-			routeHelper.findFromContextRequired ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		if (route.getSender () != null) {
+		) {
 
-			summaryAdditionalPart =
-				routeSummaryAdditionalPartManager.getPagePartBySenderCode (
-					route.getSender ().getCode ());
+			route =
+				routeHelper.findFromContextRequired ();
 
-		}
+			if (route.getSender () != null) {
 
-		if (summaryAdditionalPart != null) {
+				summaryAdditionalPart =
+					routeSummaryAdditionalPartManager.getPagePartBySenderCode (
+						route.getSender ().getCode ());
 
-			summaryAdditionalPart.setup (
-				taskLogger,
-				emptyMap ());
+			}
 
-			summaryAdditionalPart.prepare (
-				taskLogger);
+			if (summaryAdditionalPart != null) {
+
+				summaryAdditionalPart.setup (
+					taskLogger,
+					emptyMap ());
+
+				summaryAdditionalPart.prepare (
+					taskLogger);
+
+			}
 
 		}
 
@@ -76,15 +82,21 @@ class RouteSummaryAdditionalPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		if (summaryAdditionalPart != null) {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-			summaryAdditionalPart.renderHtmlBodyContent (
-				taskLogger);
+		) {
+
+			if (summaryAdditionalPart != null) {
+
+				summaryAdditionalPart.renderHtmlBodyContent (
+					taskLogger);
+
+			}
 
 		}
 

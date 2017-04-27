@@ -36,40 +36,46 @@ class SmsSpendLimiterNumberObjectHelperMethodsImplementation
 			@NonNull SmsSpendLimiterRec smsSpendLimiter,
 			@NonNull NumberRec number) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreate");
+		try (
 
-		SmsSpendLimiterNumberRec existingSpendLimiterNumber =
-			smsSpendLimiterNumberHelper.find (
-				smsSpendLimiter,
-				number);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreate");
 
-		if (
-			isNotNull (
-				existingSpendLimiterNumber)
 		) {
-			return existingSpendLimiterNumber;
+
+			SmsSpendLimiterNumberRec existingSpendLimiterNumber =
+				smsSpendLimiterNumberHelper.find (
+					smsSpendLimiter,
+					number);
+
+			if (
+				isNotNull (
+					existingSpendLimiterNumber)
+			) {
+				return existingSpendLimiterNumber;
+			}
+
+			return smsSpendLimiterNumberHelper.insert (
+				taskLogger,
+				smsSpendLimiterNumberHelper.createInstance ()
+
+				.setSmsSpendLimiter (
+					smsSpendLimiter)
+
+				.setNumber (
+					number)
+
+				.setTotalSpent (
+					0l)
+
+				.setAdviceSpent (
+					0l)
+
+			);
+
 		}
-
-		return smsSpendLimiterNumberHelper.insert (
-			taskLogger,
-			smsSpendLimiterNumberHelper.createInstance ()
-
-			.setSmsSpendLimiter (
-				smsSpendLimiter)
-
-			.setNumber (
-				number)
-
-			.setTotalSpent (
-				0l)
-
-			.setAdviceSpent (
-				0l)
-
-		);
 
 	}
 

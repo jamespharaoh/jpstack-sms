@@ -19,7 +19,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -151,76 +151,82 @@ class MessageManuallyRetryFormActionHelper
 	public
 	Optional <Responder> processFormSubmission (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull Object formState) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"processFormSubmission");
+		try (
 
-		// load data
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processFormSubmission");
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
-
-		Optional <OutboxRec> smsOutboxOptional =
-			smsOutboxHelper.find (
-				smsMessage.getId ());
-
-		// check state
-
-		if (
-			enumNotInSafe (
-				smsMessage.getStatus (),
-				MessageStatus.pending,
-				MessageStatus.failed,
-				MessageStatus.cancelled,
-				MessageStatus.blacklisted)
 		) {
 
-			requestContext.addError (
-				"Message in invalid state for this operation");
+			// load data
+
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired ();
+
+			Optional <OutboxRec> smsOutboxOptional =
+				smsOutboxHelper.find (
+					smsMessage.getId ());
+
+			// check state
+
+			if (
+				enumNotInSafe (
+					smsMessage.getStatus (),
+					MessageStatus.pending,
+					MessageStatus.failed,
+					MessageStatus.cancelled,
+					MessageStatus.blacklisted)
+			) {
+
+				requestContext.addError (
+					"Message in invalid state for this operation");
+
+				return optionalAbsent ();
+
+			}
+
+			if (
+
+				optionalIsPresent (
+					smsOutboxOptional)
+
+				&& isNotNull (
+					smsOutboxOptional.get ().getSending ())
+
+			) {
+
+				requestContext.addError (
+					"Message is currently being sent");
+
+				return optionalAbsent ();
+
+			}
+
+			// retry message
+
+			smsOutboxLogic.retryMessage (
+				taskLogger,
+				smsMessage);
+
+			eventLogic.createEvent (
+				taskLogger,
+				"message_manually_retried",
+				userConsoleLogic.userRequired (),
+				smsMessage);
+
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Message manually retried");
 
 			return optionalAbsent ();
 
 		}
-
-		if (
-
-			optionalIsPresent (
-				smsOutboxOptional)
-
-			&& isNotNull (
-				smsOutboxOptional.get ().getSending ())
-
-		) {
-
-			requestContext.addError (
-				"Message is currently being sent");
-
-			return optionalAbsent ();
-
-		}
-
-		// retry message
-
-		smsOutboxLogic.retryMessage (
-			taskLogger,
-			smsMessage);
-
-		eventLogic.createEvent (
-			taskLogger,
-			"message_manually_retried",
-			userConsoleLogic.userRequired (),
-			smsMessage);
-
-		transaction.commit ();
-
-		requestContext.addNotice (
-			"Message manually retried");
-
-		return optionalAbsent ();
 
 	}
 

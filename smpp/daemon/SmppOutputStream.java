@@ -12,7 +12,8 @@ import java.io.OutputStream;
 
 public
 class SmppOutputStream
-		extends FilterOutputStream {
+	extends FilterOutputStream
+	implements AutoCloseable {
 
 	public
 	SmppOutputStream (

@@ -61,102 +61,127 @@ class NumberListNumberUpdatePart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		goDetails ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		goForm (
-			taskLogger);
+		) {
+
+			goDetails (
+				taskLogger);
+
+			goForm (
+				taskLogger);
+
+		}
 
 	}
 
-	void goDetails () {
+	void goDetails (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		htmlTableOpenDetails ();
+		try (
 
-		htmlTableDetailsRowWrite (
-			"Numbers",
-			integerToDecimalString (
-				numberList.getNumberCount ()));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"goDetails");
 
-		htmlTableClose ();
+		) {
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWrite (
+				"Numbers",
+				integerToDecimalString (
+					numberList.getNumberCount ()));
+
+			htmlTableClose ();
+
+		}
 
 	}
 
 	void goForm (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goForm");
+		try (
 
-		// form open
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"goForm");
 
-		htmlFormOpenPost ();
-
-		// numbers
-
-		htmlParagraphOpen ();
-
-		formatWriter.writeLineFormat (
-			"Numbers<br>");
-
-		formatWriter.writeLineFormat (
-			"<textarea",
-			" name=\"numbers\"",
-			" rows=\"8\"",
-			" cols=\"60\"",
-			">%h</textarea>",
-			requestContext.parameterOrEmptyString (
-				"numbers"));
-
-		htmlParagraphClose ();
-
-		// form controls
-
-		htmlParagraphOpen ();
-
-		if (
-			privChecker.canRecursive (
-				taskLogger,
-				numberList,
-				"number_list_add")
 		) {
 
-			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"add\"",
-				" value=\"add numbers\"",
-				">");
+			// form open
 
-		}
+			htmlFormOpenPost ();
 
-		if (
-			privChecker.canRecursive (
-				taskLogger,
-				numberList,
-				"number_list_remove")
-		) {
+			// numbers
+
+			htmlParagraphOpen ();
 
 			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"remove\"",
-				" value=\"remove numbers\"",
-				">");
+				"Numbers<br>");
+
+			formatWriter.writeLineFormat (
+				"<textarea",
+				" name=\"numbers\"",
+				" rows=\"8\"",
+				" cols=\"60\"",
+				">%h</textarea>",
+				requestContext.parameterOrEmptyString (
+					"numbers"));
+
+			htmlParagraphClose ();
+
+			// form controls
+
+			htmlParagraphOpen ();
+
+			if (
+				privChecker.canRecursive (
+					taskLogger,
+					numberList,
+					"number_list_add")
+			) {
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"add\"",
+					" value=\"add numbers\"",
+					">");
+
+			}
+
+			if (
+				privChecker.canRecursive (
+					taskLogger,
+					numberList,
+					"number_list_remove")
+			) {
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"remove\"",
+					" value=\"remove numbers\"",
+					">");
+
+			}
+
+			htmlParagraphClose ();
+
+			// form close
+
+			htmlFormClose ();
 
 		}
-
-		htmlParagraphClose ();
-
-		// form close
-
-		htmlFormClose ();
 
 	}
 

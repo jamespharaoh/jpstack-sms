@@ -1,7 +1,7 @@
 package wbs.sms.message.core.console;
 
-import static wbs.utils.etc.OptionalUtils.optionalOf;
-import static wbs.utils.etc.ResultUtils.successResult;
+import static wbs.utils.etc.ResultUtils.successResultPresent;
+import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 
 import java.util.Map;
 
@@ -18,8 +18,6 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
-
-import wbs.utils.string.StringFormatWriter;
 
 import fj.data.Either;
 
@@ -46,22 +44,24 @@ class MessageContentHtmlFormFieldInterfaceMapping
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <MessageRec> genericValue) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"genericToInterface");
+		try (
 
-		StringFormatWriter formatWriter =
-			new StringFormatWriter ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"genericToInterface");
 
-		messageConsoleLogic.writeMessageContentHtml (
-			taskLogger,
-			formatWriter,
-			container);
+		) {
 
-		return successResult (
-			optionalOf (
-				formatWriter.toString ()));
+			return successResultPresent (
+				formatWriterConsumerToString (
+					formatWriter ->
+						messageConsoleLogic.writeMessageContentHtml (
+							taskLogger,
+							formatWriter,
+							container)));
+
+		}
 
 	}
 

@@ -1,6 +1,7 @@
 package wbs.sms.message.core.console;
 
 import static wbs.utils.etc.ResultUtils.successResultPresent;
+import static wbs.utils.string.FormatWriterUtils.formatWriterConsumerToString;
 
 import java.util.Map;
 
@@ -10,13 +11,13 @@ import lombok.NonNull;
 
 import wbs.console.forms.FormFieldInterfaceMapping;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
-
-import wbs.utils.string.StringFormatWriter;
 
 import fj.data.Either;
 
@@ -26,6 +27,9 @@ class MessageContentCsvFormFieldInterfaceMapping
 	implements FormFieldInterfaceMapping <MessageRec, MessageRec, String> {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
@@ -40,15 +44,23 @@ class MessageContentCsvFormFieldInterfaceMapping
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <MessageRec> genericValue) {
 
-		StringFormatWriter formatWriter =
-			new StringFormatWriter ();
+		try (
 
-		messageConsoleLogic.writeMessageContentText (
-			formatWriter,
-			container);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"genericToInterface");
 
-		return successResultPresent (
-			formatWriter.toString ());
+		) {
+
+			return successResultPresent (
+				formatWriterConsumerToString (
+					formatWriter ->
+						messageConsoleLogic.writeMessageContentText (
+							formatWriter,
+							container)));
+
+		}
 
 	}
 

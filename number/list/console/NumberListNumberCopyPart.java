@@ -61,48 +61,54 @@ class NumberListNumberCopyPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		// this number list
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		thisNumberList =
-			numberListHelper.findFromContextRequired ();
-
-		// browseable number lists
-
-		List <NumberListRec> allNumberLists =
-			numberListHelper.findAll ();
-
-		ImmutableList.Builder <NumberListRec> browseableNumberListsBuilder =
-			ImmutableList.builder ();
-
-		for (
-			NumberListRec someNumberList
-				: allNumberLists
 		) {
 
-			if (someNumberList == thisNumberList)
-				continue;
+			// this number list
 
-			if (
-				! privChecker.canRecursive (
-					taskLogger,
-					someNumberList,
-					"number_list_browse")
+			thisNumberList =
+				numberListHelper.findFromContextRequired ();
+
+			// browseable number lists
+
+			List <NumberListRec> allNumberLists =
+				numberListHelper.findAll ();
+
+			ImmutableList.Builder <NumberListRec> browseableNumberListsBuilder =
+				ImmutableList.builder ();
+
+			for (
+				NumberListRec someNumberList
+					: allNumberLists
 			) {
-				continue;
+
+				if (someNumberList == thisNumberList)
+					continue;
+
+				if (
+					! privChecker.canRecursive (
+						taskLogger,
+						someNumberList,
+						"number_list_browse")
+				) {
+					continue;
+				}
+
+				browseableNumberListsBuilder.add (
+					someNumberList);
+
 			}
 
-			browseableNumberListsBuilder.add (
-				someNumberList);
+			browseableNumberLists =
+				browseableNumberListsBuilder.build ();
 
 		}
-
-		browseableNumberLists =
-			browseableNumberListsBuilder.build ();
 
 	}
 
@@ -111,102 +117,127 @@ class NumberListNumberCopyPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		goDetails ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		goForm (
-			taskLogger);
+		) {
+
+			goDetails (
+				taskLogger);
+
+			goForm (
+				taskLogger);
+
+		}
 
 	}
 
-	void goDetails () {
+	void goDetails (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		htmlTableOpenDetails ();
+		try (
 
-		htmlTableDetailsRowWrite (
-			"Numbers",
-			integerToDecimalString (
-				thisNumberList.getNumberCount ()));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"goDetails");
 
-		htmlTableClose ();
+		) {
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWrite (
+				"Numbers",
+				integerToDecimalString (
+					thisNumberList.getNumberCount ()));
+
+			htmlTableClose ();
+
+		}
 
 	}
 
 	void goForm (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goForm");
+		try (
 
-		// form open
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"goForm");
 
-		htmlFormOpenPost ();
-
-		// number list
-
-		htmlParagraphOpen ();
-
-		formatWriter.writeLineFormat (
-			"Number list<br>");
-
-		formatWriter.writeLineFormat (
-			"<textarea",
-			" name=\"numbers\"",
-			" rows=\"8\"",
-			" cols=\"60\"",
-			">%h</textarea>",
-			requestContext.parameterOrEmptyString (
-				"numbers"));
-
-		htmlParagraphClose ();
-
-		// controls
-
-		htmlParagraphOpen ();
-
-		if (
-			privChecker.canRecursive (
-				taskLogger,
-				thisNumberList,
-				"number_list_add")
 		) {
 
-			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"add\"",
-				" value=\"add numbers\"",
-				">");
+			// form open
 
-		}
+			htmlFormOpenPost ();
 
-		if (
-			privChecker.canRecursive (
-				taskLogger,
-				thisNumberList,
-				"number_list_remove")
-		) {
+			// number list
+
+			htmlParagraphOpen ();
 
 			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"remove\"",
-				" value=\"remove numbers\"",
-				">");
+				"Number list<br>");
+
+			formatWriter.writeLineFormat (
+				"<textarea",
+				" name=\"numbers\"",
+				" rows=\"8\"",
+				" cols=\"60\"",
+				">%h</textarea>",
+				requestContext.parameterOrEmptyString (
+					"numbers"));
+
+			htmlParagraphClose ();
+
+			// controls
+
+			htmlParagraphOpen ();
+
+			if (
+				privChecker.canRecursive (
+					taskLogger,
+					thisNumberList,
+					"number_list_add")
+			) {
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"add\"",
+					" value=\"add numbers\"",
+					">");
+
+			}
+
+			if (
+				privChecker.canRecursive (
+					taskLogger,
+					thisNumberList,
+					"number_list_remove")
+			) {
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"remove\"",
+					" value=\"remove numbers\"",
+					">");
+
+			}
+
+			htmlParagraphClose ();
+
+			// form close
+
+			htmlFormClose ();
 
 		}
-
-		htmlParagraphClose ();
-
-		// form close
-
-		htmlFormClose ();
 
 	}
 

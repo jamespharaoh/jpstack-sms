@@ -14,8 +14,8 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -113,166 +113,172 @@ class WapPushLogic
 			Set <String> tags,
 			NetworkRec network) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"wapPushSend");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"wapPushSend");
 
-		ServiceRec service =
-			NullUtils.<ServiceRec> ifNull (
-				() -> serviceOrNull,
-				() -> serviceHelper.findRequired (0l));
+		) {
 
-		AffiliateRec affiliate =
-			NullUtils.<AffiliateRec> ifNull (
-				() -> affiliateOrNull,
-				() -> affiliateHelper.findRequired (0l));
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		BatchRec batch =
-			NullUtils.<BatchRec> ifNull (
-				() -> batchOrNull,
-				() -> batchHelper.findRequired (0l));
+			ServiceRec service =
+				NullUtils.<ServiceRec> ifNull (
+					() -> serviceOrNull,
+					() -> serviceHelper.findRequired (0l));
 
-		// check this route can send wap push
+			AffiliateRec affiliate =
+				NullUtils.<AffiliateRec> ifNull (
+					() -> affiliateOrNull,
+					() -> affiliateHelper.findRequired (0l));
 
-		MessageTypeRec wapPushMessageType =
-			messageTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				"wap_push");
+			BatchRec batch =
+				NullUtils.<BatchRec> ifNull (
+					() -> batchOrNull,
+					() -> batchHelper.findRequired (0l));
 
-		RouteRec route =
-			routerLogic.resolveRouter (
-				router);
+			// check this route can send wap push
 
-		if (! route.getOutboundMessageTypes ().contains (
-				wapPushMessageType)) {
+			MessageTypeRec wapPushMessageType =
+				messageTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					"wap_push");
 
-			throw new RuntimeException (
-				stringFormat (
-					"Cannot send wap push on route %s",
-					integerToDecimalString (
-						route.getId ())));
+			RouteRec route =
+				routerLogic.resolveRouter (
+					router);
 
-		}
+			if (! route.getOutboundMessageTypes ().contains (
+					wapPushMessageType)) {
 
-		MessageRec message =
-			messageHelper.createInstance ()
+				throw new RuntimeException (
+					stringFormat (
+						"Cannot send wap push on route %s",
+						integerToDecimalString (
+							route.getId ())));
 
-			.setThreadId (
-				threadId)
+			}
 
-			.setText (
-				textHelper.findOrCreate (
-					taskLogger,
-					"WAP PUSH"))
+			MessageRec message =
+				messageHelper.createInstance ()
 
-			.setNumFrom (
-				numFrom)
+				.setThreadId (
+					threadId)
 
-			.setNumTo (
-				number.getNumber ())
+				.setText (
+					textHelper.findOrCreate (
+						taskLogger,
+						"WAP PUSH"))
 
-			.setDirection (
-				MessageDirection.out)
+				.setNumFrom (
+					numFrom)
 
-			.setStatus (
-				sendNow
-					? MessageStatus.pending
-					: MessageStatus.held)
+				.setNumTo (
+					number.getNumber ())
 
-			.setNumber (
-				number)
+				.setDirection (
+					MessageDirection.out)
 
-			.setRoute (
-				route)
+				.setStatus (
+					sendNow
+						? MessageStatus.pending
+						: MessageStatus.held)
 
-			.setService (
-				service)
-
-			.setNetwork (
-				ifNull (
-					network,
-					number.getNetwork ()))
-
-			.setBatch (
-				batch)
-
-			.setCharge (
-				route.getOutCharge ())
-
-			.setAffiliate (
-				affiliate)
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setDeliveryType (
-				deliveryType)
-
-			.setRef (
-				ref)
-
-			.setMessageType (
-				wapPushMessageType)
-
-			.setNumAttempts (
-				0l);
-
-		if (tags != null) {
-
-			for (String tag : tags)
-				message.getTags ().add (tag);
-
-		}
-
-		messageHelper.insert (
-			taskLogger,
-			message);
-
-		wapPushMessageHelper.insert (
-			taskLogger,
-			wapPushMessageHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setTextText (
-				text)
-
-			.setUrlText (
-				url)
-
-		);
-
-		if (sendNow) {
-
-			outboxHelper.insert (
-				taskLogger,
-				outboxHelper.createInstance ()
-
-				.setMessage (
-					message)
+				.setNumber (
+					number)
 
 				.setRoute (
 					route)
 
+				.setService (
+					service)
+
+				.setNetwork (
+					ifNull (
+						network,
+						number.getNetwork ()))
+
+				.setBatch (
+					batch)
+
+				.setCharge (
+					route.getOutCharge ())
+
+				.setAffiliate (
+					affiliate)
+
 				.setCreatedTime (
 					transaction.now ())
 
-				.setRetryTime (
-					transaction.now ())
+				.setDeliveryType (
+					deliveryType)
 
-				.setRemainingTries (
-					route.getMaxTries ())
+				.setRef (
+					ref)
+
+				.setMessageType (
+					wapPushMessageType)
+
+				.setNumAttempts (
+					0l);
+
+			if (tags != null) {
+
+				for (String tag : tags)
+					message.getTags ().add (tag);
+
+			}
+
+			messageHelper.insert (
+				taskLogger,
+				message);
+
+			wapPushMessageHelper.insert (
+				taskLogger,
+				wapPushMessageHelper.createInstance ()
+
+				.setMessage (
+					message)
+
+				.setTextText (
+					text)
+
+				.setUrlText (
+					url)
 
 			);
 
-		}
+			if (sendNow) {
 
-		return message;
+				outboxHelper.insert (
+					taskLogger,
+					outboxHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+					.setRoute (
+						route)
+
+					.setCreatedTime (
+						transaction.now ())
+
+					.setRetryTime (
+						transaction.now ())
+
+					.setRemainingTries (
+						route.getMaxTries ())
+
+				);
+
+			}
+
+			return message;
+
+		}
 
 	}
 
@@ -294,132 +300,138 @@ class WapPushLogic
 			@NonNull RouteRec route,
 			TextRec textOrNull) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"wapPushRetry");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"wapPushRetry");
 
-		WapPushMessageRec oldWapPushMessage =
-			wapPushMessageHelper.findRequired (
-				oldMessage.getId ());
+		) {
 
-		TextRec text =
-			NullUtils.<TextRec> ifNull (
-				() -> textOrNull,
-				() -> oldWapPushMessage.getTextText ());
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		MessageRec message =
-			messageHelper.createInstance ()
+			WapPushMessageRec oldWapPushMessage =
+				wapPushMessageHelper.findRequired (
+					oldMessage.getId ());
 
-			.setThreadId (
-				oldMessage.getThreadId ())
+			TextRec text =
+				NullUtils.<TextRec> ifNull (
+					() -> textOrNull,
+					() -> oldWapPushMessage.getTextText ());
 
-			.setText (
-				textHelper.findOrCreate (
-					taskLogger,
-					"WAP PUSH"))
+			MessageRec message =
+				messageHelper.createInstance ()
 
-			.setNumFrom (
-				oldMessage.getNumFrom ())
+				.setThreadId (
+					oldMessage.getThreadId ())
 
-			.setNumTo (
-				oldMessage.getNumTo ())
+				.setText (
+					textHelper.findOrCreate (
+						taskLogger,
+						"WAP PUSH"))
 
-			.setDirection (
-				MessageDirection.out)
+				.setNumFrom (
+					oldMessage.getNumFrom ())
 
-			.setStatus (
-				MessageStatus.pending)
+				.setNumTo (
+					oldMessage.getNumTo ())
 
-			.setNumber (
-				oldMessage.getNumber ())
+				.setDirection (
+					MessageDirection.out)
 
-			.setRoute (
-				route)
+				.setStatus (
+					MessageStatus.pending)
 
-			.setService (
-				oldMessage.getService ())
+				.setNumber (
+					oldMessage.getNumber ())
 
-			.setNetwork (
-				oldMessage.getNetwork ())
+				.setRoute (
+					route)
 
-			.setBatch (
-				oldMessage.getBatch ())
+				.setService (
+					oldMessage.getService ())
 
-			.setCharge (
-				oldMessage.getRoute ().getOutCharge ())
+				.setNetwork (
+					oldMessage.getNetwork ())
 
-			.setAffiliate (
-				oldMessage.getAffiliate ())
+				.setBatch (
+					oldMessage.getBatch ())
 
-			.setCreatedTime (
-				transaction.now ())
+				.setCharge (
+					oldMessage.getRoute ().getOutCharge ())
 
-			.setDeliveryType (
-				oldMessage.getDeliveryType ())
+				.setAffiliate (
+					oldMessage.getAffiliate ())
 
-			.setRef (
-				oldMessage.getRef ())
+				.setCreatedTime (
+					transaction.now ())
 
-			.setMessageType (
-				messageTypeHelper.findByCodeRequired (
-					GlobalId.root,
-					"wap_push"))
+				.setDeliveryType (
+					oldMessage.getDeliveryType ())
 
-			.setNumAttempts (
-				0l);
+				.setRef (
+					oldMessage.getRef ())
 
-		if (oldMessage.getTags () != null) {
+				.setMessageType (
+					messageTypeHelper.findByCodeRequired (
+						GlobalId.root,
+						"wap_push"))
 
-			message.getTags ().addAll (
-				oldMessage.getTags ());
+				.setNumAttempts (
+					0l);
+
+			if (oldMessage.getTags () != null) {
+
+				message.getTags ().addAll (
+					oldMessage.getTags ());
+
+			}
+
+			messageHelper.insert (
+				taskLogger,
+				message);
+
+			wapPushMessageHelper.insert (
+				taskLogger,
+				wapPushMessageHelper.createInstance ()
+
+				.setMessage (
+					message)
+
+				.setTextText (
+					text)
+
+				.setUrlText (
+					oldWapPushMessage.getUrlText ())
+
+			);
+
+			outboxHelper.insert (
+				taskLogger,
+				outboxHelper.createInstance ()
+
+				.setMessage (
+					message)
+
+				.setRoute (
+					message.getRoute ())
+
+				.setCreatedTime (
+					transaction.now ())
+
+				.setRetryTime (
+					transaction.now ())
+
+				.setRemainingTries (
+					message.getRoute ().getMaxTries ())
+
+			);
+
+			return message;
 
 		}
-
-		messageHelper.insert (
-			taskLogger,
-			message);
-
-		wapPushMessageHelper.insert (
-			taskLogger,
-			wapPushMessageHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setTextText (
-				text)
-
-			.setUrlText (
-				oldWapPushMessage.getUrlText ())
-
-		);
-
-		outboxHelper.insert (
-			taskLogger,
-			outboxHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setRoute (
-				message.getRoute ())
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setRetryTime (
-				transaction.now ())
-
-			.setRemainingTries (
-				message.getRoute ().getMaxTries ())
-
-		);
-
-		return message;
 
 	}
 

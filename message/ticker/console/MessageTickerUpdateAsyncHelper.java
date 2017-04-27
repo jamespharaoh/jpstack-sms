@@ -27,7 +27,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -96,16 +96,21 @@ class MessageTickerUpdateAsyncHelper
 	SubscriberState newSubscription (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		@SuppressWarnings ("unused")
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"newSubscription");
+		try (
 
-		return new SubscriberState ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"newSubscription");
 
-			.generation (
-				0l);
+		) {
+
+			return new SubscriberState ()
+
+				.generation (
+					0l);
+
+		}
 
 	}
 
@@ -114,14 +119,19 @@ class MessageTickerUpdateAsyncHelper
 	void prepareUpdate (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		@SuppressWarnings ("unused")
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepareUpdate");
+		try (
 
-		messageTickerMessages =
-			messageTickerManager.getMessages ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepareUpdate");
+
+		) {
+
+			messageTickerMessages =
+				messageTickerManager.getMessages ();
+
+		}
 
 	}
 
@@ -131,101 +141,107 @@ class MessageTickerUpdateAsyncHelper
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SubscriberState state,
 			@NonNull ConsoleAsyncConnectionHandle connectionHandle,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull UserRec user,
 			@NonNull UserPrivChecker privChecker) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"updateSubscriber");
+		try (
 
-		JsonArray messagesArray =
-			new JsonArray ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"updateSubscriber");
 
-		JsonArray statusesArray =
-			new JsonArray ();
-
-		Long newGeneration =
-			state.generation ();
-
-		for (
-			MessageTickerMessage messageTickerMessage
-				: messageTickerMessages
 		) {
 
-			if (
-				lessThan (
-					state.generation (),
-					messageTickerMessage.messageGeneration ())
+			JsonArray messagesArray =
+				new JsonArray ();
+
+			JsonArray statusesArray =
+				new JsonArray ();
+
+			Long newGeneration =
+				state.generation ();
+
+			for (
+				MessageTickerMessage messageTickerMessage
+					: messageTickerMessages
 			) {
 
 				if (
-					messageIsVisible (
-						taskLogger,
-						privChecker,
-						messageTickerMessage)
+					lessThan (
+						state.generation (),
+						messageTickerMessage.messageGeneration ())
 				) {
 
-					messagesArray.add (
-						createMessage (
+					if (
+						messageIsVisible (
 							taskLogger,
-							user,
-							messageTickerMessage));
+							privChecker,
+							messageTickerMessage)
+					) {
+
+						messagesArray.add (
+							createMessage (
+								taskLogger,
+								user,
+								messageTickerMessage));
+
+					}
+
+				} else if (
+					lessThan (
+						state.generation (),
+						messageTickerMessage.statusGeneration ())
+				) {
+
+					if (
+						messageIsVisible (
+							taskLogger,
+							privChecker,
+							messageTickerMessage)
+					) {
+
+						statusesArray.add (
+							createStatus (
+								taskLogger,
+								messageTickerMessage));
+
+					}
 
 				}
 
-			} else if (
-				lessThan (
-					state.generation (),
-					messageTickerMessage.statusGeneration ())
-			) {
-
-				if (
-					messageIsVisible (
-						taskLogger,
-						privChecker,
-						messageTickerMessage)
-				) {
-
-					statusesArray.add (
-						createStatus (
-							taskLogger,
-							messageTickerMessage));
-
-				}
+				newGeneration =
+					max (
+						newGeneration,
+						messageTickerMessage.messageGeneration (),
+						messageTickerMessage.statusGeneration ());
 
 			}
 
-			newGeneration =
-				max (
-					newGeneration,
-					messageTickerMessage.messageGeneration (),
-					messageTickerMessage.statusGeneration ());
+			// send update
+
+			JsonObject updateData =
+				new JsonObject ();
+
+			updateData.add (
+				"messages",
+				messagesArray);
+
+			updateData.add (
+				"statuses",
+				statusesArray);
+
+			connectionHandle.send (
+				taskLogger,
+				updateData);
+
+			// update state
+
+			state.generation (
+				newGeneration);
 
 		}
-
-		// send update
-
-		JsonObject updateData =
-			new JsonObject ();
-
-		updateData.add (
-			"messages",
-			messagesArray);
-
-		updateData.add (
-			"statuses",
-			statusesArray);
-
-		connectionHandle.send (
-			taskLogger,
-			updateData);
-
-		// update state
-
-		state.generation (
-			newGeneration);
 
 	}
 
@@ -235,29 +251,35 @@ class MessageTickerUpdateAsyncHelper
 			@NonNull UserPrivChecker privChecker,
 			@NonNull MessageTickerMessage messageTickerMessage) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"messageIsVisible");
+		try (
 
-		return (
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"messageIsVisible");
 
-			privChecker.canRecursive (
-				taskLogger,
-				messageTickerMessage.routeGlobalId (),
-				"messages")
+		) {
 
-			|| privChecker.canRecursive (
-				taskLogger,
-				messageTickerMessage.serviceParentGlobalId (),
-				"messages")
+			return (
 
-			|| privChecker.canRecursive (
-				taskLogger,
-				messageTickerMessage.affiliateParentGlobalId (),
-				"messages")
+				privChecker.canRecursive (
+					taskLogger,
+					messageTickerMessage.routeGlobalId (),
+					"messages")
 
-		);
+				|| privChecker.canRecursive (
+					taskLogger,
+					messageTickerMessage.serviceParentGlobalId (),
+					"messages")
+
+				|| privChecker.canRecursive (
+					taskLogger,
+					messageTickerMessage.affiliateParentGlobalId (),
+					"messages")
+
+			);
+
+		}
 
 	}
 
@@ -267,147 +289,153 @@ class MessageTickerUpdateAsyncHelper
 			@NonNull UserRec user,
 			@NonNull MessageTickerMessage messageTickerMessage) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createMessage");
+		try (
 
-		JsonObject messageObject =
-			new JsonObject ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createMessage");
 
-		// message id
-
-		messageObject.addProperty (
-			"messageId",
-			messageTickerMessage.messageId ());
-
-		// row class
-
-		if (
-			enumEqualSafe (
-				messageTickerMessage.direction (),
-				MessageDirection.in)
 		) {
 
-			messageObject.addProperty (
-				"rowClass",
-				"message-in");
+			JsonObject messageObject =
+				new JsonObject ();
 
-		} else if (
-			moreThanZero (
-				messageTickerMessage.charge ())
-		) {
+			// message id
 
 			messageObject.addProperty (
-				"rowClass",
-				"message-out-charge");
+				"messageId",
+				messageTickerMessage.messageId ());
 
-		} else {
+			// row class
+
+			if (
+				enumEqualSafe (
+					messageTickerMessage.direction (),
+					MessageDirection.in)
+			) {
+
+				messageObject.addProperty (
+					"rowClass",
+					"message-in");
+
+			} else if (
+				moreThanZero (
+					messageTickerMessage.charge ())
+			) {
+
+				messageObject.addProperty (
+					"rowClass",
+					"message-out-charge");
+
+			} else {
+
+				messageObject.addProperty (
+					"rowClass",
+					"message-out");
+
+			}
+
+			// numbers and colour
+
+			String number =
+				messageTickerMessage.direction () == MessageDirection.in
+					? messageTickerMessage.numFrom ()
+					: messageTickerMessage.numTo ();
 
 			messageObject.addProperty (
-				"rowClass",
-				"message-out");
+				"number",
+				number);
+
+			messageObject.addProperty (
+				"colour",
+				htmlColourFromObject (
+					number));
+
+			messageObject.addProperty (
+				"numberFrom",
+				messageTickerMessage.numFrom ());
+
+			messageObject.addProperty (
+				"numberTo",
+				messageTickerMessage.numTo ());
+
+			// link
+
+			messageObject.addProperty (
+				"link",
+				stringFormat (
+					"/message",
+					"/%u",
+					integerToDecimalString (
+						messageTickerMessage.messageId ()),
+					"/message.summary"));
+
+			// timestamp
+
+			messageObject.addProperty (
+				"timestamp",
+				timeFormatter.timeString (
+					timeFormatter.timezone (
+						ifNull (
+							user.getDefaultTimezone (),
+							user.getSlice ().getDefaultTimezone (),
+							wbsConfig.defaultTimezone ())),
+					messageTickerMessage.createdTime ()));
+
+			// message body
+
+			messageObject.addProperty (
+				"body",
+				messageTickerMessage.text ());
+
+			// media
+
+			JsonArray mediaArray =
+				new JsonArray ();
+
+			for (
+				Long mediaId
+					: messageTickerMessage.mediaIds ()
+			) {
+
+				MediaRec media =
+					mediaHelper.findRequired (
+						mediaId);
+
+				mediaArray.add (
+					new JsonPrimitive (
+						formatWriterConsumerToString (
+							formatWriter ->
+								mediaConsoleLogic.writeMediaThumb32OrText (
+									taskLogger,
+									formatWriter,
+									media))));
+
+			}
+
+			messageObject.add (
+				"media",
+				mediaArray);
+
+			// status
+
+			messageObject.addProperty (
+				"statusClass",
+				messageConsoleLogic.classForMessageStatus (
+					messageTickerMessage.status ()));
+
+			messageObject.addProperty (
+				"statusCharacter",
+				Character.toString (
+					messageConsoleLogic.charForMessageStatus (
+						messageTickerMessage.status ())));
+
+			// return
+
+			return messageObject;
 
 		}
-
-		// numbers and colour
-
-		String number =
-			messageTickerMessage.direction () == MessageDirection.in
-				? messageTickerMessage.numFrom ()
-				: messageTickerMessage.numTo ();
-
-		messageObject.addProperty (
-			"number",
-			number);
-
-		messageObject.addProperty (
-			"colour",
-			htmlColourFromObject (
-				number));
-
-		messageObject.addProperty (
-			"numberFrom",
-			messageTickerMessage.numFrom ());
-
-		messageObject.addProperty (
-			"numberTo",
-			messageTickerMessage.numTo ());
-
-		// link
-
-		messageObject.addProperty (
-			"link",
-			stringFormat (
-				"/message",
-				"/%u",
-				integerToDecimalString (
-					messageTickerMessage.messageId ()),
-				"/message.summary"));
-
-		// timestamp
-
-		messageObject.addProperty (
-			"timestamp",
-			timeFormatter.timeString (
-				timeFormatter.timezone (
-					ifNull (
-						user.getDefaultTimezone (),
-						user.getSlice ().getDefaultTimezone (),
-						wbsConfig.defaultTimezone ())),
-				messageTickerMessage.createdTime ()));
-
-		// message body
-
-		messageObject.addProperty (
-			"body",
-			messageTickerMessage.text ());
-
-		// media
-
-		JsonArray mediaArray =
-			new JsonArray ();
-
-		for (
-			Long mediaId
-				: messageTickerMessage.mediaIds ()
-		) {
-
-			MediaRec media =
-				mediaHelper.findRequired (
-					mediaId);
-
-			mediaArray.add (
-				new JsonPrimitive (
-					formatWriterConsumerToString (
-						formatWriter ->
-							mediaConsoleLogic.writeMediaThumb32OrText (
-								taskLogger,
-								formatWriter,
-								media))));
-
-		}
-
-		messageObject.add (
-			"media",
-			mediaArray);
-
-		// status
-
-		messageObject.addProperty (
-			"statusClass",
-			messageConsoleLogic.classForMessageStatus (
-				messageTickerMessage.status ()));
-
-		messageObject.addProperty (
-			"statusCharacter",
-			Character.toString (
-				messageConsoleLogic.charForMessageStatus (
-					messageTickerMessage.status ())));
-
-		// return
-
-		return messageObject;
 
 	}
 

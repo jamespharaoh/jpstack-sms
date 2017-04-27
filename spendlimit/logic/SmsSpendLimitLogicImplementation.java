@@ -26,8 +26,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -74,32 +74,38 @@ class SmsSpendLimitLogicImplementation
 			@NonNull SmsSpendLimiterRec spendLimiter,
 			@NonNull NumberRec number) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"spendCheck");
+		try (
 
-		if (
-			isNull (
-				spendLimiter.getDailySpendLimitAmount ())
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"spendCheck");
+
 		) {
-			return optionalAbsent ();
+
+			if (
+				isNull (
+					spendLimiter.getDailySpendLimitAmount ())
+			) {
+				return optionalAbsent ();
+			}
+
+			SmsSpendLimiterNumberRec spendLimiterNumber =
+				smsSpendLimiterNumberHelper.findOrCreate (
+					taskLogger,
+					spendLimiter,
+					number);
+
+			SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
+				numberToday (
+					taskLogger,
+					spendLimiterNumber);
+
+			return optionalOf (
+				+ spendLimiter.getDailySpendLimitAmount ()
+				- spendLimiterNumberDay.getTotalSpent ());
+
 		}
-
-		SmsSpendLimiterNumberRec spendLimiterNumber =
-			smsSpendLimiterNumberHelper.findOrCreate (
-				taskLogger,
-				spendLimiter,
-				number);
-
-		SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
-			numberToday (
-				taskLogger,
-				spendLimiterNumber);
-
-		return optionalOf (
-			+ spendLimiter.getDailySpendLimitAmount ()
-			- spendLimiterNumberDay.getTotalSpent ());
 
 	}
 
@@ -113,265 +119,271 @@ class SmsSpendLimitLogicImplementation
 			@NonNull Long threadId,
 			@NonNull String originator) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"spend");
+		try (
 
-		SmsSpendLimiterNumberRec spendLimiterNumber =
-			smsSpendLimiterNumberHelper.findOrCreate (
-				taskLogger,
-				spendLimiter,
-				number);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"spend");
 
-		SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
-			numberToday (
-				taskLogger,
-				spendLimiterNumber);
+		) {
 
-		// sanity check
+			SmsSpendLimiterNumberRec spendLimiterNumber =
+				smsSpendLimiterNumberHelper.findOrCreate (
+					taskLogger,
+					spendLimiter,
+					number);
 
-		spendMessages.forEach (
-			message -> {
+			SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
+				numberToday (
+					taskLogger,
+					spendLimiterNumber);
+
+			// sanity check
+
+			spendMessages.forEach (
+				message -> {
+
+				if (
+
+					enumNotEqualSafe (
+						message.getDirection (),
+						MessageDirection.out)
+
+					|| equalToZero (
+						message.getCharge ())
+
+				) {
+					throw new IllegalArgumentException ();
+				}
+
+			});
+
+			// check daily spend limit
+
+			Long amountToSpend =
+				spendMessages.stream ()
+
+				.mapToLong (
+					MessageRec::getCharge)
+
+				.sum ();
+
+			Optional <Long> spendAvailable =
+				spendCheck (
+					taskLogger,
+					spendLimiter,
+					number);
 
 			if (
 
-				enumNotEqualSafe (
-					message.getDirection (),
-					MessageDirection.out)
+				optionalIsPresent (
+					spendAvailable)
 
-				|| equalToZero (
-					message.getCharge ())
+				&& moreThan (
+					amountToSpend,
+					spendAvailable.get ())
 
 			) {
-				throw new IllegalArgumentException ();
+				throw new RuntimeException ();
 			}
 
-		});
-
-		// check daily spend limit
-
-		Long amountToSpend =
-			spendMessages.stream ()
-
-			.mapToLong (
-				MessageRec::getCharge)
-
-			.sum ();
-
-		Optional <Long> spendAvailable =
-			spendCheck (
-				taskLogger,
-				spendLimiter,
-				number);
-
-		if (
-
-			optionalIsPresent (
-				spendAvailable)
-
-			&& moreThan (
-				amountToSpend,
-				spendAvailable.get ())
-
-		) {
-			throw new RuntimeException ();
-		}
-
-		// increase counters
-
-		spendLimiterNumber
-
-			.setAdviceSpent (
-				+ spendLimiterNumber.getAdviceSpent ()
-				+ amountToSpend)
-
-			.setLastDailySpend (
-				+ spendLimiterNumber.getLastDailySpend ()
-				+ amountToSpend)
-
-			.setTotalSpent (
-				+ spendLimiterNumber.getTotalSpent ()
-				+ amountToSpend);
-
-		spendLimiterNumber.getSpendMessages ().addAll (
-				spendMessages);
-
-		spendLimiterNumberDay
-
-			.setAdviceSpent (
-				+ spendLimiterNumberDay.getAdviceSpent ()
-				+ amountToSpend)
-
-			.setTotalSpent (
-				+ spendLimiterNumberDay.getTotalSpent ()
-				+ amountToSpend);
-
-		spendLimiterNumberDay.getSpendMessages ().addAll (
-				spendMessages);
-
-		// check daily limit
-
-		if (
-
-			isNotNull (
-				spendLimiter.getDailySpendLimitAmount ())
-
-			&& notLessThan (
-				spendLimiterNumberDay.getTotalSpent (),
-				spendLimiter.getDailySpendLimitAmount ())
-
-		) {
-
-			MessageRec limitMessage =
-				smsMessageSenderProvider.get ()
-
-				.threadId (
-					threadId)
-
-				.number (
-					number)
-
-				.messageText (
-					spendLimiter.getDailySpendLimitMessage ())
-
-				.numFrom (
-					originator)
-
-				.routerResolve (
-					spendLimiter.getRouter ())
-
-				.serviceLookup (
-					spendLimiter,
-					"daily_limit")
-
-				.send (
-					taskLogger);
+			// increase counters
 
 			spendLimiterNumber
 
 				.setAdviceSpent (
-					0l);
+					+ spendLimiterNumber.getAdviceSpent ()
+					+ amountToSpend)
+
+				.setLastDailySpend (
+					+ spendLimiterNumber.getLastDailySpend ()
+					+ amountToSpend)
+
+				.setTotalSpent (
+					+ spendLimiterNumber.getTotalSpent ()
+					+ amountToSpend);
+
+			spendLimiterNumber.getSpendMessages ().addAll (
+					spendMessages);
 
 			spendLimiterNumberDay
 
 				.setAdviceSpent (
-					0l)
+					+ spendLimiterNumberDay.getAdviceSpent ()
+					+ amountToSpend)
 
-				.setLimitSent (
-					true)
+				.setTotalSpent (
+					+ spendLimiterNumberDay.getTotalSpent ()
+					+ amountToSpend);
 
-				.setLimitMessage (
-					limitMessage);
+			spendLimiterNumberDay.getSpendMessages ().addAll (
+					spendMessages);
 
-		}
+			// check daily limit
 
-		// check daily advice
+			if (
 
-		if (
+				isNotNull (
+					spendLimiter.getDailySpendLimitAmount ())
 
-			isNotNull (
-				spendLimiter.getDailySpendAdviceAmount ())
+				&& notLessThan (
+					spendLimiterNumberDay.getTotalSpent (),
+					spendLimiter.getDailySpendLimitAmount ())
 
-			&& notLessThan (
-				spendLimiterNumberDay.getAdviceSpent (),
-				spendLimiter.getDailySpendAdviceAmount ())
+			) {
 
-		) {
+				MessageRec limitMessage =
+					smsMessageSenderProvider.get ()
 
-			MessageRec adviceMessage =
-				smsMessageSenderProvider.get ()
+					.threadId (
+						threadId)
 
-				.threadId (
-					threadId)
+					.number (
+						number)
 
-				.number (
-					number)
+					.messageText (
+						spendLimiter.getDailySpendLimitMessage ())
 
-				.messageText (
-					spendLimiter.getDailySpendAdviceMessage ())
+					.numFrom (
+						originator)
 
-				.numFrom (
-					originator)
+					.routerResolve (
+						spendLimiter.getRouter ())
 
-				.routerResolve (
-					spendLimiter.getRouter ())
+					.serviceLookup (
+						spendLimiter,
+						"daily_limit")
 
-				.serviceLookup (
-					spendLimiter,
-					"daily_advice")
+					.send (
+						taskLogger);
 
-				.send (
-					taskLogger);
+				spendLimiterNumber
 
-			spendLimiterNumber
+					.setAdviceSpent (
+						0l);
 
-				.setAdviceSpent (
-					0l);
+				spendLimiterNumberDay
 
-			spendLimiterNumberDay
+					.setAdviceSpent (
+						0l)
 
-				.setAdviceSpent (
-					0l)
+					.setLimitSent (
+						true)
 
-				.getAdviceMessages ().add (
-					adviceMessage);
+					.setLimitMessage (
+						limitMessage);
 
-		}
+			}
 
-		// check ongoing advice
+			// check daily advice
 
-		if (
+			if (
 
-			isNotNull (
-				spendLimiter.getOngoingSpendAdviceAmount ())
+				isNotNull (
+					spendLimiter.getDailySpendAdviceAmount ())
 
-			&& notLessThan (
-				spendLimiterNumber.getAdviceSpent (),
-				spendLimiter.getOngoingSpendAdviceAmount ())
+				&& notLessThan (
+					spendLimiterNumberDay.getAdviceSpent (),
+					spendLimiter.getDailySpendAdviceAmount ())
 
-		) {
+			) {
 
-			MessageRec adviceMessage =
-				smsMessageSenderProvider.get ()
+				MessageRec adviceMessage =
+					smsMessageSenderProvider.get ()
 
-				.threadId (
-					threadId)
+					.threadId (
+						threadId)
 
-				.number (
-					number)
+					.number (
+						number)
 
-				.messageText (
-					spendLimiter.getOngoingSpendAdviceMessage ())
+					.messageText (
+						spendLimiter.getDailySpendAdviceMessage ())
 
-				.numFrom (
-					originator)
+					.numFrom (
+						originator)
 
-				.routerResolve (
-					spendLimiter.getRouter ())
+					.routerResolve (
+						spendLimiter.getRouter ())
 
-				.serviceLookup (
-					spendLimiter,
-					"ongoing_advice")
+					.serviceLookup (
+						spendLimiter,
+						"daily_advice")
 
-				.send (
-					taskLogger);
+					.send (
+						taskLogger);
 
-			spendLimiterNumber
+				spendLimiterNumber
 
-				.setAdviceSpent (
-					0l)
+					.setAdviceSpent (
+						0l);
 
-				.getAdviceMessages ().add (
-					adviceMessage);
+				spendLimiterNumberDay
 
-			spendLimiterNumberDay
+					.setAdviceSpent (
+						0l)
 
-				.setAdviceSpent (
-					0l)
+					.getAdviceMessages ().add (
+						adviceMessage);
 
-				.getAdviceMessages ().add (
-					adviceMessage);
+			}
+
+			// check ongoing advice
+
+			if (
+
+				isNotNull (
+					spendLimiter.getOngoingSpendAdviceAmount ())
+
+				&& notLessThan (
+					spendLimiterNumber.getAdviceSpent (),
+					spendLimiter.getOngoingSpendAdviceAmount ())
+
+			) {
+
+				MessageRec adviceMessage =
+					smsMessageSenderProvider.get ()
+
+					.threadId (
+						threadId)
+
+					.number (
+						number)
+
+					.messageText (
+						spendLimiter.getOngoingSpendAdviceMessage ())
+
+					.numFrom (
+						originator)
+
+					.routerResolve (
+						spendLimiter.getRouter ())
+
+					.serviceLookup (
+						spendLimiter,
+						"ongoing_advice")
+
+					.send (
+						taskLogger);
+
+				spendLimiterNumber
+
+					.setAdviceSpent (
+						0l)
+
+					.getAdviceMessages ().add (
+						adviceMessage);
+
+				spendLimiterNumberDay
+
+					.setAdviceSpent (
+						0l)
+
+					.getAdviceMessages ().add (
+						adviceMessage);
+
+			}
 
 		}
 
@@ -384,74 +396,80 @@ class SmsSpendLimitLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsSpendLimiterNumberRec spendLimiterNumber) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"numberToday");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
-
-		SmsSpendLimiterRec spendLimiter =
-			spendLimiterNumber.getSmsSpendLimiter ();
-
-		DateTimeZone timezone =
-			DateTimeZone.forID (
-				spendLimiter.getTimezone ());
-
-		LocalDate today =
-			transaction.now ().toDateTime (
-				timezone
-			).toLocalDate ();
-
-		if (
-
-			isNotNull (
-				spendLimiterNumber.getLastSpendDate ())
-
-			&& notEarlierThan (
-				spendLimiterNumber.getLastSpendDate (),
-				today)
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"numberToday");
 
 		) {
 
-			return smsSpendLimiterNumberDayHelper.find (
-				spendLimiterNumber,
-				spendLimiterNumber.getLastSpendDate ());
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		} else {
+			SmsSpendLimiterRec spendLimiter =
+				spendLimiterNumber.getSmsSpendLimiter ();
 
-			spendLimiterNumber
+			DateTimeZone timezone =
+				DateTimeZone.forID (
+					spendLimiter.getTimezone ());
 
-				.setLastDailySpend (
-					0l)
+			LocalDate today =
+				transaction.now ().toDateTime (
+					timezone
+				).toLocalDate ();
 
-				.setLastSpendDate (
-					today);
+			if (
 
-			SmsSpendLimiterNumberDayRec numberDay =
-				smsSpendLimiterNumberDayHelper.insert (
-					taskLogger,
-					smsSpendLimiterNumberDayHelper.createInstance ()
+				isNotNull (
+					spendLimiterNumber.getLastSpendDate ())
 
-				.setSmsSpendLimiterNumber (
-					spendLimiterNumber)
-
-				.setDate (
+				&& notEarlierThan (
+					spendLimiterNumber.getLastSpendDate (),
 					today)
 
-				.setTotalSpent (
-					0l)
+			) {
 
-				.setAdviceSpent (
-					0l)
+				return smsSpendLimiterNumberDayHelper.find (
+					spendLimiterNumber,
+					spendLimiterNumber.getLastSpendDate ());
 
-				.setLimitSent (
-					false)
+			} else {
 
-			);
+				spendLimiterNumber
 
-			return numberDay;
+					.setLastDailySpend (
+						0l)
+
+					.setLastSpendDate (
+						today);
+
+				SmsSpendLimiterNumberDayRec numberDay =
+					smsSpendLimiterNumberDayHelper.insert (
+						taskLogger,
+						smsSpendLimiterNumberDayHelper.createInstance ()
+
+					.setSmsSpendLimiterNumber (
+						spendLimiterNumber)
+
+					.setDate (
+						today)
+
+					.setTotalSpent (
+						0l)
+
+					.setAdviceSpent (
+						0l)
+
+					.setLimitSent (
+						false)
+
+				);
+
+				return numberDay;
+
+			}
 
 		}
 

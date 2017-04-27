@@ -47,42 +47,48 @@ class NumberObjectHelperMethodsImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull String numberString) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreate");
+		try (
 
-		// find existing
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreate");
 
-		Optional <NumberRec> numberRecordOptional =
-			numberHelper.findByCode (
-				GlobalId.root,
-				numberString);
-
-		if (
-			optionalIsPresent (
-				numberRecordOptional)
 		) {
-			return numberRecordOptional.get ();
+
+			// find existing
+
+			Optional <NumberRec> numberRecordOptional =
+				numberHelper.findByCode (
+					GlobalId.root,
+					numberString);
+
+			if (
+				optionalIsPresent (
+					numberRecordOptional)
+			) {
+				return numberRecordOptional.get ();
+			}
+
+			// create it
+
+			NetworkRec defaultNetwork =
+				networkHelper.findRequired (
+					0l);
+
+			return numberHelper.insert (
+				taskLogger,
+				numberHelper.createInstance ()
+
+				.setNumber (
+					numberString)
+
+				.setNetwork (
+					defaultNetwork)
+
+			);
+
 		}
-
-		// create it
-
-		NetworkRec defaultNetwork =
-			networkHelper.findRequired (
-				0l);
-
-		return numberHelper.insert (
-			taskLogger,
-			numberHelper.createInstance ()
-
-			.setNumber (
-				numberString)
-
-			.setNetwork (
-				defaultNetwork)
-
-		);
 
 	}
 
@@ -92,65 +98,71 @@ class NumberObjectHelperMethodsImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull List <String> numberStrings) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreateMany");
+		try (
 
-		List <Optional <NumberRec>> numbersOptional =
-			numberHelper.findManyByCode (
-				GlobalId.root,
-				numberStrings);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreateMany");
 
-		ImmutableList.Builder <NumberRec> numbersBuilder =
-			ImmutableList.builder ();
-
-		NetworkRec defaultNetwork =
-			networkHelper.findRequired (
-				0l);
-
-		for (
-			long index = 0;
-			index < collectionSize (numberStrings);
-			index ++
 		) {
 
-			Optional <NumberRec> numberOptional =
-				listItemAtIndexRequired (
-					numbersOptional,
-					index);
+			List <Optional <NumberRec>> numbersOptional =
+				numberHelper.findManyByCode (
+					GlobalId.root,
+					numberStrings);
 
-			if (
-				optionalIsPresent (
-					numberOptional)
+			ImmutableList.Builder <NumberRec> numbersBuilder =
+				ImmutableList.builder ();
+
+			NetworkRec defaultNetwork =
+				networkHelper.findRequired (
+					0l);
+
+			for (
+				long index = 0;
+				index < collectionSize (numberStrings);
+				index ++
 			) {
 
-				numbersBuilder.add (
-					optionalGetRequired (
-						numberOptional));
+				Optional <NumberRec> numberOptional =
+					listItemAtIndexRequired (
+						numbersOptional,
+						index);
 
-			} else {
+				if (
+					optionalIsPresent (
+						numberOptional)
+				) {
 
-				numbersBuilder.add (
-					numberHelper.insert (
-						taskLogger,
-						numberHelper.createInstance ()
+					numbersBuilder.add (
+						optionalGetRequired (
+							numberOptional));
 
-					.setNumber (
-						listItemAtIndexRequired (
-							numberStrings,
-							index))
+				} else {
 
-					.setNetwork (
-						defaultNetwork)
+					numbersBuilder.add (
+						numberHelper.insert (
+							taskLogger,
+							numberHelper.createInstance ()
 
-				));
+						.setNumber (
+							listItemAtIndexRequired (
+								numberStrings,
+								index))
+
+						.setNetwork (
+							defaultNetwork)
+
+					));
+
+				}
 
 			}
 
-		}
+			return numbersBuilder.build ();
 
-		return numbersBuilder.build ();
+		}
 
 	}
 

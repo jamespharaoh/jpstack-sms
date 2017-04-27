@@ -6,7 +6,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import java.sql.SQLException;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
@@ -17,7 +16,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
@@ -28,7 +27,6 @@ import wbs.framework.logging.TaskLogger;
 import wbs.sms.message.delivery.metamodel.DeliveryTypeSpec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 
-@Log4j
 @PrototypeComponent ("deliveryTypeBuilder")
 @ModelMetaBuilderHandler
 public
@@ -67,18 +65,19 @@ class DeliveryTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"build");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-			log.info (
-				stringFormat (
-					"Create delivery type %s",
-					simplifyToCodeRequired (
-						spec.name ())));
+		) {
+
+			taskLogger.noticeFormat (
+				"Create delivery type %s",
+				simplifyToCodeRequired (
+					spec.name ()));
 
 			createDeliveryType (
 				taskLogger);
@@ -101,16 +100,14 @@ class DeliveryTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createDeliveryType");
-
-		// begin transaction
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createDeliveryType");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"DeliveryTypeBuilder.createDeliveryType ()",

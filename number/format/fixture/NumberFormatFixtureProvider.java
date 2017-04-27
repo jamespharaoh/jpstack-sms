@@ -6,7 +6,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -49,128 +49,134 @@ class NumberFormatFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		numberFormatHelper.insert (
-			taskLogger,
-			numberFormatHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-			.setCode (
-				"uk")
+		) {
 
-			.setName (
-				"UK")
+			numberFormatHelper.insert (
+				taskLogger,
+				numberFormatHelper.createInstance ()
 
-			.setDescription (
-				"United Kingdom")
+				.setCode (
+					"uk")
 
-		);
+				.setName (
+					"UK")
 
-		database.flush ();
+				.setDescription (
+					"United Kingdom")
 
-		numberFormatPatternHelper.insert (
-			taskLogger,
-			numberFormatPatternHelper.createInstance ()
+			);
 
-			.setNumberFormat (
-				numberFormatHelper.findByCodeRequired (
-					GlobalId.root,
-					"uk"))
+			database.flush ();
 
-			.setInputPrefix (
-				"44")
+			numberFormatPatternHelper.insert (
+				taskLogger,
+				numberFormatPatternHelper.createInstance ()
 
-			.setMinimumLength (
-				12l)
+				.setNumberFormat (
+					numberFormatHelper.findByCodeRequired (
+						GlobalId.root,
+						"uk"))
 
-			.setMaximumLength (
-				12l)
+				.setInputPrefix (
+					"44")
 
-			.setOutputPrefix (
-				"44")
+				.setMinimumLength (
+					12l)
 
-		);
+				.setMaximumLength (
+					12l)
 
-		numberFormatPatternHelper.insert (
-			taskLogger,
-			numberFormatPatternHelper.createInstance ()
+				.setOutputPrefix (
+					"44")
 
-			.setNumberFormat (
-				numberFormatHelper.findByCodeRequired (
-					GlobalId.root,
-					"uk"))
+			);
 
-			.setInputPrefix (
-				"+44")
+			numberFormatPatternHelper.insert (
+				taskLogger,
+				numberFormatPatternHelper.createInstance ()
 
-			.setMinimumLength (
-				13l)
+				.setNumberFormat (
+					numberFormatHelper.findByCodeRequired (
+						GlobalId.root,
+						"uk"))
 
-			.setMaximumLength (
-				13l)
+				.setInputPrefix (
+					"+44")
 
-			.setOutputPrefix (
-				"44")
+				.setMinimumLength (
+					13l)
 
-		);
+				.setMaximumLength (
+					13l)
 
-		numberFormatPatternHelper.insert (
-			taskLogger,
-			numberFormatPatternHelper.createInstance ()
+				.setOutputPrefix (
+					"44")
 
-			.setNumberFormat (
-				numberFormatHelper.findByCodeRequired (
-					GlobalId.root,
-					"uk"))
+			);
 
-			.setInputPrefix (
-				"0")
+			numberFormatPatternHelper.insert (
+				taskLogger,
+				numberFormatPatternHelper.createInstance ()
 
-			.setMinimumLength (
-				11l)
+				.setNumberFormat (
+					numberFormatHelper.findByCodeRequired (
+						GlobalId.root,
+						"uk"))
 
-			.setMaximumLength (
-				11l)
+				.setInputPrefix (
+					"0")
 
-			.setOutputPrefix (
-				"44")
+				.setMinimumLength (
+					11l)
 
-		);
+				.setMaximumLength (
+					11l)
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+				.setOutputPrefix (
+					"44")
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+			);
 
-			.setCode (
-				"number_format")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Number Format")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"Manage localized telephony number conventions")
+				.setCode (
+					"number_format")
 
-			.setLabel (
-				"Number format")
+				.setName (
+					"Number Format")
 
-			.setTargetPath (
-				"/numberFormats")
+				.setDescription (
+					"Manage localized telephony number conventions")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Number format")
 
-		);
+				.setTargetPath (
+					"/numberFormats")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
 

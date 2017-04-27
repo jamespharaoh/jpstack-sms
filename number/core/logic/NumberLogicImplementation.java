@@ -8,8 +8,8 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -52,59 +52,65 @@ class NumberLogicImplementation
 			@NonNull String numTo,
 			@NonNull MessageStatus status) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"updateDeliveryStatusForNumber");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"updateDeliveryStatusForNumber");
 
-		NumberRec number =
-			numberHelper.findOrCreate (
-				taskLogger,
-				numTo);
-
-		// TODO should not be here
-
-		ChatUserNumberReportRec numberReport =
-			optionalOrElse (
-
-			chatUserNumberReportHelper.find (
-				number.getId ()),
-
-			() -> chatUserNumberReportHelper.insert (
-				taskLogger,
-				chatUserNumberReportHelper.createInstance ()
-
-				.setNumber (
-					number)
-
-			)
-
-		);
-
-		if (status.isGoodType ()) {
-
-			numberReport
-
-				.setLastSuccess (
-					transaction.now ());
-
-		} else if (
-			status.isBadType ()
-			|| status.isPending ()
 		) {
 
-			if (
-				isNull (
-					numberReport.getFirstFailure ())
-			) {
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			NumberRec number =
+				numberHelper.findOrCreate (
+					taskLogger,
+					numTo);
+
+			// TODO should not be here
+
+			ChatUserNumberReportRec numberReport =
+				optionalOrElse (
+
+				chatUserNumberReportHelper.find (
+					number.getId ()),
+
+				() -> chatUserNumberReportHelper.insert (
+					taskLogger,
+					chatUserNumberReportHelper.createInstance ()
+
+					.setNumber (
+						number)
+
+				)
+
+			);
+
+			if (status.isGoodType ()) {
 
 				numberReport
 
-					.setFirstFailure (
+					.setLastSuccess (
 						transaction.now ());
+
+			} else if (
+				status.isBadType ()
+				|| status.isPending ()
+			) {
+
+				if (
+					isNull (
+						numberReport.getFirstFailure ())
+				) {
+
+					numberReport
+
+						.setFirstFailure (
+							transaction.now ());
+
+				}
 
 			}
 
@@ -118,64 +124,70 @@ class NumberLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"archiveNumberFromMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"archiveNumberFromMessage");
 
-		// TODO i don't like this at all
+		) {
 
-		NumberRec oldNumber =
-			message.getNumber ();
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		String currentNumber =
-			oldNumber.getNumber ();
+			// TODO i don't like this at all
 
-		// re-name old number
+			NumberRec oldNumber =
+				message.getNumber ();
 
-		oldNumber
+			String currentNumber =
+				oldNumber.getNumber ();
 
-			.setArchiveDate (
-				transaction.now ())
+			// re-name old number
 
-			.setNumber (
-				currentNumber + "." + oldNumber.getId ());
+			oldNumber
 
-		database.flush ();
+				.setArchiveDate (
+					transaction.now ())
 
-		// create new number and save
+				.setNumber (
+					currentNumber + "." + oldNumber.getId ());
 
-		NumberRec newNumber =
-			numberHelper.insert (
-				taskLogger,
-				numberHelper.createInstance ()
+			database.flush ();
 
-			.setNumber (
-				currentNumber)
+			// create new number and save
 
-			.setNetwork (
-				oldNumber.getNetwork ())
+			NumberRec newNumber =
+				numberHelper.insert (
+					taskLogger,
+					numberHelper.createInstance ()
 
-		);
+				.setNumber (
+					currentNumber)
 
-		// assign message to new number
+				.setNetwork (
+					oldNumber.getNetwork ())
 
-		message
+			);
 
-			.setNumber (
-				newNumber);
+			// assign message to new number
 
-		database.flush ();
+			message
 
-		taskLogger.warningFormat (
-			"Archived number %s as %s",
-			currentNumber,
-			oldNumber.getNumber ());
+				.setNumber (
+					newNumber);
 
-		return newNumber;
+			database.flush ();
+
+			taskLogger.warningFormat (
+				"Archived number %s as %s",
+				currentNumber,
+				oldNumber.getNumber ());
+
+			return newNumber;
+
+		}
 
 	}
 

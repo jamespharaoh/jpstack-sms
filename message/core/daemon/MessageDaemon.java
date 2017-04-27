@@ -20,7 +20,7 @@ import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
@@ -107,24 +107,30 @@ class MessageDaemon
 	private
 	void runOnce () {
 
-		TaskLogger taskLogger =
-			logContext.createTaskLogger (
-				"runOnce ()");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"runOnce ()");
 
-			expireMessages (
-				taskLogger);
+		) {
 
-		} catch (Exception exception) {
+			try {
 
-			exceptionLogger.logThrowable (
-				taskLogger,
-				"daemon",
-				"MessageDaemon",
-				exception,
-				Optional.absent (),
-				GenericExceptionResolution.tryAgainLater);
+				expireMessages (
+					taskLogger);
+
+			} catch (Exception exception) {
+
+				exceptionLogger.logThrowable (
+					taskLogger,
+					"daemon",
+					"MessageDaemon",
+					exception,
+					Optional.absent (),
+					GenericExceptionResolution.tryAgainLater);
+
+			}
 
 		}
 
@@ -134,14 +140,14 @@ class MessageDaemon
 	void expireMessages (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"expireMessages");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"expireMessages");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"MessageDaemon.expiresMessages ()",

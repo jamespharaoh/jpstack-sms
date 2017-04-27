@@ -15,8 +15,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -63,73 +63,79 @@ class NumberListLogicImplementation
 			@NonNull MessageRec message,
 			@NonNull ServiceRec service) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"addDueToMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"addDueToMessage");
 
-		// lookup number list number
-
-		NumberListNumberRec numberListNumber =
-			numberListNumberHelper.findOrCreate (
-				taskLogger,
-				numberList,
-				number);
-
-		// do nothing if already present
-
-		if (
-			numberListNumber.getPresent ()
 		) {
-			return;
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			// lookup number list number
+
+			NumberListNumberRec numberListNumber =
+				numberListNumberHelper.findOrCreate (
+					taskLogger,
+					numberList,
+					number);
+
+			// do nothing if already present
+
+			if (
+				numberListNumber.getPresent ()
+			) {
+				return;
+			}
+
+			// update number list number
+
+			numberListNumber
+
+				.setPresent (
+					true);
+
+			// create number list update
+
+			numberListUpdateHelper.insert (
+				taskLogger,
+				numberListUpdateHelper.createInstance ()
+
+				.setNumberList (
+					numberList)
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setService (
+					service)
+
+				.setMessage (
+					message)
+
+				.setPresent (
+					true)
+
+				.setNumberCount (
+					1l)
+
+				.setNumbers (
+					Collections.singleton (
+						number))
+
+			);
+
+			// update number list
+
+			numberList
+
+				.setNumberCount (
+					numberList.getNumberCount () + 1);
+
 		}
-
-		// update number list number
-
-		numberListNumber
-
-			.setPresent (
-				true);
-
-		// create number list update
-
-		numberListUpdateHelper.insert (
-			taskLogger,
-			numberListUpdateHelper.createInstance ()
-
-			.setNumberList (
-				numberList)
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setService (
-				service)
-
-			.setMessage (
-				message)
-
-			.setPresent (
-				true)
-
-			.setNumberCount (
-				1l)
-
-			.setNumbers (
-				Collections.singleton (
-					number))
-
-		);
-
-		// update number list
-
-		numberList
-
-			.setNumberCount (
-				numberList.getNumberCount () + 1);
 
 	}
 
@@ -212,73 +218,79 @@ class NumberListLogicImplementation
 			@NonNull MessageRec message,
 			@NonNull ServiceRec service) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"removeDueToMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"removeDueToMessage");
 
-		// lookup number list number
-
-		NumberListNumberRec numberListNumber =
-			numberListNumberHelper.findOrCreate (
-				taskLogger,
-				numberList,
-				number);
-
-		// do nothing if not present
-
-		if (
-			! numberListNumber.getPresent ()
 		) {
-			return;
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			// lookup number list number
+
+			NumberListNumberRec numberListNumber =
+				numberListNumberHelper.findOrCreate (
+					taskLogger,
+					numberList,
+					number);
+
+			// do nothing if not present
+
+			if (
+				! numberListNumber.getPresent ()
+			) {
+				return;
+			}
+
+			// update number list number
+
+			numberListNumber
+
+				.setPresent (
+					false);
+
+			// create number list update
+
+			numberListUpdateHelper.insert (
+				taskLogger,
+				numberListUpdateHelper.createInstance ()
+
+				.setNumberList (
+					numberList)
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setService (
+					service)
+
+				.setMessage (
+					message)
+
+				.setPresent (
+					false)
+
+				.setNumberCount (
+					1l)
+
+				.setNumbers (
+					Collections.singleton (
+						number))
+
+			);
+
+			// update number list
+
+			numberList
+
+				.setNumberCount (
+					numberList.getNumberCount () - 1);
+
 		}
-
-		// update number list number
-
-		numberListNumber
-
-			.setPresent (
-				false);
-
-		// create number list update
-
-		numberListUpdateHelper.insert (
-			taskLogger,
-			numberListUpdateHelper.createInstance ()
-
-			.setNumberList (
-				numberList)
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setService (
-				service)
-
-			.setMessage (
-				message)
-
-			.setPresent (
-				false)
-
-			.setNumberCount (
-				1l)
-
-			.setNumbers (
-				Collections.singleton (
-					number))
-
-		);
-
-		// update number list
-
-		numberList
-
-			.setNumberCount (
-				numberList.getNumberCount () - 1);
 
 	}
 

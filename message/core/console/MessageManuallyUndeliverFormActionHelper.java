@@ -17,7 +17,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -110,59 +110,65 @@ class MessageManuallyUndeliverFormActionHelper
 	public
 	Optional <Responder> processFormSubmission (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull Object formState) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"processFormSubmission");
+		try (
 
-		// load data
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processFormSubmission");
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
-
-		if (
-			enumNotEqualSafe (
-				smsMessage.getDirection (),
-				MessageDirection.out)
-		) {
-			throw new RuntimeException ();
-		}
-
-		if (
-			enumNotInSafe (
-				smsMessage.getStatus (),
-				MessageStatus.sent,
-				MessageStatus.submitted,
-				MessageStatus.delivered)
 		) {
 
-			requestContext.addError (
-				"Message in invalid state for this operation");
+			// load data
+
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired ();
+
+			if (
+				enumNotEqualSafe (
+					smsMessage.getDirection (),
+					MessageDirection.out)
+			) {
+				throw new RuntimeException ();
+			}
+
+			if (
+				enumNotInSafe (
+					smsMessage.getStatus (),
+					MessageStatus.sent,
+					MessageStatus.submitted,
+					MessageStatus.delivered)
+			) {
+
+				requestContext.addError (
+					"Message in invalid state for this operation");
+
+				return optionalAbsent ();
+
+			}
+
+			smsMessageLogic.messageStatus (
+				taskLogger,
+				smsMessage,
+				MessageStatus.manuallyUndelivered);
+
+			eventLogic.createEvent (
+				taskLogger,
+				"message_manually_undelivered",
+				userConsoleLogic.userRequired (),
+				smsMessage);
+
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Message manually undelivered");
 
 			return optionalAbsent ();
 
 		}
-
-		smsMessageLogic.messageStatus (
-			taskLogger,
-			smsMessage,
-			MessageStatus.manuallyUndelivered);
-
-		eventLogic.createEvent (
-			taskLogger,
-			"message_manually_undelivered",
-			userConsoleLogic.userRequired (),
-			smsMessage);
-
-		transaction.commit ();
-
-		requestContext.addNotice (
-			"Message manually undelivered");
-
-		return optionalAbsent ();
 
 	}
 

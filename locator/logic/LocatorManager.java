@@ -15,7 +15,7 @@ import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -92,14 +92,14 @@ class LocatorManager {
 	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setup");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"LocatorManager.afterPropertiesSet ()",
@@ -172,14 +172,14 @@ class LocatorManager {
 			@NonNull Long locatorLogId,
 			@NonNull LongLat longLat) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"logSuccess");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"logSuccess");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"LocatorManager.logSuccess (locatorLogId, longLat)",
@@ -215,14 +215,14 @@ class LocatorManager {
 			@NonNull String error,
 			@NonNull String errorCode) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"logFailure");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"logFailure");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"LocatorManager.logFailure (locatorLogId, error, errorCode)",
@@ -273,7 +273,7 @@ class LocatorManager {
 
 		try (
 
-			Transaction transaction =
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"LocatorManager.locate (...)",
@@ -441,41 +441,47 @@ class LocatorManager {
 			@NonNull Long affiliateId,
 			Callback callback) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"locate");
+		try (
 
-		executor.execute (
-			new Runnable () {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"locate");
 
-			@Override
-			public
-			void run () {
+		) {
 
-				try {
+			executor.execute (
+				new Runnable () {
 
-					LongLat longLat =
-						locate (
-							taskLogger,
-							locatorId,
-							numberId,
-							serviceId,
-							affiliateId);
+				@Override
+				public
+				void run () {
 
-					callback.success (
-						longLat);
+					try {
 
-				} catch (RuntimeException throwable) {
+						LongLat longLat =
+							locate (
+								taskLogger,
+								locatorId,
+								numberId,
+								serviceId,
+								affiliateId);
 
-					callback.failure (
-						throwable);
+						callback.success (
+							longLat);
+
+					} catch (RuntimeException throwable) {
+
+						callback.failure (
+							throwable);
+
+					}
 
 				}
 
-			}
+			});
 
-		});
+		}
 
 	}
 

@@ -76,111 +76,117 @@ class MessageInboxSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		htmlFormOpenPost ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableOpenList ();
-
-		htmlTableHeaderRowWrite (
-			"Message",
-			"From",
-			"To",
-			"Created",
-			"Tries",
-			"Next try",
-			"Route",
-			"Actions");
-
-		for (
-			InboxRec inbox
-				: inboxes
 		) {
 
-			htmlTableRowSeparatorWrite ();
+			htmlFormOpenPost ();
 
-			// message
+			htmlTableOpenList ();
 
-			MessageRec message =
-				inbox.getMessage ();
+			htmlTableHeaderRowWrite (
+				"Message",
+				"From",
+				"To",
+				"Created",
+				"Tries",
+				"Next try",
+				"Route",
+				"Actions");
 
-			htmlTableRowOpen ();
-
-			objectManager.writeTdForObjectMiniLink (
-				taskLogger,
-				message);
-
-			objectManager.writeTdForObjectMiniLink (
-				taskLogger,
-				message.getNumber ());
-
-			htmlTableCellWrite (
-				message.getNumTo ());
-
-			htmlTableCellWrite (
-				userConsoleLogic.timestampWithoutTimezoneString (
-					message.getCreatedTime ()));
-
-			htmlTableCellWrite (
-				integerToDecimalString (
-					inbox.getNumAttempts ()));
-
-			htmlTableCellWrite (
-				userConsoleLogic.timestampWithoutTimezoneString (
-					inbox.getNextAttempt ()));
-
-			objectManager.writeTdForObjectMiniLink (
-				taskLogger,
-				message.getRoute ());
-
-			htmlTableCellWriteHtml (
-				stringFormat (
-					"<input",
-					" type=\"submit\"",
-					" name=\"ignore_%h\"",
-					integerToDecimalString (
-						message.getId ()),
-					" value=\"cancel\"",
-					">"),
-				htmlRowSpanAttribute (3l));
-
-			htmlTableRowClose ();
-
-			// message text
-
-			htmlTableRowOpen ();
-
-			htmlTableCellWrite (
-				message.getText ().getText (),
-				htmlColumnSpanAttribute (7l));
-
-			htmlTableRowClose ();
-
-			// status message
-
-			if (
-				isNotNull (
-					inbox.getStatusMessage ())
+			for (
+				InboxRec inbox
+					: inboxes
 			) {
+
+				htmlTableRowSeparatorWrite ();
+
+				// message
+
+				MessageRec message =
+					inbox.getMessage ();
+
+				htmlTableRowOpen ();
+
+				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
+					message);
+
+				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
+					message.getNumber ());
+
+				htmlTableCellWrite (
+					message.getNumTo ());
+
+				htmlTableCellWrite (
+					userConsoleLogic.timestampWithoutTimezoneString (
+						message.getCreatedTime ()));
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						inbox.getNumAttempts ()));
+
+				htmlTableCellWrite (
+					userConsoleLogic.timestampWithoutTimezoneString (
+						inbox.getNextAttempt ()));
+
+				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
+					message.getRoute ());
+
+				htmlTableCellWriteHtml (
+					stringFormat (
+						"<input",
+						" type=\"submit\"",
+						" name=\"ignore_%h\"",
+						integerToDecimalString (
+							message.getId ()),
+						" value=\"cancel\"",
+						">"),
+					htmlRowSpanAttribute (3l));
+
+				htmlTableRowClose ();
+
+				// message text
 
 				htmlTableRowOpen ();
 
 				htmlTableCellWrite (
-					inbox.getStatusMessage (),
+					message.getText ().getText (),
 					htmlColumnSpanAttribute (7l));
 
 				htmlTableRowClose ();
 
+				// status message
+
+				if (
+					isNotNull (
+						inbox.getStatusMessage ())
+				) {
+
+					htmlTableRowOpen ();
+
+					htmlTableCellWrite (
+						inbox.getStatusMessage (),
+						htmlColumnSpanAttribute (7l));
+
+					htmlTableRowClose ();
+
+				}
+
 			}
 
+			htmlTableClose ();
+
+			htmlFormClose ();
+
 		}
-
-		htmlTableClose ();
-
-		htmlFormClose ();
 
 	}
 

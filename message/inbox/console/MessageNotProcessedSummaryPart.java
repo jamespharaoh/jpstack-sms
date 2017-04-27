@@ -71,78 +71,84 @@ class MessageNotProcessedSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		if (
-			enumNotEqualSafe (
-				message.getStatus (),
-				MessageStatus.notProcessed)
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
+
 		) {
 
-			formatWriter.writeFormat (
-				"<p>Message is not in correct state</p>");
+			if (
+				enumNotEqualSafe (
+					message.getStatus (),
+					MessageStatus.notProcessed)
+			) {
 
-			return;
+				formatWriter.writeFormat (
+					"<p>Message is not in correct state</p>");
+
+				return;
+
+			}
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWrite (
+				"ID",
+				integerToDecimalString (
+					message.getId ()));
+
+			htmlTableDetailsRowWrite (
+				"From",
+				message.getNumFrom ());
+
+			htmlTableDetailsRowWrite (
+				"To",
+				message.getNumTo ());
+
+			htmlTableDetailsRowWrite (
+				"Message",
+				message.getText ().getText ());
+
+			htmlTableDetailsRowWriteRaw (
+				"Route",
+				() -> objectManager.writeTdForObjectMiniLink (
+					taskLogger,
+					message.getRoute ()));
+
+			htmlTableDetailsRowWriteRaw (
+				"Status",
+				() -> messageConsoleLogic.writeTdForMessageStatus (
+					formatWriter,
+					message.getStatus ()));
+
+			htmlTableDetailsRowWriteHtml (
+				"Time sent",
+				ifNotNullThenElseEmDash (
+					message.getNetworkTime (),
+					() -> userConsoleLogic.timestampWithTimezoneString (
+						message.getNetworkTime ())));
+
+			htmlTableDetailsRowWrite (
+				"Time received",
+				userConsoleLogic.timestampWithTimezoneString (
+					message.getCreatedTime ()));
+
+			htmlTableDetailsRowWrite (
+				"Charge",
+				integerToDecimalString (
+					message.getCharge ()));
+
+			htmlTableDetailsRowWrite (
+				"AV status",
+				ifNullThenEmDash (
+					message.getAdultVerified ()));
+
+			htmlTableClose ();
 
 		}
-
-		htmlTableOpenDetails ();
-
-		htmlTableDetailsRowWrite (
-			"ID",
-			integerToDecimalString (
-				message.getId ()));
-
-		htmlTableDetailsRowWrite (
-			"From",
-			message.getNumFrom ());
-
-		htmlTableDetailsRowWrite (
-			"To",
-			message.getNumTo ());
-
-		htmlTableDetailsRowWrite (
-			"Message",
-			message.getText ().getText ());
-
-		htmlTableDetailsRowWriteRaw (
-			"Route",
-			() -> objectManager.writeTdForObjectMiniLink (
-				taskLogger,
-				message.getRoute ()));
-
-		htmlTableDetailsRowWriteRaw (
-			"Status",
-			() -> messageConsoleLogic.writeTdForMessageStatus (
-				formatWriter,
-				message.getStatus ()));
-
-		htmlTableDetailsRowWriteHtml (
-			"Time sent",
-			ifNotNullThenElseEmDash (
-				message.getNetworkTime (),
-				() -> userConsoleLogic.timestampWithTimezoneString (
-					message.getNetworkTime ())));
-
-		htmlTableDetailsRowWrite (
-			"Time received",
-			userConsoleLogic.timestampWithTimezoneString (
-				message.getCreatedTime ()));
-
-		htmlTableDetailsRowWrite (
-			"Charge",
-			integerToDecimalString (
-				message.getCharge ()));
-
-		htmlTableDetailsRowWrite (
-			"AV status",
-			ifNullThenEmDash (
-				message.getAdultVerified ()));
-
-		htmlTableClose ();
 
 	}
 

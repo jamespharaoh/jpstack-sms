@@ -33,9 +33,11 @@ interface SmsOutboxLogic {
 			MessageRec message);
 
 	OutboxRec claimNextMessage (
+			TaskLogger parentTaskLogger,
 			RouteRec route);
 
 	List <OutboxRec> claimNextMessages (
+			TaskLogger parentTaskLogger,
 			RouteRec route,
 			Long limit);
 

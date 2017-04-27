@@ -15,7 +15,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -98,41 +98,47 @@ class SmsCustomerEndSessionFormActionHelper
 	public
 	Optional <Responder> processFormSubmission (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull SmsCustomerEndSessionForm formState) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"processFormSubmission ()");
+		try (
 
-		SmsCustomerRec customer =
-			smsCustomerHelper.findFromContextRequired ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processFormSubmission ()");
 
-		if (
-			isNull (
-				customer.getActiveSession ())
 		) {
 
-			requestContext.addError (
-				"Customer has no active session");
+			SmsCustomerRec customer =
+				smsCustomerHelper.findFromContextRequired ();
 
-		} else {
+			if (
+				isNull (
+					customer.getActiveSession ())
+			) {
 
-			smsCustomerLogic.sessionEndManually (
-				taskLogger,
-				userConsoleLogic.userRequired (),
-				customer,
-				formState.reason ());
+				requestContext.addError (
+					"Customer has no active session");
 
-			transaction.commit ();
+			} else {
 
-			requestContext.addNotice (
-				"Customer session ended");
+				smsCustomerLogic.sessionEndManually (
+					taskLogger,
+					userConsoleLogic.userRequired (),
+					customer,
+					formState.reason ());
+
+				transaction.commit ();
+
+				requestContext.addNotice (
+					"Customer session ended");
+
+			}
+
+			return optionalAbsent ();
 
 		}
-
-		return optionalAbsent ();
 
 	}
 

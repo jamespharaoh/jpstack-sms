@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -65,24 +65,30 @@ class SmsSpendLimitFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		createMenuItems (
-			taskLogger,
-			transaction);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-		createFeatures (
-			taskLogger,
-			transaction);
+		) {
 
-		createSpendLimiter (
-			taskLogger,
-			transaction);
+			createMenuItems (
+				taskLogger,
+				transaction);
+
+			createFeatures (
+				taskLogger,
+				transaction);
+
+			createSpendLimiter (
+				taskLogger,
+				transaction);
+
+		}
 
 	}
 
@@ -91,131 +97,149 @@ class SmsSpendLimitFixtureProvider
 	private
 	void createMenuItems (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createMenuItems");
+		try (
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createMenuItems");
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+		) {
 
-			.setCode (
-				"spend_limiter")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Spend limiter")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"")
+				.setCode (
+					"spend_limiter")
 
-			.setLabel (
-				"Spend limiters")
+				.setName (
+					"Spend limiter")
 
-			.setTargetPath (
-				"/smsSpendLimiters")
+				.setDescription (
+					"")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Spend limiters")
 
-		);
+				.setTargetPath (
+					"/smsSpendLimiters")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
 
 	private
 	void createFeatures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFeatures");
+		try (
 
-		featureHelper.insert (
-			taskLogger,
-			featureHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFeatures");
 
-			.setCode (
-				"sms_spend_limit")
+		) {
 
-			.setName (
-				"SMS spend limit")
+			featureHelper.insert (
+				taskLogger,
+				featureHelper.createInstance ()
 
-			.setDescription (
-				"Apply daily and ongoing SMS spend limits and advices")
+				.setCode (
+					"sms_spend_limit")
 
-		);
+				.setName (
+					"SMS spend limit")
+
+				.setDescription (
+					"Apply daily and ongoing SMS spend limits and advices")
+
+			);
+
+		}
 
 	}
 
 	private
 	void createSpendLimiter (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createSpendLimiter");
+		try (
 
-		smsSpendLimiterHelper.insert (
-			taskLogger,
-			smsSpendLimiterHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createSpendLimiter");
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
+		) {
 
-			.setCode (
-				"test_sms_spend_limiter")
+			smsSpendLimiterHelper.insert (
+				taskLogger,
+				smsSpendLimiterHelper.createInstance ()
 
-			.setName (
-				"Test SMS spend limiter")
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
 
-			.setDescription (
-				"")
+				.setCode (
+					"test_sms_spend_limiter")
 
-			.setCurrency (
-				currencyHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"gbp"))
+				.setName (
+					"Test SMS spend limiter")
 
-			.setRouter (
-				routerHelper.findByCodeRequired (
-					routeHelper.findByCodeRequired (
+				.setDescription (
+					"")
+
+				.setCurrency (
+					currencyHelper.findByCodeRequired (
 						GlobalId.root,
 						"test",
-						"free"),
-					"static"))
+						"gbp"))
 
-			.setDailySpendLimitAmount (
-				1000l)
+				.setRouter (
+					routerHelper.findByCodeRequired (
+						routeHelper.findByCodeRequired (
+							GlobalId.root,
+							"test",
+							"free"),
+						"static"))
 
-			.setDailySpendLimitMessage (
-				textHelper.findOrCreate (
-					taskLogger,
-					"Daily spend limit"))
+				.setDailySpendLimitAmount (
+					1000l)
 
-			.setDailySpendAdviceAmount (
-				500l)
+				.setDailySpendLimitMessage (
+					textHelper.findOrCreate (
+						taskLogger,
+						"Daily spend limit"))
 
-			.setDailySpendAdviceMessage (
-				textHelper.findOrCreate (
-					taskLogger,
-					"Daily spend advice"))
+				.setDailySpendAdviceAmount (
+					500l)
 
-		);
+				.setDailySpendAdviceMessage (
+					textHelper.findOrCreate (
+						taskLogger,
+						"Daily spend advice"))
+
+			);
+
+		}
 
 	}
 

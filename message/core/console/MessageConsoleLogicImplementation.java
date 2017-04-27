@@ -87,92 +87,98 @@ class MessageConsoleLogicImplementation
 			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"writeMessageContentHtml");
+		try (
 
-		MessageConsolePlugin messageConsolePlugin =
-			messageConsolePluginManager.getPlugin (
-				message.getMessageType ().getCode ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"writeMessageContentHtml");
 
-		if (messageConsolePlugin != null) {
-
-			messageConsolePlugin.writeMessageSummaryHtml (
-				formatWriter,
-				message);
-
-			return;
-
-		}
-
-		if (
-			collectionIsNotEmpty (
-				message.getMedias ())
 		) {
 
-			if (
+			MessageConsolePlugin messageConsolePlugin =
+				messageConsolePluginManager.getPlugin (
+					message.getMessageType ().getCode ());
 
-				isNotNull (
-					message.getSubjectText ())
+			if (messageConsolePlugin != null) {
 
-				&& stringIsNotEmpty (
-					message.getSubjectText ().getText ())
+				messageConsolePlugin.writeMessageSummaryHtml (
+					formatWriter,
+					message);
 
-			) {
-
-				formatWriter.writeFormat (
-					"%h:\n",
-					message.getSubjectText ().getText ());
+				return;
 
 			}
 
-			int index = 0;
-
-			for (
-				MediaRec media
-					: message.getMedias ()
+			if (
+				collectionIsNotEmpty (
+					message.getMedias ())
 			) {
 
 				if (
-					mediaLogic.isText (
-						media.getMediaType ().getMimeType ())
+
+					isNotNull (
+						message.getSubjectText ())
+
+					&& stringIsNotEmpty (
+						message.getSubjectText ().getText ())
+
 				) {
 
-					mediaConsoleLogic.writeMediaThumb32OrText (
-						taskLogger,
-						formatWriter,
-						media);
-
-				} else {
-
-					htmlLinkWriteHtml (
-						formatWriter,
-						requestContext.resolveContextUrl (
-							stringFormat (
-								"/message",
-								"/%u",
-								integerToDecimalString (
-									message.getId ()),
-								"/message.mediaSummary",
-								"?index=%u",
-								integerToDecimalString (
-									index ++))),
-						() -> mediaConsoleLogic.writeMediaThumb32OrText (
-							taskLogger,
-							formatWriter,
-							media));
+					formatWriter.writeFormat (
+						"%h:\n",
+						message.getSubjectText ().getText ());
 
 				}
 
+				int index = 0;
+
+				for (
+					MediaRec media
+						: message.getMedias ()
+				) {
+
+					if (
+						mediaLogic.isText (
+							media.getMediaType ().getMimeType ())
+					) {
+
+						mediaConsoleLogic.writeMediaThumb32OrText (
+							taskLogger,
+							formatWriter,
+							media);
+
+					} else {
+
+						htmlLinkWriteHtml (
+							formatWriter,
+							requestContext.resolveContextUrl (
+								stringFormat (
+									"/message",
+									"/%u",
+									integerToDecimalString (
+										message.getId ()),
+									"/message.mediaSummary",
+									"?index=%u",
+									integerToDecimalString (
+										index ++))),
+							() -> mediaConsoleLogic.writeMediaThumb32OrText (
+								taskLogger,
+								formatWriter,
+								media));
+
+					}
+
+				}
+
+			} else {
+
+				formatWriter.writeFormat (
+					"%h",
+					spacify (
+						message.getText ().getText ()));
+
 			}
-
-		} else {
-
-			formatWriter.writeFormat (
-				"%h",
-				spacify (
-					message.getText ().getText ()));
 
 		}
 

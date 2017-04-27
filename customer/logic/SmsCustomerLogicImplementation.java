@@ -20,8 +20,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -77,67 +77,73 @@ class SmsCustomerLogicImplementation
 	void sessionStart (
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerRec customer,
-			@NonNull Optional<Long> threadId) {
+			@NonNull Optional <Long> threadId) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sessionStart");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sessionStart");
 
-		sessionTimeoutAuto (
-			taskLogger,
-			customer);
+		) {
 
-		if (customer.getActiveSession () != null) {
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			sessionTimeoutAuto (
+				taskLogger,
+				customer);
+
+			if (customer.getActiveSession () != null) {
+
+				customer
+
+					.setLastActionTime (
+						transaction.now ());
+
+				return;
+
+			}
+
+			SmsCustomerSessionRec newSession =
+				smsCustomerSessionHelper.insert (
+					taskLogger,
+					smsCustomerSessionHelper.createInstance ()
+
+				.setCustomer (
+					customer)
+
+				.setIndex (
+					customer.getNumSessions ())
+
+				.setStartTime (
+					transaction.now ())
+
+			);
 
 			customer
 
-				.setLastActionTime (
-					transaction.now ());
+				.setActiveSession (
+					newSession)
 
-			return;
+				.setLastActionTime (
+					transaction.now ())
+
+				.setNumSessions (
+					customer.getNumSessions () + 1);
+
+			sendWelcomeMessage (
+				taskLogger,
+				newSession,
+				threadId);
+
+			sendWarningMessage (
+				taskLogger,
+				newSession,
+				threadId);
 
 		}
-
-		SmsCustomerSessionRec newSession =
-			smsCustomerSessionHelper.insert (
-				taskLogger,
-				smsCustomerSessionHelper.createInstance ()
-
-			.setCustomer (
-				customer)
-
-			.setIndex (
-				customer.getNumSessions ())
-
-			.setStartTime (
-				transaction.now ())
-
-		);
-
-		customer
-
-			.setActiveSession (
-				newSession)
-
-			.setLastActionTime (
-				transaction.now ())
-
-			.setNumSessions (
-				customer.getNumSessions () + 1);
-
-		sendWelcomeMessage (
-			taskLogger,
-			newSession,
-			threadId);
-
-		sendWarningMessage (
-			taskLogger,
-			newSession,
-			threadId);
 
 	}
 
@@ -146,81 +152,87 @@ class SmsCustomerLogicImplementation
 			@NonNull SmsCustomerSessionRec session,
 			@NonNull Optional <Long> threadId) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sendWelcomeMessage");
+		try (
 
-		// only send once per session
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendWelcomeMessage");
 
-		if (
-			isNotNull (
-				session.getWelcomeMessage ())
 		) {
+
+			// only send once per session
+
+			if (
+				isNotNull (
+					session.getWelcomeMessage ())
+			) {
+				return;
+			}
+
+			// only send if welcome template is defined
+
+			SmsCustomerRec customer =
+				session.getCustomer ();
+
+			SmsCustomerManagerRec manager =
+				customer.getSmsCustomerManager ();
+
+			Optional<SmsCustomerTemplateRec> templateOptional =
+				smsCustomerTemplateHelper.findByCode (
+					manager,
+					"welcome");
+
+			if (
+				optionalIsNotPresent (
+					templateOptional)
+			) {
+				return;
+			}
+
+			SmsCustomerTemplateRec template =
+				templateOptional.get ();
+
+			// send message
+
+			MessageRec message =
+				messageSenderProvider.get ()
+
+				.threadId (
+					threadId.orNull ())
+
+				.number (
+					customer.getNumber ())
+
+				.messageText (
+					template.getText ())
+
+				.numFrom (
+					template.getNumber ())
+
+				.routerResolve (
+					template.getRouter ())
+
+				.serviceLookup (
+					manager,
+					"welcome")
+
+				.affiliate (
+					optionalOrNull (
+						customerAffiliate (
+							customer)))
+
+				.send (
+					taskLogger);
+
+			session
+
+				.setWelcomeMessage (
+					message);
+
 			return;
+
 		}
-
-		// only send if welcome template is defined
-
-		SmsCustomerRec customer =
-			session.getCustomer ();
-
-		SmsCustomerManagerRec manager =
-			customer.getSmsCustomerManager ();
-
-		Optional<SmsCustomerTemplateRec> templateOptional =
-			smsCustomerTemplateHelper.findByCode (
-				manager,
-				"welcome");
-
-		if (
-			optionalIsNotPresent (
-				templateOptional)
-		) {
-			return;
-		}
-
-		SmsCustomerTemplateRec template =
-			templateOptional.get ();
-
-		// send message
-
-		MessageRec message =
-			messageSenderProvider.get ()
-
-			.threadId (
-				threadId.orNull ())
-
-			.number (
-				customer.getNumber ())
-
-			.messageText (
-				template.getText ())
-
-			.numFrom (
-				template.getNumber ())
-
-			.routerResolve (
-				template.getRouter ())
-
-			.serviceLookup (
-				manager,
-				"welcome")
-
-			.affiliate (
-				optionalOrNull (
-					customerAffiliate (
-						customer)))
-
-			.send (
-				taskLogger);
-
-		session
-
-			.setWelcomeMessage (
-				message);
-
-		return;
 
 	}
 
@@ -229,68 +241,74 @@ class SmsCustomerLogicImplementation
 			@NonNull SmsCustomerSessionRec session,
 			@NonNull Optional<Long> threadId) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sendWarningMessage");
+		try (
 
-		SmsCustomerRec customer =
-			session.getCustomer ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendWarningMessage");
 
-		SmsCustomerManagerRec manager =
-			customer.getSmsCustomerManager ();
-
-		Optional<SmsCustomerTemplateRec> templateOptional =
-			smsCustomerTemplateHelper.findByCode (
-				manager,
-				"warning");
-
-		if (
-			optionalIsNotPresent (
-				templateOptional)
 		) {
+
+			SmsCustomerRec customer =
+				session.getCustomer ();
+
+			SmsCustomerManagerRec manager =
+				customer.getSmsCustomerManager ();
+
+			Optional<SmsCustomerTemplateRec> templateOptional =
+				smsCustomerTemplateHelper.findByCode (
+					manager,
+					"warning");
+
+			if (
+				optionalIsNotPresent (
+					templateOptional)
+			) {
+				return;
+			}
+
+			SmsCustomerTemplateRec template =
+				templateOptional.get ();
+
+			MessageRec message =
+				messageSenderProvider.get ()
+
+				.threadId (
+					threadId.orNull ())
+
+				.number (
+					customer.getNumber ())
+
+				.messageText (
+					template.getText ())
+
+				.numFrom (
+					template.getNumber ())
+
+				.routerResolve (
+					template.getRouter ())
+
+				.serviceLookup (
+					manager,
+					"warning")
+
+				.affiliate (
+					optionalOrNull (
+						customerAffiliate (
+							customer)))
+
+				.send (
+					taskLogger);
+
+			session
+
+				.setWarningMessage (
+					message);
+
 			return;
+
 		}
-
-		SmsCustomerTemplateRec template =
-			templateOptional.get ();
-
-		MessageRec message =
-			messageSenderProvider.get ()
-
-			.threadId (
-				threadId.orNull ())
-
-			.number (
-				customer.getNumber ())
-
-			.messageText (
-				template.getText ())
-
-			.numFrom (
-				template.getNumber ())
-
-			.routerResolve (
-				template.getRouter ())
-
-			.serviceLookup (
-				manager,
-				"warning")
-
-			.affiliate (
-				optionalOrNull (
-					customerAffiliate (
-						customer)))
-
-			.send (
-				taskLogger);
-
-		session
-
-			.setWarningMessage (
-				message);
-
-		return;
 
 	}
 
@@ -302,44 +320,50 @@ class SmsCustomerLogicImplementation
 			@NonNull SmsCustomerRec customer,
 			@NonNull String reason) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sessionEndManually");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sessionEndManually");
 
-		if (
-			isNull (
-				customer.getActiveSession ())
 		) {
-			throw new IllegalStateException ();
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			if (
+				isNull (
+					customer.getActiveSession ())
+			) {
+				throw new IllegalStateException ();
+			}
+
+			SmsCustomerSessionRec session =
+				customer.getActiveSession ();
+
+			session
+
+				.setEndTime (
+					transaction.now ())
+
+			;
+
+			customer
+
+				.setActiveSession (
+					null)
+
+			;
+
+			eventLogic.createEvent (
+				taskLogger,
+				"sms_customer_session_end_manually",
+				user,
+				customer,
+				reason);
+
 		}
-
-		SmsCustomerSessionRec session =
-			customer.getActiveSession ();
-
-		session
-
-			.setEndTime (
-				transaction.now ())
-
-		;
-
-		customer
-
-			.setActiveSession (
-				null)
-
-		;
-
-		eventLogic.createEvent (
-			taskLogger,
-			"sms_customer_session_end_manually",
-			user,
-			customer,
-			reason);
 
 	}
 
@@ -348,17 +372,23 @@ class SmsCustomerLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerRec customer) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sessionTimeoutAuto");
+		try (
 
-		if (customer.getActiveSession () == null)
-			return;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sessionTimeoutAuto");
 
-		sessionTimeoutAuto (
-			taskLogger,
-			customer.getActiveSession ());
+		) {
+
+			if (customer.getActiveSession () == null)
+				return;
+
+			sessionTimeoutAuto (
+				taskLogger,
+				customer.getActiveSession ());
+
+		}
 
 	}
 
@@ -368,91 +398,97 @@ class SmsCustomerLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsCustomerSessionRec session) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sessionTimeoutAuto");
+		try (
 
-		taskLogger.debugFormat (
-			"Automatic session timeout for %s",
-			integerToDecimalString (
-				session.getId ()));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sessionTimeoutAuto");
 
-		Transaction transaction =
-			database.currentTransaction ();
-
-		SmsCustomerRec customer =
-			session.getCustomer ();
-
-		SmsCustomerManagerRec manager =
-			customer.getSmsCustomerManager ();
-
-		if (session.getEndTime () != null) {
+		) {
 
 			taskLogger.debugFormat (
-				"Not timing out session %s ",
+				"Automatic session timeout for %s",
 				integerToDecimalString (
-					session.getId ()),
-				"since it has already ended");
+					session.getId ()));
 
-			return;
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			SmsCustomerRec customer =
+				session.getCustomer ();
+
+			SmsCustomerManagerRec manager =
+				customer.getSmsCustomerManager ();
+
+			if (session.getEndTime () != null) {
+
+				taskLogger.debugFormat (
+					"Not timing out session %s ",
+					integerToDecimalString (
+						session.getId ()),
+					"since it has already ended");
+
+				return;
+
+			}
+
+			if (manager.getSessionTimeout () == null) {
+
+				taskLogger.debugFormat (
+					"Not timing out session %s ",
+					integerToDecimalString (
+						session.getId ()),
+					"since manager %s ",
+					integerToDecimalString (
+						manager.getId ()),
+					"has no timeout configured");
+
+				return;
+
+			}
+
+			Instant startTimeBefore =
+				transaction.now ().minus (
+					Duration.standardSeconds (
+						manager.getSessionTimeout ()));
+
+			if (! session.getStartTime ().isBefore (
+					startTimeBefore)) {
+
+				taskLogger.debugFormat (
+					"Not timing out session %s, ",
+					integerToDecimalString (
+						session.getId ()),
+					"which started at %s, ",
+					session.getStartTime ().toString (),
+					"since that is not before %s",
+					startTimeBefore.toString ());
+
+				return;
+
+			}
+
+			taskLogger.warningFormat (
+				"Timing out sms customer session %s",
+				integerToDecimalString (
+					session.getId ()));
+
+			session
+
+				.setEndTime (
+					transaction.now ())
+
+			;
+
+			customer
+
+				.setActiveSession (
+					null)
+
+			;
 
 		}
-
-		if (manager.getSessionTimeout () == null) {
-
-			taskLogger.debugFormat (
-				"Not timing out session %s ",
-				integerToDecimalString (
-					session.getId ()),
-				"since manager %s ",
-				integerToDecimalString (
-					manager.getId ()),
-				"has no timeout configured");
-
-			return;
-
-		}
-
-		Instant startTimeBefore =
-			transaction.now ().minus (
-				Duration.standardSeconds (
-					manager.getSessionTimeout ()));
-
-		if (! session.getStartTime ().isBefore (
-				startTimeBefore)) {
-
-			taskLogger.debugFormat (
-				"Not timing out session %s, ",
-				integerToDecimalString (
-					session.getId ()),
-				"which started at %s, ",
-				session.getStartTime ().toString (),
-				"since that is not before %s",
-				startTimeBefore.toString ());
-
-			return;
-
-		}
-
-		taskLogger.warningFormat (
-			"Timing out sms customer session %s",
-			integerToDecimalString (
-				session.getId ()));
-
-		session
-
-			.setEndTime (
-				transaction.now ())
-
-		;
-
-		customer
-
-			.setActiveSession (
-				null)
-
-		;
 
 	}
 
@@ -484,29 +520,35 @@ class SmsCustomerLogicImplementation
 			@NonNull SmsCustomerAffiliateRec affiliate,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"customerAffiliateUpdate");
+		try (
 
-		if (
-			isNotNull (
-				customer.getSmsCustomerAffiliate ())
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"customerAffiliateUpdate");
+
 		) {
-			return;
+
+			if (
+				isNotNull (
+					customer.getSmsCustomerAffiliate ())
+			) {
+				return;
+			}
+
+			customer
+
+				.setSmsCustomerAffiliate (
+					affiliate);
+
+			eventLogic.createEvent (
+				taskLogger,
+				"sms_customer_affiliate_update_message",
+				customer,
+				affiliate,
+				message);
+
 		}
-
-		customer
-
-			.setSmsCustomerAffiliate (
-				affiliate);
-
-		eventLogic.createEvent (
-			taskLogger,
-			"sms_customer_affiliate_update_message",
-			customer,
-			affiliate,
-			message);
 
 	}
 

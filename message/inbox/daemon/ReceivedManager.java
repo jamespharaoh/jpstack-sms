@@ -24,7 +24,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
@@ -129,18 +129,24 @@ class ReceivedManager
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull MessageRec message) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"dumpMessageInfo");
+			try (
 
-			taskLogger.noticeFormat (
-				"%s %s %s %s",
-				integerToDecimalString (
-					message.getId ()),
-				message.getNumFrom (),
-				message.getNumTo (),
-				message.getText ().getText ());
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"dumpMessageInfo");
+
+			) {
+
+				taskLogger.noticeFormat (
+					"%s %s %s %s",
+					integerToDecimalString (
+						message.getId ()),
+					message.getNumFrom (),
+					message.getNumTo (),
+					message.getText ().getText ());
+
+			}
 
 		}
 
@@ -148,14 +154,14 @@ class ReceivedManager
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"doMessage");
-
 			try (
 
-				Transaction transaction =
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"doMessage");
+
+				OwnedTransaction transaction =
 					database.beginReadWrite (
 						taskLogger,
 						"ReceivedManager.ReceivedThread.doMessage (messageId)",
@@ -215,20 +221,14 @@ class ReceivedManager
 				@NonNull Long messageId,
 				@NonNull Throwable exception) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"doError");
-
-			taskLogger.errorFormatException (
-				exception,
-				"Error processing command for message %s",
-				integerToDecimalString (
-					messageId));
-
 			try (
 
-				Transaction transaction =
+				TaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"doError");
+
+				OwnedTransaction transaction =
 					database.beginReadWrite (
 						taskLogger,
 						stringFormat (
@@ -248,6 +248,12 @@ class ReceivedManager
 						this);
 
 			) {
+
+				taskLogger.errorFormatException (
+					exception,
+					"Error processing command for message %s",
+					integerToDecimalString (
+						messageId));
 
 				InboxRec inbox =
 					inboxHelper.findRequired (
@@ -305,29 +311,35 @@ class ReceivedManager
 
 				// handle it
 
-				TaskLogger taskLogger =
-					logContext.createTaskLogger (
-						"run");
+				try (
 
-				try {
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"run");
 
-					doMessage (
-						taskLogger,
+				) {
+
+					try {
+
+						doMessage (
+							taskLogger,
+							messageId);
+
+					} catch (Exception exception) {
+
+						doError (
+							taskLogger,
+							messageId,
+							exception);
+
+					}
+
+					// remove the item from the buffer
+
+					buffer.remove (
 						messageId);
 
-				} catch (Exception exception) {
-
-					doError (
-						taskLogger,
-						messageId,
-						exception);
-
 				}
-
-				// remove the item from the buffer
-
-				buffer.remove (
-					messageId);
 
 			}
 
@@ -347,7 +359,7 @@ class ReceivedManager
 
 		try (
 
-			Transaction transaction =
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"ReceivedManager.doQuery ()",

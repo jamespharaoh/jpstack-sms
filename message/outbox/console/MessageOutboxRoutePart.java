@@ -90,173 +90,179 @@ class MessageOutboxRoutePart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		if (outboxes.size () == 30) {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-			formatWriter.writeLineFormat (
-				"<p>Only showing first 30 results.</p>");
-
-		}
-
-		htmlTableOpenList ();
-
-		htmlTableHeaderRowWrite (
-			"Id",
-			"Created",
-			"Tries",
-			"From",
-			"To",
-			"Actions");
-
-		if (outboxes.size () == 0) {
-
-			htmlTableRowOpen ();
-
-			htmlTableCellWrite (
-				"Nothing to display",
-				htmlColumnSpanAttribute (6l));
-
-			htmlTableCellClose ();
-
-		}
-
-		for (
-			OutboxRec outbox
-				: outboxes
 		) {
 
-			MessageRec message =
-				outbox.getMessage ();
+			if (outboxes.size () == 30) {
 
-			htmlTableRowSeparatorWrite ();
-
-			htmlTableRowOpen ();
-
-			htmlTableCellWrite (
-				integerToDecimalString (
-					outbox.getId ()));
-
-			htmlTableCellWrite (
-				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()));
-
-			htmlTableCellWrite (
-				integerToDecimalString (
-					outbox.getTries ()));
-
-			if (
-				enumEqualSafe (
-					message.getDirection (),
-					MessageDirection.in)
-			) {
-
-				objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getNumber ());
-
-			} else {
-
-				htmlTableCellWrite (
-					message.getNumFrom ());
+				formatWriter.writeLineFormat (
+					"<p>Only showing first 30 results.</p>");
 
 			}
 
-			if (
-				enumEqualSafe (
-					message.getDirection (),
-					MessageDirection.out)
-			) {
+			htmlTableOpenList ();
 
-				objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getNumber ());
+			htmlTableHeaderRowWrite (
+				"Id",
+				"Created",
+				"Tries",
+				"From",
+				"To",
+				"Actions");
 
-			} else {
-
-				htmlTableCellWrite (
-					message.getNumTo ());
-
-			}
-
-			long rowSpan =
-				outbox.getError () != null
-					? 3
-					: 2;
-
-			htmlTableCellOpen (
-				htmlRowSpanAttribute (
-					rowSpan));
-
-			htmlFormOpenPostAction (
-				requestContext.resolveLocalUrlFormat (
-					"/outbox.route",
-					"?routeId=%u",
-					integerToDecimalString (
-						route.getId ())));
-
-			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"hidden\"",
-				" name=\"messageId\"",
-				" value=\"%h\"",
-				integerToDecimalString (
-					outbox.getId ()),
-				">");
-
-			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"cancel\"",
-				" value=\"cancel\"",
-				">");
-
-			formatWriter.writeLineFormat (
-				"<input",
-				" type=\"submit\"",
-				" name=\"retry\"",
-				" value=\"retry\"",
-				">");
-
-			htmlFormClose ();
-
-			htmlTableCellClose ();
-
-			htmlTableRowClose ();
-
-			// row 3 - message text
-
-			htmlTableRowOpen ();
-
-			htmlTableCellWrite (
-				message.getText ().getText (),
-				htmlColumnSpanAttribute (5l));
-
-			htmlTableRowClose ();
-
-			// row 4 - error
-
-			if (
-				isNotNull (
-					outbox.getError ())
-			) {
+			if (outboxes.size () == 0) {
 
 				htmlTableRowOpen ();
 
 				htmlTableCellWrite (
-					outbox.getError (),
+					"Nothing to display",
+					htmlColumnSpanAttribute (6l));
+
+				htmlTableCellClose ();
+
+			}
+
+			for (
+				OutboxRec outbox
+					: outboxes
+			) {
+
+				MessageRec message =
+					outbox.getMessage ();
+
+				htmlTableRowSeparatorWrite ();
+
+				htmlTableRowOpen ();
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						outbox.getId ()));
+
+				htmlTableCellWrite (
+					userConsoleLogic.timestampWithTimezoneString (
+						message.getCreatedTime ()));
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						outbox.getTries ()));
+
+				if (
+					enumEqualSafe (
+						message.getDirection (),
+						MessageDirection.in)
+				) {
+
+					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getNumber ());
+
+				} else {
+
+					htmlTableCellWrite (
+						message.getNumFrom ());
+
+				}
+
+				if (
+					enumEqualSafe (
+						message.getDirection (),
+						MessageDirection.out)
+				) {
+
+					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getNumber ());
+
+				} else {
+
+					htmlTableCellWrite (
+						message.getNumTo ());
+
+				}
+
+				long rowSpan =
+					outbox.getError () != null
+						? 3
+						: 2;
+
+				htmlTableCellOpen (
+					htmlRowSpanAttribute (
+						rowSpan));
+
+				htmlFormOpenPostAction (
+					requestContext.resolveLocalUrlFormat (
+						"/outbox.route",
+						"?routeId=%u",
+						integerToDecimalString (
+							route.getId ())));
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"hidden\"",
+					" name=\"messageId\"",
+					" value=\"%h\"",
+					integerToDecimalString (
+						outbox.getId ()),
+					">");
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"cancel\"",
+					" value=\"cancel\"",
+					">");
+
+				formatWriter.writeLineFormat (
+					"<input",
+					" type=\"submit\"",
+					" name=\"retry\"",
+					" value=\"retry\"",
+					">");
+
+				htmlFormClose ();
+
+				htmlTableCellClose ();
+
+				htmlTableRowClose ();
+
+				// row 3 - message text
+
+				htmlTableRowOpen ();
+
+				htmlTableCellWrite (
+					message.getText ().getText (),
 					htmlColumnSpanAttribute (5l));
 
 				htmlTableRowClose ();
 
+				// row 4 - error
+
+				if (
+					isNotNull (
+						outbox.getError ())
+				) {
+
+					htmlTableRowOpen ();
+
+					htmlTableCellWrite (
+						outbox.getError (),
+						htmlColumnSpanAttribute (5l));
+
+					htmlTableRowClose ();
+
+				}
+
 			}
 
-		}
+			htmlTableClose ();
 
-		htmlTableClose ();
+		}
 
 	}
 

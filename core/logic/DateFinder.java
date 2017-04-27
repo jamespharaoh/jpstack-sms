@@ -16,14 +16,15 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.LocalDate;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import org.joda.time.IllegalFieldValueException;
+import org.joda.time.LocalDate;
 
 /**
  * Contains utility function to search a string for a date, in various formats.
@@ -308,9 +309,8 @@ class DateFinder {
 	String relaxedFixedNumericYearRegexp =
 		"([0oO1lI23456789]{4}|[0oO1lI23456789]{2})";
 
-	@SuppressWarnings ("unchecked")
 	static
-	List<List<String>> monthNames =
+	List <List <String>> monthNames =
 		ImmutableList.of (
 			ImmutableList.of (
 				"jan",

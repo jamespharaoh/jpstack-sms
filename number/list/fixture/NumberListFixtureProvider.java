@@ -7,7 +7,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -60,18 +60,24 @@ class NumberListFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		createMenuItems (
-			taskLogger);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-		createNumberLists(
-			taskLogger);
+		) {
+
+			createMenuItems (
+				taskLogger);
+
+			createNumberLists(
+				taskLogger);
+
+		}
 
 	}
 
@@ -79,40 +85,46 @@ class NumberListFixtureProvider
 	void createMenuItems (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createMenuItems");
+		try (
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createMenuItems");
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+		) {
 
-			.setCode (
-				"number_list")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Number List")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"Manage dynamic lists of telephone numbers")
+				.setCode (
+					"number_list")
 
-			.setLabel (
-				"Number list")
+				.setName (
+					"Number List")
 
-			.setTargetPath (
-				"/numberLists")
+				.setDescription (
+					"Manage dynamic lists of telephone numbers")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Number list")
 
-		);
+				.setTargetPath (
+					"/numberLists")
+
+				.setTargetFrame (
+					"main")
+
+			);
+
+		}
 
 	}
 
@@ -120,71 +132,77 @@ class NumberListFixtureProvider
 	void createNumberLists (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createNumberLists");
+		try (
 
-		NumberListRec numberList =
-			numberListHelper.insert (
-				taskLogger,
-				numberListHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createNumberLists");
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
-
-			.setCode (
-				"uk_blocked")
-
-			.setName (
-				"UK blocked")
-
-			.setDescription (
-				"UK blocked (test)")
-
-			.setNumberFormat (
-				numberFormatHelper.findByCodeRequired (
-					GlobalId.root,
-					"uk"))
-
-		);
-
-		for (
-			String number
-				: ImmutableList.of (
-					"447000000000",
-					"447111111111",
-					"447222222222",
-					"447333333333",
-					"447444444444",
-					"447555555555",
-					"447666666666",
-					"447777777777",
-					"447888888888",
-					"447999999999")
 		) {
 
-			numberListNumberHelper.insert (
-				taskLogger,
-				numberListNumberHelper.createInstance ()
+			NumberListRec numberList =
+				numberListHelper.insert (
+					taskLogger,
+					numberListHelper.createInstance ()
 
-				.setNumberList (
-					numberList)
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
 
-				.setNumber (
-					numberHelper.findOrCreate (
-						taskLogger,
-						number))
+				.setCode (
+					"uk_blocked")
 
-				.setPresent (
-					true)
+				.setName (
+					"UK blocked")
+
+				.setDescription (
+					"UK blocked (test)")
+
+				.setNumberFormat (
+					numberFormatHelper.findByCodeRequired (
+						GlobalId.root,
+						"uk"))
 
 			);
 
-			numberList.setNumberCount (
-				numberList.getNumberCount () + 1);
+			for (
+				String number
+					: ImmutableList.of (
+						"447000000000",
+						"447111111111",
+						"447222222222",
+						"447333333333",
+						"447444444444",
+						"447555555555",
+						"447666666666",
+						"447777777777",
+						"447888888888",
+						"447999999999")
+			) {
+
+				numberListNumberHelper.insert (
+					taskLogger,
+					numberListNumberHelper.createInstance ()
+
+					.setNumberList (
+						numberList)
+
+					.setNumber (
+						numberHelper.findOrCreate (
+							taskLogger,
+							number))
+
+					.setPresent (
+						true)
+
+				);
+
+				numberList.setNumberCount (
+					numberList.getNumberCount () + 1);
+
+			}
 
 		}
 

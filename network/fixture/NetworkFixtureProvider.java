@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -52,106 +52,124 @@ class NetworkFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		createMenuItems (
-			taskLogger,
-			transaction);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-		createDefaultNetworks (
-			taskLogger,
-			transaction);
+		) {
+
+			createMenuItems (
+				taskLogger,
+				transaction);
+
+			createDefaultNetworks (
+				taskLogger,
+				transaction);
+
+		}
 
 	}
 
 	private
 	void createMenuItems (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createMenuItems");
+		try (
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createMenuItems");
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+		) {
 
-			.setCode (
-				"network")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Network")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"Manage telephony network providers")
+				.setCode (
+					"network")
 
-			.setLabel (
-				"Network")
+				.setName (
+					"Network")
 
-			.setTargetPath (
-				"/networks")
+				.setDescription (
+					"Manage telephony network providers")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Network")
 
-		);
+				.setTargetPath (
+					"/networks")
 
-		transaction.flush ();
+				.setTargetFrame (
+					"main")
+
+			);
+
+			transaction.flush ();
+
+		}
 
 	}
 
 	private
 	void createDefaultNetworks (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createDefaultNetworks");
+		try (
 
-		defaultNetworks.forEach (
-			defaultNetwork ->
-				networkHelper.insert (
-					taskLogger,
-					networkHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createDefaultNetworks");
 
-			.setId (
-				defaultNetwork.id ())
+		) {
 
-			.setCode (
-				simplifyToCodeRequired (
-					defaultNetwork.name ()))
+			defaultNetworks.forEach (
+				defaultNetwork ->
+					networkHelper.insert (
+						taskLogger,
+						networkHelper.createInstance ()
 
-			.setName (
-				defaultNetwork.name ())
+				.setId (
+					defaultNetwork.id ())
 
-			.setDescription (
-				defaultNetwork.description ())
+				.setCode (
+					simplifyToCodeRequired (
+						defaultNetwork.name ()))
 
-			.setVirtualNetworkOfNetwork (
-				optionalOrNull (
-					optionalMapRequired (
-						optionalFromNullable (
-							defaultNetwork.virtualNetworkOf ()),
-						networkHelper::findRequired)))
+				.setName (
+					defaultNetwork.name ())
 
-		));
+				.setDescription (
+					defaultNetwork.description ())
 
-		transaction.flush ();
+				.setVirtualNetworkOfNetwork (
+					optionalOrNull (
+						optionalMapRequired (
+							optionalFromNullable (
+								defaultNetwork.virtualNetworkOf ()),
+							networkHelper::findRequired)))
+
+			));
+
+			transaction.flush ();
+
+		}
 
 	}
 

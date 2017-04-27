@@ -66,20 +66,26 @@ class SmsTrackerManagerImplementation
 			@NonNull NumberRec number,
 			@NonNull Optional <Instant> timestamp) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"canSend");
+		try (
 
-		SmsTrackerHandler handler =
-			trackerHandlersByTypeCode.get (
-				tracker.getSmsTrackerType ().getCode ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"canSend");
 
-		return handler.canSend (
-			taskLogger,
-			tracker,
-			number,
-			timestamp);
+		) {
+
+			SmsTrackerHandler handler =
+				trackerHandlersByTypeCode.get (
+					tracker.getSmsTrackerType ().getCode ());
+
+			return handler.canSend (
+				taskLogger,
+				tracker,
+				number,
+				timestamp);
+
+		}
 
 	}
 

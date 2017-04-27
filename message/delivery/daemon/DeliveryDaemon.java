@@ -18,7 +18,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
@@ -78,51 +78,57 @@ class DeliveryDaemon
 	void setupService (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setupService");
-
-		buffer =
-			new QueueBuffer<> (
-				bufferSize);
-
-		handlersById =
-			new HashMap<> ();
-
 		try (
 
-			Transaction transaction =
-				database.beginReadOnly (
-					taskLogger,
-					"DeliveryDaemon.init ()",
-					this);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setupService");
 
 		) {
 
-			for (
-				Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
-					: handlersByBeanName.entrySet ()
+			buffer =
+				new QueueBuffer<> (
+					bufferSize);
+
+			handlersById =
+				new HashMap<> ();
+
+			try (
+
+				OwnedTransaction transaction =
+					database.beginReadOnly (
+						taskLogger,
+						"DeliveryDaemon.init ()",
+						this);
+
 			) {
 
-				//String beanName = ent.getKey ();
-
-				DeliveryHandler handler =
-					handlerEntry.getValue ().get ();
-
 				for (
-					String deliveryTypeCode
-						: handler.getDeliveryTypeCodes ()
+					Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
+						: handlersByBeanName.entrySet ()
 				) {
 
-					DeliveryTypeRec deliveryType =
-						deliveryTypeHelper.findByCodeRequired (
-							GlobalId.root,
-							deliveryTypeCode);
+					//String beanName = ent.getKey ();
 
-					handlersById.put (
-						deliveryType.getId (),
-						handler);
+					DeliveryHandler handler =
+						handlerEntry.getValue ().get ();
+
+					for (
+						String deliveryTypeCode
+							: handler.getDeliveryTypeCodes ()
+					) {
+
+						DeliveryTypeRec deliveryType =
+							deliveryTypeHelper.findByCodeRequired (
+								GlobalId.root,
+								deliveryTypeCode);
+
+						handlersById.put (
+							deliveryType.getId (),
+							handler);
+
+					}
 
 				}
 
@@ -216,7 +222,7 @@ class DeliveryDaemon
 
 			try (
 
-				Transaction transaction =
+				OwnedTransaction transaction =
 					database.beginReadOnly (
 						taskLogger,
 						"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
@@ -281,46 +287,53 @@ class DeliveryDaemon
 					return;
 				}
 
-				TaskLogger taskLogger =
-					logContext.createTaskLogger (
-						"worker.run");
+				try (
 
-				DeliveryTypeRec deliveryType =
-					delivery.getMessage ().getDeliveryType ();
+					TaskLogger taskLogger =
+						logContext.createTaskLogger (
+							"worker.run");
 
-				DeliveryHandler handler =
-					handlersById.get (
-						deliveryType.getId ());
+				) {
 
-				try {
+					DeliveryTypeRec deliveryType =
+						delivery.getMessage ().getDeliveryType ();
 
-					if (handler == null) {
+					DeliveryHandler handler =
+						handlersById.get (
+							deliveryType.getId ());
 
-						throw new RuntimeException (
-							stringFormat (
-								"No delivery notice handler for %s",
-								deliveryType.getCode ()));
+					try {
+
+						if (handler == null) {
+
+							throw new RuntimeException (
+								stringFormat (
+									"No delivery notice handler for %s",
+									deliveryType.getCode ()));
+
+						}
+
+						handler.handle (
+							taskLogger,
+							delivery.getId (),
+							delivery.getMessage ().getRef ());
+
+					} catch (Exception exception) {
+
+						exceptionLogger.logThrowable (
+							taskLogger,
+							"daemon",
+							"Delivery notice daemon",
+							exception,
+							optionalAbsent (),
+							GenericExceptionResolution.tryAgainLater);
 
 					}
 
-					handler.handle (
-						taskLogger,
-						delivery.getId (),
-						delivery.getMessage ().getRef ());
-
-				} catch (Exception exception) {
-
-					exceptionLogger.logThrowable (
-						taskLogger,
-						"daemon",
-						"Delivery notice daemon",
-						exception,
-						optionalAbsent (),
-						GenericExceptionResolution.tryAgainLater);
+					buffer.remove (
+						delivery.getId ());
 
 				}
-
-				buffer.remove (delivery.getId ());
 
 			}
 

@@ -84,135 +84,141 @@ class MessageThreadPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		htmlTableOpenList ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableHeaderRowWrite (
-			"ID",
-			"From",
-			"To",
-			"Time",
-			"Route",
-			"Status",
-			"Media");
-
-		for (
-			MessageRec message
-				: messages
 		) {
 
-			// separator
+			htmlTableOpenList ();
 
-			htmlTableRowSeparatorWrite ();
-
-			// various fields
-
-			String rowClass =
-				messageConsoleLogic.classForMessage (
-					message);
-
-			htmlTableRowOpen (
-				htmlClassAttribute (
-					rowClass));
-
-			htmlTableCellWrite (
-				integerToDecimalString (
-					message.getId ()));
-
-			htmlTableCellWrite (
-				message.getNumFrom ());
-
-			htmlTableCellWrite (
-				message.getNumTo ());
-
-			htmlTableCellWrite (
-				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()));
-
-			htmlTableCellWrite (
-				message.getRoute ().getCode ());
-
-			messageConsoleLogic.writeTdForMessageStatus (
-				formatWriter,
-				message.getStatus ());
-
-			List <MediaRec> medias =
-				message.getMedias ();
-
-			htmlTableCellOpen (
-				htmlRowSpanAttribute (2l));
+			htmlTableHeaderRowWrite (
+				"ID",
+				"From",
+				"To",
+				"Time",
+				"Route",
+				"Status",
+				"Media");
 
 			for (
-				int index = 0;
-				index < medias.size ();
-				index++
+				MessageRec message
+					: messages
 			) {
 
-				MediaRec media =
-					medias.get (index);
+				// separator
 
-				if (
-					stringEqualSafe (
-						media.getMediaType ().getMimeType (),
-						"text/plain")
+				htmlTableRowSeparatorWrite ();
+
+				// various fields
+
+				String rowClass =
+					messageConsoleLogic.classForMessage (
+						message);
+
+				htmlTableRowOpen (
+					htmlClassAttribute (
+						rowClass));
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						message.getId ()));
+
+				htmlTableCellWrite (
+					message.getNumFrom ());
+
+				htmlTableCellWrite (
+					message.getNumTo ());
+
+				htmlTableCellWrite (
+					userConsoleLogic.timestampWithTimezoneString (
+						message.getCreatedTime ()));
+
+				htmlTableCellWrite (
+					message.getRoute ().getCode ());
+
+				messageConsoleLogic.writeTdForMessageStatus (
+					formatWriter,
+					message.getStatus ());
+
+				List <MediaRec> medias =
+					message.getMedias ();
+
+				htmlTableCellOpen (
+					htmlRowSpanAttribute (2l));
+
+				for (
+					int index = 0;
+					index < medias.size ();
+					index++
 				) {
 
-					formatWriter.writeLineFormat (
-						"%h",
-						bytesToString (
-							media.getContent ().getData (),
-							media.getEncoding ()));
+					MediaRec media =
+						medias.get (index);
 
-				} else {
+					if (
+						stringEqualSafe (
+							media.getMediaType ().getMimeType (),
+							"text/plain")
+					) {
 
-					mediaConsoleLogic.writeMediaThumb32OrText (
-						taskLogger,
-						media);
+						formatWriter.writeLineFormat (
+							"%h",
+							bytesToString (
+								media.getContent ().getData (),
+								media.getEncoding ()));
+
+					} else {
+
+						mediaConsoleLogic.writeMediaThumb32OrText (
+							taskLogger,
+							media);
+
+					}
 
 				}
 
+				htmlTableCellClose ();
+
+				htmlTableRowClose ();
+
+				// message
+
+				htmlTableRowOpen (
+					htmlClassAttribute (
+						rowClass));
+
+				new HtmlTableCellWriter ()
+
+					.href (
+						requestContext.resolveContextUrlFormat (
+							"/message",
+							"/%u",
+							integerToDecimalString (
+								message.getId ()),
+							"/message_summary"))
+
+					.columnSpan (
+						6l)
+
+					.write (
+						formatWriter);
+
+				messageConsoleLogic.writeMessageContentHtml (
+					taskLogger,
+					formatWriter,
+					message);
+
+				htmlTableRowClose ();
+
 			}
 
-			htmlTableCellClose ();
-
-			htmlTableRowClose ();
-
-			// message
-
-			htmlTableRowOpen (
-				htmlClassAttribute (
-					rowClass));
-
-			new HtmlTableCellWriter ()
-
-				.href (
-					requestContext.resolveContextUrlFormat (
-						"/message",
-						"/%u",
-						integerToDecimalString (
-							message.getId ()),
-						"/message_summary"))
-
-				.columnSpan (
-					6l)
-
-				.write (
-					formatWriter);
-
-			messageConsoleLogic.writeMessageContentHtml (
-				taskLogger,
-				formatWriter,
-				message);
-
-			htmlTableRowClose ();
+			htmlTableClose ();
 
 		}
-
-		htmlTableClose ();
 
 	}
 

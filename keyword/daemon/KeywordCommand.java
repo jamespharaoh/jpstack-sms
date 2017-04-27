@@ -21,8 +21,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
@@ -123,151 +123,157 @@ class KeywordCommand
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		taskLogger.debugFormat (
-			"About to handle message %s ",
-			integerToDecimalString (
-				inbox.getId ()),
-			"with command %s",
-			integerToDecimalString (
-				command.getId ()));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
 
-		keywordSet =
-			keywordSetHelper.findRequired (
-				command.getParentId ());
+		) {
 
-		message =
-			inbox.getMessage ();
+			taskLogger.debugFormat (
+				"About to handle message %s ",
+				integerToDecimalString (
+					inbox.getId ()),
+				"with command %s",
+				integerToDecimalString (
+					command.getId ()));
 
-		// try and find a keyword
+			keywordSet =
+				keywordSetHelper.findRequired (
+					command.getParentId ());
 
-		Optional <Pair <KeywordRec, String>> matchResult =
-			performMatch ();
+			message =
+				inbox.getMessage ();
 
-		if (matchResult.isPresent ()) {
+			// try and find a keyword
 
-			KeywordRec keywordRecord =
-				matchResult.get ().getLeft ();
+			Optional <Pair <KeywordRec, String>> matchResult =
+				performMatch ();
 
-			CommandRec nextCommand =
-				keywordRecord.getCommand ();
+			if (matchResult.isPresent ()) {
 
-			if (nextCommand == null) {
+				KeywordRec keywordRecord =
+					matchResult.get ().getLeft ();
 
-				taskLogger.noticeFormat (
-					"Keyword %s has no command, not processing message %s",
+				CommandRec nextCommand =
+					keywordRecord.getCommand ();
+
+				if (nextCommand == null) {
+
+					taskLogger.noticeFormat (
+						"Keyword %s has no command, not processing message %s",
+						objectManager.objectPathMini (
+							keywordRecord),
+						integerToDecimalString (
+							message.getId ()));
+
+					return smsInboxLogic.inboxNotProcessed (
+						taskLogger,
+						inbox,
+						optionalAbsent (),
+						optionalAbsent (),
+						optionalOf (
+							command),
+						stringFormat (
+							"No command for keyword %s",
+							objectManager.objectPathMini (
+								keywordRecord)));
+
+				}
+
+				String messageRest =
+					keywordRecord.getLeaveIntact ()
+						? rest
+						: matchResult.get ().getRight ();
+
+				taskLogger.debugFormat (
+					"Found keyword %s ",
 					objectManager.objectPathMini (
 						keywordRecord),
+					"for message %s",
 					integerToDecimalString (
-						message.getId ()));
+						inbox.getId ()));
 
-				return smsInboxLogic.inboxNotProcessed (
+				// set fallback if sticky
+
+				if (keywordRecord.getSticky ()) {
+
+					keywordLogic.createOrUpdateKeywordSetFallback (
+						taskLogger,
+						keywordSet,
+						message.getNumber (),
+						nextCommand);
+
+				}
+
+				// hand off
+
+				return commandManager.handle (
 					taskLogger,
 					inbox,
-					optionalAbsent (),
-					optionalAbsent (),
-					optionalOf (
-						command),
-					stringFormat (
-						"No command for keyword %s",
-						objectManager.objectPathMini (
-							keywordRecord)));
+					nextCommand,
+					Optional.<Long>absent (),
+					messageRest);
 
 			}
 
-			String messageRest =
-				keywordRecord.getLeaveIntact ()
-					? rest
-					: matchResult.get ().getRight ();
+			// ok that didn't work, try a fallback thingy
 
-			taskLogger.debugFormat (
-				"Found keyword %s ",
-				objectManager.objectPathMini (
-					keywordRecord),
-				"for message %s",
-				integerToDecimalString (
-					inbox.getId ()));
+			Optional <InboxAttemptRec> keywordSetFallbackResult =
+				tryKeywordSetFallback (
+					taskLogger);
 
-			// set fallback if sticky
+			if (keywordSetFallbackResult.isPresent ())
+				return keywordSetFallbackResult.get ();
 
-			if (keywordRecord.getSticky ()) {
+			// then try the keyword set's fallback
 
-				keywordLogic.createOrUpdateKeywordSetFallback (
+			if (keywordSet.getFallbackCommand () != null) {
+
+				taskLogger.debugFormat (
+					"Using fallback command for message %s",
+					integerToDecimalString (
+						inbox.getId ()));
+
+				CommandRec nextCommand =
+					keywordSet.getFallbackCommand ();
+
+				return commandManager.handle (
 					taskLogger,
-					keywordSet,
-					message.getNumber (),
-					nextCommand);
+					inbox,
+					nextCommand,
+					optionalAbsent (),
+					rest);
 
 			}
 
-			// hand off
-
-			return commandManager.handle (
-				taskLogger,
-				inbox,
-				nextCommand,
-				Optional.<Long>absent (),
-				messageRest);
-
-		}
-
-		// ok that didn't work, try a fallback thingy
-
-		Optional <InboxAttemptRec> keywordSetFallbackResult =
-			tryKeywordSetFallback (
-				taskLogger);
-
-		if (keywordSetFallbackResult.isPresent ())
-			return keywordSetFallbackResult.get ();
-
-		// then try the keyword set's fallback
-
-		if (keywordSet.getFallbackCommand () != null) {
+			// mark as not processed
 
 			taskLogger.debugFormat (
-				"Using fallback command for message %s",
+				"Marking message %s ",
 				integerToDecimalString (
-					inbox.getId ()));
+					inbox.getId ()),
+				"as not processed");
 
-			CommandRec nextCommand =
-				keywordSet.getFallbackCommand ();
-
-			return commandManager.handle (
+			return smsInboxLogic.inboxNotProcessed (
 				taskLogger,
 				inbox,
-				nextCommand,
 				optionalAbsent (),
-				rest);
+				optionalAbsent (),
+				optionalOf (
+					command),
+				stringFormat (
+					"No keyword matched in keyword set %s",
+					objectManager.objectPathMini (
+						keywordSet)));
 
 		}
-
-		// mark as not processed
-
-		taskLogger.debugFormat (
-			"Marking message %s ",
-			integerToDecimalString (
-				inbox.getId ()),
-			"as not processed");
-
-		return smsInboxLogic.inboxNotProcessed (
-			taskLogger,
-			inbox,
-			optionalAbsent (),
-			optionalAbsent (),
-			optionalOf (
-				command),
-			stringFormat (
-				"No keyword matched in keyword set %s",
-				objectManager.objectPathMini (
-					keywordSet)));
 
 	}
 
-	Optional<Pair<KeywordRec,String>> performMatch () {
+	Optional <Pair <KeywordRec, String>> performMatch () {
 
 		switch (keywordSet.getType ()) {
 
@@ -334,62 +340,68 @@ class KeywordCommand
 	Optional <InboxAttemptRec> tryKeywordSetFallback (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"tryKeywordSetFallback");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"tryKeywordSetFallback");
 
-		// find fallback
+		) {
 
-		KeywordSetFallbackRec keywordSetFallback =
-			keywordSetFallbackHelper.find (
-				keywordSet,
-				message.getNumber ());
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		if (keywordSetFallback == null)
-			return Optional.absent ();
+			// find fallback
 
-		// check age
+			KeywordSetFallbackRec keywordSetFallback =
+				keywordSetFallbackHelper.find (
+					keywordSet,
+					message.getNumber ());
 
-		if (keywordSet.getFallbackTimeout () != null) {
-
-			Instant maxAge =
-				transaction.now ().minus (
-					Duration.standardSeconds (
-						keywordSet.getFallbackTimeout ()));
-
-			Instant timestamp =
-				keywordSetFallback.getTimestamp ();
-
-			if (timestamp.isBefore (maxAge))
+			if (keywordSetFallback == null)
 				return Optional.absent ();
 
+			// check age
+
+			if (keywordSet.getFallbackTimeout () != null) {
+
+				Instant maxAge =
+					transaction.now ().minus (
+						Duration.standardSeconds (
+							keywordSet.getFallbackTimeout ()));
+
+				Instant timestamp =
+					keywordSetFallback.getTimestamp ();
+
+				if (timestamp.isBefore (maxAge))
+					return Optional.absent ();
+
+			}
+
+			// debug
+
+			taskLogger.debugFormat (
+				"Using keyword set fallback %s ",
+				integerToDecimalString (
+					keywordSetFallback.getId ()),
+				"for message %s",
+				integerToDecimalString (inbox.getId ()));
+
+			// chain fallback command
+
+			CommandRec nextCommand =
+				keywordSetFallback.getCommand ();
+
+			return optionalOf (
+				commandManager.handle (
+					taskLogger,
+					inbox,
+					nextCommand,
+					optionalAbsent (),
+					rest));
+
 		}
-
-		// debug
-
-		taskLogger.debugFormat (
-			"Using keyword set fallback %s ",
-			integerToDecimalString (
-				keywordSetFallback.getId ()),
-			"for message %s",
-			integerToDecimalString (inbox.getId ()));
-
-		// chain fallback command
-
-		CommandRec nextCommand =
-			keywordSetFallback.getCommand ();
-
-		return Optional.of (
-			commandManager.handle (
-				taskLogger,
-				inbox,
-				nextCommand,
-				optionalAbsent (),
-				rest));
 
 	}
 

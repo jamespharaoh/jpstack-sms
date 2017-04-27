@@ -15,7 +15,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -79,14 +79,14 @@ class SmsCustomerSessionTimeoutDaemon
 	void runOnce (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"runOnce ()");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"runOnce ()");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"SmsCustomerSessionTimeoutDaemon.runOnce ()",
@@ -115,27 +115,27 @@ class SmsCustomerSessionTimeoutDaemon
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long managerId) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLoggerFormat (
-				parentTaskLogger,
-				"runOneManager (%s)",
-				integerToDecimalString (
-					managerId));
-
-		taskLogger.debugFormat (
-			"Performing session timeouts for manager %s",
-			integerToDecimalString (
-				managerId));
-
 		try (
 
-			Transaction readTransaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLoggerFormat (
+					parentTaskLogger,
+					"runOneManager (%s)",
+					integerToDecimalString (
+						managerId));
+
+			OwnedTransaction readTransaction =
 				database.beginReadOnly (
 					taskLogger,
 					"SmsCustomerSessionTimeoutDaemon.runOneManager",
 					this);
 
 		) {
+
+			taskLogger.debugFormat (
+				"Performing session timeouts for manager %s",
+				integerToDecimalString (
+					managerId));
 
 			SmsCustomerManagerRec manager =
 				smsCustomerManagerHelper.findRequired (
@@ -177,7 +177,7 @@ class SmsCustomerSessionTimeoutDaemon
 
 				try (
 
-					Transaction writeTransaction =
+					OwnedTransaction writeTransaction =
 						database.beginReadWrite (
 							taskLogger,
 							"SmsCustomerSessionTimeoutDaemon.runOneManager (managerId)",

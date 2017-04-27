@@ -13,7 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -57,14 +57,14 @@ class NumberLookupHooks
 	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setup");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"numberLookupHooks.init ()",
@@ -114,42 +114,48 @@ class NumberLookupHooks
 			return;
 		}
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createSingletons");
+		try (
 
-		ObjectTypeRec parentType =
-			objectTypeDao.findById (
-				parentHelper.objectTypeId ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createSingletons");
 
-		for (
-			Long numberLookupTypeId
-				: numberLookupTypeIdsByParentTypeId.get (
-					parentHelper.objectTypeId ())
 		) {
 
-			NumberLookupTypeRec numberLookupType =
-				numberLookupTypeDao.findRequired (
-					numberLookupTypeId);
+			ObjectTypeRec parentType =
+				objectTypeDao.findById (
+					parentHelper.objectTypeId ());
 
-			numberLookupHelper.insert (
-				taskLogger,
-				numberLookupHelper.createInstance ()
+			for (
+				Long numberLookupTypeId
+					: numberLookupTypeIdsByParentTypeId.get (
+						parentHelper.objectTypeId ())
+			) {
 
-				.setParentType (
-					parentType)
+				NumberLookupTypeRec numberLookupType =
+					numberLookupTypeDao.findRequired (
+						numberLookupTypeId);
 
-				.setParentId (
-					parent.getId ())
+				numberLookupHelper.insert (
+					taskLogger,
+					numberLookupHelper.createInstance ()
 
-				.setCode (
-					numberLookupType.getCode ())
+					.setParentType (
+						parentType)
 
-				.setNumberLookupType (
-					numberLookupType)
+					.setParentId (
+						parent.getId ())
 
-			);
+					.setCode (
+						numberLookupType.getCode ())
+
+					.setNumberLookupType (
+						numberLookupType)
+
+				);
+
+			}
 
 		}
 

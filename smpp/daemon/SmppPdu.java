@@ -80,7 +80,7 @@ class SmppPdu {
 	public
 	byte[] getBody () {
 
-		try {
+		try (
 
 			ByteArrayOutputStream baos =
 				new ByteArrayOutputStream ();
@@ -88,6 +88,8 @@ class SmppPdu {
 			SmppOutputStream out =
 				new SmppOutputStream (
 					baos);
+
+		) {
 
 			writeBody (
 				out);
@@ -222,10 +224,24 @@ class SmppPdu {
 
 		// read body and optional params
 		if (commandStatus == SmppCommandStatus.ok) {
-			SmppInputStream dataIn = new SmppInputStream(
-					new ByteArrayInputStream(data));
-			pdu.readBody(dataIn);
-			pdu.readOptParams(dataIn);
+
+			try (
+
+				SmppInputStream dataIn =
+					new SmppInputStream (
+						new ByteArrayInputStream (
+							data));
+
+			) {
+
+				pdu.readBody (
+					dataIn);
+
+				pdu.readOptParams (
+					dataIn);
+
+			}
+
 		}
 
 		// and return

@@ -62,27 +62,33 @@ class MessageMediaSummaryPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		MessageRec message =
-			messageHelper.findFromContextRequired ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		mediaIndex =
-			Integer.parseInt (
-				requestContext.parameterRequired (
-					"index"));
+		) {
 
-		media =
-			message.getMedias ().get (
-				mediaIndex);
+			MessageRec message =
+				messageHelper.findFromContextRequired ();
 
-		imageOptional =
-			mediaLogic.getImage (
-				taskLogger,
-				media);
+			mediaIndex =
+				Integer.parseInt (
+					requestContext.parameterRequired (
+						"index"));
+
+			media =
+				message.getMedias ().get (
+					mediaIndex);
+
+			imageOptional =
+				mediaLogic.getImage (
+					taskLogger,
+					media);
+
+		}
 
 	}
 
@@ -91,58 +97,64 @@ class MessageMediaSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		htmlTableOpenDetails ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableDetailsRowWrite (
-			"Filename",
-			media.getFilename ());
-
-		htmlTableDetailsRowWrite (
-			"Type",
-			media.getMediaType ().getMimeType ());
-
-		htmlTableDetailsRowWrite (
-			"Size",
-			prettySize (
-				media.getContent ().getData ().length));
-
-		if (
-			optionalIsPresent (
-				imageOptional)
 		) {
 
-			BufferedImage image =
-				optionalGetRequired (
-					imageOptional);
+			htmlTableOpenDetails ();
 
 			htmlTableDetailsRowWrite (
-				"Width",
-				integerToDecimalString (
-					fromJavaInteger (
-						image.getWidth ())));
+				"Filename",
+				media.getFilename ());
 
 			htmlTableDetailsRowWrite (
-				"Height",
-				integerToDecimalString (
-					fromJavaInteger (
-						image.getHeight ())));
+				"Type",
+				media.getMediaType ().getMimeType ());
+
+			htmlTableDetailsRowWrite (
+				"Size",
+				prettySize (
+					media.getContent ().getData ().length));
+
+			if (
+				optionalIsPresent (
+					imageOptional)
+			) {
+
+				BufferedImage image =
+					optionalGetRequired (
+						imageOptional);
+
+				htmlTableDetailsRowWrite (
+					"Width",
+					integerToDecimalString (
+						fromJavaInteger (
+							image.getWidth ())));
+
+				htmlTableDetailsRowWrite (
+					"Height",
+					integerToDecimalString (
+						fromJavaInteger (
+							image.getHeight ())));
+
+			}
+
+			htmlTableDetailsRowWriteHtml (
+				"Content",
+				() -> mediaConsoleLogic.writeMediaContentScaled (
+					taskLogger,
+					media,
+					600,
+					600));
+
+			htmlTableClose ();
 
 		}
-
-		htmlTableDetailsRowWriteHtml (
-			"Content",
-			() -> mediaConsoleLogic.writeMediaContentScaled (
-				taskLogger,
-				media,
-				600,
-				600));
-
-		htmlTableClose ();
 
 	}
 

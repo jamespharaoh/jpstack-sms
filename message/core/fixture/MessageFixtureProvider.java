@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -36,90 +36,102 @@ class MessageFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		createMenuItems (
-			taskLogger,
-			transaction);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
+
+		) {
+
+			createMenuItems (
+				taskLogger,
+				transaction);
+
+		}
 
 	}
 
 	private
 	void createMenuItems (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createMenuItems");
+		try (
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createMenuItems");
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
+		) {
 
-			.setCode (
-				"message")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Message")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setDescription (
-				"")
+				.setCode (
+					"message")
 
-			.setLabel (
-				"Messages")
+				.setName (
+					"Message")
 
-			.setTargetPath (
-				"/messages")
+				.setDescription (
+					"")
 
-			.setTargetFrame (
-				"main")
+				.setLabel (
+					"Messages")
 
-		);
+				.setTargetPath (
+					"/messages")
 
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
+				.setTargetFrame (
+					"main")
 
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"panel"))
+			);
 
-			.setCode (
-				"message_ticker")
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setName (
-				"Message ticker")
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"panel"))
 
-			.setDescription (
-				"")
+				.setCode (
+					"message_ticker")
 
-			.setLabel (
-				"Message ticker")
+				.setName (
+					"Message ticker")
 
-			.setTargetPath (
-				"/messageTicker/messageTicker.ticker")
+				.setDescription (
+					"")
 
-			.setTargetFrame (
-				"inbox")
+				.setLabel (
+					"Message ticker")
 
-		);
+				.setTargetPath (
+					"/messageTicker/messageTicker.ticker")
 
-		transaction.flush ();
+				.setTargetFrame (
+					"inbox")
+
+			);
+
+			transaction.flush ();
+
+		}
 
 	}
 

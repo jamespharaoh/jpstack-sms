@@ -70,41 +70,47 @@ class RouteTestTwoWayPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		route =
-			routeHelper.findFromContextRequired ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		Optional <String> numberOptional =
-			requestContext.parameter (
-				"num_from");
-
-		if (
-			optionalIsNotPresent (
-				numberOptional)
 		) {
-			return;
+
+			route =
+				routeHelper.findFromContextRequired ();
+
+			Optional <String> numberOptional =
+				requestContext.parameter (
+					"num_from");
+
+			if (
+				optionalIsNotPresent (
+					numberOptional)
+			) {
+				return;
+			}
+
+			MessageSearch search =
+				new MessageSearch ()
+
+				.number (
+					numberOptional.get ())
+
+				.maxResults (
+					20l)
+
+				.orderBy (
+					MessageSearchOrder.createdTimeDesc);
+
+			messages =
+				messageHelper.search (
+					taskLogger,
+					search);
+
 		}
-
-		MessageSearch search =
-			new MessageSearch ()
-
-			.number (
-				numberOptional.get ())
-
-			.maxResults (
-				20l)
-
-			.orderBy (
-				MessageSearchOrder.createdTimeDesc);
-
-		messages =
-			messageHelper.search (
-				taskLogger,
-				search);
 
 	}
 
@@ -113,114 +119,125 @@ class RouteTestTwoWayPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		htmlParagraphWriteFormat (
-			"This facility can be used to insert an inbound message into the ",
-			"system, which will then be treated exactly as if we had received ",
-			"it from the aggregator. It will also show messages sent back out",
-			"by the system, allowing an interaction over several messages in ",
-			"and out.");
+		try (
 
-		htmlParagraphWriteFormatWarning (
-			"Please note, that this is intended primarily for testing, and ",
-			"any other usage should instead be performed using a separate ",
-			"facility designed for that specific purpose.");
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		if (! route.getCanReceive ()) {
+		) {
 
-			htmlParagraphWriteFormatError (
-				"This route is not configured for inbound messages, and so ",
-				"this facility is not available.");
+			htmlParagraphWriteFormat (
+				"This facility can be used to insert an inbound message into the ",
+				"system, which will then be treated exactly as if we had received ",
+				"it from the aggregator. It will also show messages sent back out",
+				"by the system, allowing an interaction over several messages in ",
+				"and out.");
 
-			return;
+			htmlParagraphWriteFormatWarning (
+				"Please note, that this is intended primarily for testing, and ",
+				"any other usage should instead be performed using a separate ",
+				"facility designed for that specific purpose.");
 
-		}
+			if (! route.getCanReceive ()) {
 
-		htmlFormOpenPostAction (
-			requestContext.resolveLocalUrl (
-				"/route.test.twoWay"));
+				htmlParagraphWriteFormatError (
+					"This route is not configured for inbound messages, and so ",
+					"this facility is not available.");
 
-		htmlTableOpenDetails ();
-
-		htmlTableDetailsRowWriteHtml (
-			"Num from",
-			stringFormat (
-				"<input",
-				" type=\"text\"",
-				" name=\"num_from\"",
-				" size=\"32\"",
-				" value=\"%h\"",
-				requestContext.parameterOrEmptyString (
-					"num_from"),
-				">"));
-
-		htmlTableDetailsRowWriteHtml (
-			"Num to",
-			stringFormat (
-				"<input",
-				" type=\"text\"",
-				" name=\"num_to\"",
-				" size=\"32\"",
-				" value=\"%h\"",
-				requestContext.parameterOrEmptyString (
-					"num_to"),
-				">"));
-
-		htmlTableDetailsRowWriteHtml (
-			"Message",
-			stringFormat (
-				"<textarea",
-				" name=\"message\"",
-				" rows=\"3\"",
-				" cols=\"64\"",
-				"></textarea>"));
-
-		htmlTableClose ();
-
-		htmlParagraphOpen ();
-
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"send message\"",
-			">");
-
-		htmlParagraphClose ();
-
-		if (messages != null && messages.size () > 0) {
-
-			htmlHeadingThreeWrite (
-				"Messages");
-
-			htmlTableOpenList ();
-
-			htmlTableHeaderRowWrite (
-				"Number",
-				"Message");
-
-			for (
-				MessageRec message
-					: messages
-			) {
-
-				htmlTableRowOpen ();
-
-				htmlTableCellWrite (
-					message.getDirection () == MessageDirection.in
-						? message.getNumTo ()
-						: message.getNumFrom ());
-
-				htmlTableCellWrite (
-					message.getText ().getText ());
-
-				htmlTableCellClose ();
+				return;
 
 			}
 
+			htmlFormOpenPostAction (
+				requestContext.resolveLocalUrl (
+					"/route.test.twoWay"));
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWriteHtml (
+				"Num from",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"num_from\"",
+					" size=\"32\"",
+					" value=\"%h\"",
+					requestContext.parameterOrEmptyString (
+						"num_from"),
+					">"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Num to",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"num_to\"",
+					" size=\"32\"",
+					" value=\"%h\"",
+					requestContext.parameterOrEmptyString (
+						"num_to"),
+					">"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Message",
+				stringFormat (
+					"<textarea",
+					" name=\"message\"",
+					" rows=\"3\"",
+					" cols=\"64\"",
+					"></textarea>"));
+
 			htmlTableClose ();
 
-		}
+			htmlParagraphOpen ();
 
-		htmlFormClose ();
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"send message\"",
+				">");
+
+			htmlParagraphClose ();
+
+			if (messages != null && messages.size () > 0) {
+
+				htmlHeadingThreeWrite (
+					"Messages");
+
+				htmlTableOpenList ();
+
+				htmlTableHeaderRowWrite (
+					"Number",
+					"Message");
+
+				for (
+					MessageRec message
+						: messages
+				) {
+
+					htmlTableRowOpen ();
+
+					htmlTableCellWrite (
+						message.getDirection () == MessageDirection.in
+							? message.getNumTo ()
+							: message.getNumFrom ());
+
+					htmlTableCellWrite (
+						message.getText ().getText ());
+
+					htmlTableCellClose ();
+
+				}
+
+				htmlTableClose ();
+
+			}
+
+			htmlFormClose ();
+
+		}
 
 	}
 

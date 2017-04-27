@@ -17,8 +17,8 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -88,96 +88,103 @@ class RouteTesterCommand
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
 
-		MessageRec message =
-			inbox.getMessage ();
-
-		Matcher matcher =
-			routeTestPattern.matcher (
-				message.getText ().getText ());
-
-		if (! matcher.find ()) {
-
-			return smsInboxLogic.inboxNotProcessed (
-				taskLogger,
-				inbox,
-				optionalAbsent (),
-				optionalAbsent (),
-				optionalOf (
-					command),
-				"No route test info found in message body");
-
-		}
-
-		Long routeTestId =
-			Long.parseLong (
-				matcher.group (1));
-
-		Optional <RouteTestRec> routeTestOptional =
-			routeTestHelper.find (
-				routeTestId);
-
-		if (
-			optionalIsNotPresent (
-				routeTestOptional)
 		) {
 
-			return smsInboxLogic.inboxNotProcessed (
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			MessageRec message =
+				inbox.getMessage ();
+
+			Matcher matcher =
+				routeTestPattern.matcher (
+					message.getText ().getText ());
+
+			if (! matcher.find ()) {
+
+				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
+					inbox,
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalOf (
+						command),
+					"No route test info found in message body");
+
+			}
+
+			Long routeTestId =
+				Long.parseLong (
+					matcher.group (1));
+
+			Optional <RouteTestRec> routeTestOptional =
+				routeTestHelper.find (
+					routeTestId);
+
+			if (
+				optionalIsNotPresent (
+					routeTestOptional)
+			) {
+
+				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
+					inbox,
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalOf (
+						command),
+					"Response to unknown route test id");
+
+			}
+
+			RouteTestRec routeTest =
+				routeTestOptional.get ();
+
+			message.setThreadId (
+				routeTest.getSentMessage ().getThreadId ());
+
+			if (routeTest.getReturnedTime () != null) {
+
+				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
+					inbox,
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalOf (
+						command),
+					"Duplicate response for route test");
+
+			}
+
+			routeTest
+
+				.setReturnedTime (
+					transaction.now ())
+
+				.setReturnedMessage (
+					message);
+
+			return smsInboxLogic.inboxProcessed (
 				taskLogger,
 				inbox,
 				optionalAbsent (),
 				optionalAbsent (),
-				optionalOf (
-					command),
-				"Response to unknown route test id");
+				command);
 
 		}
-
-		RouteTestRec routeTest =
-			routeTestOptional.get ();
-
-		message.setThreadId (
-			routeTest.getSentMessage ().getThreadId ());
-
-		if (routeTest.getReturnedTime () != null) {
-
-			return smsInboxLogic.inboxNotProcessed (
-				taskLogger,
-				inbox,
-				optionalAbsent (),
-				optionalAbsent (),
-				optionalOf (
-					command),
-				"Duplicate response for route test");
-
-		}
-
-		routeTest
-
-			.setReturnedTime (
-				transaction.now ())
-
-			.setReturnedMessage (
-				message);
-
-		return smsInboxLogic.inboxProcessed (
-			taskLogger,
-			inbox,
-			optionalAbsent (),
-			optionalAbsent (),
-			command);
 
 	}
 
 	final static
 	Pattern routeTestPattern =
-		Pattern.compile ("ROUTETEST ID=(\\d+)");
+		Pattern.compile (
+			"ROUTETEST ID=(\\d+)");
 
 }

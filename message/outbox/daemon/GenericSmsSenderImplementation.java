@@ -32,7 +32,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.ExceptionUtils;
@@ -154,65 +154,71 @@ class GenericSmsSenderImplementation <StateType>
 	void send (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"send");
+		try (
 
-		// setup request
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"send");
 
-		setupSend (
-			taskLogger);
-
-		if (
-			enumNotEqualSafe (
-				setupRequestResult.status (),
-				SetupRequestStatus.success)
 		) {
 
-			return;
+			// setup request
 
-		}
-
-		state =
-			setupRequestResult.state ();
-
-		// perform send
-
-		performSend (
-			taskLogger);
-
-		if (
-			enumNotEqualSafe (
-				performSendResult.status (),
-				PerformSendStatus.success)
-		) {
-
-			handlePerformSendError (
+			setupSend (
 				taskLogger);
 
-			return;
+			if (
+				enumNotEqualSafe (
+					setupRequestResult.status (),
+					SetupRequestStatus.success)
+			) {
+
+				return;
+
+			}
+
+			state =
+				setupRequestResult.state ();
+
+			// perform send
+
+			performSend (
+				taskLogger);
+
+			if (
+				enumNotEqualSafe (
+					performSendResult.status (),
+					PerformSendStatus.success)
+			) {
+
+				handlePerformSendError (
+					taskLogger);
+
+				return;
+
+			}
+
+			// process response
+
+			processResponse (
+				taskLogger);
 
 		}
-
-		// process response
-
-		processResponse (
-			taskLogger);
 
 	}
 
 	void setupSend (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setupSend");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setupSend");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"GenericSmsSenderImplementation.setupSend ()",
@@ -385,14 +391,14 @@ class GenericSmsSenderImplementation <StateType>
 			@NonNull Long smsMessageId,
 			@NonNull SetupRequestResult <StateType> setupSendResult) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handleSetupErrorInSeparateTransaction");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handleSetupErrorInSeparateTransaction");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					stringFormat (
@@ -427,100 +433,106 @@ class GenericSmsSenderImplementation <StateType>
 	void performSend (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"performSend");
+		try (
 
-		// now send it
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"performSend");
 
-		try {
-
-			performSendResult =
-				smsSenderHelper.performSend (
-					taskLogger,
-					state);
-
-			if (
-
-				isNull (
-					performSendResult)
-
-				|| isNull (
-					performSendResult.status ())
-
-			) {
-				throw new NullPointerException ();
-			}
-
-		} catch (Exception exception) {
-
-			performSendResult =
-				new PerformSendResult ()
-
-				.status (
-					PerformSendStatus.unknownError)
-
-				.exception (
-					exception);
-
-		}
-
-		if (
-			enumNotEqualSafe (
-				performSendResult.status (),
-				PerformSendStatus.success)
 		) {
 
-			// set status message from exception if not present
+			// now send it
 
-			if (
+			try {
 
-				isNotNull (
-					performSendResult.exception ())
+				performSendResult =
+					smsSenderHelper.performSend (
+						taskLogger,
+						state);
 
-				&& isNull (
-					performSendResult.statusMessage ())
+				if (
 
-			) {
+					isNull (
+						performSendResult)
 
-				Throwable exception =
-					performSendResult.exception ();
+					|| isNull (
+						performSendResult.status ())
 
-				performSendResult.statusMessage (
-					ifThenElse (
-						isNotNull (
-							exception.getMessage ()),
+				) {
+					throw new NullPointerException ();
+				}
 
-					() -> stringFormat (
-						"Error sending message: %s: %s",
-						exception.getClass ().getSimpleName (),
-						exception.getMessage ()),
+			} catch (Exception exception) {
 
-					() -> stringFormat (
-						"Error sending message: %s",
-						exception.getClass ().getSimpleName ())
+				performSendResult =
+					new PerformSendResult ()
 
-				));
+					.status (
+						PerformSendStatus.unknownError)
+
+					.exception (
+						exception);
 
 			}
 
-			// set error trace from exception if not present
-
 			if (
-
-				isNotNull (
-					performSendResult.exception)
-
-				&& isNull (
-					performSendResult.errorTrace ())
-
+				enumNotEqualSafe (
+					performSendResult.status (),
+					PerformSendStatus.success)
 			) {
 
-				performSendResult.errorTrace (
-					exceptionUtils.throwableDumpJson (
-						taskLogger,
-						performSendResult.exception ()));
+				// set status message from exception if not present
+
+				if (
+
+					isNotNull (
+						performSendResult.exception ())
+
+					&& isNull (
+						performSendResult.statusMessage ())
+
+				) {
+
+					Throwable exception =
+						performSendResult.exception ();
+
+					performSendResult.statusMessage (
+						ifThenElse (
+							isNotNull (
+								exception.getMessage ()),
+
+						() -> stringFormat (
+							"Error sending message: %s: %s",
+							exception.getClass ().getSimpleName (),
+							exception.getMessage ()),
+
+						() -> stringFormat (
+							"Error sending message: %s",
+							exception.getClass ().getSimpleName ())
+
+					));
+
+				}
+
+				// set error trace from exception if not present
+
+				if (
+
+					isNotNull (
+						performSendResult.exception)
+
+					&& isNull (
+						performSendResult.errorTrace ())
+
+				) {
+
+					performSendResult.errorTrace (
+						exceptionUtils.throwableDumpJson (
+							taskLogger,
+							performSendResult.exception ()));
+
+				}
 
 			}
 
@@ -531,21 +543,25 @@ class GenericSmsSenderImplementation <StateType>
 	void handlePerformSendError (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handlePerformSendError");
+		try (
 
-		boolean success =
-			LongStream.range (0, databaseRetriesMax).anyMatch (
-				attemptNumber ->
-					attemptToHandlePerformSendError (
-						taskLogger,
-						attemptNumber));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handlePerformSendError");
 
-		if (! success) {
+		) {
 
-			throw todo ();
+			boolean success =
+				LongStream.range (0, databaseRetriesMax).anyMatch (
+					attemptNumber ->
+						attemptToHandlePerformSendError (
+							taskLogger,
+							attemptNumber));
+
+			if (! success) {
+				throw todo ();
+			}
 
 		}
 
@@ -555,30 +571,36 @@ class GenericSmsSenderImplementation <StateType>
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long attemptNumber) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"attemptToHandlePerformSendError");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"attemptToHandlePerformSendError");
 
-			attemptToHandlePerformSendErrorReal (
-				taskLogger,
-				attemptNumber);
+		) {
 
-			return true;
+			try {
 
-		} catch (Throwable exception) {
+				attemptToHandlePerformSendErrorReal (
+					taskLogger,
+					attemptNumber);
 
-			exceptionLogger.logThrowable (
-				taskLogger,
-				"daemon",
-				getClass ().getSimpleName (),
-				exception,
-				optionalAbsent (),
-				GenericExceptionResolution.tryAgainLater);
+				return true;
 
-			return false;
+			} catch (Throwable exception) {
+
+				exceptionLogger.logThrowable (
+					taskLogger,
+					"daemon",
+					getClass ().getSimpleName (),
+					exception,
+					optionalAbsent (),
+					GenericExceptionResolution.tryAgainLater);
+
+				return false;
+
+			}
 
 		}
 
@@ -588,14 +610,14 @@ class GenericSmsSenderImplementation <StateType>
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Long attemptNumber) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"attemptToHandlePerformSendErrorReal");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"attemptToHandlePerformSendErrorReal");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					stringFormat (
@@ -650,22 +672,26 @@ class GenericSmsSenderImplementation <StateType>
 	void processResponse (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"processResponse");
+		try (
 
-		boolean success =
-			LongStream.range (0, databaseRetriesMax).anyMatch (
-				attemptNumber ->
-					attemptToProcessResponse (
-						taskLogger,
-						state,
-						attemptNumber));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processResponse");
 
-		if (! success) {
+		) {
 
-			throw todo ();
+			boolean success =
+				LongStream.range (0, databaseRetriesMax).anyMatch (
+					attemptNumber ->
+						attemptToProcessResponse (
+							taskLogger,
+							state,
+							attemptNumber));
+
+			if (! success) {
+				throw todo ();
+			}
 
 		}
 
@@ -676,31 +702,37 @@ class GenericSmsSenderImplementation <StateType>
 			@NonNull StateType state,
 			@NonNull Long attemptNumber) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"attemptToProcessResponse");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"attemptToProcessResponse");
 
-			attemptToProcessResponseReal (
-				taskLogger,
-				state,
-				attemptNumber);
+		) {
 
-			return true;
+			try {
 
-		} catch (Throwable exception) {
+				attemptToProcessResponseReal (
+					taskLogger,
+					state,
+					attemptNumber);
 
-			exceptionLogger.logThrowable (
-				taskLogger,
-				"daemon",
-				getClass ().getSimpleName (),
-				exception,
-				optionalAbsent (),
-				GenericExceptionResolution.tryAgainLater);
+				return true;
 
-			return false;
+			} catch (Throwable exception) {
+
+				exceptionLogger.logThrowable (
+					taskLogger,
+					"daemon",
+					getClass ().getSimpleName (),
+					exception,
+					optionalAbsent (),
+					GenericExceptionResolution.tryAgainLater);
+
+				return false;
+
+			}
 
 		}
 
@@ -711,16 +743,14 @@ class GenericSmsSenderImplementation <StateType>
 			@NonNull StateType state,
 			@NonNull Long attemptNumber) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"attemptToProcessResponseReal");
-
-		// begin transaction
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"attemptToProcessResponseReal");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					stringFormat (

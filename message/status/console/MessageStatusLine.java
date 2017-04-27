@@ -89,28 +89,34 @@ class MessageStatusLine
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull UserPrivChecker privChecker) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"getUpdateData");
+		try (
 
-		JsonObject jsonObject =
-			new JsonObject ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"getUpdateData");
 
-		jsonObject.addProperty (
-			"inbox",
-			countInboxes (
-				taskLogger,
-				privChecker));
+		) {
 
-		jsonObject.addProperty (
-			"outbox",
-			countOutboxes (
-				taskLogger,
-				privChecker));
+			JsonObject jsonObject =
+				new JsonObject ();
 
-		return futureValue (
-			jsonObject);
+			jsonObject.addProperty (
+				"inbox",
+				countInboxes (
+					taskLogger,
+					privChecker));
+
+			jsonObject.addProperty (
+				"outbox",
+				countOutboxes (
+					taskLogger,
+					privChecker));
+
+			return futureValue (
+				jsonObject);
+
+		}
 
 	}
 
@@ -121,54 +127,60 @@ class MessageStatusLine
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull UserPrivChecker privChecker) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"countInboxes");
+		try (
 
-		Long numInbox = 0l;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"countInboxes");
 
-		// count inboxes
-
-		for (
-			SliceRec slice
-				: sliceHelper.findAll ()
 		) {
 
-			if (
+			Long numInbox = 0l;
 
-				privChecker.canRecursive (
-					taskLogger,
-					GlobalId.root,
-					"inbox_view")
+			// count inboxes
 
-				|| privChecker.canRecursive (
-					taskLogger,
-					slice,
-					"sms_inbox_view")
-
+			for (
+				SliceRec slice
+					: sliceHelper.findAll ()
 			) {
 
-				MessageNumInboxCache numInboxCache =
-					mapItemForKeyOrElseSet (
-						numInboxCacheBySliceId,
-						slice.getId (),
-						() -> messageNumInboxCacheProvider.get ()
+				if (
 
-					.sliceId (
-						slice.getId ()
+					privChecker.canRecursive (
+						taskLogger,
+						GlobalId.root,
+						"inbox_view")
 
-				));
+					|| privChecker.canRecursive (
+						taskLogger,
+						slice,
+						"sms_inbox_view")
 
-				numInbox +=
-					numInboxCache.get (
-						taskLogger);
+				) {
+
+					MessageNumInboxCache numInboxCache =
+						mapItemForKeyOrElseSet (
+							numInboxCacheBySliceId,
+							slice.getId (),
+							() -> messageNumInboxCacheProvider.get ()
+
+						.sliceId (
+							slice.getId ()
+
+					));
+
+					numInbox +=
+						numInboxCache.get (
+							taskLogger);
+
+				}
 
 			}
 
-		}
+			return numInbox;
 
-		return numInbox;
+		}
 
 	}
 
@@ -177,54 +189,60 @@ class MessageStatusLine
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull UserPrivChecker privChecker) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"countOutboxes");
+		try (
 
-		Long numOutbox = 0l;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"countOutboxes");
 
-		// count inboxes
-
-		for (
-			SliceRec slice
-				: sliceHelper.findAll ()
 		) {
 
-			if (
+			Long numOutbox = 0l;
 
-				privChecker.canRecursive (
-					taskLogger,
-					GlobalId.root,
-					"inbox_view")
+			// count inboxes
 
-				|| privChecker.canRecursive (
-					taskLogger,
-					slice,
-					"sms_outbox_view")
-
+			for (
+				SliceRec slice
+					: sliceHelper.findAll ()
 			) {
 
-				MessageNumOutboxCache numOutboxCache =
-					mapItemForKeyOrElseSet (
-						numOutboxCacheBySliceId,
-						slice.getId (),
-						() -> messageNumOutboxCacheProvider.get ()
+				if (
 
-					.sliceId (
-						slice.getId ()
+					privChecker.canRecursive (
+						taskLogger,
+						GlobalId.root,
+						"inbox_view")
 
-				));
+					|| privChecker.canRecursive (
+						taskLogger,
+						slice,
+						"sms_outbox_view")
 
-				numOutbox +=
-					numOutboxCache.get (
-						taskLogger);
+				) {
+
+					MessageNumOutboxCache numOutboxCache =
+						mapItemForKeyOrElseSet (
+							numOutboxCacheBySliceId,
+							slice.getId (),
+							() -> messageNumOutboxCacheProvider.get ()
+
+						.sliceId (
+							slice.getId ()
+
+					));
+
+					numOutbox +=
+						numOutboxCache.get (
+							taskLogger);
+
+				}
 
 			}
 
-		}
+			return numOutbox;
 
-		return numOutbox;
+		}
 
 	}
 

@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -57,137 +57,143 @@ class RouteFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		routeHelper.insert (
-			taskLogger,
-			routeHelper.createInstance ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
+		) {
 
-			.setCode (
-				"inbound")
+			routeHelper.insert (
+				taskLogger,
+				routeHelper.createInstance ()
 
-			.setName (
-				"Inbound")
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
 
-			.setDescription (
-				"Inbound")
+				.setCode (
+					"inbound")
 
-			.setNumber (
-				"in")
+				.setName (
+					"Inbound")
 
-			.setCanReceive (
-				true)
+				.setDescription (
+					"Inbound")
 
-			.setCommand (
-				commandHelper.findByCodeRequired (
-					keywordSetHelper.findByCodeRequired (
+				.setNumber (
+					"in")
+
+				.setCanReceive (
+					true)
+
+				.setCommand (
+					commandHelper.findByCodeRequired (
+						keywordSetHelper.findByCodeRequired (
+							GlobalId.root,
+							"test",
+							"inbound"),
+						"default"))
+
+			);
+
+			routeHelper.insert (
+				taskLogger,
+				routeHelper.createInstance ()
+
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
+
+				.setCode (
+					"free")
+
+				.setName (
+					"Free")
+
+				.setDescription (
+					"Free")
+
+				.setCanSend (
+					true)
+
+				.setDeliveryReports (
+					true)
+
+			);
+
+			routeHelper.insert (
+				taskLogger,
+				routeHelper.createInstance ()
+
+				.setSlice (
+					sliceHelper.findByCodeRequired (
+						GlobalId.root,
+						"test"))
+
+				.setCode (
+					"bill")
+
+				.setName (
+					"Bill")
+
+				.setDescription (
+					"Bill")
+
+				.setCanSend (
+					true)
+
+				.setDeliveryReports (
+					true)
+
+				.setOutCharge (
+					500l)
+
+				.setCurrency (
+					currencyHelper.findByCodeRequired (
 						GlobalId.root,
 						"test",
-						"inbound"),
-					"default"))
+						"gbp"))
 
-		);
+			);
 
-		routeHelper.insert (
-			taskLogger,
-			routeHelper.createInstance ()
+			menuItemHelper.insert (
+				taskLogger,
+				menuItemHelper.createInstance ()
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
+				.setMenuGroup (
+					menuGroupHelper.findByCodeRequired (
+						GlobalId.root,
+						"test",
+						"sms"))
 
-			.setCode (
-				"free")
+				.setCode (
+					"route")
 
-			.setName (
-				"Free")
+				.setName (
+					"Route")
 
-			.setDescription (
-				"Free")
+				.setDescription (
+					"")
 
-			.setCanSend (
-				true)
+				.setLabel (
+					"Routes")
 
-			.setDeliveryReports (
-				true)
+				.setTargetPath (
+					"/routes")
 
-		);
+				.setTargetFrame (
+					"main")
 
-		routeHelper.insert (
-			taskLogger,
-			routeHelper.createInstance ()
+			);
 
-			.setSlice (
-				sliceHelper.findByCodeRequired (
-					GlobalId.root,
-					"test"))
-
-			.setCode (
-				"bill")
-
-			.setName (
-				"Bill")
-
-			.setDescription (
-				"Bill")
-
-			.setCanSend (
-				true)
-
-			.setDeliveryReports (
-				true)
-
-			.setOutCharge (
-				500l)
-
-			.setCurrency (
-				currencyHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"gbp"))
-
-		);
-
-		menuItemHelper.insert (
-			taskLogger,
-			menuItemHelper.createInstance ()
-
-			.setMenuGroup (
-				menuGroupHelper.findByCodeRequired (
-					GlobalId.root,
-					"test",
-					"sms"))
-
-			.setCode (
-				"route")
-
-			.setName (
-				"Route")
-
-			.setDescription (
-				"")
-
-			.setLabel (
-				"Routes")
-
-			.setTargetPath (
-				"/routes")
-
-			.setTargetFrame (
-				"main")
-
-		);
+		}
 
 	}
 

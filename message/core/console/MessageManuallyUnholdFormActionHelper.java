@@ -15,7 +15,7 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -105,54 +105,60 @@ class MessageManuallyUnholdFormActionHelper
 	public
 	Optional <Responder> processFormSubmission (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull Object formState) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"processFormSubmission");
+		try (
 
-		// load data
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"processFormSubmission");
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
-
-		// check state
-
-		if (
-			enumNotEqualSafe (
-				smsMessage.getStatus (),
-				MessageStatus.held)
 		) {
 
-			requestContext.addError (
-				"Message in invalid state for this operation");
+			// load data
+
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired ();
+
+			// check state
+
+			if (
+				enumNotEqualSafe (
+					smsMessage.getStatus (),
+					MessageStatus.held)
+			) {
+
+				requestContext.addError (
+					"Message in invalid state for this operation");
+
+				return optionalAbsent ();
+
+			}
+
+			// unhold message
+
+			smsOutboxLogic.unholdMessage (
+				taskLogger,
+				smsMessage);
+
+			eventLogic.createEvent (
+				taskLogger,
+				"message_manually_unheld",
+				userConsoleLogic.userRequired (),
+				smsMessage);
+
+			// commit and return
+
+			transaction.commit ();
+
+			requestContext.addNotice (
+				"Message manually unheld");
 
 			return optionalAbsent ();
 
 		}
-
-		// unhold message
-
-		smsOutboxLogic.unholdMessage (
-			taskLogger,
-			smsMessage);
-
-		eventLogic.createEvent (
-			taskLogger,
-			"message_manually_unheld",
-			userConsoleLogic.userRequired (),
-			smsMessage);
-
-		// commit and return
-
-		transaction.commit ();
-
-		requestContext.addNotice (
-			"Message manually unheld");
-
-		return optionalAbsent ();
 
 	}
 

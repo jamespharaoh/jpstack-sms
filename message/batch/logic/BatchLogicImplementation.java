@@ -54,52 +54,58 @@ class BatchLogicImplementation
 			@NonNull String typeCode,
 			@NonNull String code) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"batchSubject");
+		try (
 
-		// lookup existing
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"batchSubject");
 
-		Optional<BatchSubjectRec> batchSubjectOptional =
-			batchSubjectHelper.findByCode (
-				parent,
-				code);
-
-		if (
-			optionalIsPresent (
-				batchSubjectOptional)
 		) {
-			return batchSubjectOptional.get ();
+
+			// lookup existing
+
+			Optional<BatchSubjectRec> batchSubjectOptional =
+				batchSubjectHelper.findByCode (
+					parent,
+					code);
+
+			if (
+				optionalIsPresent (
+					batchSubjectOptional)
+			) {
+				return batchSubjectOptional.get ();
+			}
+
+			// or create new
+
+			ObjectTypeRec parentType =
+				objectTypeHelper.findRequired (
+					objectManager.getObjectTypeId (
+						parent));
+
+			BatchTypeRec batchType =
+				batchTypeHelper.findByCodeRequired (
+					parentType,
+					typeCode);
+
+			return batchSubjectHelper.insert (
+				taskLogger,
+				batchSubjectHelper.createInstance ()
+
+				.setCode (
+					code)
+
+				.setBatchType (
+					batchType)
+
+				.setParentType (
+					parentType)
+
+				.setParentId (
+					parent.getId ()));
+
 		}
-
-		// or create new
-
-		ObjectTypeRec parentType =
-			objectTypeHelper.findRequired (
-				objectManager.getObjectTypeId (
-					parent));
-
-		BatchTypeRec batchType =
-			batchTypeHelper.findByCodeRequired (
-				parentType,
-				typeCode);
-
-		return batchSubjectHelper.insert (
-			taskLogger,
-			batchSubjectHelper.createInstance ()
-
-			.setCode (
-				code)
-
-			.setBatchType (
-				batchType)
-
-			.setParentType (
-				parentType)
-
-			.setParentId (
-				parent.getId ()));
 
 	}
 

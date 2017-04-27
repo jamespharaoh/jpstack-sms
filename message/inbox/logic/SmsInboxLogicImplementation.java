@@ -19,8 +19,8 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -133,244 +133,250 @@ class SmsInboxLogicImplementation
 			@NonNull Optional <String> avStatus,
 			@NonNull Optional <String> subject) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"inboxInsert");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"inboxInsert");
 
-		// lookup basics
+		) {
 
-		RootRec root =
-			rootHelper.findRequired (
-				0l);
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		// lookup the number
+			// lookup basics
 
-		NetworkRec network =
-			optionalNetwork.or (
-				networkHelper.findRequired (
-					0l));
+			RootRec root =
+				rootHelper.findRequired (
+					0l);
 
-		if (! route.getCanReceive ()) {
+			// lookup the number
 
-			throw new RuntimeException (
-				stringFormat (
-					"Cannot receive on route %s",
-					integerToDecimalString (
-						route.getId ())));
+			NetworkRec network =
+				optionalNetwork.or (
+					networkHelper.findRequired (
+						0l));
 
-		}
+			if (! route.getCanReceive ()) {
 
-		// see if this otherId already exists and return existing message if so
-
-		if (otherId.isPresent ()) {
-
-			MessageRec existingMessage =
-				messageHelper.findByOtherId (
-					MessageDirection.in,
-					route,
-					otherId.get ());
-
-			if (existingMessage != null) {
-
-				// check the details match
-
-				if (
-					existingMessage.getDirection () != MessageDirection.in
-					|| existingMessage.getText () != text
-					|| existingMessage.getNumber () != number
-					|| ! existingMessage.getNumTo ().equals (numTo)
-					|| existingMessage.getNetwork () != network
-				) {
-
-					taskLogger.errorFormat (
-						"Trying to insert inbox with duplicated other id, but other details don't match");
-
-					taskLogger.errorFormat (
-						"Other id: %s",
-						optionalOrEmptyString (
-							otherId));
-
-					taskLogger.errorFormat (
-						"Existing text: %s",
-						existingMessage.getText ().getText ());
-
-					taskLogger.errorFormat (
-						"Existing num from: %s",
-						existingMessage.getNumFrom ());
-
-					taskLogger.errorFormat (
-						"Existing num to: %s",
-						existingMessage.getNumTo ());
-
-					taskLogger.errorFormat (
-						"Existing network: %s",
+				throw new RuntimeException (
+					stringFormat (
+						"Cannot receive on route %s",
 						integerToDecimalString (
-							existingMessage.getNetwork ().getId ()));
-
-					taskLogger.errorFormat (
-						"New text: %s",
-						text.getText ());
-
-					taskLogger.errorFormat (
-						"New num from: %s",
-						number.getNumber ());
-
-					taskLogger.errorFormat (
-						"New num to: %s",
-						numTo);
-
-					taskLogger.errorFormat (
-						"New network: %s",
-						integerToDecimalString (
-							network.getId ()));
-
-					throw new RuntimeException (
-						stringFormat (
-							"Duplicated other id but message details don't ",
-							"match: %s",
-							otherId.or ("(none)")));
-
-				}
-
-				// and return it
-
-				return existingMessage;
+							route.getId ())));
 
 			}
 
-		}
+			// see if this otherId already exists and return existing message if so
 
-		// create the message
+			if (otherId.isPresent ()) {
 
-		AffiliateRec systemAffiliate =
-			affiliateHelper.findByCodeRequired (
-				root,
-				"system");
+				MessageRec existingMessage =
+					messageHelper.findByOtherId (
+						MessageDirection.in,
+						route,
+						otherId.get ());
 
-		MessageRec message =
-			messageHelper.createInstance ()
+				if (existingMessage != null) {
 
-			.setCreatedTime (
-				transaction.now ())
+					// check the details match
 
-			.setDirection (
-				MessageDirection.in)
+					if (
+						existingMessage.getDirection () != MessageDirection.in
+						|| existingMessage.getText () != text
+						|| existingMessage.getNumber () != number
+						|| ! existingMessage.getNumTo ().equals (numTo)
+						|| existingMessage.getNetwork () != network
+					) {
 
-			.setStatus (
-				MessageStatus.pending)
+						taskLogger.errorFormat (
+							"Trying to insert inbox with duplicated other id, but other details don't match");
 
-			.setOtherId (
-				otherId.orNull ())
+						taskLogger.errorFormat (
+							"Other id: %s",
+							optionalOrEmptyString (
+								otherId));
 
-			.setText (
-				text)
+						taskLogger.errorFormat (
+							"Existing text: %s",
+							existingMessage.getText ().getText ());
 
-			.setNumber (
-				number)
+						taskLogger.errorFormat (
+							"Existing num from: %s",
+							existingMessage.getNumFrom ());
 
-			.setNumFrom (
-				number.getNumber ())
+						taskLogger.errorFormat (
+							"Existing num to: %s",
+							existingMessage.getNumTo ());
 
-			.setNumTo (
-				numTo)
+						taskLogger.errorFormat (
+							"Existing network: %s",
+							integerToDecimalString (
+								existingMessage.getNetwork ().getId ()));
 
-			.setCharge (
-				route.getInCharge ())
+						taskLogger.errorFormat (
+							"New text: %s",
+							text.getText ());
 
-			.setRoute (
-				route)
+						taskLogger.errorFormat (
+							"New num from: %s",
+							number.getNumber ());
 
-			.setNetwork (
-				network)
+						taskLogger.errorFormat (
+							"New num to: %s",
+							numTo);
 
-			.setNetworkTime (
-				networkTime.isPresent ()
-					? networkTime.get ()
-					: null)
+						taskLogger.errorFormat (
+							"New network: %s",
+							integerToDecimalString (
+								network.getId ()));
 
-			.setService (
-				serviceHelper.findByCodeRequired (
+						throw new RuntimeException (
+							stringFormat (
+								"Duplicated other id but message details don't ",
+								"match: %s",
+								otherId.or ("(none)")));
+
+					}
+
+					// and return it
+
+					return existingMessage;
+
+				}
+
+			}
+
+			// create the message
+
+			AffiliateRec systemAffiliate =
+				affiliateHelper.findByCodeRequired (
 					root,
-					"system"))
+					"system");
 
-			.setAffiliate (
-				systemAffiliate)
+			MessageRec message =
+				messageHelper.createInstance ()
 
-			.setBatch (
-				batchHelper.findRequired (
-					0l))
+				.setCreatedTime (
+					transaction.now ())
 
-			.setAdultVerified (
-				avStatus.orNull ())
+				.setDirection (
+					MessageDirection.in)
 
-			.setMessageType (
-				messageTypeHelper.findByCodeRequired (
-					GlobalId.root,
-					medias.isEmpty ()
-						? "sms"
-						: "mms"))
+				.setStatus (
+					MessageStatus.pending)
 
-			.setSubjectText (
-				subject.isPresent ()
-					? textHelper.findOrCreate (
-						taskLogger,
-						subject.get ())
-					: null);
+				.setOtherId (
+					otherId.orNull ())
 
-		message.getMedias ().addAll (
-			medias);
+				.setText (
+					text)
 
-		messageHelper.insert (
-			taskLogger,
-			message);
+				.setNumber (
+					number)
 
-		// create the inbox entry
+				.setNumFrom (
+					number.getNumber ())
 
-		inboxHelper.insert (
-			taskLogger,
-			inboxHelper.createInstance ()
+				.setNumTo (
+					numTo)
 
-			.setMessage (
-				message)
+				.setCharge (
+					route.getInCharge ())
 
-			.setRoute (
-				route)
+				.setRoute (
+					route)
 
-			.setCreatedTime (
-				transaction.now ())
+				.setNetwork (
+					network)
 
-			.setState (
-				InboxState.pending)
+				.setNetworkTime (
+					networkTime.isPresent ()
+						? networkTime.get ()
+						: null)
 
-			.setNextAttempt (
-				transaction.now ())
+				.setService (
+					serviceHelper.findByCodeRequired (
+						root,
+						"system"))
 
-		);
+				.setAffiliate (
+					systemAffiliate)
 
-		taskLogger.noticeFormat (
-			"SMS %s %s %s %s %s %s",
-			integerToDecimalString (
-				message.getId ()),
-			route.getCode (),
-			emptyStringIfNull (
-				message.getOtherId ()),
-			message.getNumFrom (),
-			message.getNumTo (),
-			message.getText ().getText ());
+				.setBatch (
+					batchHelper.findRequired (
+						0l))
 
-		// update the number
+				.setAdultVerified (
+					avStatus.orNull ())
 
-		setNetworkFromMessage (
-			taskLogger,
-			message);
+				.setMessageType (
+					messageTypeHelper.findByCodeRequired (
+						GlobalId.root,
+						medias.isEmpty ()
+							? "sms"
+							: "mms"))
 
-		// return
+				.setSubjectText (
+					subject.isPresent ()
+						? textHelper.findOrCreate (
+							taskLogger,
+							subject.get ())
+						: null);
 
-		return message;
+			message.getMedias ().addAll (
+				medias);
+
+			messageHelper.insert (
+				taskLogger,
+				message);
+
+			// create the inbox entry
+
+			inboxHelper.insert (
+				taskLogger,
+				inboxHelper.createInstance ()
+
+				.setMessage (
+					message)
+
+				.setRoute (
+					route)
+
+				.setCreatedTime (
+					transaction.now ())
+
+				.setState (
+					InboxState.pending)
+
+				.setNextAttempt (
+					transaction.now ())
+
+			);
+
+			taskLogger.noticeFormat (
+				"SMS %s %s %s %s %s %s",
+				integerToDecimalString (
+					message.getId ()),
+				route.getCode (),
+				emptyStringIfNull (
+					message.getOtherId ()),
+				message.getNumFrom (),
+				message.getNumTo (),
+				message.getText ().getText ());
+
+			// update the number
+
+			setNetworkFromMessage (
+				taskLogger,
+				message);
+
+			// return
+
+			return message;
+
+		}
 
 	}
 
@@ -383,85 +389,91 @@ class SmsInboxLogicImplementation
 			@NonNull Optional<AffiliateRec> affiliate,
 			@NonNull CommandRec command) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"inboxProcessed");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"inboxProcessed");
 
-		MessageRec message =
-			inbox.getMessage ();
+		) {
 
-		// sanity check
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		checkInboxPending (
-			inbox);
+			MessageRec message =
+				inbox.getMessage ();
 
-		// create inbox attempt
+			// sanity check
 
-		InboxAttemptRec inboxAttempt =
-			inboxAttemptHelper.insert (
+			checkInboxPending (
+				inbox);
+
+			// create inbox attempt
+
+			InboxAttemptRec inboxAttempt =
+				inboxAttemptHelper.insert (
+					taskLogger,
+					inboxAttemptHelper.createInstance ()
+
+				.setInbox (
+					inbox)
+
+				.setIndex (
+					inbox.getNumAttempts ())
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setResult (
+					InboxState.processed)
+
+			);
+
+			// update inbox
+
+			inbox
+
+				.setState (
+					InboxState.processed)
+
+				.setNumAttempts (
+					inbox.getNumAttempts () + 1)
+
+				.setNextAttempt (
+					null)
+
+				.setStatusMessage (
+					null);
+
+			// update message
+
+			messageLogic.messageStatus (
 				taskLogger,
-				inboxAttemptHelper.createInstance ()
+				message,
+				MessageStatus.processed);
 
-			.setInbox (
-				inbox)
+			message
 
-			.setIndex (
-				inbox.getNumAttempts ())
+				.setProcessedTime (
+					transaction.now ())
 
-			.setTimestamp (
-				transaction.now ())
+				.setService (
+					service.or (
+						message.getService ()))
 
-			.setResult (
-				InboxState.processed)
+				.setAffiliate (
+					affiliate.or (
+						message.getAffiliate ()))
 
-		);
+				.setCommand (
+					command);
 
-		// update inbox
+			// return
 
-		inbox
+			return inboxAttempt;
 
-			.setState (
-				InboxState.processed)
-
-			.setNumAttempts (
-				inbox.getNumAttempts () + 1)
-
-			.setNextAttempt (
-				null)
-
-			.setStatusMessage (
-				null);
-
-		// update message
-
-		messageLogic.messageStatus (
-			taskLogger,
-			message,
-			MessageStatus.processed);
-
-		message
-
-			.setProcessedTime (
-				transaction.now ())
-
-			.setService (
-				service.or (
-					message.getService ()))
-
-			.setAffiliate (
-				affiliate.or (
-					message.getAffiliate ()))
-
-			.setCommand (
-				command);
-
-		// return
-
-		return inboxAttempt;
+		}
 
 	}
 
@@ -475,111 +487,117 @@ class SmsInboxLogicImplementation
 			@NonNull Optional<CommandRec> command,
 			@NonNull String statusMessage) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"inboxNotProcessed");
+		try (
 
-		taskLogger.noticeFormat (
-			"Not processed message: %s",
-			statusMessage);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"inboxNotProcessed");
 
-		Transaction transaction =
-			database.currentTransaction ();
+		) {
 
-		// sanity check
-
-		checkInboxPending (
-			inbox);
-
-		// create inbox attempt
-
-		InboxAttemptRec inboxAttempt =
-			inboxAttemptHelper.insert (
-				taskLogger,
-				inboxAttemptHelper.createInstance ()
-
-			.setInbox (
-				inbox)
-
-			.setIndex (
-				inbox.getNumAttempts ())
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setResult (
-				InboxState.notProcessed)
-
-			.setStatusMessage (
-				statusMessage)
-
-		);
-
-		// update inbox
-
-		inbox
-
-			.setState (
-				InboxState.notProcessed)
-
-			.setNumAttempts (
-				inbox.getNumAttempts () + 1)
-
-			.setNextAttempt (
-				null)
-
-			.setStatusMessage (
+			taskLogger.noticeFormat (
+				"Not processed message: %s",
 				statusMessage);
 
-		// create queue item
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		MessageRec message =
-			inbox.getMessage ();
+			// sanity check
 
-		QueueItemRec queueItem =
-			queueLogic.createQueueItem (
+			checkInboxPending (
+				inbox);
+
+			// create inbox attempt
+
+			InboxAttemptRec inboxAttempt =
+				inboxAttemptHelper.insert (
+					taskLogger,
+					inboxAttemptHelper.createInstance ()
+
+				.setInbox (
+					inbox)
+
+				.setIndex (
+					inbox.getNumAttempts ())
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setResult (
+					InboxState.notProcessed)
+
+				.setStatusMessage (
+					statusMessage)
+
+			);
+
+			// update inbox
+
+			inbox
+
+				.setState (
+					InboxState.notProcessed)
+
+				.setNumAttempts (
+					inbox.getNumAttempts () + 1)
+
+				.setNextAttempt (
+					null)
+
+				.setStatusMessage (
+					statusMessage);
+
+			// create queue item
+
+			MessageRec message =
+				inbox.getMessage ();
+
+			QueueItemRec queueItem =
+				queueLogic.createQueueItem (
+					taskLogger,
+					message.getRoute (),
+					"not_processed",
+					message.getNumber (),
+					message,
+					message.getNumFrom (),
+					message.getText ().getText ());
+
+			// update message
+
+			messageLogic.messageStatus (
 				taskLogger,
-				message.getRoute (),
-				"not_processed",
-				message.getNumber (),
 				message,
-				message.getNumFrom (),
-				message.getText ().getText ());
+				MessageStatus.notProcessed);
 
-		// update message
+			message
 
-		messageLogic.messageStatus (
-			taskLogger,
-			message,
-			MessageStatus.notProcessed);
+				.setProcessedTime (
+					transaction.now ())
 
-		message
+				.setService (
+					service.isPresent ()
+						? service.get ()
+						: message.getService ())
 
-			.setProcessedTime (
-				transaction.now ())
+				.setAffiliate (
+					affiliate.isPresent ()
+						? affiliate.get ()
+						: message.getAffiliate ())
 
-			.setService (
-				service.isPresent ()
-					? service.get ()
-					: message.getService ())
+				.setCommand (
+					command.isPresent ()
+						? command.get ()
+						: message.getCommand ())
 
-			.setAffiliate (
-				affiliate.isPresent ()
-					? affiliate.get ()
-					: message.getAffiliate ())
+				.setNotProcessedQueueItem (
+					queueItem);
 
-			.setCommand (
-				command.isPresent ()
-					? command.get ()
-					: message.getCommand ())
+			// return
 
-			.setNotProcessedQueueItem (
-				queueItem);
+			return inboxAttempt;
 
-		// return
-
-		return inboxAttempt;
+		}
 
 	}
 
@@ -587,104 +605,110 @@ class SmsInboxLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setNetworkFromMessage");
+		try (
 
-		// sanity check
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setNetworkFromMessage");
 
-		if (
-			message.getDirection ()
-				!= MessageDirection.in
 		) {
-			throw new RuntimeException ();
-		}
 
-		// tools
+			// sanity check
 
-		NumberRec number =
-			message.getNumber ();
+			if (
+				message.getDirection ()
+					!= MessageDirection.in
+			) {
+				throw new RuntimeException ();
+			}
 
-		RouteRec route =
-			message.getRoute ();
+			// tools
 
-		NetworkRec oldNetwork =
-			number.getNetwork ();
+			NumberRec number =
+				message.getNumber ();
 
-		NetworkRec newNetwork =
-			message.getNetwork ();
+			RouteRec route =
+				message.getRoute ();
 
-		// ignore if new network unknown
+			NetworkRec oldNetwork =
+				number.getNetwork ();
 
-		if (newNetwork.getId () == 0)
-			return;
+			NetworkRec newNetwork =
+				message.getNetwork ();
 
-		// ignore if no change
+			// ignore if new network unknown
 
-		if (
-			referenceEqualWithClass (
-				NetworkRec.class,
-				oldNetwork,
-				newNetwork)
-		) {
-			return;
-		}
-
-		// route network behaviour
-
-		switch (route.getNetworkBehaviour ()) {
-
-		case neverUpdate:
-
-			return;
-
-		case updateIfUnknown:
-
-			if (number.getNetwork ().getId () != 0)
+			if (newNetwork.getId () == 0)
 				return;
 
-			break;
-
-		case updateKeepingVirtual:
+			// ignore if no change
 
 			if (
 				referenceEqualWithClass (
 					NetworkRec.class,
-					oldNetwork.getVirtualNetworkOfNetwork (),
+					oldNetwork,
 					newNetwork)
 			) {
 				return;
 			}
 
-			break;
+			// route network behaviour
 
-		case alwaysUpdate:
+			switch (route.getNetworkBehaviour ()) {
 
-			break;
+			case neverUpdate:
 
-		default:
+				return;
 
-			throw new RuntimeException ();
+			case updateIfUnknown:
+
+				if (number.getNetwork ().getId () != 0)
+					return;
+
+				break;
+
+			case updateKeepingVirtual:
+
+				if (
+					referenceEqualWithClass (
+						NetworkRec.class,
+						oldNetwork.getVirtualNetworkOfNetwork (),
+						newNetwork)
+				) {
+					return;
+				}
+
+				break;
+
+			case alwaysUpdate:
+
+				break;
+
+			default:
+
+				throw new RuntimeException ();
+
+			}
+
+			// update it
+
+			number
+
+				.setNetwork (
+					newNetwork);
+
+			// create event
+
+			eventLogic.createEvent (
+				taskLogger,
+				"number_network_from_message",
+				number,
+				oldNetwork,
+				newNetwork,
+				message);
 
 		}
-
-		// update it
-
-		number
-
-			.setNetwork (
-				newNetwork);
-
-		// create event
-
-		eventLogic.createEvent (
-			taskLogger,
-			"number_network_from_message",
-			number,
-			oldNetwork,
-			newNetwork,
-			message);
 
 	}
 
@@ -695,61 +719,67 @@ class SmsInboxLogicImplementation
 			@NonNull InboxRec inbox,
 			@NonNull String statusMessage) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"inboxProcessingFailed");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"inboxProcessingFailed");
 
-		// sanity check
+		) {
 
-		checkInboxPending (
-			inbox);
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		// create inbox attempt
+			// sanity check
 
-		InboxAttemptRec inboxAttempt =
-			inboxAttemptHelper.insert (
-				taskLogger,
-				inboxAttemptHelper.createInstance ()
+			checkInboxPending (
+				inbox);
 
-			.setInbox (
-				inbox)
+			// create inbox attempt
 
-			.setIndex (
-				inbox.getNumAttempts ())
+			InboxAttemptRec inboxAttempt =
+				inboxAttemptHelper.insert (
+					taskLogger,
+					inboxAttemptHelper.createInstance ()
 
-			.setTimestamp (
-				transaction.now ())
+				.setInbox (
+					inbox)
 
-			.setResult (
-				InboxState.pending)
+				.setIndex (
+					inbox.getNumAttempts ())
 
-			.setStatusMessage (
-				statusMessage)
+				.setTimestamp (
+					transaction.now ())
 
-		);
+				.setResult (
+					InboxState.pending)
 
-		// update inbox
+				.setStatusMessage (
+					statusMessage)
 
-		inbox
+			);
 
-			.setNumAttempts (
-				inbox.getNumAttempts () + 1)
+			// update inbox
 
-			.setNextAttempt (
-				inbox.getNextAttempt ().plus (
-					Duration.standardSeconds (
-						inbox.getNumAttempts ())))
+			inbox
 
-			.setStatusMessage (
-				statusMessage);
+				.setNumAttempts (
+					inbox.getNumAttempts () + 1)
 
-		// return
+				.setNextAttempt (
+					inbox.getNextAttempt ().plus (
+						Duration.standardSeconds (
+							inbox.getNumAttempts ())))
 
-		return inboxAttempt;
+				.setStatusMessage (
+					statusMessage);
+
+			// return
+
+			return inboxAttempt;
+
+		}
 
 	}
 

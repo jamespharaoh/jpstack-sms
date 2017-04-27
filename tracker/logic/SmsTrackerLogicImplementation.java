@@ -19,8 +19,8 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -61,73 +61,81 @@ class SmsTrackerLogicImplementation
 			@NonNull NumberRec number,
 			@NonNull Optional<Instant> date) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"simpleTrackerConsult");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"simpleTrackerConsult");
 
-		SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
-			smsSimpleTrackerNumberHelper.find (
-				smsSimpleTracker,
-				number);
-
-		// create a new tracker number
-
-		if (smsSimpleTrackerNumber == null) {
-
-			smsSimpleTrackerNumber =
-				smsSimpleTrackerNumberHelper.createInstance ()
-
-				.setSmsSimpleTracker (
-					smsSimpleTracker)
-
-				.setNumber (
-					number)
-
-				.setBlocked (
-					false);
-
-			boolean result =
-				simpleTrackerNumberScanAndUpdate (
-					smsSimpleTrackerNumber);
-
-			smsSimpleTrackerNumberHelper.insert (
-				taskLogger,
-				smsSimpleTrackerNumber);
-
-			return result;
-
-		}
-
-		// if we have an existing blocked just return that
-
-		if (smsSimpleTrackerNumber.getBlocked ())
-			return false;
-
-		// check if the result has expired
-
-		Instant expiryTime =
-			smsSimpleTrackerNumber.getLastScan ().plus (
-				Duration.standardSeconds (
-					smsSimpleTracker.getSinceScanSecsMax ()));
-
-		if (
-			earlierThan (
-				expiryTime,
-				transaction.now ())
 		) {
 
-			return simpleTrackerNumberScanAndUpdate (
-				smsSimpleTrackerNumber);
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
+				smsSimpleTrackerNumberHelper.find (
+					smsSimpleTracker,
+					number);
+
+			// create a new tracker number
+
+			if (smsSimpleTrackerNumber == null) {
+
+				smsSimpleTrackerNumber =
+					smsSimpleTrackerNumberHelper.createInstance ()
+
+					.setSmsSimpleTracker (
+						smsSimpleTracker)
+
+					.setNumber (
+						number)
+
+					.setBlocked (
+						false);
+
+				boolean result =
+					simpleTrackerNumberScanAndUpdate (
+						taskLogger,
+						smsSimpleTrackerNumber);
+
+				smsSimpleTrackerNumberHelper.insert (
+					taskLogger,
+					smsSimpleTrackerNumber);
+
+				return result;
+
+			}
+
+			// if we have an existing blocked just return that
+
+			if (smsSimpleTrackerNumber.getBlocked ())
+				return false;
+
+			// check if the result has expired
+
+			Instant expiryTime =
+				smsSimpleTrackerNumber.getLastScan ().plus (
+					Duration.standardSeconds (
+						smsSimpleTracker.getSinceScanSecsMax ()));
+
+			if (
+				earlierThan (
+					expiryTime,
+					transaction.now ())
+			) {
+
+				return simpleTrackerNumberScanAndUpdate (
+					taskLogger,
+					smsSimpleTrackerNumber);
+
+			}
+
+			// or just return the current value
+
+			return ! smsSimpleTrackerNumber.getBlocked ();
 
 		}
-
-		// or just return the current value
-
-		return ! smsSimpleTrackerNumber.getBlocked ();
 
 	}
 
@@ -141,25 +149,37 @@ class SmsTrackerLogicImplementation
 	 */
 	private
 	boolean simpleTrackerNumberScanAndUpdate (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsSimpleTrackerNumberRec trackerNumber) {
 
-		Transaction transaction =
-			database.currentTransaction ();
+		try (
 
-		boolean result =
-			simpleTrackerScan (
-				trackerNumber.getSmsSimpleTracker (),
-				trackerNumber.getNumber ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"simpleTrackerNumberScanAndUpdate");
 
-		trackerNumber
+		) {
 
-			.setLastScan (
-				transaction.now ())
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			.setBlocked (
-				! result);
+			boolean result =
+				simpleTrackerScan (
+					trackerNumber.getSmsSimpleTracker (),
+					trackerNumber.getNumber ());
 
-		return result;
+			trackerNumber
+
+				.setLastScan (
+					transaction.now ())
+
+				.setBlocked (
+					! result);
+
+			return result;
+
+		}
 
 	}
 

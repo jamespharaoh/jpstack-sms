@@ -107,270 +107,276 @@ class MessageSummaryPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		// open table
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableOpenDetails ();
-
-		// write id
-
-		htmlTableDetailsRowWrite (
-			"ID",
-			integerToDecimalString (
-				message.getId ()));
-
-		htmlTableDetailsRowWrite (
-			"Thread ID",
-			integerToDecimalString (
-				message.getThreadId ()));
-
-		htmlTableDetailsRowWrite (
-			"Other ID",
-			ifNull (
-				message.getOtherId (),
-				"—"));
-
-		htmlTableDetailsRowWriteHtml (
-			"Message",
-			() -> messageConsoleLogic.writeMessageContentHtml (
-				taskLogger,
-				formatWriter,
-				message));
-
-		if (
-			enumEqualSafe (
-				message.getDirection (),
-				MessageDirection.in)
 		) {
 
-			htmlTableDetailsRowWriteRaw (
-				"Number from",
-				() ->
-					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
-						message.getNumber ()));
+			// open table
+
+			htmlTableOpenDetails ();
+
+			// write id
 
 			htmlTableDetailsRowWrite (
-				"Number to",
-				message.getNumTo ());
-
-		} else {
+				"ID",
+				integerToDecimalString (
+					message.getId ()));
 
 			htmlTableDetailsRowWrite (
-				"Number from",
-				message.getNumFrom ());
+				"Thread ID",
+				integerToDecimalString (
+					message.getThreadId ()));
 
-			htmlTableDetailsRowWriteRaw (
-				"Number to",
-				() ->
-					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
-						message.getNumber ()));
+			htmlTableDetailsRowWrite (
+				"Other ID",
+				ifNull (
+					message.getOtherId (),
+					"—"));
 
-		}
-
-		htmlTableDetailsRowWrite (
-			"Status",
-			message.getStatus ().getDescription ());
-
-		htmlTableDetailsRowWrite (
-			"Direction",
-			message.getDirection ().name ());
-
-		htmlTableDetailsRowWriteRaw (
-			"Route",
-			() ->
-				objectManager.writeTdForObjectMiniLink (
+			htmlTableDetailsRowWriteHtml (
+				"Message",
+				() -> messageConsoleLogic.writeMessageContentHtml (
 					taskLogger,
-					message.getRoute ()));
+					formatWriter,
+					message));
 
-		htmlTableDetailsRowWrite (
-			"Network",
-			message.getNetwork ().getDescription ());
-
-		htmlTableDetailsRowWriteRaw (
-			"Service",
-			() ->
-				objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getService ()));
-
-		htmlTableDetailsRowWriteRaw (
-			"Affiliate",
-			() ->
-				objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getAffiliate ()));
-
-		if (
-			enumEqualSafe (
-				message.getDirection (),
-				MessageDirection.in)
-		) {
-
-			htmlTableDetailsRowWrite (
-				"Time sent",
-				ifNotNullThenElseEmDash (
-					message.getNetworkTime (),
-					() ->
-						userConsoleLogic.timestampWithTimezoneString (
-							message.getNetworkTime ())));
-
-			htmlTableDetailsRowWrite (
-				"Time received",
-				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()));
-
-			htmlTableDetailsRowWrite (
-				"Time processed",
-				ifNotNullThenElseEmDash (
-					message.getProcessedTime (),
-					() ->
-						userConsoleLogic.timestampWithTimezoneString (
-							message.getProcessedTime ())));
-
-			htmlTableDetailsRowWriteRaw (
-				"Command",
-				() -> ifNotNullThenElse (
-					message.getCommand (),
-					() -> objectManager.writeTdForObjectMiniLink (
-						taskLogger,
-						message.getCommand ()),
-					() -> htmlTableCellWrite (
-						"—")));
-
-		} else {
-
-			htmlTableDetailsRowWrite (
-				"Time created",
-				userConsoleLogic.timestampWithTimezoneString (
-					message.getCreatedTime ()));
-
-			htmlTableDetailsRowWrite (
-				"Time sent",
-				ifNotNullThenElseEmDash (
-					message.getProcessedTime (),
-					() ->
-						userConsoleLogic.timestampWithTimezoneString (
-							message.getProcessedTime ())));
-
-			htmlTableDetailsRowWrite (
-				"Time received",
-				ifNotNullThenElseEmDash (
-					message.getNetworkTime (),
-					() ->
-						userConsoleLogic.timestampWithTimezoneString (
-							message.getNetworkTime ())));
-
-		}
-
-		htmlTableDetailsRowWriteRaw (
-			"Charge",
-			ifThenElseEmDash (
-				moreThanZero (
-					message.getCharge ()),
-				() -> currencyLogic.formatHtmlTd (
-					message.getRoute ().getCurrency (),
-					message.getCharge ())));
-
-		List <MediaRec> medias =
-			message.getMedias ();
-
-		if (
-			collectionIsNotEmpty (
-				medias)
-		) {
-
-			for (
-				int index = 0;
-				index < medias.size ();
-				index ++
+			if (
+				enumEqualSafe (
+					message.getDirection (),
+					MessageDirection.in)
 			) {
 
-				MediaRec media =
-					medias.get (index);
+				htmlTableDetailsRowWriteRaw (
+					"Number from",
+					() ->
+						objectManager.writeTdForObjectMiniLink (
+							taskLogger,
+							message.getNumber ()));
 
-				int mediaIndex =
-					index;
+				htmlTableDetailsRowWrite (
+					"Number to",
+					message.getNumTo ());
 
-				if (
-					mediaLogic.isText (
-						media)
+			} else {
+
+				htmlTableDetailsRowWrite (
+					"Number from",
+					message.getNumFrom ());
+
+				htmlTableDetailsRowWriteRaw (
+					"Number to",
+					() ->
+						objectManager.writeTdForObjectMiniLink (
+							taskLogger,
+							message.getNumber ()));
+
+			}
+
+			htmlTableDetailsRowWrite (
+				"Status",
+				message.getStatus ().getDescription ());
+
+			htmlTableDetailsRowWrite (
+				"Direction",
+				message.getDirection ().name ());
+
+			htmlTableDetailsRowWriteRaw (
+				"Route",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getRoute ()));
+
+			htmlTableDetailsRowWrite (
+				"Network",
+				message.getNetwork ().getDescription ());
+
+			htmlTableDetailsRowWriteRaw (
+				"Service",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getService ()));
+
+			htmlTableDetailsRowWriteRaw (
+				"Affiliate",
+				() ->
+					objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getAffiliate ()));
+
+			if (
+				enumEqualSafe (
+					message.getDirection (),
+					MessageDirection.in)
+			) {
+
+				htmlTableDetailsRowWrite (
+					"Time sent",
+					ifNotNullThenElseEmDash (
+						message.getNetworkTime (),
+						() ->
+							userConsoleLogic.timestampWithTimezoneString (
+								message.getNetworkTime ())));
+
+				htmlTableDetailsRowWrite (
+					"Time received",
+					userConsoleLogic.timestampWithTimezoneString (
+						message.getCreatedTime ()));
+
+				htmlTableDetailsRowWrite (
+					"Time processed",
+					ifNotNullThenElseEmDash (
+						message.getProcessedTime (),
+						() ->
+							userConsoleLogic.timestampWithTimezoneString (
+								message.getProcessedTime ())));
+
+				htmlTableDetailsRowWriteRaw (
+					"Command",
+					() -> ifNotNullThenElse (
+						message.getCommand (),
+						() -> objectManager.writeTdForObjectMiniLink (
+							taskLogger,
+							message.getCommand ()),
+						() -> htmlTableCellWrite (
+							"—")));
+
+			} else {
+
+				htmlTableDetailsRowWrite (
+					"Time created",
+					userConsoleLogic.timestampWithTimezoneString (
+						message.getCreatedTime ()));
+
+				htmlTableDetailsRowWrite (
+					"Time sent",
+					ifNotNullThenElseEmDash (
+						message.getProcessedTime (),
+						() ->
+							userConsoleLogic.timestampWithTimezoneString (
+								message.getProcessedTime ())));
+
+				htmlTableDetailsRowWrite (
+					"Time received",
+					ifNotNullThenElseEmDash (
+						message.getNetworkTime (),
+						() ->
+							userConsoleLogic.timestampWithTimezoneString (
+								message.getNetworkTime ())));
+
+			}
+
+			htmlTableDetailsRowWriteRaw (
+				"Charge",
+				ifThenElseEmDash (
+					moreThanZero (
+						message.getCharge ()),
+					() -> currencyLogic.formatHtmlTd (
+						message.getRoute ().getCurrency (),
+						message.getCharge ())));
+
+			List <MediaRec> medias =
+				message.getMedias ();
+
+			if (
+				collectionIsNotEmpty (
+					medias)
+			) {
+
+				for (
+					int index = 0;
+					index < medias.size ();
+					index ++
 				) {
 
-					htmlTableDetailsRowWrite (
-						"Media",
-						utf8ToString (
-							media.getContent ().getData ()));
+					MediaRec media =
+						medias.get (index);
 
-				} else {
+					int mediaIndex =
+						index;
 
-					htmlTableDetailsRowWriteRaw (
-						"Media",
-						() -> {
+					if (
+						mediaLogic.isText (
+							media)
+					) {
 
-						formatWriter.writeLineFormatIncreaseIndent (
-							"<td>");
+						htmlTableDetailsRowWrite (
+							"Media",
+							utf8ToString (
+								media.getContent ().getData ()));
 
-						htmlLinkWriteHtml (
-							requestContext.resolveLocalUrlFormat (
-								"/message.mediaSummary?index=%u",
-								integerToDecimalString (
-									mediaIndex)),
-							() -> mediaConsoleLogic.writeMediaThumb100 (
-								taskLogger,
-								media));
+					} else {
 
-						formatWriter.writeLineFormatDecreaseIndent (
-							"</td>");
+						htmlTableDetailsRowWriteRaw (
+							"Media",
+							() -> {
 
-					});
+							formatWriter.writeLineFormatIncreaseIndent (
+								"<td>");
+
+							htmlLinkWriteHtml (
+								requestContext.resolveLocalUrlFormat (
+									"/message.mediaSummary?index=%u",
+									integerToDecimalString (
+										mediaIndex)),
+								() -> mediaConsoleLogic.writeMediaThumb100 (
+									taskLogger,
+									media));
+
+							formatWriter.writeLineFormatDecreaseIndent (
+								"</td>");
+
+						});
+
+					}
 
 				}
 
 			}
 
-		}
-
-		htmlTableDetailsRowWrite (
-			"Tags",
-			joinWithCommaAndSpace (
-				message.getTags ()));
-
-		if (
-			optionalIsPresent (
-				failedMessageOptional)
-		) {
-
 			htmlTableDetailsRowWrite (
-				"Failure reason",
-				failedMessageOptional.get ().getError ());
+				"Tags",
+				joinWithCommaAndSpace (
+					message.getTags ()));
+
+			if (
+				optionalIsPresent (
+					failedMessageOptional)
+			) {
+
+				htmlTableDetailsRowWrite (
+					"Failure reason",
+					failedMessageOptional.get ().getError ());
+
+			}
+
+			htmlTableDetailsRowWriteRaw (
+				"User",
+				() -> ifNotNullThenElse (
+					message.getUser (),
+					() -> objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getUser ()),
+					() -> htmlTableCellWrite ("—")));
+
+			htmlTableDetailsRowWriteRaw (
+				"Delivery type",
+				() -> ifNotNullThenElse (
+					message.getDeliveryType (),
+					() -> objectManager.writeTdForObjectMiniLink (
+						taskLogger,
+						message.getDeliveryType ()),
+					() -> htmlTableCellWrite ("—")));
+
+			htmlTableClose ();
 
 		}
-
-		htmlTableDetailsRowWriteRaw (
-			"User",
-			() -> ifNotNullThenElse (
-				message.getUser (),
-				() -> objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getUser ()),
-				() -> htmlTableCellWrite ("—")));
-
-		htmlTableDetailsRowWriteRaw (
-			"Delivery type",
-			() -> ifNotNullThenElse (
-				message.getDeliveryType (),
-				() -> objectManager.writeTdForObjectMiniLink (
-					taskLogger,
-					message.getDeliveryType ()),
-				() -> htmlTableCellWrite ("—")));
-
-		htmlTableClose ();
 
 	}
 

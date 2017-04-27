@@ -137,92 +137,105 @@ class GenericMessageStatsPart
 	// implementation
 
 	public
-	void prepareParams () {
+	void prepareParams (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		// check split param
+		try (
 
-		splitCriteria =
-			toEnum (
-				SmsStatsCriteria.class,
-				requestContext.parameterOrEmptyString (
-					"split"));
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepareParams");
 
-		if (splitCriteria != null) {
-
-			urlParams.add (
-				"split",
-				splitCriteria.toString ());
-
-		}
-
-		// check stats params
-
-		for (
-			SmsStatsCriteria crit
-				: SmsStatsCriteria.values ()
 		) {
 
-			Optional<String> paramOptional =
-				requestContext.parameter (
-					crit.toString ());
+			// check split param
 
-			if (
-				optionalIsNotPresent (
-					paramOptional)
-			) {
-				continue;
+			splitCriteria =
+				toEnum (
+					SmsStatsCriteria.class,
+					requestContext.parameterOrEmptyString (
+						"split"));
+
+			if (splitCriteria != null) {
+
+				urlParams.add (
+					"split",
+					splitCriteria.toString ());
+
 			}
 
-			String param =
-				paramOptional.get ();
+			// check stats params
 
-			Long critId =
-				Long.parseLong (
-					param);
+			for (
+				SmsStatsCriteria crit
+					: SmsStatsCriteria.values ()
+			) {
 
-			criteriaMap.put (
-				crit,
-				Collections.singleton (
-					critId));
+				Optional<String> paramOptional =
+					requestContext.parameter (
+						crit.toString ());
 
-			criteriaInfo.put (
-				crit.toString (),
-				statsConsoleLogic.lookupGroupName (
+				if (
+					optionalIsNotPresent (
+						paramOptional)
+				) {
+					continue;
+				}
+
+				String param =
+					paramOptional.get ();
+
+				Long critId =
+					Long.parseLong (
+						param);
+
+				criteriaMap.put (
 					crit,
-					critId));
+					Collections.singleton (
+						critId));
+
+				criteriaInfo.put (
+					crit.toString (),
+					statsConsoleLogic.lookupGroupName (
+						taskLogger,
+						crit,
+						critId));
+
+				urlParams.set (
+					crit.toString (),
+					integerToDecimalString (
+						critId));
+
+			}
+
+			// check view param
+
+			viewMode =
+				toEnum (
+					SmsStatsViewMode.class,
+					requestContext.parameterOrEmptyString (
+						"view"));
+
+			if (viewMode == null)
+				viewMode = SmsStatsViewMode.daily;
 
 			urlParams.set (
-				crit.toString (),
-				integerToDecimalString (
-					critId));
+				"view",
+				viewMode.toString ());
+
+			// check date param
+
+			dateField =
+				ObsoleteDateField.parse (
+					requestContext.parameterOrNull (
+						"date"));
+
+			urlParams.set (
+				"date",
+				dateField.text);
 
 		}
-
-		// check view param
-
-		viewMode =
-			toEnum (
-				SmsStatsViewMode.class,
-				requestContext.parameterOrEmptyString (
-					"view"));
-
-		if (viewMode == null)
-			viewMode = SmsStatsViewMode.daily;
-
-		urlParams.set (
-			"view",
-			viewMode.toString ());
-
-		// check date param
-
-		dateField =
-			ObsoleteDateField.parse (
-				requestContext.parameterOrNull (
-					"date"));
-
-		urlParams.set (
-			"date",
-			dateField.text);
 
 	}
 
@@ -230,76 +243,82 @@ class GenericMessageStatsPart
 	void prepareTabs (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepareTabs");
+		try (
 
-		// prepare split tabs
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepareTabs");
 
-		TabList splitTabs =
-			tabListProvider.get ();
-
-		Tab splitTab;
-
-		splitTabs.add (
-			splitTab = new TotalTab ());
-
-		for (
-			SmsStatsCriteria criteria
-				: SmsStatsCriteria.values ()
 		) {
 
-			if (excludeCriteria.contains(criteria))
-				continue;
+			// prepare split tabs
 
-			// if (critMap.containsKey (crit)) continue;
+			TabList splitTabs =
+				tabListProvider.get ();
 
-			Tab newTab =
-				new StatsTab (criteria);
+			Tab splitTab;
 
 			splitTabs.add (
-				newTab);
+				splitTab = new TotalTab ());
 
-			if (criteria == splitCriteria)
-				splitTab = newTab;
+			for (
+				SmsStatsCriteria criteria
+					: SmsStatsCriteria.values ()
+			) {
+
+				if (excludeCriteria.contains(criteria))
+					continue;
+
+				// if (critMap.containsKey (crit)) continue;
+
+				Tab newTab =
+					new StatsTab (criteria);
+
+				splitTabs.add (
+					newTab);
+
+				if (criteria == splitCriteria)
+					splitTab = newTab;
+
+			}
+
+			splitTabsPrepared =
+				splitTabs.prepare (
+					taskLogger,
+					splitTab);
+
+			// prepare view tabs
+
+			TabList viewTabs =
+				tabListProvider.get ();
+
+			Tab viewTab = null;
+
+			for (
+				SmsStatsViewMode smsStatsViewMode
+					: SmsStatsViewMode.values ()
+			) {
+
+				Tab newTab =
+					new ViewTab (
+						smsStatsViewMode.toString (),
+						smsStatsViewMode.toString ());
+
+				viewTabs.add (
+					newTab);
+
+				if (smsStatsViewMode == this.viewMode)
+					viewTab = newTab;
+
+			}
+
+			viewTabsPrepared =
+				viewTabs.prepare (
+					taskLogger,
+					viewTab);
 
 		}
-
-		splitTabsPrepared =
-			splitTabs.prepare (
-				taskLogger,
-				splitTab);
-
-		// prepare view tabs
-
-		TabList viewTabs =
-			tabListProvider.get ();
-
-		Tab viewTab = null;
-
-		for (
-			SmsStatsViewMode smsStatsViewMode
-				: SmsStatsViewMode.values ()
-		) {
-
-			Tab newTab =
-				new ViewTab (
-					smsStatsViewMode.toString (),
-					smsStatsViewMode.toString ());
-
-			viewTabs.add (
-				newTab);
-
-			if (smsStatsViewMode == this.viewMode)
-				viewTab = newTab;
-
-		}
-
-		viewTabsPrepared =
-			viewTabs.prepare (
-				taskLogger,
-				viewTab);
 
 	}
 
@@ -308,35 +327,42 @@ class GenericMessageStatsPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		// process page params
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		prepareParams ();
-
-		// prepre tabs
-
-		prepareTabs (
-			taskLogger);
-
-		// check inputs
-
-		if (
-			isNull (
-				dateField.date)
 		) {
 
-			requestContext.addError (
-				"Invalid date format");
+			// process page params
 
-			return;
+			prepareParams (
+				taskLogger);
+
+			// prepre tabs
+
+			prepareTabs (
+				taskLogger);
+
+			// check inputs
+
+			if (
+				isNull (
+					dateField.date)
+			) {
+
+				requestContext.addError (
+					"Invalid date format");
+
+				return;
+
+			}
+
+			ready = true;
 
 		}
-
-		ready = true;
 
 	}
 
@@ -345,250 +371,256 @@ class GenericMessageStatsPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		splitTabsPrepared.go (
-			formatWriter);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		viewTabsPrepared.go (
-			formatWriter);
+		) {
 
-		if (criteriaInfo.size () > 0) {
+			splitTabsPrepared.go (
+				formatWriter);
 
-			htmlTableOpenDetails ();
+			viewTabsPrepared.go (
+				formatWriter);
 
-			for (
-				Map.Entry <String, String> entry
-					: criteriaInfo.entrySet ()
-			) {
+			if (criteriaInfo.size () > 0) {
 
-				String name =
-					entry.getKey ();
+				htmlTableOpenDetails ();
 
-				String value =
-					entry.getValue ();
+				for (
+					Map.Entry <String, String> entry
+						: criteriaInfo.entrySet ()
+				) {
 
-				htmlTableDetailsRowWrite (
-					name,
-					value);
+					String name =
+						entry.getKey ();
+
+					String value =
+						entry.getValue ();
+
+					htmlTableDetailsRowWrite (
+						name,
+						value);
+
+				}
+
+				htmlTableClose ();
 
 			}
 
-			htmlTableClose ();
+			htmlFormOpenGetAction (
+				url);
 
-		}
+			UrlParams myUrlParams =
+				new UrlParams (
+					urlParams);
 
-		htmlFormOpenGetAction (
-			url);
+			urlParams.remove (
+				"date");
 
-		UrlParams myUrlParams =
-			new UrlParams (
-				urlParams);
+			urlParams.printHidden (
+				formatWriter);
 
-		urlParams.remove (
-			"date");
+			htmlParagraphOpen ();
 
-		urlParams.printHidden (
-			formatWriter);
+			formatWriter.writeLineFormat (
+				"Date<br>");
 
-		htmlParagraphOpen ();
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"date\"",
+				" value=\"%h\"",
+				dateField.text,
+				">");
 
-		formatWriter.writeLineFormat (
-			"Date<br>");
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"ok\"",
+				">");
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"text\"",
-			" name=\"date\"",
-			" value=\"%h\"",
-			dateField.text,
-			">");
+			htmlParagraphClose ();
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"ok\"",
-			">");
+			htmlFormClose ();
 
-		htmlParagraphClose ();
+			if (! ready)
+				return;
 
-		htmlFormClose ();
+			htmlParagraphOpen (
+				htmlClassAttribute (
+					"links"));
 
-		if (! ready)
-			return;
+			switch (viewMode) {
 
-		htmlParagraphOpen (
-			htmlClassAttribute (
-				"links"));
+			case daily:
 
-		switch (viewMode) {
+				myUrlParams.set (
+					"view",
+					"daily");
 
-		case daily:
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.minusWeeks (1)));
 
-			myUrlParams.set (
-				"view",
-				"daily");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Prev week");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.minusWeeks (1)));
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.plusWeeks (1)));
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Prev week");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Next week");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.plusWeeks (1)));
+				break;
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Next week");
+			case weekly:
 
-			break;
+				myUrlParams.set (
+					"view",
+					"weekly");
 
-		case weekly:
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.minusDays (49)));
 
-			myUrlParams.set (
-				"view",
-				"weekly");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Prev weeks");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.minusDays (49)));
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.plusDays (49)));
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Prev weeks");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Next weeks");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.plusDays (49)));
+				break;
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Next weeks");
+			case monthly:
 
-			break;
+				myUrlParams.set (
+					"view",
+					"monthly");
 
-		case monthly:
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.minusMonths (6)));
 
-			myUrlParams.set (
-				"view",
-				"monthly");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Prev months");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.minusMonths (6)));
+				myUrlParams.set (
+					"date",
+					timeFormatter.dateString (
+						dateField.date.plusMonths (6)));
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Prev months");
+				htmlLinkWrite (
+					myUrlParams.toUrl (url),
+					"Next months");
 
-			myUrlParams.set (
-				"date",
-				timeFormatter.dateString (
-					dateField.date.plusMonths (6)));
+				break;
+			}
 
-			htmlLinkWrite (
-				myUrlParams.toUrl (url),
-				"Next months");
+			htmlParagraphClose ();
 
-			break;
-		}
+			UrlParams groupedUrlParams =
+				new UrlParams (urlParams);
 
-		htmlParagraphClose ();
+			groupedUrlParams.remove ("split");
 
-		UrlParams groupedUrlParams =
-			new UrlParams (urlParams);
+			GroupedStatsSource groupedStatsSource =
+				groupedStatsSourceProvider.get ()
 
-		groupedUrlParams.remove ("split");
+				.groupCriteria (
+					splitCriteria)
 
-		GroupedStatsSource groupedStatsSource =
-			groupedStatsSourceProvider.get ()
+				.statsSource (
+					statsSource)
 
-			.groupCriteria (
-				splitCriteria)
+				.critMap (
+					criteriaMap)
 
-			.statsSource (
-				statsSource)
+				.filterMap (
+					statsConsoleLogic.makeFilterMap (
+						taskLogger))
 
-			.critMap (
-				criteriaMap)
+				.url (
+					url)
 
-			.filterMap (
-				statsConsoleLogic.makeFilterMap (
-					taskLogger))
+				.urlParams (
+					groupedUrlParams);
 
-			.url (
-				url)
+			switch (viewMode) {
 
-			.urlParams (
-				groupedUrlParams);
+			case daily:
 
-		switch (viewMode) {
+				statsFormatterProvider.get ()
 
-		case daily:
+					.groupedStatsSource (
+						groupedStatsSource)
 
-			statsFormatterProvider.get ()
+					.mainDate (
+						dateField.date)
 
-				.groupedStatsSource (
-					groupedStatsSource)
+					.timeScheme (
+						smsStatsDailyTimeScheme)
 
-				.mainDate (
-					dateField.date)
+					.go (
+						formatWriter);
 
-				.timeScheme (
-					smsStatsDailyTimeScheme)
+				break;
 
-				.go (
-					formatWriter);
+			case weekly:
 
-			break;
+				statsFormatterProvider.get ()
 
-		case weekly:
+					.groupedStatsSource (
+						groupedStatsSource)
 
-			statsFormatterProvider.get ()
+					.mainDate (
+						dateField.date)
 
-				.groupedStatsSource (
-					groupedStatsSource)
+					.timeScheme (
+						smsStatsWeeklyTimeScheme)
 
-				.mainDate (
-					dateField.date)
+					.go (
+						formatWriter);
 
-				.timeScheme (
-					smsStatsWeeklyTimeScheme)
+				break;
 
-				.go (
-					formatWriter);
+			case monthly:
 
-			break;
+				statsFormatterProvider.get ()
 
-		case monthly:
+					.groupedStatsSource (
+						groupedStatsSource)
 
-			statsFormatterProvider.get ()
+					.mainDate (
+						dateField.date)
 
-				.groupedStatsSource (
-					groupedStatsSource)
+					.timeScheme (
+						smsStatsMonthlyTimeScheme)
 
-				.mainDate (
-					dateField.date)
+					.go (
+						formatWriter);
 
-				.timeScheme (
-					smsStatsMonthlyTimeScheme)
+				break;
 
-				.go (
-					formatWriter);
-
-			break;
+			}
 
 		}
 

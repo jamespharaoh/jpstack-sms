@@ -94,64 +94,70 @@ class MagicNumberCommandTypeHandler
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		MessageRec message =
-			inbox.getMessage ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
 
-		// lookup the MagicNumber
+		) {
 
-		MagicNumberRec magicNumber =
-			magicNumberHelper.findByNumber (
-				message.getNumTo ());
+			MessageRec message =
+				inbox.getMessage ();
 
-		if (magicNumber == null) {
+			// lookup the MagicNumber
 
-			return smsInboxLogic.inboxNotProcessed (
+			MagicNumberRec magicNumber =
+				magicNumberHelper.findByNumber (
+					message.getNumTo ());
+
+			if (magicNumber == null) {
+
+				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
+					inbox,
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalOf (
+						command),
+					stringFormat (
+						"Magic number does not exist",
+						message.getNumTo ()));
+
+			}
+
+			// lookup the MagicNumberUse
+
+			MagicNumberUseRec magicNumberUse =
+				magicNumberUseHelper.find (
+					magicNumber,
+					message.getNumber ());
+
+			if (magicNumberUse == null) {
+
+				return smsInboxLogic.inboxNotProcessed (
+					taskLogger,
+					inbox,
+					optionalAbsent (),
+					optionalAbsent (),
+					optionalOf (
+						command),
+					"Magic number has not been used");
+
+			}
+
+			// and delegate
+
+			return commandManager.handle (
 				taskLogger,
 				inbox,
-				optionalAbsent (),
-				optionalAbsent (),
-				optionalOf (
-					command),
-				stringFormat (
-					"Magic number does not exist",
-					message.getNumTo ()));
+				magicNumberUse.getCommand (),
+				Optional.of (
+					magicNumberUse.getRefId ()),
+				rest);
 
 		}
-
-		// lookup the MagicNumberUse
-
-		MagicNumberUseRec magicNumberUse =
-			magicNumberUseHelper.find (
-				magicNumber,
-				message.getNumber ());
-
-		if (magicNumberUse == null) {
-
-			return smsInboxLogic.inboxNotProcessed (
-				taskLogger,
-				inbox,
-				optionalAbsent (),
-				optionalAbsent (),
-				optionalOf (
-					command),
-				"Magic number has not been used");
-
-		}
-
-		// and delegate
-
-		return commandManager.handle (
-			taskLogger,
-			inbox,
-			magicNumberUse.getCommand (),
-			Optional.of (
-				magicNumberUse.getRefId ()),
-			rest);
 
 	}
 

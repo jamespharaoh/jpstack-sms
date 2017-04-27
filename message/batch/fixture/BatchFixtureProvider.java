@@ -5,7 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
@@ -48,85 +48,91 @@ class BatchFixtureProvider
 	public
 	void createFixtures (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction) {
+			@NonNull OwnedTransaction transaction) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createFixtures");
+		try (
 
-		ObjectTypeRec rootType =
-			objectTypeHelper.findByCodeRequired (
-				GlobalId.root,
-				"root");
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createFixtures");
 
-		BatchTypeRec systemBatchType =
-			batchTypeHelper.insertSpecial (
+		) {
+
+			ObjectTypeRec rootType =
+				objectTypeHelper.findByCodeRequired (
+					GlobalId.root,
+					"root");
+
+			BatchTypeRec systemBatchType =
+				batchTypeHelper.insertSpecial (
+					taskLogger,
+					batchTypeHelper.createInstance ()
+
+				.setId (
+					0l)
+
+				.setSubjectType (
+					rootType)
+
+				.setCode (
+					"system")
+
+				.setName (
+					"System")
+
+				.setDescription (
+					"System")
+
+				.setBatchType (
+					rootType)
+
+			);
+
+			BatchSubjectRec systemBatchSubject =
+				batchSubjectHelper.insertSpecial (
+					taskLogger,
+					batchSubjectHelper.createInstance ()
+
+				.setId (
+					0l)
+
+				.setParentType (
+					rootType)
+
+				.setParentId (
+					0l)
+
+				.setCode (
+					"system")
+
+				.setBatchType (
+					systemBatchType)
+
+			);
+
+			batchHelper.insertSpecial (
 				taskLogger,
-				batchTypeHelper.createInstance ()
+				batchHelper.createInstance ()
 
-			.setId (
-				0l)
+				.setId (
+					0l)
 
-			.setSubjectType (
-				rootType)
+				.setParentType (
+					rootType)
 
-			.setCode (
-				"system")
+				.setParentId (
+					0l)
 
-			.setName (
-				"System")
+				.setCode (
+					"system")
 
-			.setDescription (
-				"System")
+				.setSubject (
+					systemBatchSubject)
 
-			.setBatchType (
-				rootType)
+			);
 
-		);
-
-		BatchSubjectRec systemBatchSubject =
-			batchSubjectHelper.insertSpecial (
-				taskLogger,
-				batchSubjectHelper.createInstance ()
-
-			.setId (
-				0l)
-
-			.setParentType (
-				rootType)
-
-			.setParentId (
-				0l)
-
-			.setCode (
-				"system")
-
-			.setBatchType (
-				systemBatchType)
-
-		);
-
-		batchHelper.insertSpecial (
-			taskLogger,
-			batchHelper.createInstance ()
-
-			.setId (
-				0l)
-
-			.setParentType (
-				rootType)
-
-			.setParentId (
-				0l)
-
-			.setCode (
-				"system")
-
-			.setSubject (
-				systemBatchSubject)
-
-		);
+		}
 
 	}
 

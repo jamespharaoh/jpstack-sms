@@ -13,7 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -57,14 +57,14 @@ class RouterHooks
 	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setup");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"routerHooks.setup ()",
@@ -108,42 +108,48 @@ class RouterHooks
 			return;
 		}
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createSingletons");
+		try (
 
-		ObjectTypeRec parentType =
-			objectTypeDao.findById (
-				parentHelper.objectTypeId ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createSingletons");
 
-		for (
-			Long routerTypeId
-				: routerTypeIdsByParentTypeId.get (
-					parentHelper.objectTypeId ())
 		) {
 
-			RouterTypeRec routerType =
-				routerTypeDao.findRequired (
-					routerTypeId);
+			ObjectTypeRec parentType =
+				objectTypeDao.findById (
+					parentHelper.objectTypeId ());
 
-			routerHelper.insert (
-				taskLogger,
-				routerHelper.createInstance ()
+			for (
+				Long routerTypeId
+					: routerTypeIdsByParentTypeId.get (
+						parentHelper.objectTypeId ())
+			) {
 
-				.setRouterType (
-					routerType)
+				RouterTypeRec routerType =
+					routerTypeDao.findRequired (
+						routerTypeId);
 
-				.setCode (
-					routerType.getCode ())
+				routerHelper.insert (
+					taskLogger,
+					routerHelper.createInstance ()
 
-				.setParentType (
-					parentType)
+					.setRouterType (
+						routerType)
 
-				.setParentId (
-					parent.getId ())
+					.setCode (
+						routerType.getCode ())
 
-			);
+					.setParentType (
+						parentType)
+
+					.setParentId (
+						parent.getId ())
+
+				);
+
+			}
 
 		}
 

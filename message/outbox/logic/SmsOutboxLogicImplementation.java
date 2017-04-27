@@ -32,8 +32,8 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -108,116 +108,122 @@ class SmsOutboxLogicImplementation
 			@NonNull Optional <TextRec> newTextOptional,
 			@NonNull Optional <MessageTypeRec> newMessageTypeOptional) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"resendMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"resendMessage");
 
-		TextRec textRec =
-			optionalOr (
-				newTextOptional,
-				originalMessage.getText ());
+		) {
 
-		MessageTypeRec messageType =
-			optionalOr (
-				newMessageTypeOptional,
-				originalMessage.getMessageType ());
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-		MessageRec message =
-			messageHelper.insert (
+			TextRec textRec =
+				optionalOr (
+					newTextOptional,
+					originalMessage.getText ());
+
+			MessageTypeRec messageType =
+				optionalOr (
+					newMessageTypeOptional,
+					originalMessage.getMessageType ());
+
+			MessageRec message =
+				messageHelper.insert (
+					taskLogger,
+					messageHelper.createInstance ()
+
+				.setThreadId (
+					originalMessage.getThreadId ())
+
+				.setText (
+					textRec) // old.getText ()
+
+				.setNumFrom (
+					originalMessage.getNumFrom ())
+
+				.setNumTo (
+					originalMessage.getNumTo ())
+
+				.setDirection (
+					MessageDirection.out)
+
+				.setStatus (
+					MessageStatus.pending)
+
+				.setNumber (
+					originalMessage.getNumber ())
+
+				.setRoute (
+					newRoute) // old.getRoute ()
+
+				.setService (
+					originalMessage.getService ())
+
+				.setNetwork (
+					originalMessage.getNetwork ())
+
+				.setBatch (
+					originalMessage.getBatch ())
+
+				.setCharge (
+					originalMessage.getCharge ())
+
+				.setAffiliate (
+					originalMessage.getAffiliate ())
+
+				.setCreatedTime (
+					transaction.now ())
+
+				.setDeliveryType (
+					originalMessage.getDeliveryType ())
+
+				.setRef (
+					originalMessage.getRef ())
+
+				.setSubjectText (
+					originalMessage.getSubjectText ())
+
+				.setMessageType (
+					messageType)
+
+				.setMedias (
+					ImmutableList.copyOf (
+						originalMessage.getMedias ()))
+
+				.setTags (
+					ImmutableSet.copyOf (
+						originalMessage.getTags ()))
+
+				.setNumAttempts (
+					0l)
+
+			);
+
+			outboxHelper.insert (
 				taskLogger,
-				messageHelper.createInstance ()
+				outboxHelper.createInstance ()
 
-			.setThreadId (
-				originalMessage.getThreadId ())
+				.setMessage (
+					message)
 
-			.setText (
-				textRec) // old.getText ()
+				.setRoute (
+					message.getRoute ())
 
-			.setNumFrom (
-				originalMessage.getNumFrom ())
+				.setCreatedTime (
+					transaction.now ())
 
-			.setNumTo (
-				originalMessage.getNumTo ())
+				.setRetryTime (
+					transaction.now ())
 
-			.setDirection (
-				MessageDirection.out)
+				.setRemainingTries (
+					message.getRoute ().getMaxTries ()));
 
-			.setStatus (
-				MessageStatus.pending)
+			return message;
 
-			.setNumber (
-				originalMessage.getNumber ())
-
-			.setRoute (
-				newRoute) // old.getRoute ()
-
-			.setService (
-				originalMessage.getService ())
-
-			.setNetwork (
-				originalMessage.getNetwork ())
-
-			.setBatch (
-				originalMessage.getBatch ())
-
-			.setCharge (
-				originalMessage.getCharge ())
-
-			.setAffiliate (
-				originalMessage.getAffiliate ())
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setDeliveryType (
-				originalMessage.getDeliveryType ())
-
-			.setRef (
-				originalMessage.getRef ())
-
-			.setSubjectText (
-				originalMessage.getSubjectText ())
-
-			.setMessageType (
-				messageType)
-
-			.setMedias (
-				ImmutableList.copyOf (
-					originalMessage.getMedias ()))
-
-			.setTags (
-				ImmutableSet.copyOf (
-					originalMessage.getTags ()))
-
-			.setNumAttempts (
-				0l)
-
-		);
-
-		outboxHelper.insert (
-			taskLogger,
-			outboxHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setRoute (
-				message.getRoute ())
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setRetryTime (
-				transaction.now ())
-
-			.setRemainingTries (
-				message.getRoute ().getMaxTries ()));
-
-		return message;
+		}
 
 	}
 
@@ -227,627 +233,32 @@ class SmsOutboxLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"unholdMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"unholdMessage");
 
-		if (message.getStatus () != MessageStatus.held) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Trying to unhold message in state: %s",
-					enumNameSpaces (
-						message.getStatus ())));
-
-		}
-
-		messageLogic.messageStatus (
-			taskLogger,
-			message,
-			MessageStatus.pending);
-
-		outboxHelper.insert (
-			taskLogger,
-			outboxHelper.createInstance ()
-
-			.setMessage (
-				message)
-
-			.setRoute (
-				message.getRoute ())
-
-			.setCreatedTime (
-				transaction.now ())
-
-			.setRetryTime (
-				transaction.now ())
-
-			.setRemainingTries (
-				message.getRoute ().getMaxTries ())
-
-		);
-
-	}
-
-	@Override
-	public
-	void cancelMessage (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull MessageRec message) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"cancelMessage");
-
-		// check message state
-
-		if (
-			enumEqualSafe (
-				message.getStatus (),
-				MessageStatus.pending)
 		) {
 
-			// lookup outbox
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			OutboxRec outbox =
-				outboxHelper.findRequired (
-					message.getId ());
-
-			// check message is not being sent
-
-			if (outbox.getSending () != null) {
+			if (message.getStatus () != MessageStatus.held) {
 
 				throw new RuntimeException (
-					"Message is being sent");
+					stringFormat (
+						"Trying to unhold message in state: %s",
+						enumNameSpaces (
+							message.getStatus ())));
 
 			}
 
-			// cancel message
-
 			messageLogic.messageStatus (
 				taskLogger,
 				message,
-				MessageStatus.cancelled);
-
-			// remove outbox
-
-			outboxHelper.remove (
-				outbox);
-
-		} else if (
-			enumEqualSafe (
-				message.getStatus (),
-				MessageStatus.held)
-		) {
-
-			// cancel message
-
-			messageLogic.messageStatus (
-				taskLogger,
-				message,
-				MessageStatus.cancelled);
-
-		} else {
-
-			throw new RuntimeException (
-				"Message is not pending/held");
-
-		}
-
-	}
-
-	@Override
-	public
-	OutboxRec claimNextMessage (
-			@NonNull RouteRec route) {
-
-		Transaction transaction =
-			database.currentTransaction ();
-
-		OutboxRec outbox =
-			outboxHelper.findNext (
-				transaction.now (),
-				route);
-
-		if (outbox == null)
-			return null;
-
-		outbox
-
-			.setSending (
-				transaction.now ())
-
-			.setRemainingTries (
-				outbox.getRemainingTries () != null
-					? outbox.getRemainingTries () - 1
-					: null);
-
-		return outbox;
-
-	}
-
-	@Override
-	public
-	List <OutboxRec> claimNextMessages (
-			@NonNull RouteRec route,
-			@NonNull Long limit) {
-
-		Transaction transaction =
-			database.currentTransaction ();
-
-		List <OutboxRec> outboxes =
-			outboxDao.findNextLimit (
-				transaction.now (),
-				route,
-				limit);
-
-		for (
-			OutboxRec outbox
-				: outboxes
-		) {
-
-			outbox
-
-				.setSending (
-					transaction.now ());
-
-			if (outbox.getRemainingTries () != null) {
-
-				outbox
-
-					.setRemainingTries (
-						outbox.getRemainingTries () - 1);
-
-			}
-
-		}
-
-		return outboxes;
-
-	}
-
-	@Override
-	public
-	void messageSuccess (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull MessageRec message,
-			@NonNull Optional <List <String>> otherIds,
-			@NonNull Optional <Long> simulateMultipart) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"messageSuccess");
-
-		sanityCheckMultipartOptions (
-			otherIds,
-			simulateMultipart);
-
-		Transaction transaction =
-			database.currentTransaction ();
-
-		OutboxRec outbox =
-			outboxHelper.findRequired (
-				message.getId ());
-
-		// check message state
-
-		if (
-
-			enumNotEqualSafe (
-				message.getStatus (),
-				MessageStatus.pending)
-
-			&& enumNotEqualSafe (
-				message.getStatus (),
-				MessageStatus.cancelled)
-
-		) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Invalid message status %s for message %s",
-					message.getStatus ().toString (),
-					integerToDecimalString (
-						message.getId ())));
-
-		}
-
-		if (outbox.getSending () == null) {
-
-			throw new RuntimeException (
-				"Outbox not marked as sending!");
-
-		}
-
-		// remove the outbox and log success
-
-		outboxHelper.remove (
-			outbox);
-
-		messageLogic.messageStatus (
-			taskLogger,
-			message,
-			MessageStatus.sent);
-
-		if (
-			optionalIsPresent (
-				otherIds)
-		) {
-
-			message
-
-				.setOtherId (
-					otherIds.get ().get (0));
-
-		}
-
-		message
-
-			.setProcessedTime (
-				transaction.now ());
-
-		// create expiry if appropriate
-
-		RouteRec route =
-			message.getRoute ();
-
-		if (
-			route.getDeliveryReports ()
-			&& route.getExpirySecs () != null
-		) {
-
-			messageExpiryHelper.insert (
-				taskLogger,
-				messageExpiryHelper.createInstance ()
-
-				.setMessage (
-					message)
-
-				.setExpiryTime (
-					Instant.now ().plus (
-						Duration.standardSeconds (
-							route.getExpirySecs ())))
-
-			);
-
-		}
-
-		database.flush ();
-
-		// create multipart companions from other ids
-
-		if (
-
-			optionalIsPresent (
-				otherIds)
-
-			&& collectionHasMoreThanOneElement (
-				otherIds.get ())
-
-		) {
-
-			otherIds.get ().stream ().skip (1).forEach (
-				otherId -> {
-
-				MessageRec companionMessage =
-					messageHelper.insert (
-						taskLogger,
-						messageHelper.createInstance ()
-
-					.setThreadId (
-						message.getThreadId ())
-
-					.setOtherId (
-						otherId)
-
-					.setText (
-						textHelper.findOrCreateFormat (
-							taskLogger,
-							"[multipart companion for %s]",
-							integerToDecimalString (
-								message.getId ())))
-
-					.setNumFrom (
-						message.getNumFrom ())
-
-					.setNumTo (
-						message.getNumTo ())
-
-					.setDirection (
-						MessageDirection.out)
-
-					.setNumber (
-						message.getNumber ())
-
-					.setCharge (
-						message.getCharge ())
-
-					.setMessageType (
-						message.getMessageType ())
-
-					.setRoute (
-						message.getRoute ())
-
-					.setService (
-						message.getService ())
-
-					.setNetwork (
-						message.getNetwork ())
-
-					.setBatch (
-						message.getBatch ())
-
-					.setAffiliate (
-						message.getAffiliate ())
-
-					.setStatus (
-						MessageStatus.sent)
-
-					.setCreatedTime (
-						message.getCreatedTime ())
-
-					.setProcessedTime (
-						message.getProcessedTime ())
-
-					.setNetworkTime (
-						null)
-
-					.setUser (
-						message.getUser ())
-
-				);
-
-				smsOutboxMultipartLinkHelper.insert (
-					taskLogger,
-					smsOutboxMultipartLinkHelper.createInstance ()
-
-					.setMessage (
-						companionMessage)
-
-					.setMainMessage (
-						message)
-
-					.setSimulated (
-						false)
-
-				);
-
-			});
-
-		}
-
-		// create simulated multipart companions
-
-		if (
-
-			optionalIsPresent (
-				simulateMultipart)
-
-			&& moreThanOne (
-				simulateMultipart.get ())
-
-		) {
-
-			LongStream.range (1, simulateMultipart.get ()).forEach (
-				companionIndex -> {
-
-				MessageRec companionMessage =
-					messageHelper.insert (
-						taskLogger,
-						messageHelper.createInstance ()
-
-					.setThreadId (
-						message.getThreadId ())
-
-					.setText (
-						textHelper.findOrCreateFormat (
-							taskLogger,
-							"[multipart companion for %s]",
-							integerToDecimalString (
-								message.getId ())))
-
-					.setNumFrom (
-						message.getNumFrom ())
-
-					.setNumTo (
-						message.getNumTo ())
-
-					.setDirection (
-						MessageDirection.out)
-
-					.setNumber (
-						message.getNumber ())
-
-					.setCharge (
-						message.getCharge ())
-
-					.setMessageType (
-						message.getMessageType ())
-
-					.setRoute (
-						message.getRoute ())
-
-					.setService (
-						message.getService ())
-
-					.setNetwork (
-						message.getNetwork ())
-
-					.setBatch (
-						message.getBatch ())
-
-					.setAffiliate (
-						message.getAffiliate ())
-
-					.setStatus (
-						MessageStatus.sent)
-
-					.setCreatedTime (
-						message.getCreatedTime ())
-
-					.setProcessedTime (
-						message.getProcessedTime ())
-
-					.setNetworkTime (
-						null)
-
-					.setUser (
-						message.getUser ())
-
-				);
-
-				smsOutboxMultipartLinkHelper.insert (
-					taskLogger,
-					smsOutboxMultipartLinkHelper.createInstance ()
-
-					.setMessage (
-						companionMessage)
-
-					.setMainMessage (
-						message)
-
-					.setSimulated (
-						true)
-
-				);
-
-			});
-
-		}
-
-	}
-
-	@Override
-	public
-	void messageFailure (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull MessageRec message,
-			@NonNull String error,
-			@NonNull FailureType failureType) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"messageFailure");
-
-		Transaction transaction =
-			database.currentTransaction ();
-
-		taskLogger.debugFormat (
-			"outbox failure id = %s",
-			integerToDecimalString (
-				message.getId ()));
-
-		OutboxRec outbox =
-			outboxHelper.findRequired (
-				message.getId ());
-
-		if (
-			enumNotInSafe (
-				message.getStatus (),
-				MessageStatus.pending,
-				MessageStatus.cancelled)
-		) {
-
-			throw new RuntimeException (
-				"Invalid message status");
-
-		}
-
-		if (outbox.getSending () == null) {
-
-			throw new RuntimeException (
-				"Outbox not marked as sending!");
-
-		}
-
-		if (failureType == FailureType.permanent) {
-
-			outboxHelper.remove (
-				outbox);
-
-			messageLogic.messageStatus (
-				taskLogger,
-				message,
-				MessageStatus.failed);
-
-			message
-
-				.setProcessedTime (
-					transaction.now ());
-
-			failedMessageHelper.insert (
-				taskLogger,
-				failedMessageHelper.createInstance ()
-
-				.setMessage (
-					message)
-
-				.setError (
-					error)
-
-			);
-
-		} else {
-
-			outbox
-
-				.setRetryTime (
-					transaction.now ().plus (
-						Duration.standardSeconds (
-							outbox.getTries () * 10)))
-
-				.setTries (
-					outbox.getTries () + 1)
-
-				.setDailyFailure (
-					failureType == FailureType.daily)
-
-				.setError (
-					error)
-
-				.setSending (
-					null);
-
-		}
-
-	}
-
-	@Override
-	public
-	void retryMessage (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull MessageRec message) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"retryMessage");
-
-		Transaction transaction =
-			database.currentTransaction ();
-
-		if (
-			enumNotEqualSafe (
-				message.getDirection (),
-				MessageDirection.out)
-		) {
-
-			throw new RuntimeException ();
-
-		} else if (
-			enumInSafe (
-				message.getStatus (),
-				MessageStatus.failed,
-				MessageStatus.cancelled,
-				MessageStatus.blacklisted)
-		) {
+				MessageStatus.pending);
 
 			outboxHelper.insert (
 				taskLogger,
@@ -870,38 +281,687 @@ class SmsOutboxLogicImplementation
 
 			);
 
+		}
+
+	}
+
+	@Override
+	public
+	void cancelMessage (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"cancelMessage");
+
+		) {
+
+			// check message state
+
+			if (
+				enumEqualSafe (
+					message.getStatus (),
+					MessageStatus.pending)
+			) {
+
+				// lookup outbox
+
+				OutboxRec outbox =
+					outboxHelper.findRequired (
+						message.getId ());
+
+				// check message is not being sent
+
+				if (outbox.getSending () != null) {
+
+					throw new RuntimeException (
+						"Message is being sent");
+
+				}
+
+				// cancel message
+
+				messageLogic.messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.cancelled);
+
+				// remove outbox
+
+				outboxHelper.remove (
+					outbox);
+
+			} else if (
+				enumEqualSafe (
+					message.getStatus (),
+					MessageStatus.held)
+			) {
+
+				// cancel message
+
+				messageLogic.messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.cancelled);
+
+			} else {
+
+				throw new RuntimeException (
+					"Message is not pending/held");
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	OutboxRec claimNextMessage (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull RouteRec route) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"claimNextMessage");
+
+		) {
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			OutboxRec outbox =
+				outboxHelper.findNext (
+					transaction.now (),
+					route);
+
+			if (outbox == null)
+				return null;
+
+			outbox
+
+				.setSending (
+					transaction.now ())
+
+				.setRemainingTries (
+					outbox.getRemainingTries () != null
+						? outbox.getRemainingTries () - 1
+						: null);
+
+			return outbox;
+
+		}
+
+	}
+
+	@Override
+	public
+	List <OutboxRec> claimNextMessages (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull RouteRec route,
+			@NonNull Long limit) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"claimNextMessages");
+
+		) {
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			List <OutboxRec> outboxes =
+				outboxDao.findNextLimit (
+					transaction.now (),
+					route,
+					limit);
+
+			for (
+				OutboxRec outbox
+					: outboxes
+			) {
+
+				outbox
+
+					.setSending (
+						transaction.now ());
+
+				if (outbox.getRemainingTries () != null) {
+
+					outbox
+
+						.setRemainingTries (
+							outbox.getRemainingTries () - 1);
+
+				}
+
+			}
+
+			return outboxes;
+
+		}
+
+	}
+
+	@Override
+	public
+	void messageSuccess (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message,
+			@NonNull Optional <List <String>> otherIds,
+			@NonNull Optional <Long> simulateMultipart) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"messageSuccess");
+
+		) {
+
+			sanityCheckMultipartOptions (
+				otherIds,
+				simulateMultipart);
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			OutboxRec outbox =
+				outboxHelper.findRequired (
+					message.getId ());
+
+			// check message state
+
+			if (
+
+				enumNotEqualSafe (
+					message.getStatus (),
+					MessageStatus.pending)
+
+				&& enumNotEqualSafe (
+					message.getStatus (),
+					MessageStatus.cancelled)
+
+			) {
+
+				throw new RuntimeException (
+					stringFormat (
+						"Invalid message status %s for message %s",
+						message.getStatus ().toString (),
+						integerToDecimalString (
+							message.getId ())));
+
+			}
+
+			if (outbox.getSending () == null) {
+
+				throw new RuntimeException (
+					"Outbox not marked as sending!");
+
+			}
+
+			// remove the outbox and log success
+
+			outboxHelper.remove (
+				outbox);
+
 			messageLogic.messageStatus (
 				taskLogger,
 				message,
-				MessageStatus.pending);
+				MessageStatus.sent);
 
-		} else if (
-			enumInSafe (
-				message.getStatus (),
-				MessageStatus.pending)
+			if (
+				optionalIsPresent (
+					otherIds)
+			) {
+
+				message
+
+					.setOtherId (
+						otherIds.get ().get (0));
+
+			}
+
+			message
+
+				.setProcessedTime (
+					transaction.now ());
+
+			// create expiry if appropriate
+
+			RouteRec route =
+				message.getRoute ();
+
+			if (
+				route.getDeliveryReports ()
+				&& route.getExpirySecs () != null
+			) {
+
+				messageExpiryHelper.insert (
+					taskLogger,
+					messageExpiryHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+					.setExpiryTime (
+						Instant.now ().plus (
+							Duration.standardSeconds (
+								route.getExpirySecs ())))
+
+				);
+
+			}
+
+			database.flush ();
+
+			// create multipart companions from other ids
+
+			if (
+
+				optionalIsPresent (
+					otherIds)
+
+				&& collectionHasMoreThanOneElement (
+					otherIds.get ())
+
+			) {
+
+				otherIds.get ().stream ().skip (1).forEach (
+					otherId -> {
+
+					MessageRec companionMessage =
+						messageHelper.insert (
+							taskLogger,
+							messageHelper.createInstance ()
+
+						.setThreadId (
+							message.getThreadId ())
+
+						.setOtherId (
+							otherId)
+
+						.setText (
+							textHelper.findOrCreateFormat (
+								taskLogger,
+								"[multipart companion for %s]",
+								integerToDecimalString (
+									message.getId ())))
+
+						.setNumFrom (
+							message.getNumFrom ())
+
+						.setNumTo (
+							message.getNumTo ())
+
+						.setDirection (
+							MessageDirection.out)
+
+						.setNumber (
+							message.getNumber ())
+
+						.setCharge (
+							message.getCharge ())
+
+						.setMessageType (
+							message.getMessageType ())
+
+						.setRoute (
+							message.getRoute ())
+
+						.setService (
+							message.getService ())
+
+						.setNetwork (
+							message.getNetwork ())
+
+						.setBatch (
+							message.getBatch ())
+
+						.setAffiliate (
+							message.getAffiliate ())
+
+						.setStatus (
+							MessageStatus.sent)
+
+						.setCreatedTime (
+							message.getCreatedTime ())
+
+						.setProcessedTime (
+							message.getProcessedTime ())
+
+						.setNetworkTime (
+							null)
+
+						.setUser (
+							message.getUser ())
+
+					);
+
+					smsOutboxMultipartLinkHelper.insert (
+						taskLogger,
+						smsOutboxMultipartLinkHelper.createInstance ()
+
+						.setMessage (
+							companionMessage)
+
+						.setMainMessage (
+							message)
+
+						.setSimulated (
+							false)
+
+					);
+
+				});
+
+			}
+
+			// create simulated multipart companions
+
+			if (
+
+				optionalIsPresent (
+					simulateMultipart)
+
+				&& moreThanOne (
+					simulateMultipart.get ())
+
+			) {
+
+				LongStream.range (1, simulateMultipart.get ()).forEach (
+					companionIndex -> {
+
+					MessageRec companionMessage =
+						messageHelper.insert (
+							taskLogger,
+							messageHelper.createInstance ()
+
+						.setThreadId (
+							message.getThreadId ())
+
+						.setText (
+							textHelper.findOrCreateFormat (
+								taskLogger,
+								"[multipart companion for %s]",
+								integerToDecimalString (
+									message.getId ())))
+
+						.setNumFrom (
+							message.getNumFrom ())
+
+						.setNumTo (
+							message.getNumTo ())
+
+						.setDirection (
+							MessageDirection.out)
+
+						.setNumber (
+							message.getNumber ())
+
+						.setCharge (
+							message.getCharge ())
+
+						.setMessageType (
+							message.getMessageType ())
+
+						.setRoute (
+							message.getRoute ())
+
+						.setService (
+							message.getService ())
+
+						.setNetwork (
+							message.getNetwork ())
+
+						.setBatch (
+							message.getBatch ())
+
+						.setAffiliate (
+							message.getAffiliate ())
+
+						.setStatus (
+							MessageStatus.sent)
+
+						.setCreatedTime (
+							message.getCreatedTime ())
+
+						.setProcessedTime (
+							message.getProcessedTime ())
+
+						.setNetworkTime (
+							null)
+
+						.setUser (
+							message.getUser ())
+
+					);
+
+					smsOutboxMultipartLinkHelper.insert (
+						taskLogger,
+						smsOutboxMultipartLinkHelper.createInstance ()
+
+						.setMessage (
+							companionMessage)
+
+						.setMainMessage (
+							message)
+
+						.setSimulated (
+							true)
+
+					);
+
+				});
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void messageFailure (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message,
+			@NonNull String error,
+			@NonNull FailureType failureType) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"messageFailure");
+
 		) {
 
-			OutboxRec existingOutbox =
-				outboxHelper.find (
-					message);
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			existingOutbox
+			taskLogger.debugFormat (
+				"outbox failure id = %s",
+				integerToDecimalString (
+					message.getId ()));
 
-				.setRetryTime (
-					earliest (
-						existingOutbox.getRetryTime (),
-						transaction.now ()))
+			OutboxRec outbox =
+				outboxHelper.findRequired (
+					message.getId ());
 
-				.setRemainingTries (
-					existingOutbox.getRemainingTries () != null
-						? Math.max (
-							existingOutbox.getRemainingTries (),
-							1)
-						: null);
+			if (
+				enumNotInSafe (
+					message.getStatus (),
+					MessageStatus.pending,
+					MessageStatus.cancelled)
+			) {
 
-		} else {
+				throw new RuntimeException (
+					"Invalid message status");
 
-			throw new RuntimeException ();
+			}
+
+			if (outbox.getSending () == null) {
+
+				throw new RuntimeException (
+					"Outbox not marked as sending!");
+
+			}
+
+			if (failureType == FailureType.permanent) {
+
+				outboxHelper.remove (
+					outbox);
+
+				messageLogic.messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.failed);
+
+				message
+
+					.setProcessedTime (
+						transaction.now ());
+
+				failedMessageHelper.insert (
+					taskLogger,
+					failedMessageHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+					.setError (
+						error)
+
+				);
+
+			} else {
+
+				outbox
+
+					.setRetryTime (
+						transaction.now ().plus (
+							Duration.standardSeconds (
+								outbox.getTries () * 10)))
+
+					.setTries (
+						outbox.getTries () + 1)
+
+					.setDailyFailure (
+						failureType == FailureType.daily)
+
+					.setError (
+						error)
+
+					.setSending (
+						null);
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void retryMessage (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MessageRec message) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"retryMessage");
+
+		) {
+
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
+
+			if (
+				enumNotEqualSafe (
+					message.getDirection (),
+					MessageDirection.out)
+			) {
+
+				throw new RuntimeException ();
+
+			} else if (
+				enumInSafe (
+					message.getStatus (),
+					MessageStatus.failed,
+					MessageStatus.cancelled,
+					MessageStatus.blacklisted)
+			) {
+
+				outboxHelper.insert (
+					taskLogger,
+					outboxHelper.createInstance ()
+
+					.setMessage (
+						message)
+
+					.setRoute (
+						message.getRoute ())
+
+					.setCreatedTime (
+						transaction.now ())
+
+					.setRetryTime (
+						transaction.now ())
+
+					.setRemainingTries (
+						message.getRoute ().getMaxTries ())
+
+				);
+
+				messageLogic.messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.pending);
+
+			} else if (
+				enumInSafe (
+					message.getStatus (),
+					MessageStatus.pending)
+			) {
+
+				OutboxRec existingOutbox =
+					outboxHelper.find (
+						message);
+
+				existingOutbox
+
+					.setRetryTime (
+						earliest (
+							existingOutbox.getRetryTime (),
+							transaction.now ()))
+
+					.setRemainingTries (
+						existingOutbox.getRemainingTries () != null
+							? Math.max (
+								existingOutbox.getRemainingTries (),
+								1)
+							: null);
+
+			} else {
+
+				throw new RuntimeException ();
+
+			}
 
 		}
 
@@ -914,52 +974,58 @@ class SmsOutboxLogicImplementation
 			@NonNull OutboxRec smsOutbox,
 			@NonNull Optional<byte[]> requestTrace) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"beginSendAttempt");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"beginSendAttempt");
 
-		MessageRec smsMessage =
-			smsOutbox.getMessage ();
+		) {
 
-		SmsOutboxAttemptRec smsOutboxAttempt =
-			smsOutboxAttemptHelper.insert (
-				taskLogger,
-				smsOutboxAttemptHelper.createInstance ()
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			.setMessage (
-				smsMessage)
+			MessageRec smsMessage =
+				smsOutbox.getMessage ();
 
-			.setIndex (
-				smsMessage.getNumAttempts ())
+			SmsOutboxAttemptRec smsOutboxAttempt =
+				smsOutboxAttemptHelper.insert (
+					taskLogger,
+					smsOutboxAttemptHelper.createInstance ()
 
-			.setState (
-				SmsOutboxAttemptState.sending)
+				.setMessage (
+					smsMessage)
 
-			.setStatusMessage (
-				"Sending")
+				.setIndex (
+					smsMessage.getNumAttempts ())
 
-			.setRoute (
-				smsOutbox.getRoute ())
+				.setState (
+					SmsOutboxAttemptState.sending)
 
-			.setStartTime (
-				transaction.now ())
+				.setStatusMessage (
+					"Sending")
 
-			.setRequestTrace (
-				optionalOrNull (
-					requestTrace))
+				.setRoute (
+					smsOutbox.getRoute ())
 
-		);
+				.setStartTime (
+					transaction.now ())
 
-		smsMessage
+				.setRequestTrace (
+					optionalOrNull (
+						requestTrace))
 
-			.setNumAttempts (
-				smsMessage.getNumAttempts () + 1);
+			);
 
-		return smsOutboxAttempt;
+			smsMessage
+
+				.setNumAttempts (
+					smsMessage.getNumAttempts () + 1);
+
+			return smsOutboxAttempt;
+
+		}
 
 	}
 
@@ -973,48 +1039,54 @@ class SmsOutboxLogicImplementation
 			@NonNull Optional <byte[]> requestTrace,
 			@NonNull Optional <byte[]> responseTrace) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"completeSendAttemptSuccess");
+		try (
 
-		sanityCheckMultipartOptions (
-			otherIds,
-			simulateMultipart);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"completeSendAttemptSuccess");
 
-		// create sms outbox attempt
+		) {
 
-		Transaction transaction =
-			database.currentTransaction ();
+			sanityCheckMultipartOptions (
+				otherIds,
+				simulateMultipart);
 
-		MessageRec smsMessage =
-			smsOutboxAttempt.getMessage ();
+			// create sms outbox attempt
 
-		smsOutboxAttempt
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			.setState (
-				SmsOutboxAttemptState.success)
+			MessageRec smsMessage =
+				smsOutboxAttempt.getMessage ();
 
-			.setStatusMessage (
-				"Success")
+			smsOutboxAttempt
 
-			.setEndTime (
-				transaction.now ())
+				.setState (
+					SmsOutboxAttemptState.success)
 
-			.setRequestTrace (
-				ifNull (
-					requestTrace.orNull (),
-					smsOutboxAttempt.getRequestTrace ()))
+				.setStatusMessage (
+					"Success")
 
-			.setResponseTrace (
-				optionalOrNull (
-					responseTrace));
+				.setEndTime (
+					transaction.now ())
 
-		messageSuccess (
-			taskLogger,
-			smsMessage,
-			otherIds,
-			simulateMultipart);
+				.setRequestTrace (
+					ifNull (
+						requestTrace.orNull (),
+						smsOutboxAttempt.getRequestTrace ()))
+
+				.setResponseTrace (
+					optionalOrNull (
+						responseTrace));
+
+			messageSuccess (
+				taskLogger,
+				smsMessage,
+				otherIds,
+				simulateMultipart);
+
+		}
 
 	}
 
@@ -1029,44 +1101,50 @@ class SmsOutboxLogicImplementation
 			@NonNull Optional <byte[]> responseTrace,
 			@NonNull Optional <byte[]> errorTrace) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"completeSendAttemptFailure");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"completeSendAttemptFailure");
 
-		MessageRec smsMessage =
-			smsOutboxAttempt.getMessage ();
+		) {
 
-		smsOutboxAttempt
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			.setState (
-				SmsOutboxAttemptState.failure)
+			MessageRec smsMessage =
+				smsOutboxAttempt.getMessage ();
 
-			.setStatusMessage (
-				errorMessage)
+			smsOutboxAttempt
 
-			.setEndTime (
-				transaction.now ())
+				.setState (
+					SmsOutboxAttemptState.failure)
 
-			.setRequestTrace (
-				ifNull (
-					requestTrace.orNull (),
-					smsOutboxAttempt.getRequestTrace ()))
+				.setStatusMessage (
+					errorMessage)
 
-			.setResponseTrace (
-				responseTrace.orNull ())
+				.setEndTime (
+					transaction.now ())
 
-			.setErrorTrace (
-				errorTrace.orNull ());
+				.setRequestTrace (
+					ifNull (
+						requestTrace.orNull (),
+						smsOutboxAttempt.getRequestTrace ()))
 
-		messageFailure (
-			taskLogger,
-			smsMessage,
-			errorMessage,
-			failureType);
+				.setResponseTrace (
+					responseTrace.orNull ())
+
+				.setErrorTrace (
+					errorTrace.orNull ());
+
+			messageFailure (
+				taskLogger,
+				smsMessage,
+				errorMessage,
+				failureType);
+
+		}
 
 	}
 

@@ -56,27 +56,33 @@ class NumberServicesPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		NumberRec number =
-			numberHelper.findFromContextRequired ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		List <ServiceRec> allServices =
-			messageHelper.projectServices (
-				number);
+		) {
 
-		services =
-			mapWithDerivedKey (
-				iterableFilter (
-					service ->
-						objectManager.canView (
-							taskLogger,
-							service),
-					allServices),
-				objectManager::objectPathMini);
+			NumberRec number =
+				numberHelper.findFromContextRequired ();
+
+			List <ServiceRec> allServices =
+				messageHelper.projectServices (
+					number);
+
+			services =
+				mapWithDerivedKey (
+					iterableFilter (
+						service ->
+							objectManager.canView (
+								taskLogger,
+								service),
+						allServices),
+					objectManager::objectPathMini);
+
+		}
 
 	}
 
@@ -85,42 +91,23 @@ class NumberServicesPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		// open table
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		formatWriter.writeLineFormat (
-			"<table class=\"list\">\n");
-
-		formatWriter.increaseIndent ();
-
-		// write header
-
-		formatWriter.writeLineFormat (
-			"<tr>");
-
-		formatWriter.increaseIndent ();
-
-		formatWriter.writeLineFormat (
-			"<th>Subject</th>");
-
-		formatWriter.writeLineFormat (
-			"<th>Service</th>");
-
-		formatWriter.decreaseIndent ();
-
-		formatWriter.writeLineFormat (
-			"</tr>");
-
-		// write empty contents
-
-		if (
-			mapIsEmpty (
-				services)
 		) {
+
+			// open table
+
+			formatWriter.writeLineFormat (
+				"<table class=\"list\">\n");
+
+			formatWriter.increaseIndent ();
+
+			// write header
 
 			formatWriter.writeLineFormat (
 				"<tr>");
@@ -128,63 +115,88 @@ class NumberServicesPart
 			formatWriter.increaseIndent ();
 
 			formatWriter.writeLineFormat (
-				"<td colspan=\"2\">Nothing to show</td>");
+				"<th>Subject</th>");
+
+			formatWriter.writeLineFormat (
+				"<th>Service</th>");
 
 			formatWriter.decreaseIndent ();
 
 			formatWriter.writeLineFormat (
 				"</tr>");
 
-		}
+			// write empty contents
 
-		// write table contents
+			if (
+				mapIsEmpty (
+					services)
+			) {
 
-		for (
-			ServiceRec service
-				: services.values ()
-		) {
+				formatWriter.writeLineFormat (
+					"<tr>");
 
-			Record <?> parent =
-				objectManager.getParentRequired (
-					service);
+				formatWriter.increaseIndent ();
 
-			// open table row
+				formatWriter.writeLineFormat (
+					"<td colspan=\"2\">Nothing to show</td>");
 
-			formatWriter.writeLineFormat (
-				"<tr>");
+				formatWriter.decreaseIndent ();
 
-			formatWriter.increaseIndent ();
+				formatWriter.writeLineFormat (
+					"</tr>");
 
-			// write parent table cell
+			}
 
-			objectManager.writeTdForObjectLink (
-				taskLogger,
-				formatWriter,
-				parent);
+			// write table contents
 
-			// write service table cell
+			for (
+				ServiceRec service
+					: services.values ()
+			) {
 
-			objectManager.writeTdForObjectMiniLink (
-				taskLogger,
-				formatWriter,
-				service,
-				parent);
+				Record <?> parent =
+					objectManager.getParentRequired (
+						service);
 
-			// close table row
+				// open table row
+
+				formatWriter.writeLineFormat (
+					"<tr>");
+
+				formatWriter.increaseIndent ();
+
+				// write parent table cell
+
+				objectManager.writeTdForObjectLink (
+					taskLogger,
+					formatWriter,
+					parent);
+
+				// write service table cell
+
+				objectManager.writeTdForObjectMiniLink (
+					taskLogger,
+					formatWriter,
+					service,
+					parent);
+
+				// close table row
+
+				formatWriter.decreaseIndent ();
+
+				formatWriter.writeLineFormat (
+					"</tr>");
+
+			}
+
+			// close table
 
 			formatWriter.decreaseIndent ();
 
 			formatWriter.writeLineFormat (
-				"</tr>");
+				"</table>");
 
 		}
-
-		// close table
-
-		formatWriter.decreaseIndent ();
-
-		formatWriter.writeLineFormat (
-			"</table>");
 
 	}
 

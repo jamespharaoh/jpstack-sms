@@ -341,111 +341,117 @@ class SmsStatsFormatter {
 				: rows
 		) {
 
-			StringFormatWriter buffer =
-				formatWriter.stringBuffer ();
+			try (
 
-			htmlTableRowOpen (
-				buffer);
+				StringFormatWriter buffer =
+					formatWriter.stringBuffer ();
 
-			htmlTableCellWrite (
-				buffer,
-				row.name,
-				htmlClassAttribute (
-					row.className));
-
-			boolean foundSomething =
-				false;
-
-			for (
-				int index = 0;
-				index < data.length;
-				index ++
 			) {
 
-				MessageStatsData messageStatus =
-					data [index];
-
-				String className =
-					hilites [index]
-						? "hi-" + row.className
-						: row.className;
-
-				String charge = "";
-
-				if (messageStatus == null) {
-
-					charge = "";
-
-				} else {
-
-					long messageCount =
-						row.getData (
-							messageStatus);
-
-					if (messageCount > 0) {
-						foundSomething = true;
-					}
-
-					switch (row.direction) {
-
-					case in:
-
-						charge =
-							ifThenElse (
-								allOf (
-									() -> optionalIsPresent (
-										routeOptional),
-									() -> moreThanZero (
-										routeOptional.get ().getInCharge ())),
-								() -> currencyLogic.formatText (
-									routeOptional.get ().getCurrency (),
-									routeOptional.get ().getInCharge ()
-										* messageCount),
-								() -> noZero (
-									messageCount));
-
-						break;
-
-					case out:
-
-						charge =
-							ifThenElse (
-								allOf (
-									() -> optionalIsPresent (
-										routeOptional),
-									() -> moreThanZero (
-										routeOptional.get ().getOutCharge ())),
-								() -> currencyLogic.formatText (
-									routeOptional.get ().getCurrency (),
-									routeOptional.get ().getOutCharge ()
-										* messageCount),
-								() -> noZero (
-									messageCount));
-
-						break;
-
-					}
-
-				}
+				htmlTableRowOpen (
+					buffer);
 
 				htmlTableCellWrite (
 					buffer,
-					charge,
+					row.name,
 					htmlClassAttribute (
-						className),
-					htmlStyleRuleEntry (
-						"text-align",
-						"right"));
+						row.className));
 
-			}
+				boolean foundSomething =
+					false;
 
-			htmlTableRowClose (
-				buffer);
+				for (
+					int index = 0;
+					index < data.length;
+					index ++
+				) {
 
-			if (foundSomething) {
+					MessageStatsData messageStatus =
+						data [index];
 
-				formatWriter.writeString (
-					buffer.toString ());
+					String className =
+						hilites [index]
+							? "hi-" + row.className
+							: row.className;
+
+					String charge = "";
+
+					if (messageStatus == null) {
+
+						charge = "";
+
+					} else {
+
+						long messageCount =
+							row.getData (
+								messageStatus);
+
+						if (messageCount > 0) {
+							foundSomething = true;
+						}
+
+						switch (row.direction) {
+
+						case in:
+
+							charge =
+								ifThenElse (
+									allOf (
+										() -> optionalIsPresent (
+											routeOptional),
+										() -> moreThanZero (
+											routeOptional.get ().getInCharge ())),
+									() -> currencyLogic.formatText (
+										routeOptional.get ().getCurrency (),
+										routeOptional.get ().getInCharge ()
+											* messageCount),
+									() -> noZero (
+										messageCount));
+
+							break;
+
+						case out:
+
+							charge =
+								ifThenElse (
+									allOf (
+										() -> optionalIsPresent (
+											routeOptional),
+										() -> moreThanZero (
+											routeOptional.get ().getOutCharge ())),
+									() -> currencyLogic.formatText (
+										routeOptional.get ().getCurrency (),
+										routeOptional.get ().getOutCharge ()
+											* messageCount),
+									() -> noZero (
+										messageCount));
+
+							break;
+
+						}
+
+					}
+
+					htmlTableCellWrite (
+						buffer,
+						charge,
+						htmlClassAttribute (
+							className),
+						htmlStyleRuleEntry (
+							"text-align",
+							"right"));
+
+				}
+
+				htmlTableRowClose (
+					buffer);
+
+				if (foundSomething) {
+
+					formatWriter.writeString (
+						buffer.toString ());
+
+				}
 
 			}
 

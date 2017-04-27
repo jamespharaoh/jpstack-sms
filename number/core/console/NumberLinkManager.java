@@ -43,28 +43,34 @@ class NumberLinkManager {
 			@NonNull NumberRec number,
 			boolean active) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findLinks");
+		try (
 
-		List <NumberPlugin.Link> links =
-			new ArrayList<> ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findLinks");
 
-		for (
-			NumberPlugin numberPlugin
-				: numberPlugins
 		) {
 
-			links.addAll (
-				numberPlugin.findLinks (
-					taskLogger,
-					number,
-					active));
+			List <NumberPlugin.Link> links =
+				new ArrayList<> ();
+
+			for (
+				NumberPlugin numberPlugin
+					: numberPlugins
+			) {
+
+				links.addAll (
+					numberPlugin.findLinks (
+						taskLogger,
+						number,
+						active));
+
+			}
+
+			return links;
 
 		}
-
-		return links;
 
 	}
 

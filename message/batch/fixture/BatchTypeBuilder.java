@@ -19,7 +19,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
@@ -76,38 +76,44 @@ class BatchTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder builder) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"build");
+		try (
 
-		try {
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-			log.info (
-				stringFormat (
-					"Create batch type %s.%s",
-					camelToUnderscore (
-						ifNull (
-							spec.subject (),
-							parent.name ())),
-					simplifyToCodeRequired (
-						spec.name ())));
+		) {
 
-			createBatchType (
-				taskLogger);
+			try {
 
-		} catch (Exception exception) {
+				log.info (
+					stringFormat (
+						"Create batch type %s.%s",
+						camelToUnderscore (
+							ifNull (
+								spec.subject (),
+								parent.name ())),
+						simplifyToCodeRequired (
+							spec.name ())));
 
-			throw new RuntimeException (
-				stringFormat (
-					"Error creating batch type %s.%s",
-					camelToUnderscore (
-						ifNull (
-							spec.subject (),
-							parent.name ())),
-					simplifyToCodeRequired (
-						spec.name ())),
-				exception);
+				createBatchType (
+					taskLogger);
+
+			} catch (Exception exception) {
+
+				throw new RuntimeException (
+					stringFormat (
+						"Error creating batch type %s.%s",
+						camelToUnderscore (
+							ifNull (
+								spec.subject (),
+								parent.name ())),
+						simplifyToCodeRequired (
+							spec.name ())),
+					exception);
+
+			}
 
 		}
 
@@ -118,16 +124,14 @@ class BatchTypeBuilder {
 			@NonNull TaskLogger parentTaskLogger)
 		throws SQLException {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createBatchType");
-
-		// begin transaction
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createBatchType");
+
+			OwnedTransaction transaction =
 				database.beginReadWrite (
 					taskLogger,
 					"BatchTypeBuilder.createBatchType ()",

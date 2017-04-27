@@ -54,54 +54,60 @@ class CommandLogicImplementation
 			@NonNull String typeCode,
 			@NonNull String code) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"findOrCreateCommand");
+		try (
 
-		// lookup existing command...
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"findOrCreateCommand");
 
-		Optional<CommandRec> existingCommandOptional =
-			commandHelper.findByCode (
-				parent,
-				code);
-
-		if (
-			optionalIsPresent (
-				existingCommandOptional)
 		) {
-			return existingCommandOptional.get ();
+
+			// lookup existing command...
+
+			Optional<CommandRec> existingCommandOptional =
+				commandHelper.findByCode (
+					parent,
+					code);
+
+			if (
+				optionalIsPresent (
+					existingCommandOptional)
+			) {
+				return existingCommandOptional.get ();
+			}
+
+			// ...or create new command
+
+			ObjectTypeRec parentType =
+				objectTypeHelper.findRequired (
+					objectManager.getObjectTypeId (
+						parent));
+
+			CommandTypeRec commandType =
+				commandTypeHelper.findByCodeRequired (
+					parentType,
+					typeCode);
+
+			return commandHelper.insert (
+				taskLogger,
+				commandHelper.createInstance ()
+
+				.setCode (
+					code)
+
+				.setCommandType (
+					commandType)
+
+				.setParentType (
+					parentType)
+
+				.setParentId (
+					parent.getId ())
+
+			);
+
 		}
-
-		// ...or create new command
-
-		ObjectTypeRec parentType =
-			objectTypeHelper.findRequired (
-				objectManager.getObjectTypeId (
-					parent));
-
-		CommandTypeRec commandType =
-			commandTypeHelper.findByCodeRequired (
-				parentType,
-				typeCode);
-
-		return commandHelper.insert (
-			taskLogger,
-			commandHelper.createInstance ()
-
-			.setCode (
-				code)
-
-			.setCommandType (
-				commandType)
-
-			.setParentType (
-				parentType)
-
-			.setParentId (
-				parent.getId ())
-
-		);
 
 	}
 

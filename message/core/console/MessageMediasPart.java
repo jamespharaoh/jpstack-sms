@@ -100,77 +100,83 @@ class MessageMediasPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		htmlTableOpenList ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		htmlTableHeaderRowWrite (
-			"Thumbnail",
-			"Type",
-			"Filename",
-			"Size");
+		) {
 
-		if (medias.size () == 0) {
+			htmlTableOpenList ();
 
-			htmlTableRowOpen ();
+			htmlTableHeaderRowWrite (
+				"Thumbnail",
+				"Type",
+				"Filename",
+				"Size");
 
-			htmlTableCellWrite (
-				"(no media)",
-				htmlColumnSpanAttribute (4l));
+			if (medias.size () == 0) {
 
-			htmlTableRowClose ();
-
-		} else {
-
-			for (
-				int index = 0;
-				index < medias.size ();
-				index ++
-			) {
-
-				MediaRec media =
-					medias.get (index);
-
-				htmlTableRowOpen (
-					htmlClassAttribute (
-						"magic-table-row"),
-					htmlDataAttribute (
-						"target-href",
-						requestContext.resolveLocalUrlFormat (
-							"/message.mediaSummary",
-							"?index=%u",
-							integerToDecimalString (
-								index))));
-
-				htmlTableCellOpen ();
-
-				mediaConsoleLogic.writeMediaThumb100 (
-					taskLogger,
-					media);
-
-				htmlTableCellClose ();
+				htmlTableRowOpen ();
 
 				htmlTableCellWrite (
-					media.getMediaType ().getMimeType ());
-
-				htmlTableCellWrite (
-					ifNullThenEmDash (
-						media.getFilename ()));
-
-				htmlTableCellWrite (
-					prettySize (
-						media.getContent().getData ().length));
+					"(no media)",
+					htmlColumnSpanAttribute (4l));
 
 				htmlTableRowClose ();
 
+			} else {
+
+				for (
+					int index = 0;
+					index < medias.size ();
+					index ++
+				) {
+
+					MediaRec media =
+						medias.get (index);
+
+					htmlTableRowOpen (
+						htmlClassAttribute (
+							"magic-table-row"),
+						htmlDataAttribute (
+							"target-href",
+							requestContext.resolveLocalUrlFormat (
+								"/message.mediaSummary",
+								"?index=%u",
+								integerToDecimalString (
+									index))));
+
+					htmlTableCellOpen ();
+
+					mediaConsoleLogic.writeMediaThumb100 (
+						taskLogger,
+						media);
+
+					htmlTableCellClose ();
+
+					htmlTableCellWrite (
+						media.getMediaType ().getMimeType ());
+
+					htmlTableCellWrite (
+						ifNullThenEmDash (
+							media.getFilename ()));
+
+					htmlTableCellWrite (
+						prettySize (
+							media.getContent().getData ().length));
+
+					htmlTableRowClose ();
+
+				}
+
 			}
 
-		}
+			htmlTableClose ();
 
-		htmlTableClose ();
+		}
 
 	}
 

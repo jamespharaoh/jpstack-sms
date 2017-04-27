@@ -101,53 +101,59 @@ class ObjectSmsMessagesPart
 	void prepare (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"prepare");
+		try (
 
-		requestContext.request (
-			"localName",
-			localName);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		// work out view mode and setup tabs
+		) {
 
-		viewMode =
-			viewModesByName.get (
-				requestContext.parameterOrNull (
-					"view"));
+			requestContext.request (
+				"localName",
+				localName);
 
-		if (viewMode == null)
-			viewMode = defaultViewMode;
+			// work out view mode and setup tabs
 
-		viewTabsPrepared =
-			viewTabs.prepare (
-				taskLogger,
-				viewMode.viewTab);
+			viewMode =
+				viewModesByName.get (
+					requestContext.parameterOrNull (
+						"view"));
 
-		// get date
+			if (viewMode == null)
+				viewMode = defaultViewMode;
 
-		dateField =
-			ObsoleteDateField.parse (
-				requestContext.parameterOrNull (
-					"date"));
+			viewTabsPrepared =
+				viewTabs.prepare (
+					taskLogger,
+					viewMode.viewTab);
 
-		if (dateField.date == null) {
-			requestContext.addError ("Invalid date");
-			return;
+			// get date
+
+			dateField =
+				ObsoleteDateField.parse (
+					requestContext.parameterOrNull (
+						"date"));
+
+			if (dateField.date == null) {
+				requestContext.addError ("Invalid date");
+				return;
+			}
+
+			requestContext.request (
+				"date",
+				dateField.text);
+
+			// do the query
+
+			messages =
+				messageSource.findMessages (
+					taskLogger,
+					dateField.date.toInterval (),
+					viewMode.viewMode);
+
 		}
-
-		requestContext.request (
-			"date",
-			dateField.text);
-
-		// do the query
-
-		messages =
-			messageSource.findMessages (
-				taskLogger,
-				dateField.date.toInterval (),
-				viewMode.viewMode);
 
 	}
 
@@ -158,201 +164,207 @@ class ObjectSmsMessagesPart
 	void renderHtmlBodyContent (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"renderHtmlBodyContent");
+		try (
 
-		/*
-		viewTabsPrepared.go (
-			requestContext);
-		*/
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"renderHtmlBodyContent");
 
-		String localUrl =
-			requestContext.resolveLocalUrl (
-				localName);
-
-		htmlFormOpenGetAction (
-			localUrl);
-
-		formatWriter.writeLineFormat (
-			"<p",
-			" class=\"links\"",
-			">");
-
-		formatWriter.increaseIndent ();
-
-		formatWriter.writeLineFormat (
-			"Date");
-
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"text\"",
-			" name=\"date\"",
-			" value=\"%h\"",
-			dateField.text,
-			">");
-
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"ok\"",
-			">");
-
-		ObsoleteDateLinks.dailyBrowserLinks (
-			formatWriter,
-			localUrl,
-			requestContext.formData (),
-			dateField.date);
-
-		formatWriter.decreaseIndent ();
-
-		formatWriter.writeLineFormat (
-			"</p>");
-
-		htmlFormClose ();
-
-		if (
-			isNull (
-				messages)
-		) {
-			return;
-		}
-
-		htmlTableOpenList ();
-
-		htmlTableHeaderRowWrite (
-			"Time",
-			"From",
-			"To",
-			"Route",
-			"Id",
-			"Status",
-			"Media");
-
-		Calendar calendar =
-			Calendar.getInstance ();
-
-		int dayNumber = 0;
-
-		for (
-			MessageRec message
-				: messages
 		) {
 
-			calendar.setTime (
-				instantToDateNullSafe (
-					message.getCreatedTime ()));
+			/*
+			viewTabsPrepared.go (
+				requestContext);
+			*/
 
-			int newDayNumber =
-				+ (calendar.get (Calendar.YEAR) << 9)
-				+ calendar.get (Calendar.DAY_OF_YEAR);
+			String localUrl =
+				requestContext.resolveLocalUrl (
+					localName);
 
-			if (newDayNumber != dayNumber) {
+			htmlFormOpenGetAction (
+				localUrl);
+
+			formatWriter.writeLineFormat (
+				"<p",
+				" class=\"links\"",
+				">");
+
+			formatWriter.increaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"Date");
+
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"text\"",
+				" name=\"date\"",
+				" value=\"%h\"",
+				dateField.text,
+				">");
+
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"ok\"",
+				">");
+
+			ObsoleteDateLinks.dailyBrowserLinks (
+				formatWriter,
+				localUrl,
+				requestContext.formData (),
+				dateField.date);
+
+			formatWriter.decreaseIndent ();
+
+			formatWriter.writeLineFormat (
+				"</p>");
+
+			htmlFormClose ();
+
+			if (
+				isNull (
+					messages)
+			) {
+				return;
+			}
+
+			htmlTableOpenList ();
+
+			htmlTableHeaderRowWrite (
+				"Time",
+				"From",
+				"To",
+				"Route",
+				"Id",
+				"Status",
+				"Media");
+
+			Calendar calendar =
+				Calendar.getInstance ();
+
+			int dayNumber = 0;
+
+			for (
+				MessageRec message
+					: messages
+			) {
+
+				calendar.setTime (
+					instantToDateNullSafe (
+						message.getCreatedTime ()));
+
+				int newDayNumber =
+					+ (calendar.get (Calendar.YEAR) << 9)
+					+ calendar.get (Calendar.DAY_OF_YEAR);
+
+				if (newDayNumber != dayNumber) {
+
+					htmlTableRowSeparatorWrite ();
+
+					htmlTableRowOpen (
+						htmlAttribute (
+							"style",
+							"font-weight: bold"));
+
+					htmlTableCellWrite (
+						userConsoleLogic.dateStringLong (
+							message.getCreatedTime ()),
+						htmlColumnSpanAttribute (7l));
+
+					htmlTableRowClose ();
+
+					dayNumber =
+						newDayNumber;
+
+				}
+
+				String rowClass =
+					messageConsoleLogic.classForMessage (
+						message);
 
 				htmlTableRowSeparatorWrite ();
 
 				htmlTableRowOpen (
-					htmlAttribute (
-						"style",
-						"font-weight: bold"));
+					htmlClassAttribute (
+						rowClass));
 
 				htmlTableCellWrite (
-					userConsoleLogic.dateStringLong (
-						message.getCreatedTime ()),
-					htmlColumnSpanAttribute (7l));
+					userConsoleLogic.timeString (
+						message.getCreatedTime ()));
+
+				htmlTableCellWrite (
+					message.getNumFrom ());
+
+				htmlTableCellWrite (
+					message.getNumTo ());
+
+				htmlTableCellWrite (
+					message.getRoute ().getCode ());
+
+				htmlTableCellWrite (
+					integerToDecimalString (
+						message.getId ()));
+
+				messageConsoleLogic.writeTdForMessageStatus (
+					formatWriter,
+					message.getStatus ());
+
+				List <MediaRec> medias =
+					message.getMedias ();
+
+				htmlTableCellOpen (
+					htmlRowSpanAttribute (2l));
+
+				for (
+					MediaRec media
+						: medias
+				) {
+
+					if (media.getThumb32Content () == null)
+						continue;
+
+					mediaConsoleLogic.writeMediaThumb32 (
+						taskLogger,
+						formatWriter,
+						media);
+
+				}
+
+				htmlTableCellClose ();
 
 				htmlTableRowClose ();
 
-				dayNumber =
-					newDayNumber;
+				htmlTableRowOpen (
+					htmlClassAttribute (
+						rowClass));
+
+				new HtmlTableCellWriter ()
+
+					.href (
+						consoleObjectManager.localLink (
+							taskLogger,
+							message))
+
+					.columnSpan (
+						6l)
+
+					.write (
+						formatWriter);
+
+				formatWriter.writeFormat (
+					"%h",
+					message.getText ().getText ());
+
+				htmlTableCellClose ();
+
+				htmlTableRowClose ();
 
 			}
 
-			String rowClass =
-				messageConsoleLogic.classForMessage (
-					message);
-
-			htmlTableRowSeparatorWrite ();
-
-			htmlTableRowOpen (
-				htmlClassAttribute (
-					rowClass));
-
-			htmlTableCellWrite (
-				userConsoleLogic.timeString (
-					message.getCreatedTime ()));
-
-			htmlTableCellWrite (
-				message.getNumFrom ());
-
-			htmlTableCellWrite (
-				message.getNumTo ());
-
-			htmlTableCellWrite (
-				message.getRoute ().getCode ());
-
-			htmlTableCellWrite (
-				integerToDecimalString (
-					message.getId ()));
-
-			messageConsoleLogic.writeTdForMessageStatus (
-				formatWriter,
-				message.getStatus ());
-
-			List <MediaRec> medias =
-				message.getMedias ();
-
-			htmlTableCellOpen (
-				htmlRowSpanAttribute (2l));
-
-			for (
-				MediaRec media
-					: medias
-			) {
-
-				if (media.getThumb32Content () == null)
-					continue;
-
-				mediaConsoleLogic.writeMediaThumb32 (
-					taskLogger,
-					formatWriter,
-					media);
-
-			}
-
-			htmlTableCellClose ();
-
-			htmlTableRowClose ();
-
-			htmlTableRowOpen (
-				htmlClassAttribute (
-					rowClass));
-
-			new HtmlTableCellWriter ()
-
-				.href (
-					consoleObjectManager.localLink (
-						taskLogger,
-						message))
-
-				.columnSpan (
-					6l)
-
-				.write (
-					formatWriter);
-
-			formatWriter.writeFormat (
-				"%h",
-				message.getText ().getText ());
-
-			htmlTableCellClose ();
-
-			htmlTableRowClose ();
+			htmlTableClose ();
 
 		}
-
-		htmlTableClose ();
 
 	}
 

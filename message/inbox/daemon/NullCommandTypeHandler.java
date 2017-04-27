@@ -80,19 +80,25 @@ class NullCommandTypeHandler
 	InboxAttemptRec handle (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		return smsInboxLogic.inboxNotProcessed (
-			taskLogger,
-			inbox,
-			optionalAbsent (),
-			optionalAbsent (),
-			optionalOf (
-				command),
-			"Null command handler");
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
+
+		) {
+
+			return smsInboxLogic.inboxNotProcessed (
+				taskLogger,
+				inbox,
+				optionalAbsent (),
+				optionalAbsent (),
+				optionalOf (
+					command),
+				"Null command handler");
+
+		}
 
 	}
 

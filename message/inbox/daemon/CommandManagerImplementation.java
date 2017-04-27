@@ -127,31 +127,37 @@ class CommandManagerImplementation
 			@NonNull String parentObjectTypeCode,
 			@NonNull String commandTypeCode) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"getHandler");
+		try (
 
-		String key =
-			parentObjectTypeCode + "." + commandTypeCode;
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"getHandler");
 
-		if (! commandTypeHandlerBeanNamesByCommandType.containsKey (key)) {
+		) {
 
-			throw new RuntimeException (
-				stringFormat (
-					"No command type handler for %s",
-					key));
+			String key =
+				parentObjectTypeCode + "." + commandTypeCode;
+
+			if (! commandTypeHandlerBeanNamesByCommandType.containsKey (key)) {
+
+				throw new RuntimeException (
+					stringFormat (
+						"No command type handler for %s",
+						key));
+
+			}
+
+			String beanName =
+				commandTypeHandlerBeanNamesByCommandType.get (key);
+
+			return genericCastUnchecked (
+				componentManager.getComponentRequired (
+					taskLogger,
+					beanName,
+					CommandHandler.class));
 
 		}
-
-		String beanName =
-			commandTypeHandlerBeanNamesByCommandType.get (key);
-
-		return genericCastUnchecked (
-			componentManager.getComponentRequired (
-				taskLogger,
-				beanName,
-				CommandHandler.class));
 
 	}
 
@@ -164,29 +170,35 @@ class CommandManagerImplementation
 			@NonNull Optional<Long> ref,
 			@NonNull String rest) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"handle");
+		try (
 
-		return getHandler (
-			taskLogger,
-			command.getCommandType ())
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"handle");
 
-			.inbox (
-				inbox)
+		) {
 
-			.command (
-				command)
+			return getHandler (
+				taskLogger,
+				command.getCommandType ())
 
-			.commandRef (
-				ref)
+				.inbox (
+					inbox)
 
-			.rest (
-				rest)
+				.command (
+					command)
 
-			.handle (
-				taskLogger);
+				.commandRef (
+					ref)
+
+				.rest (
+					rest)
+
+				.handle (
+					taskLogger);
+
+		}
 
 	}
 

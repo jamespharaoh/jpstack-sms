@@ -80,23 +80,29 @@ class SmsMessageLogicImplementation
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newStatus) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"messageStatus");
+		try (
 
-		message.setStatus (
-			newStatus);
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"messageStatus");
 
-		// TODO wtf?
-		// store delivery status for number
-		// following code shouldn't be here really
-		if (isChatMessage (message)) {
+		) {
 
-			numberLogic.updateDeliveryStatusForNumber (
-				taskLogger,
-				message.getNumTo (),
+			message.setStatus (
 				newStatus);
+
+			// TODO wtf?
+			// store delivery status for number
+			// following code shouldn't be here really
+			if (isChatMessage (message)) {
+
+				numberLogic.updateDeliveryStatusForNumber (
+					taskLogger,
+					message.getNumTo (),
+					newStatus);
+
+			}
 
 		}
 
@@ -108,55 +114,61 @@ class SmsMessageLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull MessageRec message) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"blackListMessage");
+		try (
 
-		// check message state
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"blackListMessage");
 
-		if (message.getStatus () == MessageStatus.pending) {
+		) {
 
-			// lookup outbox
+			// check message state
 
-			OutboxRec smsOutbox =
-				smsOutboxHelper.findRequired (
-					message.getId ());
+			if (message.getStatus () == MessageStatus.pending) {
 
-			// check message is not being sent
+				// lookup outbox
 
-			if (smsOutbox.getSending () != null) {
+				OutboxRec smsOutbox =
+					smsOutboxHelper.findRequired (
+						message.getId ());
+
+				// check message is not being sent
+
+				if (smsOutbox.getSending () != null) {
+
+					throw new RuntimeException (
+						"Message is being sent");
+
+				}
+
+				// blacklist message
+
+				messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.blacklisted);
+
+				// remove outbox
+
+				smsOutboxHelper.remove (
+					smsOutbox);
+
+			} else if (message.getStatus () == MessageStatus.held) {
+
+				// blacklist message
+
+				messageStatus (
+					taskLogger,
+					message,
+					MessageStatus.blacklisted);
+
+			} else {
 
 				throw new RuntimeException (
-					"Message is being sent");
+					"Message is not pending/held");
 
 			}
-
-			// blacklist message
-
-			messageStatus (
-				taskLogger,
-				message,
-				MessageStatus.blacklisted);
-
-			// remove outbox
-
-			smsOutboxHelper.remove (
-				smsOutbox);
-
-		} else if (message.getStatus () == MessageStatus.held) {
-
-			// blacklist message
-
-			messageStatus (
-				taskLogger,
-				message,
-				MessageStatus.blacklisted);
-
-		} else {
-
-			throw new RuntimeException (
-				"Message is not pending/held");
 
 		}
 

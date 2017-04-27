@@ -79,146 +79,153 @@ class SmsStatsConsoleLogicImplementation
 	Map <SmsStatsCriteria, Set <Long>> makeFilterMap (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"makeFilterMap");
+		try (
 
-		if (
-			privChecker.canRecursive (
-				taskLogger,
-				GlobalId.root,
-				"stats")
-		) {
-			return null;
-		}
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"makeFilterMap");
 
-		Set <Long> serviceIds =
-			new HashSet<> ();
-
-		serviceIds.add (
-			-1l);
-
-		for (
-			ServiceRec service
-				: serviceHelper.findAll ()
-		) {
-
-			try {
-
-				if (
-					! privChecker.canRecursive (
-						taskLogger,
-						objectManager.getParentRequired (
-							service),
-						"stats")
-				) {
-					continue;
-				}
-
-			} catch (Exception exception) {
-
-				taskLogger.errorFormatException (
-					exception,
-					"Error checking privs for service %s",
-					integerToDecimalString (
-						service.getId ()));
-
-				continue;
-
-			}
-
-			serviceIds.add (
-				service.getId ());
-
-		}
-
-		Set<Long> affiliateIds =
-			new HashSet<> ();
-
-		affiliateIds.add (
-			-1l);
-
-		for (
-			AffiliateRec affiliate
-				: affiliateHelper.findAll ()
-		) {
-
-			try {
-
-				if (
-					! privChecker.canRecursive (
-						taskLogger,
-						objectManager.getParentRequired (
-							affiliate),
-						"stats")
-				) {
-					continue;
-				}
-
-			} catch (Exception exception) {
-
-				taskLogger.errorFormatException (
-					exception,
-					"Error checking privs for affiliate %s",
-					integerToDecimalString (
-						affiliate.getId ()));
-
-				continue;
-
-			}
-
-			affiliateIds.add (
-				affiliate.getId ());
-
-		}
-
-		Set<Long> routeIds =
-			new HashSet<> ();
-
-		routeIds.add (
-			-1l);
-
-		for (
-			RouteRec route
-				: routeHelper.findAll ()
 		) {
 
 			if (
 				privChecker.canRecursive (
 					taskLogger,
-					route,
+					GlobalId.root,
 					"stats")
 			) {
+				return null;
+			}
 
-				routeIds.add (
-					route.getId ());
+			Set <Long> serviceIds =
+				new HashSet<> ();
+
+			serviceIds.add (
+				-1l);
+
+			for (
+				ServiceRec service
+					: serviceHelper.findAll ()
+			) {
+
+				try {
+
+					if (
+						! privChecker.canRecursive (
+							taskLogger,
+							objectManager.getParentRequired (
+								service),
+							"stats")
+					) {
+						continue;
+					}
+
+				} catch (Exception exception) {
+
+					taskLogger.errorFormatException (
+						exception,
+						"Error checking privs for service %s",
+						integerToDecimalString (
+							service.getId ()));
+
+					continue;
+
+				}
+
+				serviceIds.add (
+					service.getId ());
 
 			}
 
+			Set<Long> affiliateIds =
+				new HashSet<> ();
+
+			affiliateIds.add (
+				-1l);
+
+			for (
+				AffiliateRec affiliate
+					: affiliateHelper.findAll ()
+			) {
+
+				try {
+
+					if (
+						! privChecker.canRecursive (
+							taskLogger,
+							objectManager.getParentRequired (
+								affiliate),
+							"stats")
+					) {
+						continue;
+					}
+
+				} catch (Exception exception) {
+
+					taskLogger.errorFormatException (
+						exception,
+						"Error checking privs for affiliate %s",
+						integerToDecimalString (
+							affiliate.getId ()));
+
+					continue;
+
+				}
+
+				affiliateIds.add (
+					affiliate.getId ());
+
+			}
+
+			Set<Long> routeIds =
+				new HashSet<> ();
+
+			routeIds.add (
+				-1l);
+
+			for (
+				RouteRec route
+					: routeHelper.findAll ()
+			) {
+
+				if (
+					privChecker.canRecursive (
+						taskLogger,
+						route,
+						"stats")
+				) {
+
+					routeIds.add (
+						route.getId ());
+
+				}
+
+			}
+
+			return ImmutableMap.<SmsStatsCriteria,Set<Long>>builder ()
+
+				.put (
+					SmsStatsCriteria.service,
+					serviceIds)
+
+				.put (
+					SmsStatsCriteria.affiliate,
+					affiliateIds)
+
+				.put (
+					SmsStatsCriteria.route,
+					routeIds)
+
+				.build ();
+
 		}
-
-		return ImmutableMap.<SmsStatsCriteria,Set<Long>>builder ()
-
-			.put (
-				SmsStatsCriteria.service,
-				serviceIds)
-
-			.put (
-				SmsStatsCriteria.affiliate,
-				affiliateIds)
-
-			.put (
-				SmsStatsCriteria.route,
-				routeIds)
-
-			.build ();
 
 	}
 
 	@Override
 	public
 	String lookupGroupName (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull SmsStatsCriteria crit,
 			@NonNull Long id) {
 

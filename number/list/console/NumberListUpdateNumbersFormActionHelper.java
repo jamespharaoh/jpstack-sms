@@ -13,7 +13,7 @@ import wbs.console.formaction.ConsoleFormActionHelper;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.web.TextResponder;
@@ -43,7 +43,7 @@ class NumberListUpdateNumbersFormActionHelper
 	public
 	Optional <Responder> processFormSubmission (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Transaction transaction,
+			@NonNull OwnedTransaction transaction,
 			@NonNull Object formState) {
 
 		NumberListUpdateRec update =

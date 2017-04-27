@@ -17,8 +17,8 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -81,115 +81,121 @@ class SmsInboxMultipartLogicImplementation
 			String msgOtherId,
 			String msgText) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"insertInboxMultipart");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"insertInboxMultipart");
 
-		taskLogger.noticeFormat (
-			"MULTI: IN %s",
-			integerToDecimalString (
-				multipartSeg));
+		) {
 
-		try {
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			if (! route.getCanReceive ())
-				throw new RuntimeException ("Cannot receive on this route");
+			taskLogger.noticeFormat (
+				"MULTI: IN %s",
+				integerToDecimalString (
+					multipartSeg));
 
-			// lock route to ensure atomicity
+			try {
 
-			routeHelper.lock (
-				route);
+				if (! route.getCanReceive ())
+					throw new RuntimeException ("Cannot receive on this route");
 
-			// if a message part with this otherId has already been received,
-			// ignore it
+				// lock route to ensure atomicity
 
-			if (msgOtherId != null) {
+				routeHelper.lock (
+					route);
 
-				List <InboxMultipartBufferRec> list =
-					inboxMultipartBufferHelper.findByOtherId (
-						route,
-						msgOtherId);
+				// if a message part with this otherId has already been received,
+				// ignore it
 
-				if (! list.isEmpty ()) {
+				if (msgOtherId != null) {
 
-					taskLogger.errorFormat (
-						"ERROR: inboxMultipartBufferExists");
+					List <InboxMultipartBufferRec> list =
+						inboxMultipartBufferHelper.findByOtherId (
+							route,
+							msgOtherId);
 
-					return null;
+					if (! list.isEmpty ()) {
+
+						taskLogger.errorFormat (
+							"ERROR: inboxMultipartBufferExists");
+
+						return null;
+
+					}
 
 				}
 
+				// create new buffer entry
+
+				InboxMultipartBufferRec inboxMultipartBuffer =
+					inboxMultipartBufferHelper.insert (
+						taskLogger,
+						inboxMultipartBufferHelper.createInstance ()
+
+					.setRoute (
+						route)
+
+					.setTimestamp (
+						transaction.now ())
+
+					.setMultipartId (
+						multipartId)
+
+					.setMultipartSegMax (
+						multipartSegMax)
+
+					.setMultipartSeg (
+						multipartSeg)
+
+					.setMsgTo (
+						msgTo)
+
+					.setMsgFrom (
+						msgFrom)
+
+					.setMsgNetworkTime (
+						msgNetworkTime)
+
+					.setMsgNetwork (
+						msgNetwork)
+
+					.setMsgOtherId (
+						msgOtherId)
+
+					.setMsgText (
+						msgText)
+
+				);
+
+				taskLogger.noticeFormat (
+					"MULTI: insert %s",
+					integerToDecimalString (
+						multipartSeg));
+
+				boolean state =
+					insertInboxMultipartMessage (
+						taskLogger,
+						inboxMultipartBuffer);
+
+				taskLogger.noticeFormat (
+					"MULTI: message insert %s",
+					booleanToYesNo (
+						state));
+
+				return inboxMultipartBuffer;
+
+			} finally {
+
+				taskLogger.noticeFormat (
+					"MULTI: OUT %s",
+					integerToDecimalString (
+						multipartSeg));
+
 			}
-
-			// create new buffer entry
-
-			InboxMultipartBufferRec inboxMultipartBuffer =
-				inboxMultipartBufferHelper.insert (
-					taskLogger,
-					inboxMultipartBufferHelper.createInstance ()
-
-				.setRoute (
-					route)
-
-				.setTimestamp (
-					transaction.now ())
-
-				.setMultipartId (
-					multipartId)
-
-				.setMultipartSegMax (
-					multipartSegMax)
-
-				.setMultipartSeg (
-					multipartSeg)
-
-				.setMsgTo (
-					msgTo)
-
-				.setMsgFrom (
-					msgFrom)
-
-				.setMsgNetworkTime (
-					msgNetworkTime)
-
-				.setMsgNetwork (
-					msgNetwork)
-
-				.setMsgOtherId (
-					msgOtherId)
-
-				.setMsgText (
-					msgText)
-
-			);
-
-			taskLogger.noticeFormat (
-				"MULTI: insert %s",
-				integerToDecimalString (
-					multipartSeg));
-
-			boolean state =
-				insertInboxMultipartMessage (
-					taskLogger,
-					inboxMultipartBuffer);
-
-			taskLogger.noticeFormat (
-				"MULTI: message insert %s",
-				booleanToYesNo (
-					state));
-
-			return inboxMultipartBuffer;
-
-		} finally {
-
-			taskLogger.noticeFormat (
-				"MULTI: OUT %s",
-				integerToDecimalString (
-					multipartSeg));
 
 		}
 
@@ -201,139 +207,145 @@ class SmsInboxMultipartLogicImplementation
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull InboxMultipartBufferRec inboxMultipartBuffer) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"insertInboxMultipartMessage");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"insertInboxMultipartMessage");
 
-		// define "recent" as 1 hour ago
-
-		Instant recentTime =
-			Instant.now ()
-
-			.minus (
-				Duration.standardHours (1));
-
-		// check if there is a recent log entry, if so just ignore
-
-		List<InboxMultipartLogRec> logList =
-			inboxMultipartLogHelper.findRecent (
-				inboxMultipartBuffer,
-				recentTime);
-
-		if (! logList.isEmpty ()) {
-
-			taskLogger.noticeFormat (
-				"ERROR: inboxMultipartLogExistsRecent");
-
-			return false;
-
-		}
-
-		// check for all recent buffer entries
-
-		List<InboxMultipartBufferRec> recentInboxMultipartBuffers =
-			inboxMultipartBufferHelper.findRecent (
-				inboxMultipartBuffer,
-				recentTime);
-
-		// concatenate all the bits, if there are any missing just return
-
-		InboxMultipartBufferRec[] bits =
-			new InboxMultipartBufferRec [
-				toJavaIntegerRequired (
-					inboxMultipartBuffer.getMultipartSegMax ())];
-
-		for (
-			InboxMultipartBufferRec recentInboxMultipartBuffer
-				: recentInboxMultipartBuffers
 		) {
 
-			taskLogger.noticeFormat (
-				"MULTI: found %s",
-				integerToDecimalString (
-					recentInboxMultipartBuffer.getMultipartSeg ()));
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-			int bitIndex =
-				toJavaIntegerRequired (
-					recentInboxMultipartBuffer.getMultipartSeg () - 1);
+			// define "recent" as 1 hour ago
 
-			bits [bitIndex] =
-				recentInboxMultipartBuffer;
+			Instant recentTime =
+				Instant.now ()
 
-		}
+				.minus (
+					Duration.standardHours (1));
 
-		StringBuilder stringBuilder =
-			new StringBuilder ();
+			// check if there is a recent log entry, if so just ignore
 
-		for (
-			int index = 0;
-			index < bits.length;
-			index ++
-		) {
+			List<InboxMultipartLogRec> logList =
+				inboxMultipartLogHelper.findRecent (
+					inboxMultipartBuffer,
+					recentTime);
 
-			if (bits [index] == null) {
+			if (! logList.isEmpty ()) {
 
-				taskLogger.errorFormat (
-					"ERROR: InboxMultipartBufferRec %s",
-					integerToDecimalString (
-						index + 1));
+				taskLogger.noticeFormat (
+					"ERROR: inboxMultipartLogExistsRecent");
 
 				return false;
 
 			}
 
-			stringBuilder.append (bits[index].getMsgText());
+			// check for all recent buffer entries
+
+			List<InboxMultipartBufferRec> recentInboxMultipartBuffers =
+				inboxMultipartBufferHelper.findRecent (
+					inboxMultipartBuffer,
+					recentTime);
+
+			// concatenate all the bits, if there are any missing just return
+
+			InboxMultipartBufferRec[] bits =
+				new InboxMultipartBufferRec [
+					toJavaIntegerRequired (
+						inboxMultipartBuffer.getMultipartSegMax ())];
+
+			for (
+				InboxMultipartBufferRec recentInboxMultipartBuffer
+					: recentInboxMultipartBuffers
+			) {
+
+				taskLogger.noticeFormat (
+					"MULTI: found %s",
+					integerToDecimalString (
+						recentInboxMultipartBuffer.getMultipartSeg ()));
+
+				int bitIndex =
+					toJavaIntegerRequired (
+						recentInboxMultipartBuffer.getMultipartSeg () - 1);
+
+				bits [bitIndex] =
+					recentInboxMultipartBuffer;
+
+			}
+
+			StringBuilder stringBuilder =
+				new StringBuilder ();
+
+			for (
+				int index = 0;
+				index < bits.length;
+				index ++
+			) {
+
+				if (bits [index] == null) {
+
+					taskLogger.errorFormat (
+						"ERROR: InboxMultipartBufferRec %s",
+						integerToDecimalString (
+							index + 1));
+
+					return false;
+
+				}
+
+				stringBuilder.append (bits[index].getMsgText());
+
+			}
+
+			// now create the message
+
+			smsInboxLogic.inboxInsert (
+				taskLogger,
+				optionalOf (
+					bits [0].getMsgOtherId ()),
+				textHelper.findOrCreate (
+					taskLogger,
+					stringBuilder.toString ()),
+				numberHelper.findOrCreate (
+					taskLogger,
+					inboxMultipartBuffer.getMsgFrom ()),
+				inboxMultipartBuffer.getMsgTo (),
+				inboxMultipartBuffer.getRoute (),
+				optionalAbsent (),
+				optionalAbsent (),
+				emptyList (),
+				optionalAbsent (),
+				optionalAbsent ());
+
+			// and create log entry
+
+			inboxMultipartLogHelper.insert (
+				taskLogger,
+				inboxMultipartLogHelper.createInstance ()
+
+				.setRoute (
+					inboxMultipartBuffer.getRoute ())
+
+				.setTimestamp (
+					transaction.now ())
+
+				.setMsgFrom (
+					inboxMultipartBuffer.getMsgFrom ())
+
+				.setMultipartId (
+					inboxMultipartBuffer.getMultipartId ())
+
+				.setMultipartSegMax (
+					inboxMultipartBuffer.getMultipartSegMax ())
+
+			);
+
+			return true;
 
 		}
-
-		// now create the message
-
-		smsInboxLogic.inboxInsert (
-			taskLogger,
-			optionalOf (
-				bits [0].getMsgOtherId ()),
-			textHelper.findOrCreate (
-				taskLogger,
-				stringBuilder.toString ()),
-			numberHelper.findOrCreate (
-				taskLogger,
-				inboxMultipartBuffer.getMsgFrom ()),
-			inboxMultipartBuffer.getMsgTo (),
-			inboxMultipartBuffer.getRoute (),
-			optionalAbsent (),
-			optionalAbsent (),
-			emptyList (),
-			optionalAbsent (),
-			optionalAbsent ());
-
-		// and create log entry
-
-		inboxMultipartLogHelper.insert (
-			taskLogger,
-			inboxMultipartLogHelper.createInstance ()
-
-			.setRoute (
-				inboxMultipartBuffer.getRoute ())
-
-			.setTimestamp (
-				transaction.now ())
-
-			.setMsgFrom (
-				inboxMultipartBuffer.getMsgFrom ())
-
-			.setMultipartId (
-				inboxMultipartBuffer.getMultipartId ())
-
-			.setMultipartSegMax (
-				inboxMultipartBuffer.getMultipartSegMax ())
-
-		);
-
-		return true;
 
 	}
 

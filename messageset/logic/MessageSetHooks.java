@@ -13,7 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -57,14 +57,14 @@ class MessageSetHooks
 	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"setup");
-
 		try (
 
-			Transaction transaction =
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+			OwnedTransaction transaction =
 				database.beginReadOnly (
 					taskLogger,
 					"privHooks.init ()",
@@ -108,42 +108,48 @@ class MessageSetHooks
 			return;
 		}
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"createSingletons");
+		try (
 
-		ObjectTypeRec parentType =
-			objectTypeDao.findById (
-				parentHelper.objectTypeId ());
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"createSingletons");
 
-		for (
-			Long messageSetTypeId
-				: messageSetTypeIdsByParentTypeId.get (
-					parentHelper.objectTypeId ())
 		) {
 
-			MessageSetTypeRec messageSetType =
-				messageSetTypeDao.findRequired (
-					messageSetTypeId);
+			ObjectTypeRec parentType =
+				objectTypeDao.findById (
+					parentHelper.objectTypeId ());
 
-			messageSetHelper.insert (
-				taskLogger,
-				messageSetHelper.createInstance ()
+			for (
+				Long messageSetTypeId
+					: messageSetTypeIdsByParentTypeId.get (
+						parentHelper.objectTypeId ())
+			) {
 
-				.setMessageSetType (
-					messageSetType)
+				MessageSetTypeRec messageSetType =
+					messageSetTypeDao.findRequired (
+						messageSetTypeId);
 
-				.setCode (
-					messageSetType.getCode ())
+				messageSetHelper.insert (
+					taskLogger,
+					messageSetHelper.createInstance ()
 
-				.setParentType (
-					parentType)
+					.setMessageSetType (
+						messageSetType)
 
-				.setParentId (
-					parent.getId ())
+					.setCode (
+						messageSetType.getCode ())
 
-			);
+					.setParentType (
+						parentType)
+
+					.setParentId (
+						parent.getId ())
+
+				);
+
+			}
 
 		}
 

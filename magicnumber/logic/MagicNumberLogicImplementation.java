@@ -2,6 +2,7 @@ package wbs.sms.magicnumber.logic;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 
 import java.util.Collection;
 
@@ -15,8 +16,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
-import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -76,65 +77,104 @@ class MagicNumberLogicImplementation
 			@NonNull CommandRec command,
 			long ref) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"allocateMagicNumber");
+		try (
 
-		Transaction transaction =
-			database.currentTransaction ();
-
-		// create a lock over the magic number set and number
-
-		coreLogic.magicLock (
-			magicNumberSet,
-			number);
-
-		// lookup an existing use
-
-		MagicNumberUseRec magicNumberUse =
-			magicNumberUseHelper.findExistingByRef (
-				magicNumberSet,
-				number,
-				command,
-				ref);
-
-		if (
-
-			magicNumberUse != null
-
-			&& ! magicNumberUse.getMagicNumber ().getDeleted ()
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"allocateMagicNumber");
 
 		) {
 
-			magicNumberUse
+			BorrowedTransaction transaction =
+				database.currentTransaction ();
 
-				.setLastUseTimestamp (
-					transaction.now ());
+			// create a lock over the magic number set and number
 
-			return magicNumberUse.getMagicNumber ();
-
-		}
-
-		// lookup an unused magic number
-
-		MagicNumberRec magicNumber =
-			magicNumberHelper.findExistingUnused (
+			coreLogic.magicLock (
 				magicNumberSet,
 				number);
 
-		if (magicNumber != null) {
+			// lookup an existing use
+
+			MagicNumberUseRec magicNumberUse =
+				magicNumberUseHelper.findExistingByRef (
+					magicNumberSet,
+					number,
+					command,
+					ref);
+
+			if (
+
+				magicNumberUse != null
+
+				&& ! magicNumberUse.getMagicNumber ().getDeleted ()
+
+			) {
+
+				magicNumberUse
+
+					.setLastUseTimestamp (
+						transaction.now ());
+
+				return magicNumberUse.getMagicNumber ();
+
+			}
+
+			// lookup an unused magic number
+
+			MagicNumberRec magicNumber =
+				magicNumberHelper.findExistingUnused (
+					magicNumberSet,
+					number);
+
+			if (magicNumber != null) {
+
+				magicNumberUse =
+					magicNumberUseHelper.insert (
+						taskLogger,
+						magicNumberUseHelper.createInstance ()
+
+					.setNumber (
+						number)
+
+					.setMagicNumber (
+						magicNumber)
+
+					.setCommand (
+						command)
+
+					.setRefId (
+						ref)
+
+					.setLastUseTimestamp (
+						transaction.now ())
+
+				);
+
+				return magicNumber;
+
+			}
+
+			// ok, reallocate the least-recently-used one
 
 			magicNumberUse =
-				magicNumberUseHelper.insert (
-					taskLogger,
-					magicNumberUseHelper.createInstance ()
+				magicNumberUseHelper.findExistingLeastRecentlyUsed (
+					magicNumberSet,
+					number);
 
-				.setNumber (
-					number)
+			if (magicNumberUse == null) {
 
-				.setMagicNumber (
-					magicNumber)
+				taskLogger.fatalFormat (
+					"No magic numbers found for %s",
+					integerToDecimalString (
+						magicNumberSet.getId ()));
+
+				return null;
+
+			}
+
+			magicNumberUse
 
 				.setCommand (
 					command)
@@ -143,44 +183,11 @@ class MagicNumberLogicImplementation
 					ref)
 
 				.setLastUseTimestamp (
-					transaction.now ())
+					transaction.now ());
 
-			);
-
-			return magicNumber;
+			return magicNumberUse.getMagicNumber ();
 
 		}
-
-		// ok, reallocate the least-recently-used one
-
-		magicNumberUse =
-			magicNumberUseHelper.findExistingLeastRecentlyUsed (
-				magicNumberSet,
-				number);
-
-		if (magicNumberUse == null) {
-
-			taskLogger.fatalFormat (
-				"No magic numbers found for %s",
-				integerToDecimalString (
-					magicNumberSet.getId ()));
-
-			return null;
-
-		}
-
-		magicNumberUse
-
-			.setCommand (
-				command)
-
-			.setRefId (
-				ref)
-
-			.setLastUseTimestamp (
-				transaction.now ());
-
-		return magicNumberUse.getMagicNumber ();
 
 	}
 
@@ -200,30 +207,122 @@ class MagicNumberLogicImplementation
 			@NonNull AffiliateRec affiliate,
 			@NonNull Optional <UserRec> user) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sendMessage");
+		try (
 
-		// allocate a magic number
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendMessage");
 
-		MagicNumberRec magicNumber =
-			allocateMagicNumber (
-				taskLogger,
-				magicNumberSet,
-				number,
-				magicCommand,
-				magicRef);
-
-		// and send parts
-
-		for (
-			TextRec part
-				: parts
 		) {
 
-			MessageRec message =
-				messageSender.get ()
+			// allocate a magic number
+
+			MagicNumberRec magicNumber =
+				allocateMagicNumber (
+					taskLogger,
+					magicNumberSet,
+					number,
+					magicCommand,
+					magicRef);
+
+			// and send parts
+
+			for (
+				TextRec part
+					: parts
+			) {
+
+				MessageRec message =
+					messageSender.get ()
+
+					.threadId (
+						threadId.orNull ())
+
+					.number (
+						number)
+
+					.messageText (
+						part)
+
+					.numFrom (
+						magicNumber.getNumber ())
+
+					.routerResolve (
+						router)
+
+					.service (
+						service)
+
+					.batch (
+						batch.orNull ())
+
+					.affiliate (
+						affiliate)
+
+					.user (
+						user.orNull ())
+
+					.send (
+						taskLogger);
+
+				if (
+					optionalIsNotPresent (
+						threadId)
+				) {
+
+					threadId =
+						optionalOf (
+							message.getId ());
+
+				}
+
+			}
+
+			return threadId.get ();
+
+		}
+
+	}
+
+	@Override
+	public
+	MessageRec sendMessage (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull MagicNumberSetRec magicNumberSet,
+			@NonNull NumberRec number,
+			@NonNull CommandRec magicCommand,
+			long magicRef,
+			@NonNull Optional <Long> threadId,
+			@NonNull TextRec messageText,
+			@NonNull RouterRec router,
+			@NonNull ServiceRec service,
+			@NonNull Optional <BatchRec> batch,
+			@NonNull AffiliateRec affiliate,
+			@NonNull Optional <UserRec> user) {
+
+		try (
+
+			TaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendMessage");
+
+		) {
+
+			// allocate a magic number
+
+			MagicNumberRec magicNumber =
+				allocateMagicNumber (
+					taskLogger,
+					magicNumberSet,
+					number,
+					magicCommand,
+					magicRef);
+
+			// and send message
+
+			return messageSender.get ()
 
 				.threadId (
 					threadId.orNull ())
@@ -232,7 +331,7 @@ class MagicNumberLogicImplementation
 					number)
 
 				.messageText (
-					part)
+					messageText)
 
 				.numFrom (
 					magicNumber.getNumber ())
@@ -249,90 +348,10 @@ class MagicNumberLogicImplementation
 				.affiliate (
 					affiliate)
 
-				.user (
-					user.orNull ())
-
 				.send (
 					taskLogger);
 
-			if (
-				optionalIsNotPresent (
-					threadId)
-			) {
-
-				threadId =
-					Optional.of (
-						message.getId ());
-
-			}
-
 		}
-
-		return threadId.get ();
-
-	}
-
-	@Override
-	public
-	MessageRec sendMessage (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull MagicNumberSetRec magicNumberSet,
-			@NonNull NumberRec number,
-			@NonNull CommandRec magicCommand,
-			long magicRef,
-			@NonNull Optional<Long> threadId,
-			@NonNull TextRec messageText,
-			@NonNull RouterRec router,
-			@NonNull ServiceRec service,
-			@NonNull Optional<BatchRec> batch,
-			@NonNull AffiliateRec affiliate,
-			@NonNull Optional<UserRec> user) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"sendMessage");
-
-		// allocate a magic number
-
-		MagicNumberRec magicNumber =
-			allocateMagicNumber (
-				taskLogger,
-				magicNumberSet,
-				number,
-				magicCommand,
-				magicRef);
-
-		// and send message
-
-		return messageSender.get ()
-
-			.threadId (
-				threadId.orNull ())
-
-			.number (
-				number)
-
-			.messageText (
-				messageText)
-
-			.numFrom (
-				magicNumber.getNumber ())
-
-			.routerResolve (
-				router)
-
-			.service (
-				service)
-
-			.batch (
-				batch.orNull ())
-
-			.affiliate (
-				affiliate)
-
-			.send (
-				taskLogger);
 
 	}
 
