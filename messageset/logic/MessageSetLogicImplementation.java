@@ -8,8 +8,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -44,7 +45,7 @@ class MessageSetLogicImplementation
 	@Override
 	public
 	Long sendMessageSet (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageSetRec messageSet,
 			Long threadId,
 			@NonNull NumberRec number,
@@ -53,9 +54,9 @@ class MessageSetLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sendMessageSet");
 
 		) {
@@ -75,7 +76,7 @@ class MessageSetLogicImplementation
 						number)
 
 					.messageString (
-						taskLogger,
+						transaction,
 						messageSetMessage.getMessage ())
 
 					.numFrom (
@@ -91,7 +92,7 @@ class MessageSetLogicImplementation
 						affiliate)
 
 					.send (
-						taskLogger);
+						transaction);
 
 				if (threadId == null) {
 

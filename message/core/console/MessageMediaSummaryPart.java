@@ -21,8 +21,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
@@ -60,19 +61,20 @@ class MessageMediaSummaryPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
 
 			MessageRec message =
-				messageHelper.findFromContextRequired ();
+				messageHelper.findFromContextRequired (
+					transaction);
 
 			mediaIndex =
 				Integer.parseInt (
@@ -85,7 +87,7 @@ class MessageMediaSummaryPart
 
 			imageOptional =
 				mediaLogic.getImage (
-					taskLogger,
+					transaction,
 					media);
 
 		}
@@ -95,13 +97,13 @@ class MessageMediaSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -147,7 +149,7 @@ class MessageMediaSummaryPart
 			htmlTableDetailsRowWriteHtml (
 				"Content",
 				() -> mediaConsoleLogic.writeMediaContentScaled (
-					taskLogger,
+					transaction,
 					media,
 					600,
 					600));

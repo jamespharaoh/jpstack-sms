@@ -12,7 +12,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.console.helper.core.ConsoleHooks;
 import wbs.console.priv.UserPrivChecker;
@@ -20,9 +19,10 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -39,7 +39,6 @@ import wbs.sms.route.core.model.RouteRec;
 import fj.data.Either;
 
 @SingletonComponent ("messageConsoleHooks")
-@Log4j
 public
 class MessageConsoleHooks
 	implements ConsoleHooks <MessageRec> {
@@ -69,29 +68,41 @@ class MessageConsoleHooks
 	@Override
 	public
 	Optional <String> getListClass (
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
-		if (
-			enumEqualSafe (
-				message.getDirection (),
-				MessageDirection.in)
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"getListClass");
+
 		) {
 
-			return Optional.of (
-				"message-in");
+			if (
+				enumEqualSafe (
+					message.getDirection (),
+					MessageDirection.in)
+			) {
 
-		} else if (
-			moreThanZero (
-				message.getCharge ())
-		) {
+				return Optional.of (
+					"message-in");
 
-			return Optional.of (
-				"message-out-charge");
+			} else if (
+				moreThanZero (
+					message.getCharge ())
+			) {
 
-		} else {
+				return Optional.of (
+					"message-out-charge");
 
-			return Optional.of (
-				"message-out");
+			} else {
+
+				return Optional.of (
+					"message-out");
+
+			}
 
 		}
 
@@ -100,14 +111,14 @@ class MessageConsoleHooks
 	@Override
 	public
 	void applySearchFilter (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Object searchObject) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"applySearchFilter");
 
 		) {
@@ -128,11 +139,13 @@ class MessageConsoleHooks
 
 			for (
 				ServiceRec service
-					: serviceHelper.findAll ()
+					: serviceHelper.findAll (
+						transaction)
 			) {
 
 				Either <Optional <Record <?>>, String> serviceParentOrError =
 					objectManager.getParentOrError (
+						transaction,
 						service);
 
 				if (
@@ -140,7 +153,8 @@ class MessageConsoleHooks
 						serviceParentOrError)
 				) {
 
-					log.warn (
+					transaction.warningFormat (
+						"%s",
 						getError (
 							serviceParentOrError));
 
@@ -155,7 +169,7 @@ class MessageConsoleHooks
 
 				if (
 				 	! privChecker.canRecursive (
-				 		taskLogger,
+				 		transaction,
 				 		serviceParent,
 				 		"messages")
 				 ) {
@@ -179,11 +193,13 @@ class MessageConsoleHooks
 
 			for (
 				AffiliateRec affiliate
-					: affiliateHelper.findAll ()
+					: affiliateHelper.findAll (
+						transaction)
 			) {
 
 				Either <Optional <Record <?>>, String> affiliateParentOrError =
 					objectManager.getParentOrError (
+						transaction,
 						affiliate);
 
 				if (
@@ -191,7 +207,8 @@ class MessageConsoleHooks
 						affiliateParentOrError)
 				) {
 
-					log.warn (
+					transaction.warningFormat (
+						"%s",
 						getError (
 							affiliateParentOrError));
 
@@ -206,7 +223,7 @@ class MessageConsoleHooks
 
 				if (
 					! privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						affiliateParent,
 						"messages")
 				) {
@@ -225,17 +242,18 @@ class MessageConsoleHooks
 
 			// routes
 
-			ImmutableList.Builder<Long> routesBuilder =
+			ImmutableList.Builder <Long> routesBuilder =
 				ImmutableList.builder ();
 
 			for (
 				RouteRec route
-					: routeHelper.findAll ()
+					: routeHelper.findAll (
+						transaction)
 			) {
 
 				if (
 					! privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						route,
 						"messages")
 				) {

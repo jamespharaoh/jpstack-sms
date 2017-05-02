@@ -14,9 +14,10 @@ import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkRec;
@@ -44,14 +45,14 @@ class NumberObjectHelperMethodsImplementation
 	@Override
 	public
 	NumberRec findOrCreate (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull String numberString) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"findOrCreate");
 
 		) {
@@ -60,6 +61,7 @@ class NumberObjectHelperMethodsImplementation
 
 			Optional <NumberRec> numberRecordOptional =
 				numberHelper.findByCode (
+					transaction,
 					GlobalId.root,
 					numberString);
 
@@ -74,10 +76,11 @@ class NumberObjectHelperMethodsImplementation
 
 			NetworkRec defaultNetwork =
 				networkHelper.findRequired (
+					transaction,
 					0l);
 
 			return numberHelper.insert (
-				taskLogger,
+				transaction,
 				numberHelper.createInstance ()
 
 				.setNumber (
@@ -95,20 +98,21 @@ class NumberObjectHelperMethodsImplementation
 	@Override
 	public
 	List <NumberRec> findOrCreateMany (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull List <String> numberStrings) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"findOrCreateMany");
 
 		) {
 
 			List <Optional <NumberRec>> numbersOptional =
 				numberHelper.findManyByCode (
+					transaction,
 					GlobalId.root,
 					numberStrings);
 
@@ -117,6 +121,7 @@ class NumberObjectHelperMethodsImplementation
 
 			NetworkRec defaultNetwork =
 				networkHelper.findRequired (
+					transaction,
 					0l);
 
 			for (
@@ -143,7 +148,7 @@ class NumberObjectHelperMethodsImplementation
 
 					numbersBuilder.add (
 						numberHelper.insert (
-							taskLogger,
+							transaction,
 							numberHelper.createInstance ()
 
 						.setNumber (

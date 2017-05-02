@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 
 import org.joda.time.Instant;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsTrackerRec;
@@ -15,7 +15,7 @@ interface SmsTrackerHandler {
 	String getTypeCode ();
 
 	boolean canSend (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsTrackerRec tracker,
 			NumberRec number,
 			Optional <Instant> timestamp);

@@ -15,9 +15,12 @@ import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
@@ -28,6 +31,9 @@ class RouteTestOutPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -41,91 +47,114 @@ class RouteTestOutPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		route =
-			routeHelper.findFromContextRequired ();
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			route =
+				routeHelper.findFromContextRequired (
+					transaction);
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		htmlParagraphWriteFormat (
-			"This facility can be used to insert an outbound message into the ",
-			"system, which will then be sent out to the aggregator as normal");
+		try (
 
-		htmlParagraphWrite (
-			stringFormat (
-				"Please note, that this is intended primarily for testing, ",
-				"and any other usage should instead be performed using a ",
-				"separate facility designed for that specific purpose."),
-			htmlClassAttribute (
-				"warning"));
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		if (! route.getCanSend ()) {
+		) {
+
+			htmlParagraphWriteFormat (
+				"This facility can be used to insert an outbound message into the ",
+				"system, which will then be sent out to the aggregator as normal");
 
 			htmlParagraphWrite (
 				stringFormat (
-					"This route is not configured for outbound messages, and ",
-					"so this facility is not available."),
+					"Please note, that this is intended primarily for testing, ",
+					"and any other usage should instead be performed using a ",
+					"separate facility designed for that specific purpose."),
 				htmlClassAttribute (
-					"error"));
+					"warning"));
 
-			return;
+			if (! route.getCanSend ()) {
+
+				htmlParagraphWrite (
+					stringFormat (
+						"This route is not configured for outbound messages, and ",
+						"so this facility is not available."),
+					htmlClassAttribute (
+						"error"));
+
+				return;
+
+			}
+
+			htmlFormOpenPostAction (
+				requestContext.resolveLocalUrl (
+					"/route.test.out"));
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWriteHtml (
+				"Num free",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"num_from\"",
+					" size=\"32\"",
+					">"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Num to",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"num_to\"",
+					" size=\"32\"",
+					">"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Message",
+				stringFormat (
+					"<textarea",
+					" rows=\"8\"",
+					" cols=\"32\"",
+					" name=\"message\"",
+					"></textarea>"));
+
+			htmlTableRowClose ();
+
+			htmlTableClose ();
+
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"insert message\"",
+				">");
+
+			htmlParagraphOpen ();
+
+			htmlTableClose ();
 
 		}
-
-		htmlFormOpenPostAction (
-			requestContext.resolveLocalUrl (
-				"/route.test.out"));
-
-		htmlTableOpenDetails ();
-
-		htmlTableDetailsRowWriteHtml (
-			"Num free",
-			stringFormat (
-				"<input",
-				" type=\"text\"",
-				" name=\"num_from\"",
-				" size=\"32\"",
-				">"));
-
-		htmlTableDetailsRowWriteHtml (
-			"Num to",
-			stringFormat (
-				"<input",
-				" type=\"text\"",
-				" name=\"num_to\"",
-				" size=\"32\"",
-				">"));
-
-		htmlTableDetailsRowWriteHtml (
-			"Message",
-			stringFormat (
-				"<textarea",
-				" rows=\"8\"",
-				" cols=\"32\"",
-				" name=\"message\"",
-				"></textarea>"));
-
-		htmlTableRowClose ();
-
-		htmlTableClose ();
-
-		htmlParagraphOpen ();
-
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"insert message\"",
-			">");
-
-		htmlParagraphOpen ();
-
-		htmlTableClose ();
 
 	}
 

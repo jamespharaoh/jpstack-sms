@@ -6,7 +6,7 @@ import com.google.common.base.Optional;
 
 import org.joda.time.Instant;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.media.model.MediaRec;
@@ -25,7 +25,7 @@ public
 interface SmsInboxLogic {
 
 	MessageRec inboxInsert (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			Optional <String> otherId,
 			TextRec text,
 			NumberRec numFrom,
@@ -38,14 +38,14 @@ interface SmsInboxLogic {
 			Optional <String> subject);
 
 	InboxAttemptRec inboxProcessed (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			InboxRec inbox,
 			Optional <ServiceRec> service,
 			Optional <AffiliateRec> affiliate,
 			CommandRec command);
 
 	InboxAttemptRec inboxNotProcessed (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			InboxRec inbox,
 			Optional <ServiceRec> service,
 			Optional <AffiliateRec> affiliate,
@@ -53,7 +53,7 @@ interface SmsInboxLogic {
 			String statusMessage);
 
 	InboxAttemptRec inboxProcessingFailed (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			InboxRec inbox,
 			String statusMessage);
 

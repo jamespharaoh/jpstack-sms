@@ -17,9 +17,9 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -63,61 +63,84 @@ class MessageManuallyUndeliverFormActionHelper
 	@Override
 	public
 	Permissions canBePerformed (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		boolean show = (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"canBePerformed");
 
-			enumEqualSafe (
-				smsMessage.getDirection (),
-				MessageDirection.out)
+		) {
 
-			&& enumInSafe (
-				smsMessage.getStatus (),
-				MessageStatus.sent,
-				MessageStatus.submitted,
-				MessageStatus.delivered,
-				MessageStatus.manuallyDelivered)
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
-		);
+			boolean show = (
 
-		return new Permissions ()
-			.canView (show)
-			.canPerform (show);
+				enumEqualSafe (
+					smsMessage.getDirection (),
+					MessageDirection.out)
+
+				&& enumInSafe (
+					smsMessage.getStatus (),
+					MessageStatus.sent,
+					MessageStatus.submitted,
+					MessageStatus.delivered,
+					MessageStatus.manuallyDelivered)
+
+			);
+
+			return new Permissions ()
+				.canView (show)
+				.canPerform (show);
+
+		}
 
 	}
 
 	@Override
 	public
 	void writePreamble (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull Boolean submit) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		htmlParagraphWriteFormat (
-			"This outbound message is in the \"%h\" ",
-			smsMessage.getStatus ().getDescription (),
-			"state, and can be manually undelivered.");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writePreamble");
+
+		) {
+
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
+
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
+				smsMessage.getStatus ().getDescription (),
+				"state, and can be manually undelivered.");
+
+		}
 
 	}
 
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction,
+			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"processFormSubmission");
 
 		) {
@@ -125,7 +148,8 @@ class MessageManuallyUndeliverFormActionHelper
 			// load data
 
 			MessageRec smsMessage =
-				smsMessageHelper.findFromContextRequired ();
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
 			if (
 				enumNotEqualSafe (
@@ -151,14 +175,15 @@ class MessageManuallyUndeliverFormActionHelper
 			}
 
 			smsMessageLogic.messageStatus (
-				taskLogger,
+				transaction,
 				smsMessage,
 				MessageStatus.manuallyUndelivered);
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"message_manually_undelivered",
-				userConsoleLogic.userRequired (),
+				userConsoleLogic.userRequired (
+					transaction),
 				smsMessage);
 
 			transaction.commit ();

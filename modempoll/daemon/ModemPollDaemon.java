@@ -27,6 +27,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -258,7 +259,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.createTaskLogger (
 						"RetrieveThread.openModem ()");
 
@@ -328,7 +329,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"doPoll");
@@ -411,7 +412,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"sendCommand");
@@ -486,7 +487,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"sendCommandOk");
@@ -529,7 +530,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"sendCommandsOk");
@@ -561,21 +562,16 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
-					logContext.nestTaskLogger (
-						parentTaskLogger,
-						"storePdu");
-
 				OwnedTransaction transaction =
 					database.beginReadWrite (
-						taskLogger,
-						"ModemPollDaemon.RetrieveThread.storePdu (pdu)",
-						this);
+						logContext,
+						parentTaskLogger,
+						"storePdu");
 
 			) {
 
 				modemPollQueueHelper.insert (
-					taskLogger,
+					transaction,
 					modemPollQueueHelper.createInstance ()
 
 					.setPdu (
@@ -602,7 +598,7 @@ class ModemPollDaemon
 
 					try (
 
-						TaskLogger taskLogger =
+						OwnedTaskLogger taskLogger =
 							logContext.createTaskLogger (
 								"ProcessThread.run");
 
@@ -634,39 +630,66 @@ class ModemPollDaemon
 				@NonNull TaskLogger parentTaskLogger)
 			throws InterruptedException {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"processAll");
+			try (
 
-			while (true) {
+				OwnedTaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"processAll");
 
-				flagWaiter.clear();
+			) {
 
-				try (
+				while (true) {
 
-					OwnedTransaction transaction =
-						database.beginReadWrite (
-							taskLogger,
-							"ModemPollDaemon.ProcessThread.processAll ()",
-							this);
+					flagWaiter.clear ();
 
-				) {
+					if (
+						! processOne (
+							taskLogger)
+					) {
+						return;
+					}
+
+				}
+
+			}
+
+		}
+
+		private
+		boolean processOne (
+				@NonNull TaskLogger parentTaskLogger)
+			throws InterruptedException {
+
+			try (
+
+				OwnedTransaction transaction =
+					database.beginReadWrite (
+						logContext,
+						parentTaskLogger,
+						"processOne");
+
+			) {
+
+				try {
 
 					ModemPollQueueRec modemPollQueue =
 						modemPollQueueHelper.findNext (
+							transaction,
 							transaction.now ());
 
-					if (modemPollQueue == null)
-						return;
+					if (modemPollQueue == null) {
+						return false;
+					}
 
 					try {
 
-						processOne (
-							taskLogger,
+						processOneReal (
+							transaction,
 							modemPollQueue);
 
 						modemPollQueueHelper.remove (
+							transaction,
 							modemPollQueue);
 
 					} catch (Exception e) {
@@ -686,35 +709,37 @@ class ModemPollDaemon
 
 					}
 
-					transaction.commit();
+					transaction.commit ();
 
-				} catch (Exception e) {
+				} catch (Exception exception) {
 
-					taskLogger.errorFormat (
+					transaction.errorFormat (
 						"Unhandled exception: %s",
-						e.getMessage ());
+						exception.getMessage ());
 
-					taskLogger.errorFormat (
+					transaction.errorFormat (
 						"Sleeping for a bit...");
 
 					Thread.sleep (5000);
 
 				}
 
+				return true;
+
 			}
 
 		}
 
-		void processOne (
+		void processOneReal (
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull ModemPollQueueRec mpq) {
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
-						"processOne");
+						"processOneReal");
 
 			) {
 
@@ -747,36 +772,32 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
-					logContext.nestTaskLogger (
-						parentTaskLogger,
-						"handlePdu");
-
 				OwnedTransaction transaction =
 					database.beginReadWrite (
-						taskLogger,
-						"ModelPollDaemon.ProcessThread.handlePdu (pdu)",
-						this);
+						logContext,
+						parentTaskLogger,
+						"ProcessThread.handlePdu");
 
 			) {
 
-				taskLogger.noticeFormat (
+				transaction.noticeFormat (
 					"Got message from %s: %s",
 					pdu.getOriginatingAddress ().getAddressValue (),
 					pdu.getMessage ());
 
 				RouteRec route =
 					routeHelper.findRequired (
+						transaction,
 						routeId);
 
 				smsInboxLogic.inboxInsert (
-					taskLogger,
+					transaction,
 					optionalAbsent (),
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						pdu.getMessage ()),
 					smsNumberHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						pdu.getOriginatingAddress ().getAddressValue ()),
 					destinationNumber,
 					route,
@@ -802,7 +823,7 @@ class ModemPollDaemon
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"decodePduString");

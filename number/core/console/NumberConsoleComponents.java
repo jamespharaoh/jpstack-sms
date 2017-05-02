@@ -5,6 +5,7 @@ import javax.inject.Provider;
 import wbs.console.part.PagePart;
 import wbs.console.request.Cryptor;
 import wbs.console.request.CryptorFactory;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;

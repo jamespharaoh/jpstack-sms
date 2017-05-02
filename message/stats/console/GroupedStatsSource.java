@@ -12,6 +12,8 @@ import lombok.NonNull;
 
 import org.joda.time.LocalDate;
 
+import wbs.framework.database.Transaction;
+
 import wbs.sms.message.stats.model.MessageStatsData;
 import wbs.sms.route.core.model.RouteRec;
 
@@ -21,7 +23,8 @@ public
 interface GroupedStatsSource {
 
 	public
-	Map<String,GroupStats> load (
+	Map <String, GroupStats> load (
+			Transaction parentTransaction,
 			SmsStatsTimeScheme timeScheme,
 			LocalDate start,
 			LocalDate end);
@@ -104,10 +107,10 @@ interface GroupedStatsSource {
 			SmsStatsSource statsSource);
 
 	GroupedStatsSource critMap (
-			Map<SmsStatsCriteria,Set<Long>> critMap);
+			Map <SmsStatsCriteria, Set <Long>> critMap);
 
 	GroupedStatsSource filterMap (
-			Map<SmsStatsCriteria,Set<Long>> filterMap);
+			Map <SmsStatsCriteria, Set <Long>> filterMap);
 
 	GroupedStatsSource url (
 			String url);

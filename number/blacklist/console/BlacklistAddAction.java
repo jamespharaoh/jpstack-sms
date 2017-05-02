@@ -84,18 +84,13 @@ class BlacklistAddAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"BlacklistAddAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
@@ -103,6 +98,7 @@ class BlacklistAddAction
 
 			NumberFormatRec ukNumberFormat =
 				numberFormatHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					"uk");
 
@@ -125,8 +121,9 @@ class BlacklistAddAction
 
 			}
 
-			Optional<BlacklistRec> blacklistOptional =
+			Optional <BlacklistRec> blacklistOptional =
 				blacklistHelper.findByCode (
+					transaction,
 					GlobalId.root,
 					number);
 
@@ -156,7 +153,7 @@ class BlacklistAddAction
 			}
 
 			blacklistHelper.insert (
-				taskLogger,
+				transaction,
 				blacklistHelper.createInstance ()
 
 				.setNumber (
@@ -170,9 +167,10 @@ class BlacklistAddAction
 			// create an event
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"number_blacklisted",
-				userConsoleLogic.userRequired (),
+				userConsoleLogic.userRequired (
+					transaction),
 				blacklistOptional.get ());
 
 			transaction.commit ();

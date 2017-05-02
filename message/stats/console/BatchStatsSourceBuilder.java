@@ -8,11 +8,19 @@ import javax.inject.Provider;
 
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
+
 import wbs.console.helper.manager.ConsoleObjectManager;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.message.batch.model.BatchRec;
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
 
@@ -22,6 +30,9 @@ class BatchStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -36,35 +47,48 @@ class BatchStatsSourceBuilder
 	@Override
 	public
 	SmsStatsSource buildStatsSource (
-			Record<?> parent) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Record <?> parent) {
 
-		List<BatchRec> batches =
-			objectManager.getChildren (
-				parent,
-				BatchRec.class);
+		try (
 
-		if (batches.isEmpty ())
-			return null;
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"buildStatsSource");
 
-		Set<Long> batchIds =
-			new HashSet<> ();
-
-		for (
-			BatchRec batch
-				: batches
 		) {
 
-			batchIds.add (
-				batch.getId ());
+			List <BatchRec> batches =
+				objectManager.getChildren (
+					transaction,
+					parent,
+					BatchRec.class);
+
+			if (batches.isEmpty ())
+				return null;
+
+			Set<Long> batchIds =
+				new HashSet<> ();
+
+			for (
+				BatchRec batch
+					: batches
+			) {
+
+				batchIds.add (
+					batch.getId ());
+
+			}
+
+			return smsStatsSourceProvider.get ()
+
+				.fixedCriteriaMap (
+					ImmutableMap.of (
+						SmsStatsCriteria.batch,
+						batchIds));
 
 		}
-
-		return smsStatsSourceProvider.get ()
-
-			.fixedCriteriaMap (
-				ImmutableMap.of (
-					SmsStatsCriteria.batch,
-					batchIds));
 
 	}
 

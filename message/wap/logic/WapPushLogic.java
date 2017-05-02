@@ -14,11 +14,11 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -97,7 +97,7 @@ class WapPushLogic
 
 	public
 	MessageRec wapPushSend (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			Long threadId,
 			NumberRec number,
 			String numFrom,
@@ -115,40 +115,45 @@ class WapPushLogic
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"wapPushSend");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			ServiceRec service =
 				NullUtils.<ServiceRec> ifNull (
 					() -> serviceOrNull,
-					() -> serviceHelper.findRequired (0l));
+					() -> serviceHelper.findRequired (
+						transaction,
+						0l));
 
 			AffiliateRec affiliate =
 				NullUtils.<AffiliateRec> ifNull (
 					() -> affiliateOrNull,
-					() -> affiliateHelper.findRequired (0l));
+					() -> affiliateHelper.findRequired (
+						transaction,
+						0l));
 
 			BatchRec batch =
 				NullUtils.<BatchRec> ifNull (
 					() -> batchOrNull,
-					() -> batchHelper.findRequired (0l));
+					() -> batchHelper.findRequired (
+						transaction,
+						0l));
 
 			// check this route can send wap push
 
 			MessageTypeRec wapPushMessageType =
 				messageTypeHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					"wap_push");
 
 			RouteRec route =
 				routerLogic.resolveRouter (
+					transaction,
 					router);
 
 			if (! route.getOutboundMessageTypes ().contains (
@@ -170,7 +175,7 @@ class WapPushLogic
 
 				.setText (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						"WAP PUSH"))
 
 				.setNumFrom (
@@ -233,11 +238,11 @@ class WapPushLogic
 			}
 
 			messageHelper.insert (
-				taskLogger,
+				transaction,
 				message);
 
 			wapPushMessageHelper.insert (
-				taskLogger,
+				transaction,
 				wapPushMessageHelper.createInstance ()
 
 				.setMessage (
@@ -254,7 +259,7 @@ class WapPushLogic
 			if (sendNow) {
 
 				outboxHelper.insert (
-					taskLogger,
+					transaction,
 					outboxHelper.createInstance ()
 
 					.setMessage (
@@ -295,25 +300,23 @@ class WapPushLogic
 	 */
 	public
 	MessageRec wapPushRetry (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec oldMessage,
 			@NonNull RouteRec route,
 			TextRec textOrNull) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"wapPushRetry");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			WapPushMessageRec oldWapPushMessage =
 				wapPushMessageHelper.findRequired (
+					transaction,
 					oldMessage.getId ());
 
 			TextRec text =
@@ -329,7 +332,7 @@ class WapPushLogic
 
 				.setText (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						"WAP PUSH"))
 
 				.setNumFrom (
@@ -376,6 +379,7 @@ class WapPushLogic
 
 				.setMessageType (
 					messageTypeHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"wap_push"))
 
@@ -390,11 +394,11 @@ class WapPushLogic
 			}
 
 			messageHelper.insert (
-				taskLogger,
+				transaction,
 				message);
 
 			wapPushMessageHelper.insert (
-				taskLogger,
+				transaction,
 				wapPushMessageHelper.createInstance ()
 
 				.setMessage (
@@ -409,7 +413,7 @@ class WapPushLogic
 			);
 
 			outboxHelper.insert (
-				taskLogger,
+				transaction,
 				outboxHelper.createInstance ()
 
 				.setMessage (
@@ -452,13 +456,13 @@ class WapPushLogic
 		@Override
 		public
 		MessageRec messageRetry (
-				@NonNull TaskLogger parentTaskLogger,
+				@NonNull Transaction parentTransaction,
 				@NonNull MessageRec rec,
 				@NonNull RouteRec route,
 				TextRec textRec) {
 
 			return wapPushRetry (
-				parentTaskLogger,
+				parentTransaction,
 				rec,
 				route,
 				textRec);

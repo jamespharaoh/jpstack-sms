@@ -3,12 +3,10 @@ package wbs.sms.route.sender.fixture;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.sql.SQLException;
-
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
-import wbs.framework.builder.BuilderComponent;
+import wbs.framework.builder.TransactionBuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -17,13 +15,13 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.route.sender.metamodel.SenderSpec;
 import wbs.sms.route.sender.model.SenderObjectHelper;
@@ -32,7 +30,7 @@ import wbs.sms.route.sender.model.SenderObjectHelper;
 @ModelMetaBuilderHandler
 public
 class SenderBuilder
-	implements BuilderComponent {
+	implements TransactionBuilderComponent {
 
 	// singleton dependencies
 
@@ -65,25 +63,25 @@ class SenderBuilder
 	@Override
 	public
 	void build (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Builder builder) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Builder <Transaction> builder) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"build");
 
 		) {
 
-			taskLogger.noticeFormat (
+			transaction.noticeFormat (
 				"Create sender %s",
 				simplifyToCodeRequired (
 					spec.name ()));
 
 			createSender (
-				taskLogger);
+				transaction);
 
 		} catch (Exception exception) {
 
@@ -100,28 +98,21 @@ class SenderBuilder
 
 	private
 	void createSender (
-			@NonNull TaskLogger parentTaskLogger)
-		throws SQLException {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSender");
-
-			OwnedTransaction transaction =
-				database.beginReadWrite (
-					taskLogger,
-					"SenderBuilder.createSender ()",
-					this);
 
 		) {
 
 			// create sender
 
 			senderHelper.insert (
-				taskLogger,
+				transaction,
 				senderHelper.createInstance ()
 
 				.setCode (
@@ -132,10 +123,6 @@ class SenderBuilder
 					spec.description ())
 
 			);
-
-			// commit transaction
-
-			transaction.commit ();
 
 		}
 

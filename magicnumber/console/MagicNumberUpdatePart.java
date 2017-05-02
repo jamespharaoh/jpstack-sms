@@ -8,64 +8,86 @@ import static wbs.web.utils.HtmlFormUtils.htmlFormOpenPost;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 @PrototypeComponent ("magicNumberUpdatePart")
 public
 class MagicNumberUpdatePart
 	extends AbstractPagePart {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		// form open
+		try (
 
-		htmlFormOpenPost ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		// numbers
+		) {
 
-		htmlParagraphOpen ();
+			// form open
 
-		formatWriter.writeFormat (
-			"Numbers<br>");
+			htmlFormOpenPost ();
 
-		formatWriter.writeFormat (
-			"<textarea",
-			" name=\"numbers\"",
-			" rows=\"16\"",
-			" cols=\"40\"",
-			">%h</textarea>",
-			requestContext.parameterOrEmptyString (
-				"numbers"));
+			// numbers
 
-		htmlParagraphClose ();
+			htmlParagraphOpen ();
 
-		// form controls
+			formatWriter.writeFormat (
+				"Numbers<br>");
 
-		htmlParagraphOpen ();
+			formatWriter.writeFormat (
+				"<textarea",
+				" name=\"numbers\"",
+				" rows=\"16\"",
+				" cols=\"40\"",
+				">%h</textarea>",
+				requestContext.parameterOrEmptyString (
+					"numbers"));
 
-		formatWriter.writeFormat (
-			"<input",
-			" type=\"submit\"",
-			" name=\"create\"",
-			" value=\"create magic numbers\"",
-			">");
+			htmlParagraphClose ();
 
-		formatWriter.writeFormat (
-			"<input",
-			" type=\"submit\"",
-			" name=\"delete\"",
-			" value=\"delete magic numbers\"",
-			">");
+			// form controls
 
-		htmlParagraphClose ();
+			htmlParagraphOpen ();
 
-		// form close
+			formatWriter.writeFormat (
+				"<input",
+				" type=\"submit\"",
+				" name=\"create\"",
+				" value=\"create magic numbers\"",
+				">");
 
-		htmlFormClose ();
+			formatWriter.writeFormat (
+				"<input",
+				" type=\"submit\"",
+				" name=\"delete\"",
+				" value=\"delete magic numbers\"",
+				">");
+
+			htmlParagraphClose ();
+
+			// form close
+
+			htmlFormClose ();
+
+		}
 
 	}
 

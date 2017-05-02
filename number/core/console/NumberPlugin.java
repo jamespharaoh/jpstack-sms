@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.core.model.NumberRec;
 
@@ -15,7 +15,7 @@ interface NumberPlugin {
 	String getName ();
 
 	List <Link> findLinks (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			NumberRec number,
 			boolean active);
 
@@ -32,7 +32,7 @@ interface NumberPlugin {
 		String getType ();
 
 		boolean canView (
-				TaskLogger parentTaskLogger);
+				Transaction parentTransaction);
 
 	}
 

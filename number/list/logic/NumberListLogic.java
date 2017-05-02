@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -16,24 +16,26 @@ public
 interface NumberListLogic {
 
 	void addDueToMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			NumberListRec numberList,
 			NumberRec number,
 			MessageRec message,
 			ServiceRec service);
 
 	void removeDueToMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			NumberListRec numberList,
 			NumberRec number,
 			MessageRec message,
 			ServiceRec service);
 
 	boolean includesNumber (
+			Transaction parentTransaction,
 			NumberListRec numberList,
 			NumberRec number);
 
 	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			Transaction parentTransaction,
 			NumberListRec numberList,
 			List <NumberRec> numbers);
 

@@ -2,6 +2,8 @@ package wbs.sms.message.core.console;
 
 import javax.inject.Provider;
 
+import lombok.NonNull;
+
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.forms.FormFieldAccessor;
 import wbs.console.forms.FormFieldBuilderContext;
@@ -15,25 +17,35 @@ import wbs.console.forms.IdentityFormFieldAccessor;
 import wbs.console.forms.IdentityFormFieldNativeMapping;
 import wbs.console.forms.ReadOnlyFormField;
 import wbs.console.forms.RequiredFormFieldValueValidator;
+
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("messageContentFormFieldBuilder")
 @ConsoleModuleBuilderHandler
 public
-class MessageContentFormFieldBuilder {
+class MessageContentFormFieldBuilder
+	implements BuilderComponent {
 
 	// singleton dependencies
 
 	@SingletonDependency
 	FormFieldPluginManagerImplementation formFieldPluginManager;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// prototype dependencies
 
@@ -78,78 +90,91 @@ class MessageContentFormFieldBuilder {
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Builder builder) {
 
-		String name =
-			"details";
+		try (
 
-		String label =
-			"Details";
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-		// accessor
+		) {
 
-		FormFieldAccessor accessor =
-			identityFormFieldAccessorProvider.get ()
+			String name =
+				"details";
 
-			.containerClass (
-				context.containerClass ());
+			String label =
+				"Details";
 
-		// native mapping
+			// accessor
 
-		FormFieldNativeMapping nativeMapping =
-			identityFormFieldNativeMappingProvider.get ();
+			FormFieldAccessor accessor =
+				identityFormFieldAccessorProvider.get ()
 
-		// interface mapping
+				.containerClass (
+					context.containerClass ());
 
-		FormFieldInterfaceMapping interfaceMapping =
-			messageContentHtmlFormFieldInterfaceMappingProvider.get ();
+			// native mapping
 
-		// csv mapping
+			FormFieldNativeMapping nativeMapping =
+				identityFormFieldNativeMappingProvider.get ();
 
-		FormFieldInterfaceMapping csvMapping =
-			messageContentCsvFormFieldInterfaceMappingProvider.get ();
+			// interface mapping
 
-		// renderer
+			FormFieldInterfaceMapping interfaceMapping =
+				messageContentHtmlFormFieldInterfaceMappingProvider.get ();
 
-		FormFieldRenderer renderer =
-			htmlFormFieldRendererProvider.get ()
+			// csv mapping
 
-			.name (
-				name)
+			FormFieldInterfaceMapping csvMapping =
+				messageContentCsvFormFieldInterfaceMappingProvider.get ();
 
-			.label (
-				label);
+			// renderer
 
-		// form field
+			FormFieldRenderer renderer =
+				htmlFormFieldRendererProvider.get ()
 
-		formFieldSet.addFormItem (
-			readOnlyFormFieldProvider.get ()
+				.name (
+					name)
 
-			.name (
-				name)
+				.label (
+					label);
 
-			.label (
-				label)
+			// form field
 
-			.accessor (
-				accessor)
+			formFieldSet.addFormItem (
+				readOnlyFormFieldProvider.get ()
 
-			.nativeMapping (
-				nativeMapping)
+				.name (
+					name)
 
-			.interfaceMapping (
-				interfaceMapping)
+				.label (
+					label)
 
-			.csvMapping (
-				csvMapping)
+				.accessor (
+					accessor)
 
-			.renderer (
-				renderer)
+				.nativeMapping (
+					nativeMapping)
 
-		);
+				.interfaceMapping (
+					interfaceMapping)
+
+				.csvMapping (
+					csvMapping)
+
+				.renderer (
+					renderer)
+
+			);
+
+		}
 
 	}
 

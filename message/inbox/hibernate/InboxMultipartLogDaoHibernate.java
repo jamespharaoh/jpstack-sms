@@ -7,7 +7,12 @@ import lombok.NonNull;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
 import wbs.sms.message.inbox.model.InboxMultipartLogDao;
 import wbs.sms.message.inbox.model.InboxMultipartLogRec;
@@ -17,46 +22,66 @@ class InboxMultipartLogDaoHibernate
 	extends HibernateDao
 	implements InboxMultipartLogDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
-	List<InboxMultipartLogRec> findRecent (
+	List <InboxMultipartLogRec> findRecent (
+			@NonNull Transaction parentTransaction,
 			@NonNull InboxMultipartBufferRec inboxMultipartBuffer,
 			@NonNull Instant timestamp) {
 
-		return findMany (
-			"findRecent (inboxMultipartBuffer, timestamp)",
-			InboxMultipartLogRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findRecent");
+
+		) {
+
+			return findMany (
+				transaction,
 				InboxMultipartLogRec.class,
-				"_inboxMultipartLog")
 
-			.add (
-				Restrictions.eq (
-					"_inboxMultipartLog.route",
-					inboxMultipartBuffer.getRoute ()))
+				createCriteria (
+					transaction,
+					InboxMultipartLogRec.class,
+					"_inboxMultipartLog")
 
-			.add (
-				Restrictions.eq (
-					"_inboxMultipartLog.msgFrom",
-					inboxMultipartBuffer.getMsgFrom ()))
+				.add (
+					Restrictions.eq (
+						"_inboxMultipartLog.route",
+						inboxMultipartBuffer.getRoute ()))
 
-			.add (
-				Restrictions.eq (
-					"_inboxMultipartLog.multipartId",
-					inboxMultipartBuffer.getMultipartId ()))
+				.add (
+					Restrictions.eq (
+						"_inboxMultipartLog.msgFrom",
+						inboxMultipartBuffer.getMsgFrom ()))
 
-			.add (
-				Restrictions.eq (
-					"_inboxMultipartLog.multipartSegMax",
-					inboxMultipartBuffer.getMultipartSegMax ()))
+				.add (
+					Restrictions.eq (
+						"_inboxMultipartLog.multipartId",
+						inboxMultipartBuffer.getMultipartId ()))
 
-			.add (
-				Restrictions.ge (
-					"_inboxMultipartLog.timestamp",
-					timestamp))
+				.add (
+					Restrictions.eq (
+						"_inboxMultipartLog.multipartSegMax",
+						inboxMultipartBuffer.getMultipartSegMax ()))
 
-		);
+				.add (
+					Restrictions.ge (
+						"_inboxMultipartLog.timestamp",
+						timestamp))
+
+			);
+
+		}
 
 	}
 

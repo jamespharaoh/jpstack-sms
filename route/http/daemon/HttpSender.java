@@ -22,11 +22,15 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
@@ -45,7 +49,6 @@ import wbs.sms.route.http.model.HttpRouteRec;
  *
  * TODO this does not belong here
  */
-@Log4j
 @SingletonComponent ("httpSender")
 public
 class HttpSender
@@ -55,6 +58,9 @@ class HttpSender
 
 	@SingletonDependency
 	HttpRouteObjectHelper httpRouteHelper;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NetworkObjectHelper networkHelper;
@@ -87,57 +93,70 @@ class HttpSender
 	@Override
 	protected
 	HttpOutbox getMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull OutboxRec outbox)
 		throws SendFailureException {
 
-		HttpRouteRec httpRoute =
-			selectRoute (outbox);
+		try (
 
-		if (httpRoute == null) {
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"getMessage");
 
-			log.error (
-				stringFormat (
-					"No network information for message %s",
-					integerToDecimalString (
-						outbox.getMessage ().getId ())));
-
-			throw permFailure (
-				"No network information or no route for network");
-
-		}
-
-		WapPushMessageRec wapPushMessage = null;
-
-		if (
-			stringEqualSafe (
-				outbox.getMessage ().getMessageType ().getCode (),
-				"wap_push")
 		) {
 
-			wapPushMessage =
-				wapPushMessageHelper.findOrThrow (
-					outbox.getId (),
-					() -> tempFailure (
-						stringFormat (
-							"Wap push message not found for message %s",
-							integerToDecimalString (
-								outbox.getId ()))));
+			HttpRouteRec httpRoute =
+				selectRoute (
+					transaction,
+					outbox);
 
-			wapPushMessage
-				.getUrlText ()
-				.getText ();
+			if (httpRoute == null) {
 
-			wapPushMessage
-				.getTextText ()
-				.getText ();
+				transaction.errorFormat (
+					"No network information for message %s",
+					integerToDecimalString (
+						outbox.getMessage ().getId ()));
+
+				throw permFailure (
+					"No network information or no route for network");
+
+			}
+
+			WapPushMessageRec wapPushMessage = null;
+
+			if (
+				stringEqualSafe (
+					outbox.getMessage ().getMessageType ().getCode (),
+					"wap_push")
+			) {
+
+				wapPushMessage =
+					wapPushMessageHelper.findOrThrow (
+						transaction,
+						outbox.getId (),
+						() -> tempFailure (
+							stringFormat (
+								"Wap push message not found for message %s",
+								integerToDecimalString (
+									outbox.getId ()))));
+
+				wapPushMessage
+					.getUrlText ()
+					.getText ();
+
+				wapPushMessage
+					.getTextText ()
+					.getText ();
+
+			}
+
+			return new HttpOutbox (
+				outbox,
+				httpRoute,
+				wapPushMessage);
 
 		}
-
-		return new HttpOutbox (
-			outbox,
-			httpRoute,
-			wapPushMessage);
 
 	}
 
@@ -148,31 +167,43 @@ class HttpSender
 			@NonNull HttpOutbox httpOutbox)
 		throws SendFailureException {
 
-		log.info (
-			stringFormat (
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"sendMessage");
+
+		) {
+
+			taskLogger.noticeFormat (
 				"Sending message %s",
 				integerToDecimalString (
-					httpOutbox.messageId)));
-
-		try {
+					httpOutbox.messageId));
 
 			// do the request
 
 			HttpURLConnection urlConnection =
 				httpOutbox.httpRoute.getPost ()
-					? openPost (httpOutbox)
-					: openGet (httpOutbox);
+					? openPost (
+						taskLogger,
+						httpOutbox)
+					: openGet (
+						taskLogger,
+						httpOutbox);
 
 			// read the response
 
 			String response =
 				readResponse (
+					taskLogger,
 					urlConnection);
 
 			// check the response
 
 			String otherId =
 				checkResponse (
+					taskLogger,
 					httpOutbox,
 					response);
 
@@ -193,61 +224,79 @@ class HttpSender
 
 	}
 
+	private
 	HttpRouteRec selectRoute (
-			OutboxRec outbox) {
+			@NonNull Transaction parentTransaction,
+			@NonNull OutboxRec outbox) {
 
-		HttpRouteRec httpRoute;
+		try (
 
-		// if a network is specified try that
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"selectRoute");
 
-		if (outbox.getMessage ().getNetwork () != null) {
+		) {
+
+			HttpRouteRec httpRoute;
+
+			// if a network is specified try that
+
+			if (outbox.getMessage ().getNetwork () != null) {
+
+				httpRoute =
+					httpRouteHelper.find (
+						transaction,
+						outbox.getMessage ().getRoute (),
+						outbox.getMessage ().getNetwork ());
+
+				if (httpRoute != null)
+					return httpRoute;
+
+			}
+
+			// then look for a non-specific route
+
+			NetworkRec defaultNetwork =
+				networkHelper.findRequired (
+					transaction,
+					0l);
 
 			httpRoute =
 				httpRouteHelper.find (
+					transaction,
 					outbox.getMessage ().getRoute (),
-					outbox.getMessage ().getNetwork ());
+					defaultNetwork);
 
 			if (httpRoute != null)
 				return httpRoute;
 
-		}
+			// finally try looking up the number in the network prefixes list
+			// and use that httpRoute
 
-		// then look for a non-specific route
+			NetworkRec network =
+				networkPrefixCache.lookupNetwork (
+					transaction,
+					outbox.getMessage ().getNumTo ());
 
-		NetworkRec defaultNetwork =
-			networkHelper.findRequired (
-				0l);
+			if (network != null) {
 
-		httpRoute =
-			httpRouteHelper.find (
-				outbox.getMessage ().getRoute (),
-				defaultNetwork);
+				httpRoute =
+					httpRouteHelper.find (
+						transaction,
+						outbox.getRoute (),
+						network);
 
-		if (httpRoute != null)
-			return httpRoute;
+				if (httpRoute != null)
+					return httpRoute;
 
-		// finally try looking up the number in the network prefixes list and
-		// use that httpRoute
+			}
 
-		NetworkRec network =
-			networkPrefixCache.lookupNetwork (
-				outbox.getMessage ().getNumTo ());
+			// not found
 
-		if (network != null) {
-
-			httpRoute =
-				httpRouteHelper.find (
-					outbox.getRoute (),
-					network);
-
-			if (httpRoute != null)
-				return httpRoute;
+			return null;
 
 		}
-
-		// not found
-
-		return null;
 
 	}
 
@@ -255,452 +304,522 @@ class HttpSender
 	 * Reads the response from the connection into into a string (assumes utf-8
 	 * encoding).
 	 */
+	private
 	String readResponse (
-			HttpURLConnection urlConn)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull HttpURLConnection urlConn)
 		throws
 			IOException,
 			UnsupportedEncodingException {
 
-		Reader reader =
-			new InputStreamReader (
-				urlConn.getInputStream (),
-				"utf-8");
+		try (
 
-		StringBuffer responseBuffer =
-			new StringBuffer ();
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"readResponse");
 
-		int numread;
+		) {
 
-		char buffer[] =
-			new char [1024];
+			Reader reader =
+				new InputStreamReader (
+					urlConn.getInputStream (),
+					"utf-8");
 
-		while ((numread = reader.read (buffer, 0, 1024)) > 0)
-			responseBuffer.append (buffer, 0, numread);
+			StringBuffer responseBuffer =
+				new StringBuffer ();
 
-		return responseBuffer.toString ();
+			int numread;
+
+			char buffer[] =
+				new char [1024];
+
+			while ((numread = reader.read (buffer, 0, 1024)) > 0)
+				responseBuffer.append (buffer, 0, numread);
+
+			return responseBuffer.toString ();
+
+		}
 
 	}
 
+	private
 	String checkResponse (
-			HttpOutbox httpOutbox,
-			String response)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull HttpOutbox httpOutbox,
+			@NonNull String response)
 		throws SendFailureException {
 
-		// check for success
+		try (
 
-		Pattern successPattern =
-			Pattern.compile (
-				httpOutbox.httpRoute.getSuccessRegex ());
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"checkResponse");
 
-		Matcher successMatcher =
-			successPattern.matcher (
-				response);
-
-		if (successMatcher.find ()) {
-
-			String otherId =
-				successMatcher.groupCount () >= 1
-					? successMatcher.group (1)
-					: null;
-
-			return otherId;
-
-		}
-
-		// check for known failures...
-
-		if (
-			isNotNull (
-				httpOutbox.httpRoute.getTemporaryFailureRegex ())
 		) {
 
-			Pattern tempFailurePattern =
+			// check for success
+
+			Pattern successPattern =
 				Pattern.compile (
-					httpOutbox.httpRoute.getTemporaryFailureRegex ());
+					httpOutbox.httpRoute.getSuccessRegex ());
 
-			Matcher tempFailureMatcher =
-				tempFailurePattern.matcher (response);
-
-			if (tempFailureMatcher.find ()) {
-
-				String fullError =
-					stringFormat (
-						"Server returned temporary failure: %s",
-						response);
-
-				log.warn (
-					fullError);
-
-				throw tempFailure (
-					fullError);
-
-			}
-
-		}
-
-		if (
-			isNotNull (
-				httpOutbox.httpRoute.getPermanentFailureRegex ())
-		) {
-
-			Pattern permFailurePattern =
-				Pattern.compile (
-					httpOutbox.httpRoute.getPermanentFailureRegex ());
-
-			Matcher permFailureMatcher =
-				permFailurePattern.matcher (
+			Matcher successMatcher =
+				successPattern.matcher (
 					response);
 
-			if (permFailureMatcher.find ()) {
+			if (successMatcher.find ()) {
 
-				String fullError =
-					stringFormat (
-						"Server returned permanent failure: %s",
-						response);
+				String otherId =
+					successMatcher.groupCount () >= 1
+						? successMatcher.group (1)
+						: null;
 
-				log.error (
-					fullError);
-
-				throw permFailure (
-					fullError);
+				return otherId;
 
 			}
 
-		}
+			// check for known failures...
 
-		if (httpOutbox.httpRoute.getDailyFailureRegex () != null) {
+			if (
+				isNotNull (
+					httpOutbox.httpRoute.getTemporaryFailureRegex ())
+			) {
 
-			Pattern dailyFailurePattern =
-				Pattern.compile (
-					httpOutbox.httpRoute.getDailyFailureRegex ());
+				Pattern tempFailurePattern =
+					Pattern.compile (
+						httpOutbox.httpRoute.getTemporaryFailureRegex ());
 
-			Matcher dailyFailureMatcher =
-				dailyFailurePattern.matcher (
+				Matcher tempFailureMatcher =
+					tempFailurePattern.matcher (response);
+
+				if (tempFailureMatcher.find ()) {
+
+					String fullError =
+						stringFormat (
+							"Server returned temporary failure: %s",
+							response);
+
+					taskLogger.warningFormat (
+						"%s",
+						fullError);
+
+					throw tempFailure (
+						fullError);
+
+				}
+
+			}
+
+			if (
+				isNotNull (
+					httpOutbox.httpRoute.getPermanentFailureRegex ())
+			) {
+
+				Pattern permFailurePattern =
+					Pattern.compile (
+						httpOutbox.httpRoute.getPermanentFailureRegex ());
+
+				Matcher permFailureMatcher =
+					permFailurePattern.matcher (
+						response);
+
+				if (permFailureMatcher.find ()) {
+
+					String fullError =
+						stringFormat (
+							"Server returned permanent failure: %s",
+							response);
+
+					taskLogger.errorFormat (
+						"%s",
+						fullError);
+
+					throw permFailure (
+						fullError);
+
+				}
+
+			}
+
+			if (httpOutbox.httpRoute.getDailyFailureRegex () != null) {
+
+				Pattern dailyFailurePattern =
+					Pattern.compile (
+						httpOutbox.httpRoute.getDailyFailureRegex ());
+
+				Matcher dailyFailureMatcher =
+					dailyFailurePattern.matcher (
+						response);
+
+				if (dailyFailureMatcher.find ()) {
+
+					String fullError =
+						stringFormat (
+							"Server returned daily failure: %s",
+							response);
+
+					taskLogger.warningFormat (
+						"%s",
+						fullError);
+
+					throw dailyFailure (
+						fullError);
+
+				}
+			}
+
+			if (httpOutbox.httpRoute.getCreditFailureRegex () != null) {
+
+				Pattern creditFailurePattern =
+					Pattern.compile (
+						httpOutbox.httpRoute.getCreditFailureRegex ());
+
+				Matcher creditFailureMatcher =
+					creditFailurePattern.matcher (
+						response);
+
+				if (creditFailureMatcher.find ()) {
+
+					String fullError =
+						stringFormat (
+							"Server returned credit failure: %s",
+							response);
+
+					taskLogger.warningFormat (
+						"%s",
+						fullError);
+
+					throw dailyFailure (
+						fullError);
+
+				}
+
+			}
+
+			// unknown response, temporary failure
+
+			String fullError =
+				stringFormat (
+					"Server returned unknown error: %s",
 					response);
 
-			if (dailyFailureMatcher.find ()) {
+			taskLogger.warningFormat (
+				"%s",
+				fullError);
 
-				String fullError =
-					stringFormat (
-						"Server returned daily failure: %s",
-						response);
-
-				log.warn (
-					fullError);
-
-				throw dailyFailure (
-					fullError);
-
-			}
-		}
-
-		if (httpOutbox.httpRoute.getCreditFailureRegex () != null) {
-
-			Pattern creditFailurePattern =
-				Pattern.compile (
-					httpOutbox.httpRoute.getCreditFailureRegex ());
-
-			Matcher creditFailureMatcher =
-				creditFailurePattern.matcher (
-					response);
-
-			if (creditFailureMatcher.find ()) {
-
-				String fullError =
-					stringFormat (
-						"Server returned credit failure: %s",
-						response);
-
-
-				log.warn (
-					fullError);
-
-				throw dailyFailure (
-					fullError);
-
-			}
+			throw tempFailure (
+				fullError);
 
 		}
-
-		// unknown response, temporary failure
-
-		String fullError =
-			stringFormat (
-				"Server returned unknown error: %s",
-				response);
-
-		log.warn (
-			fullError);
-
-		throw tempFailure (
-			fullError);
 
 	}
 
+	private
 	String getParams (
-			HttpOutbox httpOutbox)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull HttpOutbox httpOutbox)
 		throws UnsupportedEncodingException {
 
-		String paramsTemplate =
-			httpOutbox.httpRoute.getParams ();
+		try (
 
-		String paramEncoding =
-			httpOutbox.httpRoute.getParamEncoding ();
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"getParams");
 
-		StringBuilder stringBuilder =
-			new StringBuilder ();
+		) {
 
-		Matcher paramsMatcher =
-			paramsPattern.matcher (
-				paramsTemplate);
+			String paramsTemplate =
+				httpOutbox.httpRoute.getParams ();
 
-		int index = 0;
+			String paramEncoding =
+				httpOutbox.httpRoute.getParamEncoding ();
 
-		while (paramsMatcher.find ()) {
+			StringBuilder stringBuilder =
+				new StringBuilder ();
 
-			String param =
-				paramsTemplate.substring (
-					index,
-					paramsMatcher.start ());
+			Matcher paramsMatcher =
+				paramsPattern.matcher (
+					paramsTemplate);
 
-			String paramName =
-				paramsMatcher.group (1);
+			int index = 0;
 
-			if (paramName.equals ("title")
-					|| paramName.equals ("url")
-					|| paramName.equals ("media")
-					|| paramName.equals ("terminal")) {
+			while (paramsMatcher.find ()) {
 
-				if (httpOutbox.wapPushMessage == null) {
+				String param =
+					paramsTemplate.substring (
+						index,
+						paramsMatcher.start ());
 
-					index =
-						paramsMatcher.end ();
+				String paramName =
+					paramsMatcher.group (1);
 
-					continue;
+				if (paramName.equals ("title")
+						|| paramName.equals ("url")
+						|| paramName.equals ("media")
+						|| paramName.equals ("terminal")) {
+
+					if (httpOutbox.wapPushMessage == null) {
+
+						index =
+							paramsMatcher.end ();
+
+						continue;
+
+					}
+
+				}
+
+				// TODO should not be here
+
+				if (httpOutbox.wapPushMessage != null) {
+
+					if (paramName.equals ("message")
+							|| paramName.equals ("hexmessage")) {
+
+						index =
+							paramsMatcher.end ();
+
+						continue;
+
+					}
 
 				}
 
-			}
+				stringBuilder.append (
+					param);
 
-			// TODO should not be here
+				if (paramName.equals ("id")) {
 
-			if (httpOutbox.wapPushMessage != null) {
+					stringBuilder.append (
+						URLEncoder.encode (
+							Long.toString (
+								httpOutbox.messageId),
+							paramEncoding));
 
-				if (paramName.equals ("message")
-						|| paramName.equals ("hexmessage")) {
+				} else if (paramName.equals ("message")) {
 
-					index =
-						paramsMatcher.end ();
+					stringBuilder.append (
+						URLEncoder.encode (
+							httpOutbox.message.getText ().getText (),
+							paramEncoding));
 
-					continue;
+				} else if (paramName.equals ("numfrom")) {
+
+					stringBuilder.append (
+						URLEncoder.encode (
+							httpOutbox.message.getNumFrom (),
+							paramEncoding));
+
+				} else if (paramName.equals ("numto")) {
+
+					stringBuilder.append (
+						URLEncoder.encode (
+							httpOutbox.message.getNumTo (),
+							paramEncoding));
+
+				} else if (paramName.equals ("title")) {
+
+					if (httpOutbox.wapPushMessage != null) {
+
+						stringBuilder.append (
+							URLEncoder.encode (
+								httpOutbox.wapPushMessage.getTextText ().getText (),
+								paramEncoding));
+
+					}
+
+				} else if (paramName.equals ("media")) {
+
+					if (httpOutbox.wapPushMessage != null) {
+
+						stringBuilder.append (
+							URLEncoder.encode (
+								"PI",
+								paramEncoding));
+
+					}
+
+				} else if (paramName.equals ("terminal")) {
+
+					if (httpOutbox.wapPushMessage != null) {
+
+						stringBuilder.append (
+							URLEncoder.encode (
+								"WAP",
+								paramEncoding));
+
+					}
+
+				} else if (paramName.equals ("comshen_ton_hack")) {
+
+					// should not be here
+
+					String senderTon = "5";
+
+					if (httpOutbox.message.getNumFrom ().startsWith ("0"))
+						senderTon = "1";
+
+					if (httpOutbox.message.getNumFrom ().startsWith ("6"))
+						senderTon = "3";
+
+					if (httpOutbox.message.getNumFrom ().startsWith ("8"))
+						senderTon = "3";
+
+					stringBuilder.append (
+						senderTon);
 
 				}
+
+				index =
+					paramsMatcher.end ();
 
 			}
 
 			stringBuilder.append (
-				param);
+				paramsTemplate.substring (
+					index));
 
-			if (paramName.equals ("id")) {
+			taskLogger.debugFormat (
+				"STRING IS %s",
+				stringBuilder.toString ());
 
-				stringBuilder.append (
-					URLEncoder.encode (
-						Long.toString (
-							httpOutbox.messageId),
-						paramEncoding));
-
-			} else if (paramName.equals ("message")) {
-
-				stringBuilder.append (
-					URLEncoder.encode (
-						httpOutbox.message.getText ().getText (),
-						paramEncoding));
-
-			} else if (paramName.equals ("numfrom")) {
-
-				stringBuilder.append (
-					URLEncoder.encode (
-						httpOutbox.message.getNumFrom (),
-						paramEncoding));
-
-			} else if (paramName.equals ("numto")) {
-
-				stringBuilder.append (
-					URLEncoder.encode (
-						httpOutbox.message.getNumTo (),
-						paramEncoding));
-
-			} else if (paramName.equals ("title")) {
-
-				if (httpOutbox.wapPushMessage != null) {
-
-					stringBuilder.append (
-						URLEncoder.encode (
-							httpOutbox.wapPushMessage.getTextText ().getText (),
-							paramEncoding));
-
-				}
-
-			} else if (paramName.equals ("media")) {
-
-				if (httpOutbox.wapPushMessage != null) {
-
-					stringBuilder.append (
-						URLEncoder.encode (
-							"PI",
-							paramEncoding));
-
-				}
-
-			} else if (paramName.equals ("terminal")) {
-
-				if (httpOutbox.wapPushMessage != null) {
-
-					stringBuilder.append (
-						URLEncoder.encode (
-							"WAP",
-							paramEncoding));
-
-				}
-
-			} else if (paramName.equals ("comshen_ton_hack")) {
-
-				// should not be here
-
-				String senderTon = "5";
-
-				if (httpOutbox.message.getNumFrom ().startsWith ("0"))
-					senderTon = "1";
-
-				if (httpOutbox.message.getNumFrom ().startsWith ("6"))
-					senderTon = "3";
-
-				if (httpOutbox.message.getNumFrom ().startsWith ("8"))
-					senderTon = "3";
-
-				stringBuilder.append (
-					senderTon);
-
-			}
-
-			index =
-				paramsMatcher.end ();
+			return stringBuilder.toString ();
 
 		}
 
-		stringBuilder.append (
-			paramsTemplate.substring (index));
-
-		log.debug (
-			stringFormat (
-				"STRING IS %s",
-				stringBuilder.toString ()));
-
-		return stringBuilder.toString ();
-
 	}
 
-	public
+	private
 	HttpURLConnection openPost (
-			HttpOutbox httpOutbox)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull HttpOutbox httpOutbox)
 		throws IOException {
 
-		String params =
-			getParams (httpOutbox);
+		try (
 
-		// create and open http connection
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"openPost");
 
-		URL urlObject =
-			new URL (
-				httpOutbox.httpRoute.getUrl ());
+		) {
 
-		HttpURLConnection urlConnection =
-			(HttpURLConnection)
-			urlObject.openConnection ();
+			String params =
+				getParams (
+					taskLogger,
+					httpOutbox);
 
-		urlConnection.setDoInput (
-			true);
+			// create and open http connection
 
-		urlConnection.setDoOutput (
-			true);
+			URL urlObject =
+				new URL (
+					httpOutbox.httpRoute.getUrl ());
 
-		urlConnection.setAllowUserInteraction (
-			false);
+			HttpURLConnection urlConnection =
+				(HttpURLConnection)
+				urlObject.openConnection ();
 
-		urlConnection.setRequestMethod (
-			"POST");
+			urlConnection.setDoInput (
+				true);
 
-		urlConnection.setRequestProperty (
-			"User-Agent",
-			wbsConfig.httpUserAgent ());
+			urlConnection.setDoOutput (
+				true);
 
-		urlConnection.setRequestProperty (
-			"Content-Type",
-			stringFormat (
-				"application/x-www-form-urlencoded; ",
-				"charset=\"%s\"",
-				httpOutbox.httpRoute.getParamEncoding ()));
+			urlConnection.setAllowUserInteraction (
+				false);
 
-		urlConnection.setRequestProperty (
-			"Content-Length",
-			Integer.toString (
-				params.length ()));
+			urlConnection.setRequestMethod (
+				"POST");
 
-		log.debug (
-			stringFormat (
+			urlConnection.setRequestProperty (
+				"User-Agent",
+				wbsConfig.httpUserAgent ());
+
+			urlConnection.setRequestProperty (
+				"Content-Type",
+				stringFormat (
+					"application/x-www-form-urlencoded; ",
+					"charset=\"%s\"",
+					httpOutbox.httpRoute.getParamEncoding ()));
+
+			urlConnection.setRequestProperty (
+				"Content-Length",
+				Integer.toString (
+					params.length ()));
+
+			taskLogger.debugFormat (
 				"Sending: %s",
-				params));
+				params);
 
-		// send request
+			// send request
 
-		Writer writer =
-			new OutputStreamWriter (
-				urlConnection.getOutputStream (),
-				"iso-8859-1");
+			Writer writer =
+				new OutputStreamWriter (
+					urlConnection.getOutputStream (),
+					"iso-8859-1");
 
-		writer.write (params);
+			writer.write (params);
 
-		writer.flush ();
+			writer.flush ();
 
-		return urlConnection;
+			return urlConnection;
+
+		}
 
 	}
 
 	public
 	HttpURLConnection openGet (
-			HttpOutbox httpOutbox)
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull HttpOutbox httpOutbox)
 		throws IOException {
 
-		// create and open http connection
+		try (
 
-		URL urlObj =
-			new URL (
-				stringFormat (
-					"%s",
-					httpOutbox.httpRoute.getUrl (),
-					"?%s",
-					getParams (httpOutbox)));
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"openGet");
 
-		HttpURLConnection urlConnection =
-			(HttpURLConnection)
-			urlObj.openConnection ();
+		) {
 
-		urlConnection.setDoInput (
-			true);
+			// create and open http connection
 
-		urlConnection.setAllowUserInteraction (
-			false);
+			URL urlObj =
+				new URL (
+					stringFormat (
+						"%s",
+						httpOutbox.httpRoute.getUrl (),
+						"?%s",
+						getParams (
+							taskLogger,
+							httpOutbox)));
 
-		urlConnection.setRequestMethod (
-			"GET");
+			HttpURLConnection urlConnection =
+				(HttpURLConnection)
+				urlObj.openConnection ();
 
-		urlConnection.setRequestProperty (
-			"User-Agent",
-			wbsConfig.httpUserAgent ());
+			urlConnection.setDoInput (
+				true);
 
-		// return
+			urlConnection.setAllowUserInteraction (
+				false);
 
-		return urlConnection;
+			urlConnection.setRequestMethod (
+				"GET");
+
+			urlConnection.setRequestProperty (
+				"User-Agent",
+				wbsConfig.httpUserAgent ());
+
+			// return
+
+			return urlConnection;
+
+		}
 
 	}
 

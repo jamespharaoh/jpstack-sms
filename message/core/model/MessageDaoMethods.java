@@ -2,7 +2,7 @@ package wbs.sms.message.core.model;
 
 import java.util.List;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -13,25 +13,31 @@ public
 interface MessageDaoMethods {
 
 	MessageRec findByOtherId (
+			Transaction parentTransaction,
 			MessageDirection direction,
 			RouteRec route,
 			String otherId);
 
 	List <MessageRec> findByThreadId (
+			Transaction parentTransaction,
 			Long threadId);
 
-	List <MessageRec> findNotProcessed ();
+	List <MessageRec> findNotProcessed (
+			Transaction parentTransaction);
 
 	List <MessageRec> findRecentLimit (
+			Transaction parentTransaction,
 			Long maxResults);
 
-	Long countNotProcessed ();
+	Long countNotProcessed (
+			Transaction parentTransaction);
 
 	List <ServiceRec> projectServices (
+			Transaction parentTransaction,
 			NumberRec number);
 
 	List <Long> searchIds (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageSearch search);
 
 }

@@ -2,15 +2,20 @@ package wbs.sms.customer.hibernate;
 
 import java.util.List;
 
+import lombok.NonNull;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import lombok.NonNull;
-
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.customer.model.SmsCustomerDao;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerRec;
@@ -23,81 +28,114 @@ class SmsCustomerDaoHibernate
 	extends HibernateDao
 	implements SmsCustomerDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	List <Long> searchIds (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerSearch smsCustomerSearch) {
 
-		Criteria customerCriteria =
-			createCriteria (
-				SmsCustomerRec.class);
+		try (
 
-		Criteria managerCriteria =
-			customerCriteria.createCriteria (
-				"smsCustomerManager");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"searchIds");
 
-		Criteria numberCriteria =
-			customerCriteria.createCriteria (
-				"number");
+		) {
 
-		if (smsCustomerSearch.getSmsCustomerManagerId () != null) {
+			Criteria customerCriteria =
+				createCriteria (
+					transaction,
+					SmsCustomerRec.class);
 
-			managerCriteria.add (
-				Restrictions.eq (
-					"id",
-					smsCustomerSearch.getSmsCustomerManagerId ()));
+			Criteria managerCriteria =
+				customerCriteria.createCriteria (
+					"smsCustomerManager");
+
+			Criteria numberCriteria =
+				customerCriteria.createCriteria (
+					"number");
+
+			if (smsCustomerSearch.getSmsCustomerManagerId () != null) {
+
+				managerCriteria.add (
+					Restrictions.eq (
+						"id",
+						smsCustomerSearch.getSmsCustomerManagerId ()));
+
+			}
+
+			if (smsCustomerSearch.getNumberLike () != null) {
+
+				numberCriteria.add (
+					Restrictions.ilike (
+						"number",
+						smsCustomerSearch.getNumberLike ()));
+
+			}
+
+			managerCriteria.addOrder (
+				Order.asc ("code"));
+
+			customerCriteria.addOrder (
+				Order.asc ("code"));
+
+			customerCriteria.setProjection (
+				Projections.id ());
+
+			return findMany (
+				transaction,
+				Long.class,
+				customerCriteria);
 
 		}
-
-		if (smsCustomerSearch.getNumberLike () != null) {
-
-			numberCriteria.add (
-				Restrictions.ilike (
-					"number",
-					smsCustomerSearch.getNumberLike ()));
-
-		}
-
-		managerCriteria.addOrder (
-			Order.asc ("code"));
-
-		customerCriteria.addOrder (
-			Order.asc ("code"));
-
-		customerCriteria.setProjection (
-			Projections.id ());
-
-		return findMany (
-			"searchIds (smsCustomerSearch)",
-			Long.class,
-			customerCriteria);
 
 	}
 
 	@Override
 	public
 	SmsCustomerRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerManagerRec manager,
 			@NonNull NumberRec number) {
 
-		Criteria customerCriteria =
-			createCriteria (
-				SmsCustomerRec.class);
+		try (
 
-		customerCriteria.add (
-			Restrictions.eq (
-				"smsCustomerManager",
-				manager));
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
 
-		customerCriteria.add (
-			Restrictions.eq (
-				"number",
-				number));
+		) {
 
-		return findOneOrNull (
-			"find (manager, number)",
-			SmsCustomerRec.class,
-			customerCriteria);
+			Criteria customerCriteria =
+				createCriteria (
+					transaction,
+					SmsCustomerRec.class);
+
+			customerCriteria.add (
+				Restrictions.eq (
+					"smsCustomerManager",
+					manager));
+
+			customerCriteria.add (
+				Restrictions.eq (
+					"number",
+					number));
+
+			return findOneOrNull (
+				transaction,
+				SmsCustomerRec.class,
+				customerCriteria);
+
+		}
 
 	}
 

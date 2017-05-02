@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 
 import org.joda.time.ReadableInstant;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.core.logic.NoSuchMessageException;
 import wbs.sms.message.core.logic.InvalidMessageStateException;
@@ -16,7 +16,7 @@ public
 interface SmsDeliveryReportLogic {
 
 	void deliveryReport (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message,
 			MessageStatus newMessageStatus,
 			Optional <String> theirCode,
@@ -28,7 +28,7 @@ interface SmsDeliveryReportLogic {
 			InvalidMessageStateException;
 
 	MessageRec deliveryReport (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			RouteRec route,
 			String otherId,
 			MessageStatus newMessageStatus,
@@ -41,7 +41,7 @@ interface SmsDeliveryReportLogic {
 			InvalidMessageStateException;
 
 	void deliveryReport (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			Long messageId,
 			MessageStatus newMessageStatus,
 			Optional <String> theirCode,

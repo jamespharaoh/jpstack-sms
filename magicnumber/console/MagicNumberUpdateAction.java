@@ -81,25 +81,21 @@ class MagicNumberUpdateAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		// start transaction
 
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MagicNumberUpdateAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			MagicNumberSetRec magicNumberSet =
-				magicNumberSetHelper.findFromContextRequired ();
+				magicNumberSetHelper.findFromContextRequired (
+					transaction);
 
 			// parse numbers
 
@@ -139,6 +135,7 @@ class MagicNumberUpdateAction
 
 					MagicNumberRec existingMagicNumber =
 						magicNumberHelper.findByNumber (
+							transaction,
 							number);
 
 					if (
@@ -175,9 +172,10 @@ class MagicNumberUpdateAction
 						numAdded ++;
 
 						eventLogic.createEvent (
-							taskLogger,
+							transaction,
 							"object_field_updated",
-							userConsoleLogic.userRequired (),
+							userConsoleLogic.userRequired (
+								transaction),
 							"deleted",
 							existingMagicNumber,
 							false);
@@ -186,7 +184,7 @@ class MagicNumberUpdateAction
 
 						MagicNumberRec newMagicNumber =
 							magicNumberHelper.insert (
-								taskLogger,
+								transaction,
 								magicNumberHelper.createInstance ()
 
 							.setMagicNumberSet (
@@ -200,9 +198,10 @@ class MagicNumberUpdateAction
 						numAdded ++;
 
 						eventLogic.createEvent (
-							taskLogger,
+							transaction,
 							"object_created",
-							userConsoleLogic.userRequired (),
+							userConsoleLogic.userRequired (
+								transaction),
 							newMagicNumber,
 							magicNumberSet);
 
@@ -243,6 +242,7 @@ class MagicNumberUpdateAction
 
 					MagicNumberRec magicNumber =
 						magicNumberHelper.findByNumber (
+							transaction,
 							number);
 
 					if (
@@ -266,9 +266,10 @@ class MagicNumberUpdateAction
 					numDeleted ++;
 
 					eventLogic.createEvent (
-						taskLogger,
+						transaction,
 						"object_field_updated",
-						userConsoleLogic.userRequired (),
+						userConsoleLogic.userRequired (
+							transaction),
 						"deleted",
 						magicNumber,
 						true);

@@ -15,8 +15,9 @@ import org.joda.time.Interval;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageObjectHelper;
@@ -51,15 +52,15 @@ class MessageSourceImplementation
 	@Override
 	public
 	List <MessageRec> findMessages (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Interval interval,
 			@NonNull ViewMode viewMode) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"findMessages");
 
 		) {
@@ -137,7 +138,7 @@ class MessageSourceImplementation
 			}
 
 			return messageHelper.search (
-				taskLogger,
+				transaction,
 				search);
 
 		}

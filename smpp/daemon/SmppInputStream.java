@@ -67,8 +67,11 @@ class SmppInputStream
 
 	public
 	int readInteger (
-			int length)
+			int originalLength)
 		throws IOException {
+
+		int length =
+			originalLength;
 
 		// check params
 

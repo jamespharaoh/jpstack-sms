@@ -13,66 +13,80 @@ import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 @PrototypeComponent ("blacklistAddPart")
 public
 class BlacklistAddPart
 	extends AbstractPagePart {
 
-	@Override
-	public
-	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+	// singleton dependencies
 
-	}
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		htmlTableOpenDetails ();
+		try (
 
-		htmlFormOpenMethodAction (
-			"post",
-			requestContext.resolveLocalUrl (
-				"/blacklist.add"));
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		htmlTableDetailsRowWriteHtml (
-			"Number",
-			stringFormat (
+		) {
+
+			htmlTableOpenDetails ();
+
+			htmlFormOpenMethodAction (
+				"post",
+				requestContext.resolveLocalUrl (
+					"/blacklist.add"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Number",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"number\"",
+					">"));
+
+			htmlTableDetailsRowWriteHtml (
+				"Reason",
+				stringFormat (
+					"<textarea",
+					" name=\"reason\"",
+					" rows=\"4\"",
+					" cols=\"48\"",
+					"></textarea>"));
+
+			htmlTableClose ();
+
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
 				"<input",
-				" type=\"text\"",
-				" name=\"number\"",
-				">"));
+				" type=\"submit\"",
+				" name=\"Blacklist\"",
+				" value=\"Blacklist\"",
+				">");
 
-		htmlTableDetailsRowWriteHtml (
-			"Reason",
-			stringFormat (
-				"<textarea",
-				" name=\"reason\"",
-				" rows=\"4\"",
-				" cols=\"48\"",
-				"></textarea>"));
+			htmlParagraphClose ();
 
-		htmlTableClose ();
+			htmlFormClose ();
 
-		htmlParagraphOpen ();
+			htmlTableClose ();
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" name=\"Blacklist\"",
-			" value=\"Blacklist\"",
-			">");
-
-		htmlParagraphClose ();
-
-		htmlFormClose ();
-
-		htmlTableClose ();
+		}
 
 	}
 

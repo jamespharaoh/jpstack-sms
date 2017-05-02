@@ -22,9 +22,10 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -77,20 +78,20 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	Map <SmsStatsCriteria, Set <Long>> makeFilterMap (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"makeFilterMap");
 
 		) {
 
 			if (
 				privChecker.canRecursive (
-					taskLogger,
+					transaction,
 					GlobalId.root,
 					"stats")
 			) {
@@ -105,15 +106,17 @@ class SmsStatsConsoleLogicImplementation
 
 			for (
 				ServiceRec service
-					: serviceHelper.findAll ()
+					: serviceHelper.findAll (
+						transaction)
 			) {
 
 				try {
 
 					if (
 						! privChecker.canRecursive (
-							taskLogger,
+							transaction,
 							objectManager.getParentRequired (
+								transaction,
 								service),
 							"stats")
 					) {
@@ -122,7 +125,7 @@ class SmsStatsConsoleLogicImplementation
 
 				} catch (Exception exception) {
 
-					taskLogger.errorFormatException (
+					transaction.errorFormatException (
 						exception,
 						"Error checking privs for service %s",
 						integerToDecimalString (
@@ -145,15 +148,17 @@ class SmsStatsConsoleLogicImplementation
 
 			for (
 				AffiliateRec affiliate
-					: affiliateHelper.findAll ()
+					: affiliateHelper.findAll (
+						transaction)
 			) {
 
 				try {
 
 					if (
 						! privChecker.canRecursive (
-							taskLogger,
+							transaction,
 							objectManager.getParentRequired (
+								transaction,
 								affiliate),
 							"stats")
 					) {
@@ -162,7 +167,7 @@ class SmsStatsConsoleLogicImplementation
 
 				} catch (Exception exception) {
 
-					taskLogger.errorFormatException (
+					transaction.errorFormatException (
 						exception,
 						"Error checking privs for affiliate %s",
 						integerToDecimalString (
@@ -185,12 +190,13 @@ class SmsStatsConsoleLogicImplementation
 
 			for (
 				RouteRec route
-					: routeHelper.findAll ()
+					: routeHelper.findAll (
+						transaction)
 			) {
 
 				if (
 					privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						route,
 						"stats")
 				) {
@@ -225,52 +231,71 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	String lookupGroupName (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsStatsCriteria crit,
 			@NonNull Long id) {
 
-		switch (crit) {
+		try (
 
-		case route:
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"lookupGroupName");
 
-			return objectManager.objectPathMini (
-				routeHelper.findRequired (
-					id));
+		) {
 
-		case service:
+			switch (crit) {
 
-			return objectManager.objectPathMini (
-				serviceHelper.findRequired (
-					id));
+			case route:
 
-		case affiliate:
+				return objectManager.objectPathMini (
+					transaction,
+					routeHelper.findRequired (
+						transaction,
+						id));
 
-			return objectManager.objectPathMini (
-				affiliateHelper.findRequired (
-					id));
+			case service:
 
-		case network:
+				return objectManager.objectPathMini (
+					transaction,
+					serviceHelper.findRequired (
+						transaction,
+						id));
 
-			NetworkRec network =
-				networkHelper.findRequired (
-					id);
+			case affiliate:
 
-			return network.getDescription ();
+				return objectManager.objectPathMini (
+					transaction,
+					affiliateHelper.findRequired (
+						transaction,
+						id));
 
-		case batch:
+			case network:
 
-			return batchHelper
+				NetworkRec network =
+					networkHelper.findRequired (
+						transaction,
+						id);
 
-				.findRequired (
-					id)
+				return network.getDescription ();
 
-				.getId ()
+			case batch:
 
-				.toString ();
+				return batchHelper
+
+					.findRequired (
+						transaction,
+						id)
+
+					.getId ()
+
+					.toString ();
+
+			}
+
+			throw new IllegalArgumentException ();
 
 		}
-
-		throw new IllegalArgumentException ();
 
 	}
 
@@ -280,58 +305,70 @@ class SmsStatsConsoleLogicImplementation
 	 */
 	@Override
 	public
-	Map<SmsStatsCriteria,Set<Long>> criteriaMapIntersect (
-			@NonNull List<Map<SmsStatsCriteria,Set<Long>>> critMaps) {
+	Map <SmsStatsCriteria, Set <Long>> criteriaMapIntersect (
+			@NonNull Transaction parentTransaction,
+			@NonNull List <Map <SmsStatsCriteria, Set <Long>>> critMaps) {
 
-		// start with an empty map (will return everything)
+		try (
 
-		Map<SmsStatsCriteria,Set<Long>> ret =
-			new HashMap<> ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"criteriaMapIntersect");
 
-		// now intersect this with each map in turn
-
-		for (
-			Map<SmsStatsCriteria,Set<Long>> critMap
-				: critMaps
 		) {
 
-			// for each criterion to ids mapping...
+			// start with an empty map (will return everything)
+
+			Map <SmsStatsCriteria, Set <Long>> ret =
+				new HashMap<> ();
+
+			// now intersect this with each map in turn
 
 			for (
-				Map.Entry<SmsStatsCriteria,Set<Long>> ent
-					: critMap.entrySet ()
+				Map <SmsStatsCriteria, Set <Long>> critMap
+					: critMaps
 			) {
 
-				SmsStatsCriteria crit =
-					ent.getKey ();
+				// for each criterion to ids mapping...
 
-				Collection<Long> ids =
-					ent.getValue ();
+				for (
+					Map.Entry <SmsStatsCriteria, Set <Long>> entry
+						: critMap.entrySet ()
+				) {
 
-				// if this criterion is already listed...
+					SmsStatsCriteria crit =
+						entry.getKey ();
 
-				if (ret.containsKey (crit)) {
+					Collection <Long> ids =
+						entry.getValue ();
 
-					// ...intersect it (remove any ids not listed in this map
-					// too)
+					// if this criterion is already listed...
 
-					ret.get (crit).retainAll (ids);
+					if (ret.containsKey (crit)) {
 
-				} else {
+						// ...intersect it (remove any ids not listed in this
+						// map too)
 
-					// ...otherwise just copy this restriction
+						ret.get (crit).retainAll (ids);
 
-					ret.put (
-						crit,
-						new HashSet<> (ids));
+					} else {
+
+						// ...otherwise just copy this restriction
+
+						ret.put (
+							crit,
+							new HashSet<> (ids));
+
+					}
 
 				}
 
 			}
 
-		}
+			return ret;
 
-		return ret;
+		}
 
 	}
 
@@ -342,89 +379,114 @@ class SmsStatsConsoleLogicImplementation
 	@Override
 	public
 	MessageStatsSearch critMapToMessageStatsSearch (
-			Map<SmsStatsCriteria,Set<Long>> critMap,
-			Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Map <SmsStatsCriteria, Set <Long>> critMap,
+			@NonNull Optional <Map <SmsStatsCriteria, Set <Long>>> filterMap) {
 
-		MessageStatsSearch search =
-			new MessageStatsSearch ();
+		try (
 
-		for (
-			Map.Entry<SmsStatsCriteria,Set<Long>> ent
-				: critMap.entrySet ()
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"critMapToMessageStatsSearch");
+
 		) {
 
-			setSearchCriteria (
-				search,
-				ent.getKey (),
-				ent.getValue ());
+			MessageStatsSearch search =
+				new MessageStatsSearch ();
+
+			for (
+				Map.Entry <SmsStatsCriteria, Set <Long>> entry
+					: critMap.entrySet ()
+			) {
+
+				setSearchCriteria (
+					transaction,
+					search,
+					entry.getKey (),
+					entry.getValue ());
+
+			}
+
+			if (
+				optionalIsPresent (
+					filterMap)
+			) {
+
+				search
+
+					.filter (
+						true)
+
+					.filterServiceIds (
+						filterMap.get ().get (
+							SmsStatsCriteria.service))
+
+					.filterAffiliateIds (
+						filterMap.get ().get (
+							SmsStatsCriteria.affiliate))
+
+					.filterRouteIds (
+						filterMap.get ().get (
+							SmsStatsCriteria.route));
+
+			}
+
+			return search;
 
 		}
-
-		if (
-			optionalIsPresent (
-				filterMap)
-		) {
-
-			search
-
-				.filter (
-					true)
-
-				.filterServiceIds (
-					filterMap.get ().get (
-						SmsStatsCriteria.service))
-
-				.filterAffiliateIds (
-					filterMap.get ().get (
-						SmsStatsCriteria.affiliate))
-
-				.filterRouteIds (
-					filterMap.get ().get (
-						SmsStatsCriteria.route));
-
-		}
-
-		return search;
 
 	}
 
 	@Override
 	public
 	MessageStatsSearch setSearchCriteria (
-			MessageStatsSearch search,
-			SmsStatsCriteria statsCriteria,
-			Collection<Long> value) {
+			@NonNull Transaction parentTransaction,
+			@NonNull MessageStatsSearch search,
+			@NonNull SmsStatsCriteria statsCriteria,
+			@NonNull Collection <Long> value) {
 
-		switch (statsCriteria) {
+		try (
 
-		case route:
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"setSearchCriteria");
 
-			return search.routeIdIn (
-				value);
+		) {
 
-		case service:
+			switch (statsCriteria) {
 
-			return search.serviceIdIn (
-				value);
+			case route:
 
-		case affiliate:
+				return search.routeIdIn (
+					value);
 
-			return search.affiliateIdIn (
-				value);
+			case service:
 
-		case batch:
+				return search.serviceIdIn (
+					value);
 
-			return search.batchIdIn (
-				value);
+			case affiliate:
 
-		case network:
+				return search.affiliateIdIn (
+					value);
 
-			return search.networkIdIn (
-				value);
+			case batch:
+
+				return search.batchIdIn (
+					value);
+
+			case network:
+
+				return search.networkIdIn (
+					value);
+
+			}
+
+			throw new IllegalArgumentException ();
 
 		}
-
-		throw new IllegalArgumentException ();
 
 	}
 

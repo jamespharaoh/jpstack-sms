@@ -15,10 +15,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -57,7 +57,7 @@ class NumberListLogicImplementation
 	@Override
 	public
 	void addDueToMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number,
 			@NonNull MessageRec message,
@@ -65,21 +65,18 @@ class NumberListLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"addDueToMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// lookup number list number
 
 			NumberListNumberRec numberListNumber =
 				numberListNumberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					numberList,
 					number);
 
@@ -101,7 +98,7 @@ class NumberListLogicImplementation
 			// create number list update
 
 			numberListUpdateHelper.insert (
-				taskLogger,
+				transaction,
 				numberListUpdateHelper.createInstance ()
 
 				.setNumberList (
@@ -142,77 +139,103 @@ class NumberListLogicImplementation
 	@Override
 	public
 	boolean includesNumber (
-			NumberListRec numberList,
-			NumberRec number) {
+			@NonNull Transaction parentTransaction,
+			@NonNull NumberListRec numberList,
+			@NonNull NumberRec number) {
 
-		NumberListNumberRec numberListNumber =
-			numberListNumberHelper.find (
-				numberList,
-				number);
+		try (
 
-		if (numberListNumber == null)
-			return false;
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"includesNumber");
 
-		return numberListNumber.getPresent ();
+		) {
+
+			NumberListNumberRec numberListNumber =
+				numberListNumberHelper.find (
+					transaction,
+					numberList,
+					number);
+
+			if (numberListNumber == null)
+				return false;
+
+			return numberListNumber.getPresent ();
+
+		}
 
 	}
 
 	@Override
 	public
 	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberListRec numberList,
 			@NonNull List <NumberRec> numbers) {
 
-		List <NumberListNumberRec> numberListNumbers =
-			numberListNumberHelper.findManyPresent (
-				numberList,
-				numbers);
+		try (
 
-		Set <Long> numberIdsPresent =
-			iterableMapToSet (
-				numberListNumber ->
-					numberListNumber.getNumber ().getId (),
-				numberListNumbers);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"splitNumbersPresent");
 
-		List <NumberRec> numbersPresent =
-			new ArrayList<> ();
-
-		List <NumberRec> numbersNotPresent =
-			new ArrayList<> ();
-
-		for (
-			NumberRec number
-				: numbers
 		) {
 
-			if (
-				contains (
-					numberIdsPresent,
-					number.getId ())
+			List <NumberListNumberRec> numberListNumbers =
+				numberListNumberHelper.findManyPresent (
+					transaction,
+					numberList,
+					numbers);
+
+			Set <Long> numberIdsPresent =
+				iterableMapToSet (
+					numberListNumber ->
+						numberListNumber.getNumber ().getId (),
+					numberListNumbers);
+
+			List <NumberRec> numbersPresent =
+				new ArrayList<> ();
+
+			List <NumberRec> numbersNotPresent =
+				new ArrayList<> ();
+
+			for (
+				NumberRec number
+					: numbers
 			) {
 
-				numbersPresent.add (
-					number);
+				if (
+					contains (
+						numberIdsPresent,
+						number.getId ())
+				) {
 
-			} else {
+					numbersPresent.add (
+						number);
 
-				numbersNotPresent.add (
-					number);
+				} else {
+
+					numbersNotPresent.add (
+						number);
+
+				}
 
 			}
 
-		}
+			return Pair.of (
+				numbersPresent,
+				numbersNotPresent);
 
-		return Pair.of (
-			numbersPresent,
-			numbersNotPresent);
+		}
 
 	}
 
 	@Override
 	public
 	void removeDueToMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberListRec numberList,
 			@NonNull NumberRec number,
 			@NonNull MessageRec message,
@@ -220,21 +243,18 @@ class NumberListLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"removeDueToMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// lookup number list number
 
 			NumberListNumberRec numberListNumber =
 				numberListNumberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					numberList,
 					number);
 
@@ -256,7 +276,7 @@ class NumberListLogicImplementation
 			// create number list update
 
 			numberListUpdateHelper.insert (
-				taskLogger,
+				transaction,
 				numberListUpdateHelper.createInstance ()
 
 				.setNumberList (

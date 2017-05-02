@@ -2,7 +2,8 @@ package wbs.sms.message.inbox.daemon;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.message.inbox.model.InboxAttemptRec;
 import wbs.sms.message.inbox.model.InboxRec;
@@ -25,6 +26,6 @@ interface CommandHandler {
 			String rest);
 
 	InboxAttemptRec handle (
-			TaskLogger taskLogger);
+			Transaction parentTransaction);
 
 }

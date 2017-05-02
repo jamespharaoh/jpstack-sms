@@ -8,10 +8,10 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -48,25 +48,22 @@ class NumberLogicImplementation
 	@Override
 	public
 	void updateDeliveryStatusForNumber (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull String numTo,
 			@NonNull MessageStatus status) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"updateDeliveryStatusForNumber");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			NumberRec number =
 				numberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					numTo);
 
 			// TODO should not be here
@@ -75,10 +72,11 @@ class NumberLogicImplementation
 				optionalOrElse (
 
 				chatUserNumberReportHelper.find (
+					transaction,
 					number.getId ()),
 
 				() -> chatUserNumberReportHelper.insert (
-					taskLogger,
+					transaction,
 					chatUserNumberReportHelper.createInstance ()
 
 					.setNumber (
@@ -121,20 +119,17 @@ class NumberLogicImplementation
 	@Override
 	public
 	NumberRec archiveNumberFromMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"archiveNumberFromMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// TODO i don't like this at all
 
@@ -154,13 +149,13 @@ class NumberLogicImplementation
 				.setNumber (
 					currentNumber + "." + oldNumber.getId ());
 
-			database.flush ();
+			transaction.flush ();
 
 			// create new number and save
 
 			NumberRec newNumber =
 				numberHelper.insert (
-					taskLogger,
+					transaction,
 					numberHelper.createInstance ()
 
 				.setNumber (
@@ -178,9 +173,9 @@ class NumberLogicImplementation
 				.setNumber (
 					newNumber);
 
-			database.flush ();
+			transaction.flush ();
 
-			taskLogger.warningFormat (
+			transaction.warningFormat (
 				"Archived number %s as %s",
 				currentNumber,
 				oldNumber.getNumber ());

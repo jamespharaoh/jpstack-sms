@@ -3,6 +3,7 @@ package wbs.sms.message.stats.logic;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.SingletonComponent;
+
 import wbs.sms.message.stats.model.MessageStatsData;
 
 @SingletonComponent ("messageStatsLogic")

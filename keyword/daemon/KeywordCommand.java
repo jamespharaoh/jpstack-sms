@@ -21,10 +21,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.sms.command.model.CommandObjectHelper;
@@ -121,18 +121,18 @@ class KeywordCommand
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"handle");
 
 		) {
 
-			taskLogger.debugFormat (
+			transaction.debugFormat (
 				"About to handle message %s ",
 				integerToDecimalString (
 					inbox.getId ()),
@@ -142,6 +142,7 @@ class KeywordCommand
 
 			keywordSet =
 				keywordSetHelper.findRequired (
+					transaction,
 					command.getParentId ());
 
 			message =
@@ -162,15 +163,16 @@ class KeywordCommand
 
 				if (nextCommand == null) {
 
-					taskLogger.noticeFormat (
+					transaction.noticeFormat (
 						"Keyword %s has no command, not processing message %s",
 						objectManager.objectPathMini (
+							transaction,
 							keywordRecord),
 						integerToDecimalString (
 							message.getId ()));
 
 					return smsInboxLogic.inboxNotProcessed (
-						taskLogger,
+						transaction,
 						inbox,
 						optionalAbsent (),
 						optionalAbsent (),
@@ -179,6 +181,7 @@ class KeywordCommand
 						stringFormat (
 							"No command for keyword %s",
 							objectManager.objectPathMini (
+								transaction,
 								keywordRecord)));
 
 				}
@@ -188,9 +191,10 @@ class KeywordCommand
 						? rest
 						: matchResult.get ().getRight ();
 
-				taskLogger.debugFormat (
+				transaction.debugFormat (
 					"Found keyword %s ",
 					objectManager.objectPathMini (
+						transaction,
 						keywordRecord),
 					"for message %s",
 					integerToDecimalString (
@@ -201,7 +205,7 @@ class KeywordCommand
 				if (keywordRecord.getSticky ()) {
 
 					keywordLogic.createOrUpdateKeywordSetFallback (
-						taskLogger,
+						transaction,
 						keywordSet,
 						message.getNumber (),
 						nextCommand);
@@ -211,7 +215,7 @@ class KeywordCommand
 				// hand off
 
 				return commandManager.handle (
-					taskLogger,
+					transaction,
 					inbox,
 					nextCommand,
 					Optional.<Long>absent (),
@@ -223,7 +227,7 @@ class KeywordCommand
 
 			Optional <InboxAttemptRec> keywordSetFallbackResult =
 				tryKeywordSetFallback (
-					taskLogger);
+					transaction);
 
 			if (keywordSetFallbackResult.isPresent ())
 				return keywordSetFallbackResult.get ();
@@ -232,7 +236,7 @@ class KeywordCommand
 
 			if (keywordSet.getFallbackCommand () != null) {
 
-				taskLogger.debugFormat (
+				transaction.debugFormat (
 					"Using fallback command for message %s",
 					integerToDecimalString (
 						inbox.getId ()));
@@ -241,7 +245,7 @@ class KeywordCommand
 					keywordSet.getFallbackCommand ();
 
 				return commandManager.handle (
-					taskLogger,
+					transaction,
 					inbox,
 					nextCommand,
 					optionalAbsent (),
@@ -251,14 +255,14 @@ class KeywordCommand
 
 			// mark as not processed
 
-			taskLogger.debugFormat (
+			transaction.debugFormat (
 				"Marking message %s ",
 				integerToDecimalString (
 					inbox.getId ()),
 				"as not processed");
 
 			return smsInboxLogic.inboxNotProcessed (
-				taskLogger,
+				transaction,
 				inbox,
 				optionalAbsent (),
 				optionalAbsent (),
@@ -267,6 +271,7 @@ class KeywordCommand
 				stringFormat (
 					"No keyword matched in keyword set %s",
 					objectManager.objectPathMini (
+						transaction,
 						keywordSet)));
 
 		}
@@ -337,30 +342,30 @@ class KeywordCommand
 
 	}
 
+	private
 	Optional <InboxAttemptRec> tryKeywordSetFallback (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"tryKeywordSetFallback");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// find fallback
 
 			KeywordSetFallbackRec keywordSetFallback =
 				keywordSetFallbackHelper.find (
+					transaction,
 					keywordSet,
 					message.getNumber ());
 
-			if (keywordSetFallback == null)
-				return Optional.absent ();
+			if (keywordSetFallback == null) {
+				return optionalAbsent ();
+			}
 
 			// check age
 
@@ -381,7 +386,7 @@ class KeywordCommand
 
 			// debug
 
-			taskLogger.debugFormat (
+			transaction.debugFormat (
 				"Using keyword set fallback %s ",
 				integerToDecimalString (
 					keywordSetFallback.getId ()),
@@ -395,7 +400,7 @@ class KeywordCommand
 
 			return optionalOf (
 				commandManager.handle (
-					taskLogger,
+					transaction,
 					inbox,
 					nextCommand,
 					optionalAbsent (),

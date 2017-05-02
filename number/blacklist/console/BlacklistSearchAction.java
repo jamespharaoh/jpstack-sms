@@ -90,23 +90,19 @@ class BlacklistSearchAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"BlacklistSearchAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			NumberFormatRec ukNumberFormat =
 				numberFormatHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					"uk");
 
@@ -129,8 +125,9 @@ class BlacklistSearchAction
 
 			}
 
-			Optional<BlacklistRec> blacklistOptional =
+			Optional <BlacklistRec> blacklistOptional =
 				blacklistHelper.findByCode (
+					transaction,
 					GlobalId.root,
 					number);
 
@@ -151,8 +148,9 @@ class BlacklistSearchAction
 
 			// copied from eventconsolemodule for now
 
-			Collection<EventLinkRec> eventLinks =
+			Collection <EventLinkRec> eventLinks =
 				eventLinkHelper.findByTypeAndRef (
+					transaction,
 					objectManager.objectClassToTypeId (
 						BlacklistRec.class),
 					blacklist.getId ());
@@ -211,6 +209,7 @@ class BlacklistSearchAction
 
 						Record <?> object =
 							objectManager.findObject (
+								transaction,
 								new GlobalId (
 									eventLink.getTypeId (),
 									eventLink.getRefId ()));
@@ -219,7 +218,7 @@ class BlacklistSearchAction
 							text.replaceAll (
 								"%" + eventLink.getIndex (),
 								objectManager.htmlForObject (
-									taskLogger,
+									transaction,
 									object,
 									optionalAbsent (),
 									false));
@@ -228,7 +227,8 @@ class BlacklistSearchAction
 
 				}
 
-				stringBuilder.append (text);
+				stringBuilder.append (
+					text);
 
 			}
 

@@ -9,13 +9,24 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
+import wbs.framework.object.InterfaceHelper;
 
 @Log4j
 public abstract
-class AbstractHelperManager <HelperType extends Helper> {
+class AbstractHelperManager <HelperType extends InterfaceHelper> {
+
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// state
 
@@ -33,74 +44,86 @@ class AbstractHelperManager <HelperType extends Helper> {
 
 	@NormalLifecycleSetup
 	public
-	void init () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		int errorCount = 0;
+		try (
 
-		Map <String, String> beanNamesByParentTypeCode =
-			new HashMap<> ();
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
 
-		ImmutableMap.Builder <String, HelperType>
-		byParentObjectTypeCodeBuilder =
-			ImmutableMap.builder ();
-
-		for (
-			Map.Entry <String, HelperType> helperEntry
-				: helpersByBeanName ().entrySet ()
 		) {
 
-			String beanName =
-				helperEntry.getKey ();
+			int errorCount = 0;
 
-			HelperType helper =
-				helperEntry.getValue ();
+			Map <String, String> beanNamesByParentTypeCode =
+				new HashMap<> ();
 
-			String parentObjectTypeCode =
-				helper.parentObjectTypeCode ();
+			ImmutableMap.Builder <String, HelperType>
+			byParentObjectTypeCodeBuilder =
+				ImmutableMap.builder ();
 
-			// make sure they're unique
+			for (
+				Map.Entry <String, HelperType> helperEntry
+					: helpersByBeanName ().entrySet ()
+			) {
 
-			if (beanNamesByParentTypeCode.containsKey (
-					parentObjectTypeCode)) {
+				String beanName =
+					helperEntry.getKey ();
 
-				log.error (
-					stringFormat (
-						"%s helper for %s from both %s and %s",
-						capitalise (
-							friendlyName ()),
-						parentObjectTypeCode,
-						beanNamesByParentTypeCode.get (
-							parentObjectTypeCode),
-						beanName));
+				HelperType helper =
+					helperEntry.getValue ();
 
-				errorCount ++;
+				String parentObjectTypeCode =
+					helper.parentObjectTypeCode ();
 
-				continue;
+				// make sure they're unique
+
+				if (beanNamesByParentTypeCode.containsKey (
+						parentObjectTypeCode)) {
+
+					log.error (
+						stringFormat (
+							"%s helper for %s from both %s and %s",
+							capitalise (
+								friendlyName ()),
+							parentObjectTypeCode,
+							beanNamesByParentTypeCode.get (
+								parentObjectTypeCode),
+							beanName));
+
+					errorCount ++;
+
+					continue;
+
+				}
+
+				// add it to the list
+
+				byParentObjectTypeCodeBuilder.put (
+					parentObjectTypeCode,
+					helper);
 
 			}
 
-			// add it to the list
+			// abort if there were errors
 
-			byParentObjectTypeCodeBuilder.put (
-				parentObjectTypeCode,
-				helper);
+			if (errorCount > 0) {
 
-		}
+				throw new RuntimeException (
+					stringFormat (
+						"Aborting due to %s errors",
+						integerToDecimalString (
+							errorCount)));
 
-		// abort if there were errors
+			}
 
-		if (errorCount > 0) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Aborting due to %s errors",
-					integerToDecimalString (
-						errorCount)));
+			byParentObjectTypeCode =
+				byParentObjectTypeCodeBuilder.build ();
 
 		}
-
-		byParentObjectTypeCode =
-			byParentObjectTypeCodeBuilder.build ();
 
 	}
 

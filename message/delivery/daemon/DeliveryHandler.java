@@ -10,7 +10,7 @@ interface DeliveryHandler {
 	Collection <String> getDeliveryTypeCodes ();
 
 	void handle (
-			TaskLogger taskLogger,
+			TaskLogger parentTaskLogger,
 			Long deliveryNoticeQueueId,
 			Long ref);
 

@@ -12,9 +12,12 @@ import lombok.Setter;
 import wbs.console.forms.FormFieldNativeMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
@@ -26,11 +29,14 @@ class GazetteerCodeFormFieldNativeMapping <Container>
 
 	// singleton dependencies
 
-	@SingletonDependency
-	ConsoleObjectManager objectManager;
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	GazetteerEntryConsoleHelper gazetteerEntryHelper;
+
+	@SingletonDependency
+	ConsoleObjectManager objectManager;
 
 	// properties
 
@@ -42,55 +48,80 @@ class GazetteerCodeFormFieldNativeMapping <Container>
 	@Override
 	public
 	Optional <String> genericToNative (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
 			@NonNull Optional <GazetteerEntryRec> genericValue) {
 
-		if (
-			optionalIsNotPresent (
-				genericValue)
-		) {
-			return Optional.<String>absent ();
-		}
+		try (
 
-		return Optional.of (
-			genericValue.get ().getCode ());
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"genericToNative");
+
+		) {
+
+			if (
+				optionalIsNotPresent (
+					genericValue)
+			) {
+				return Optional.<String>absent ();
+			}
+
+			return Optional.of (
+				genericValue.get ().getCode ());
+
+		}
 
 	}
 
 	@Override
 	public
-	Optional<GazetteerEntryRec> nativeToGeneric (
+	Optional <GazetteerEntryRec> nativeToGeneric (
+			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
-			@NonNull Optional<String> nativeValue) {
+			@NonNull Optional <String> nativeValue) {
 
-		if (
-			optionalIsNotPresent (
-				nativeValue)
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"nativeToGeneric");
+
 		) {
-			return Optional.<GazetteerEntryRec>absent ();
+
+			if (
+				optionalIsNotPresent (
+					nativeValue)
+			) {
+				return Optional.<GazetteerEntryRec> absent ();
+			}
+
+			GazetteerRec gazetteer =
+				(GazetteerRec)
+				objectManager.dereferenceObsolete (
+					transaction,
+					container,
+					gazetteerFieldName);
+
+			if (
+				isNull (
+					gazetteer)
+			) {
+				throw new RuntimeException ();
+			}
+
+			GazetteerEntryRec entry =
+				gazetteerEntryHelper.findByCodeRequired (
+					transaction,
+					gazetteer,
+					nativeValue.get ());
+
+			return Optional.of (
+				entry);
+
 		}
-
-		GazetteerRec gazetteer =
-			(GazetteerRec)
-			objectManager.dereferenceObsolete (
-				container,
-				gazetteerFieldName);
-
-		if (
-			isNull (
-				gazetteer)
-		) {
-			throw new RuntimeException ();
-		}
-
-		GazetteerEntryRec entry =
-			gazetteerEntryHelper.findByCodeRequired (
-				gazetteer,
-				nativeValue.get ());
-
-		return Optional.of (
-			entry);
 
 	}
 

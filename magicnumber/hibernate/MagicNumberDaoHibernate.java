@@ -4,7 +4,12 @@ import lombok.NonNull;
 
 import org.hibernate.criterion.Restrictions;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.magicnumber.model.MagicNumberDao;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
@@ -15,56 +20,89 @@ class MagicNumberDaoHibernate
 	extends HibernateDao
 	implements MagicNumberDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	MagicNumberRec findByNumber (
+			@NonNull Transaction parentTransaction,
 			@NonNull String number) {
 
-		return findOneOrNull (
-			"findByNumber (number)",
-			MagicNumberRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findByNumber");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				MagicNumberRec.class,
-				"_magicNumber")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumber.number",
-					number))
+				createCriteria (
+					transaction,
+					MagicNumberRec.class,
+					"_magicNumber")
 
-		);
+				.add (
+					Restrictions.eq (
+						"_magicNumber.number",
+						number))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	MagicNumberRec findExistingUnused (
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number) {
 
-		return findOne (
-			MagicNumberRec.class,
+		try (
 
-			createQuery (
-				"FROM MagicNumberRec magicNumber " +
-				"WHERE magicNumber.magicNumberSet = :magicNumberSet " +
-				"AND NOT EXISTS (" +
-					"SELECT magicNumberUse.id " +
-					"FROM magicNumber.magicNumberUses magicNumberUse " +
-					"WHERE magicNumberUse.number = :number" +
-				") " +
-				"AND magicNumber.deleted = false")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findExistingUnused");
 
-			.setEntity (
-				"magicNumberSet",
-				magicNumberSet)
+		) {
 
-			.setEntity (
-				"number",
-				number)
+			return findOne (
+				MagicNumberRec.class,
 
-			.list ());
+				createQuery (
+					transaction,
+					"FROM MagicNumberRec magicNumber " +
+					"WHERE magicNumber.magicNumberSet = :magicNumberSet " +
+					"AND NOT EXISTS (" +
+						"SELECT magicNumberUse.id " +
+						"FROM magicNumber.magicNumberUses magicNumberUse " +
+						"WHERE magicNumberUse.number = :number" +
+					") " +
+					"AND magicNumber.deleted = false")
+
+				.setEntity (
+					"magicNumberSet",
+					magicNumberSet)
+
+				.setEntity (
+					"number",
+					number)
+
+				.list ());
+
+		}
 
 	}
 

@@ -4,6 +4,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;

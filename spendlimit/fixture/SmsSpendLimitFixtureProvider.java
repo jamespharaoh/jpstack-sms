@@ -5,11 +5,11 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.currency.model.CurrencyObjectHelper;
 import wbs.platform.feature.model.FeatureObjectHelper;
@@ -64,28 +64,24 @@ class SmsSpendLimitFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createFixtures");
 
 		) {
 
 			createMenuItems (
-				taskLogger,
 				transaction);
 
 			createFeatures (
-				taskLogger,
 				transaction);
 
 			createSpendLimiter (
-				taskLogger,
 				transaction);
 
 		}
@@ -96,24 +92,24 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createMenuItems (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createMenuItems");
 
 		) {
 
 			menuItemHelper.insert (
-				taskLogger,
+				transaction,
 				menuItemHelper.createInstance ()
 
 				.setMenuGroup (
 					menuGroupHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"test",
 						"sms"))
@@ -144,20 +140,19 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createFeatures (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createFeatures");
 
 		) {
 
 			featureHelper.insert (
-				taskLogger,
+				transaction,
 				featureHelper.createInstance ()
 
 				.setCode (
@@ -177,24 +172,24 @@ class SmsSpendLimitFixtureProvider
 
 	private
 	void createSpendLimiter (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSpendLimiter");
 
 		) {
 
 			smsSpendLimiterHelper.insert (
-				taskLogger,
+				transaction,
 				smsSpendLimiterHelper.createInstance ()
 
 				.setSlice (
 					sliceHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"test"))
 
@@ -209,13 +204,16 @@ class SmsSpendLimitFixtureProvider
 
 				.setCurrency (
 					currencyHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"test",
 						"gbp"))
 
 				.setRouter (
 					routerHelper.findByCodeRequired (
+						transaction,
 						routeHelper.findByCodeRequired (
+							transaction,
 							GlobalId.root,
 							"test",
 							"free"),
@@ -226,7 +224,7 @@ class SmsSpendLimitFixtureProvider
 
 				.setDailySpendLimitMessage (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						"Daily spend limit"))
 
 				.setDailySpendAdviceAmount (
@@ -234,7 +232,7 @@ class SmsSpendLimitFixtureProvider
 
 				.setDailySpendAdviceMessage (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						"Daily spend advice"))
 
 			);

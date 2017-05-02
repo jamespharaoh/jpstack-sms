@@ -18,10 +18,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.service.model.ServiceObjectHelper;
@@ -122,19 +122,16 @@ class SmsCustomerStopCommand
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"handle");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			MessageRec inboundMessage =
 				inbox.getMessage ();
@@ -142,16 +139,18 @@ class SmsCustomerStopCommand
 			SmsCustomerManagerRec customerManager =
 				genericCastUnchecked (
 					objectManager.getParentRequired (
+						transaction,
 						command));
 
 			SmsCustomerRec customer =
 				smsCustomerHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					customerManager,
 					inboundMessage.getNumber ());
 
 			ServiceRec stopService =
 				serviceHelper.findByCodeRequired (
+					transaction,
 					customerManager,
 					"stop");
 
@@ -159,6 +158,7 @@ class SmsCustomerStopCommand
 
 			SmsCustomerTemplateRec stopTemplate =
 				smsCustomerTemplateHelper.findByCodeRequired (
+					transaction,
 					customerManager,
 					"stop");
 
@@ -186,6 +186,7 @@ class SmsCustomerStopCommand
 						stopTemplate.getNumber ())
 
 					.routerResolve (
+						transaction,
 						stopTemplate.getRouter ())
 
 					.service (
@@ -194,10 +195,11 @@ class SmsCustomerStopCommand
 					.affiliate (
 						optionalOrNull (
 							smsCustomerLogic.customerAffiliate (
+								transaction,
 								customer)))
 
 					.send (
-						taskLogger);
+						transaction);
 
 			}
 
@@ -234,7 +236,7 @@ class SmsCustomerStopCommand
 			) {
 
 				numberListLogic.addDueToMessage (
-					taskLogger,
+					transaction,
 					customerManager.getStopNumberList (),
 					inboundMessage.getNumber (),
 					inboundMessage,
@@ -245,11 +247,12 @@ class SmsCustomerStopCommand
 			// process message
 
 			return smsInboxLogic.inboxProcessed (
-				taskLogger,
+				transaction,
 				inbox,
 				optionalOf (
 					stopService),
 				smsCustomerLogic.customerAffiliate (
+					transaction,
 					customer),
 				command);
 

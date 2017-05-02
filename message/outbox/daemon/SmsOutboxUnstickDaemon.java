@@ -73,20 +73,15 @@ class SmsOutboxUnstickDaemon
 	void runOnce (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"runOnce ()");
-
 		for (;;) {
 
 			try (
 
 				OwnedTransaction transaction =
 					database.beginReadWrite (
-						taskLogger,
-						"SmsOutboxUnstickDaemon.runOnce ()",
-						this);
+						logContext,
+						parentTaskLogger,
+						"runOnce");
 
 			) {
 
@@ -94,8 +89,9 @@ class SmsOutboxUnstickDaemon
 					transaction.now ().minus (
 						timeoutDuration);
 
-				List<OutboxRec> outboxesToUnstick =
+				List <OutboxRec> outboxesToUnstick =
 					outboxHelper.findSendingBeforeLimit (
+						transaction,
 						sendingBefore,
 						batchSize);
 
@@ -107,7 +103,7 @@ class SmsOutboxUnstickDaemon
 						: outboxesToUnstick
 				) {
 
-					taskLogger.warningFormat (
+					transaction.warningFormat (
 						"Unsticking outbox %s (sending time is %s)",
 						integerToDecimalString (
 							outbox.getId ()),

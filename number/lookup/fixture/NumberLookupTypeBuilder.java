@@ -5,11 +5,10 @@ import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 import static wbs.utils.string.StringUtils.camelToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.sql.SQLException;
-
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.TransactionBuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -18,14 +17,14 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
 import wbs.platform.object.core.model.ObjectTypeRec;
@@ -36,7 +35,8 @@ import wbs.sms.number.lookup.model.NumberLookupTypeObjectHelper;
 @PrototypeComponent ("numberLookupTypeBuilder")
 @ModelMetaBuilderHandler
 public
-class NumberLookupTypeBuilder {
+class NumberLookupTypeBuilder
+	implements TransactionBuilderComponent {
 
 	// singleton dependencies
 
@@ -68,22 +68,23 @@ class NumberLookupTypeBuilder {
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Builder builder) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Builder <Transaction> builder) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"build");
 
 		) {
 
-			taskLogger.noticeFormat (
+			transaction.noticeFormat (
 				"Create delivery type %s.%s",
 				camelToUnderscore (
 					ifNull (
@@ -93,7 +94,7 @@ class NumberLookupTypeBuilder {
 					spec.name ()));
 
 			createNumberLookupType (
-				taskLogger);
+				transaction);
 
 		} catch (Exception exception) {
 
@@ -114,21 +115,14 @@ class NumberLookupTypeBuilder {
 
 	private
 	void createNumberLookupType (
-			@NonNull TaskLogger parentTaskLogger)
-		throws SQLException {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createNumberLookupType");
-
-			OwnedTransaction transaction =
-				database.beginReadWrite (
-					taskLogger,
-					"NumberLookupTypeBuilder.createNumberLookupType ()",
-					this);
 
 		) {
 
@@ -142,13 +136,14 @@ class NumberLookupTypeBuilder {
 
 			ObjectTypeRec parentType =
 				objectTypeHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					parentTypeCode);
 
 			// create number lookup type
 
 			numberLookupTypeHelper.insert (
-				taskLogger,
+				transaction,
 				numberLookupTypeHelper.createInstance ()
 
 				.setParentType (
@@ -162,10 +157,6 @@ class NumberLookupTypeBuilder {
 					spec.description ())
 
 			);
-
-			// commit transaction
-
-			transaction.commit ();
 
 		}
 

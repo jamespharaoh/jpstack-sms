@@ -19,9 +19,9 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -70,78 +70,103 @@ class MessageManuallyRetryFormActionHelper
 	@Override
 	public
 	Permissions canBePerformed (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		Optional <OutboxRec> smsOutboxOptional =
-			smsOutboxHelper.find (
-				smsMessage.getId ());
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"canBePerformed");
 
-		boolean show = (
+		) {
 
-			enumEqualSafe (
-				smsMessage.getDirection (),
-				MessageDirection.out)
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
-			&& enumInSafe (
-				smsMessage.getStatus (),
-				MessageStatus.pending,
-				MessageStatus.failed,
-				MessageStatus.cancelled,
-				MessageStatus.blacklisted)
+			Optional <OutboxRec> smsOutboxOptional =
+				smsOutboxHelper.find (
+					transaction,
+					smsMessage.getId ());
 
-		);
+			boolean show = (
 
-		boolean submit = (
+				enumEqualSafe (
+					smsMessage.getDirection (),
+					MessageDirection.out)
 
-			enumInSafe (
-				smsMessage.getStatus (),
-				MessageStatus.failed,
-				MessageStatus.cancelled,
-				MessageStatus.blacklisted)
+				&& enumInSafe (
+					smsMessage.getStatus (),
+					MessageStatus.pending,
+					MessageStatus.failed,
+					MessageStatus.cancelled,
+					MessageStatus.blacklisted)
 
-		) || (
+			);
 
-			optionalIsPresent (
-				smsOutboxOptional)
+			boolean submit = (
 
-			&& isNull (
-				smsOutboxOptional.get ().getSending ())
+				enumInSafe (
+					smsMessage.getStatus (),
+					MessageStatus.failed,
+					MessageStatus.cancelled,
+					MessageStatus.blacklisted)
 
-		);
+			) || (
 
-		return new Permissions ()
-			.canView (show)
-			.canPerform (submit);
+				optionalIsPresent (
+					smsOutboxOptional)
+
+				&& isNull (
+					smsOutboxOptional.get ().getSending ())
+
+			);
+
+			return new Permissions ()
+				.canView (show)
+				.canPerform (submit);
+
+		}
 
 	}
 
 	@Override
 	public
 	void writePreamble (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull Boolean submit) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		if (submit) {
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writePreamble");
 
-			htmlParagraphWriteFormat (
-				"This outbound message is in the \"%h\" ",
-				smsMessage.getStatus ().getDescription (),
-				"state, and can be manually retried.");
+		) {
 
-		} else {
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
-			htmlParagraphWriteFormat (
-				"This outbound message is in the \"%h\" ",
-				smsMessage.getStatus ().getDescription (),
-				"state, but is currently being sent, so no action can be ",
-				"taken at this time.");
+			if (submit) {
+
+				htmlParagraphWriteFormat (
+					"This outbound message is in the \"%h\" ",
+					smsMessage.getStatus ().getDescription (),
+					"state, and can be manually retried.");
+
+			} else {
+
+				htmlParagraphWriteFormat (
+					"This outbound message is in the \"%h\" ",
+					smsMessage.getStatus ().getDescription (),
+					"state, but is currently being sent, so no action can be ",
+					"taken at this time.");
+
+			}
 
 		}
 
@@ -150,15 +175,14 @@ class MessageManuallyRetryFormActionHelper
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction,
+			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"processFormSubmission");
 
 		) {
@@ -166,10 +190,12 @@ class MessageManuallyRetryFormActionHelper
 			// load data
 
 			MessageRec smsMessage =
-				smsMessageHelper.findFromContextRequired ();
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
 			Optional <OutboxRec> smsOutboxOptional =
 				smsOutboxHelper.find (
+					transaction,
 					smsMessage.getId ());
 
 			// check state
@@ -210,13 +236,14 @@ class MessageManuallyRetryFormActionHelper
 			// retry message
 
 			smsOutboxLogic.retryMessage (
-				taskLogger,
+				transaction,
 				smsMessage);
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"message_manually_retried",
-				userConsoleLogic.userRequired (),
+				userConsoleLogic.userRequired (
+					transaction),
 				smsMessage);
 
 			transaction.commit ();

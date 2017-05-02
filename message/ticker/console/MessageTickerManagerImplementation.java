@@ -15,13 +15,18 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.media.model.MediaRec;
@@ -37,14 +42,17 @@ class MessageTickerManagerImplementation
 
 	// singleton dependencies
 
-	@SingletonDependency
-	ObjectManager objectManager;
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
 
 	@SingletonDependency
 	MessageObjectHelper messageHelper;
+
+	@SingletonDependency
+	ObjectManager objectManager;
 
 	// properties
 
@@ -69,154 +77,184 @@ class MessageTickerManagerImplementation
 	// implementation
 
 	private synchronized
-	void update () {
+	void update (
+			@NonNull Transaction parentTransaction) {
 
-		// don't run too often
+		try (
 
-		Instant now =
-			Instant.now ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"update");
 
-		if (
-			earlierThan (
-				now,
-				lastUpdate.plus (
-					updateDuration))
-		) {
-			return;
-		}
-
-		lastUpdate = now;
-
-		// get a generation number
-
-		generation ++;
-
-		// update the info
-
-		List <MessageRec> recentMessages =
-			messageHelper.findRecentLimit (
-				generations);
-
-		Collections.sort (
-			recentMessages,
-			Ordering.natural ().reverse ());
-
-		ImmutableMap.Builder <Long, MessageTickerMessage>
-			messageTickerMessagesBuilder =
-				ImmutableMap.builder ();
-
-		for (
-			MessageRec message
-				: recentMessages
 		) {
 
-			MessageTickerMessage messageTickerMessage =
-				messageTickerMessages.get (
-					message.getId ());
+			// don't run too often
 
-			if (messageTickerMessage != null) {
+			Instant now =
+				Instant.now ();
 
-				if (messageTickerMessage.status != message.getStatus ()) {
+			if (
+				earlierThan (
+					now,
+					lastUpdate.plus (
+						updateDuration))
+			) {
+				return;
+			}
+
+			lastUpdate = now;
+
+			// get a generation number
+
+			generation ++;
+
+			// update the info
+
+			List <MessageRec> recentMessages =
+				messageHelper.findRecentLimit (
+					transaction,
+					generations);
+
+			Collections.sort (
+				recentMessages,
+				Ordering.natural ().reverse ());
+
+			ImmutableMap.Builder <Long, MessageTickerMessage>
+				messageTickerMessagesBuilder =
+					ImmutableMap.builder ();
+
+			for (
+				MessageRec message
+					: recentMessages
+			) {
+
+				MessageTickerMessage messageTickerMessage =
+					messageTickerMessages.get (
+						message.getId ());
+
+				if (messageTickerMessage != null) {
+
+					if (messageTickerMessage.status != message.getStatus ()) {
+
+						messageTickerMessage =
+							new MessageTickerMessage (
+								messageTickerMessage);
+
+						messageTickerMessage.status =
+							message.getStatus ();
+
+						messageTickerMessage.statusGeneration =
+							generation;
+
+					}
+
+				} else {
 
 					messageTickerMessage =
-						new MessageTickerMessage (
-							messageTickerMessage);
+						new MessageTickerMessage ();
 
-					messageTickerMessage.status =
-						message.getStatus ();
+					messageTickerMessage.messageGeneration =
+						generation;
 
 					messageTickerMessage.statusGeneration =
 						generation;
 
-				}
+					messageTickerMessage.messageId =
+						message.getId ();
 
-			} else {
+					messageTickerMessage.routeGlobalId =
+						objectManager.getGlobalId (
+							transaction,
+							message.getRoute ());
 
-				messageTickerMessage =
-					new MessageTickerMessage ();
+					messageTickerMessage.serviceParentGlobalId =
+						objectManager.getParentGlobalId (
+							transaction,
+							message.getService ());
 
-				messageTickerMessage.messageGeneration =
-					generation;
+					messageTickerMessage.affiliateParentGlobalId =
+						objectManager.getParentGlobalId (
+							transaction,
+							message.getAffiliate ());
 
-				messageTickerMessage.statusGeneration =
-					generation;
+					messageTickerMessage.createdTime =
+						message.getCreatedTime ();
 
-				messageTickerMessage.messageId =
-					message.getId ();
+					messageTickerMessage.numFrom =
+						message.getNumFrom ();
 
-				messageTickerMessage.routeGlobalId =
-					objectManager.getGlobalId (
-						message.getRoute ());
+					messageTickerMessage.numTo =
+						message.getNumTo ();
 
-				messageTickerMessage.serviceParentGlobalId =
-					objectManager.getParentGlobalId (
-						message.getService ());
+					// TODO this encoding looks like it's in the wrong layer
 
-				messageTickerMessage.affiliateParentGlobalId =
-					objectManager.getParentGlobalId (
-						message.getAffiliate ());
+					messageTickerMessage.text =
+						spacify (
+							formatWriterConsumerToString (
+								formatWriter ->
 
-				messageTickerMessage.createdTime =
-					message.getCreatedTime ();
+						messageConsoleLogic.writeMessageContentText (
+							transaction,
+							formatWriter,
+							message)
 
-				messageTickerMessage.numFrom =
-					message.getNumFrom ();
+					));
 
-				messageTickerMessage.numTo =
-					message.getNumTo ();
+					messageTickerMessage.direction =
+						message.getDirection ();
 
-				// TODO this encoding looks like it's in the wrong layer
+					messageTickerMessage.status =
+						message.getStatus ();
 
-				messageTickerMessage.text =
-					spacify (
-						formatWriterConsumerToString (
-							formatWriter ->
+					messageTickerMessage.charge =
+						message.getCharge ();
 
-					messageConsoleLogic.writeMessageContentText (
-						formatWriter,
-						message)
+					for (
+						MediaRec media
+							: message.getMedias ()
+					) {
 
-				));
+						messageTickerMessage.mediaIds.add (
+							media.getId ());
 
-				messageTickerMessage.direction =
-					message.getDirection ();
-
-				messageTickerMessage.status =
-					message.getStatus ();
-
-				messageTickerMessage.charge =
-					message.getCharge ();
-
-				for (
-					MediaRec media
-						: message.getMedias ()
-				) {
-
-					messageTickerMessage.mediaIds.add (
-						media.getId ());
+					}
 
 				}
+
+				messageTickerMessagesBuilder.put (
+					message.getId (),
+					messageTickerMessage);
 
 			}
 
-			messageTickerMessagesBuilder.put (
-				message.getId (),
-				messageTickerMessage);
+			messageTickerMessages =
+				messageTickerMessagesBuilder.build ();
 
 		}
-
-		messageTickerMessages =
-			messageTickerMessagesBuilder.build ();
 
 	}
 
 	@Override
 	public
-	synchronized Collection <MessageTickerMessage> getMessages () {
+	synchronized Collection <MessageTickerMessage> getMessages (
+			@NonNull Transaction parentTransaction) {
 
-		update ();
+		try (
 
-		return messageTickerMessages.values ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"getMessages");
+
+		) {
+
+			update (
+				transaction);
+
+			return messageTickerMessages.values ();
+
+		}
 
 	}
 

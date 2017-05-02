@@ -18,8 +18,9 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.list.model.NumberListRec;
 
@@ -49,45 +50,57 @@ class NumberListNumberUpdatePart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		numberList =
-			numberListHelper.findFromContextRequired ();
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			numberList =
+				numberListHelper.findFromContextRequired (
+					transaction);
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
 
 			goDetails (
-				taskLogger);
+				transaction);
 
 			goForm (
-				taskLogger);
+				transaction);
 
 		}
 
 	}
 
 	void goDetails (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"goDetails");
 
 		) {
@@ -106,13 +119,13 @@ class NumberListNumberUpdatePart
 	}
 
 	void goForm (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"goForm");
 
 		) {
@@ -145,7 +158,7 @@ class NumberListNumberUpdatePart
 
 			if (
 				privChecker.canRecursive (
-					taskLogger,
+					transaction,
 					numberList,
 					"number_list_add")
 			) {
@@ -161,7 +174,7 @@ class NumberListNumberUpdatePart
 
 			if (
 				privChecker.canRecursive (
-					taskLogger,
+					transaction,
 					numberList,
 					"number_list_remove")
 			) {

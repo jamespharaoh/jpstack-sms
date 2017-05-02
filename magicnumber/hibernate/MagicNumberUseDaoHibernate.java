@@ -5,7 +5,12 @@ import lombok.NonNull;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberRec;
 import wbs.sms.magicnumber.model.MagicNumberSetRec;
@@ -18,123 +23,169 @@ class MagicNumberUseDaoHibernate
 	extends HibernateDao
 	implements MagicNumberUseDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	MagicNumberUseRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberRec magicNumber,
 			@NonNull NumberRec number) {
 
-		return findOneOrNull (
-			"find (magicNumber, number)",
-			MagicNumberUseRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				MagicNumberUseRec.class,
-				"_magicNumberUse")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.magicNumber",
-					magicNumber))
+				createCriteria (
+					transaction,
+					MagicNumberUseRec.class,
+					"_magicNumberUse")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.magicNumber",
+						magicNumber))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.number",
+						number))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	MagicNumberUseRec findExistingByRef (
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
 			@NonNull Long ref) {
 
-		return findOneOrNull (
-			"findExistingByRef (magicNumberSet, number, command, ref)",
-			MagicNumberUseRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findExistingByRef");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				MagicNumberUseRec.class,
-				"_magicNumberUse")
 
-			.createAlias (
-				"_magicNumberUse.magicNumber",
-				"_magicNumber")
+				createCriteria (
+					transaction,
+					MagicNumberUseRec.class,
+					"_magicNumberUse")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumber.magicNumberSet",
-					magicNumberSet))
+				.createAlias (
+					"_magicNumberUse.magicNumber",
+					"_magicNumber")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_magicNumber.magicNumberSet",
+						magicNumberSet))
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.command",
-					command))
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.number",
+						number))
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.refId",
-					ref))
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.command",
+						command))
 
-			.add (
-				Restrictions.eq (
-					"_magicNumber.deleted",
-					false))
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.refId",
+						ref))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_magicNumber.deleted",
+						false))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	MagicNumberUseRec findExistingLeastRecentlyUsed (
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number) {
 
-		return findOneOrNull (
-			"findExistingLeastRecentlyUsed (magicNumberSet, number)",
-			MagicNumberUseRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findExistingLeastRecentlyUsed");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				MagicNumberUseRec.class,
-				"_magicNumberUse")
 
-			.createAlias (
-				"_magicNumberUse.magicNumber",
-				"_magicNumber")
+				createCriteria (
+					transaction,
+					MagicNumberUseRec.class,
+					"_magicNumberUse")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumber.magicNumberSet",
-					magicNumberSet))
+				.createAlias (
+					"_magicNumberUse.magicNumber",
+					"_magicNumber")
 
-			.add (
-				Restrictions.eq (
-					"_magicNumberUse.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_magicNumber.magicNumberSet",
+						magicNumberSet))
 
-			.add (
-				Restrictions.eq (
-					"_magicNumber.deleted",
-					false))
+				.add (
+					Restrictions.eq (
+						"_magicNumberUse.number",
+						number))
 
-			.addOrder (
-				Order.asc (
-					"_magicNumberUse.lastUseTimestamp"))
+				.add (
+					Restrictions.eq (
+						"_magicNumber.deleted",
+						false))
 
-			.setMaxResults (1)
+				.addOrder (
+					Order.asc (
+						"_magicNumberUse.lastUseTimestamp"))
 
-		);
+				.setMaxResults (1)
+
+			);
+
+		}
 
 	}
 

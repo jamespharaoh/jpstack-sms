@@ -27,8 +27,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.core.console.ConsoleAsyncSubscription;
@@ -98,7 +100,7 @@ class MessageTickerUpdateAsyncHelper
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"newSubscription");
@@ -117,19 +119,20 @@ class MessageTickerUpdateAsyncHelper
 	@Override
 	public
 	void prepareUpdate (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepareUpdate");
 
 		) {
 
 			messageTickerMessages =
-				messageTickerManager.getMessages ();
+				messageTickerManager.getMessages (
+					transaction);
 
 		}
 
@@ -138,18 +141,17 @@ class MessageTickerUpdateAsyncHelper
 	@Override
 	public
 	void updateSubscriber (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SubscriberState state,
 			@NonNull ConsoleAsyncConnectionHandle connectionHandle,
-			@NonNull OwnedTransaction transaction,
 			@NonNull UserRec user,
 			@NonNull UserPrivChecker privChecker) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"updateSubscriber");
 
 		) {
@@ -176,14 +178,14 @@ class MessageTickerUpdateAsyncHelper
 
 					if (
 						messageIsVisible (
-							taskLogger,
+							transaction,
 							privChecker,
 							messageTickerMessage)
 					) {
 
 						messagesArray.add (
 							createMessage (
-								taskLogger,
+								transaction,
 								user,
 								messageTickerMessage));
 
@@ -197,14 +199,14 @@ class MessageTickerUpdateAsyncHelper
 
 					if (
 						messageIsVisible (
-							taskLogger,
+							transaction,
 							privChecker,
 							messageTickerMessage)
 					) {
 
 						statusesArray.add (
 							createStatus (
-								taskLogger,
+								transaction,
 								messageTickerMessage));
 
 					}
@@ -233,7 +235,7 @@ class MessageTickerUpdateAsyncHelper
 				statusesArray);
 
 			connectionHandle.send (
-				taskLogger,
+				transaction,
 				updateData);
 
 			// update state
@@ -253,7 +255,7 @@ class MessageTickerUpdateAsyncHelper
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"messageIsVisible");
@@ -285,15 +287,15 @@ class MessageTickerUpdateAsyncHelper
 
 	private
 	JsonObject createMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull UserRec user,
 			@NonNull MessageTickerMessage messageTickerMessage) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createMessage");
 
 		) {
@@ -401,6 +403,7 @@ class MessageTickerUpdateAsyncHelper
 
 				MediaRec media =
 					mediaHelper.findRequired (
+						transaction,
 						mediaId);
 
 				mediaArray.add (
@@ -408,7 +411,7 @@ class MessageTickerUpdateAsyncHelper
 						formatWriterConsumerToString (
 							formatWriter ->
 								mediaConsoleLogic.writeMediaThumb32OrText (
-									taskLogger,
+									transaction,
 									formatWriter,
 									media))));
 

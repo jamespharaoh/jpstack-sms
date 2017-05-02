@@ -18,13 +18,23 @@ import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 @PrototypeComponent ("messageStatusLinePart")
 public
 class MessageStatusLinePart
 	extends AbstractPagePart {
+
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// details
 
 	@Override
 	public
@@ -39,87 +49,127 @@ class MessageStatusLinePart
 
 	}
 
+	// implementation
+
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		renderInboxRow ();
-		renderOutboxRow ();
+		try (
 
-	}
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-	private
-	void renderInboxRow () {
+		) {
 
-		htmlTableRowOpen (
+			renderInboxRow (
+				transaction);
 
-			htmlIdAttribute (
-				"inboxRow"),
+			renderOutboxRow (
+				transaction);
 
-			htmlAttribute (
-				"onmouseover",
-				"this.className='hover';"),
-
-			htmlAttribute (
-				"onmouseout",
-				"this.className='';"),
-
-			htmlAttributeFormat (
-				"onclick",
-				"top.frames.main.location='%j';",
-				requestContext.resolveApplicationUrl (
-					"/inbox")),
-
-			htmlStyleRuleEntry (
-				"display",
-				"none")
-
-		);
-
-		htmlTableCellWrite (
-			"—",
-			htmlIdAttribute (
-				"inboxCell"));
-
-		htmlTableRowClose ();
+		}
 
 	}
 
 	private
-	void renderOutboxRow () {
+	void renderInboxRow (
+			@NonNull Transaction parentTransaction) {
 
-		htmlTableRowOpen (
+		try (
 
-			htmlIdAttribute (
-				"outboxRow"),
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderInboxRow");
 
-			htmlAttribute (
-				"onmouseover",
-				"this.className='hover';"),
+		) {
 
-			htmlAttribute (
-				"onmouseout",
-				"this.className='';"),
+			htmlTableRowOpen (
 
-			htmlAttributeFormat (
-				"onclick",
-				"top.frames.main.location='%j'",
-				requestContext.resolveApplicationUrl (
-					"/outboxes")),
+				htmlIdAttribute (
+					"inboxRow"),
 
-			htmlStyleRuleEntry (
-				"display",
-				"none")
+				htmlAttribute (
+					"onmouseover",
+					"this.className='hover';"),
 
-		);
+				htmlAttribute (
+					"onmouseout",
+					"this.className='';"),
 
-		htmlTableCellWrite (
-			"—",
-			htmlIdAttribute (
-				"outboxCell"));
+				htmlAttributeFormat (
+					"onclick",
+					"top.frames.main.location='%j';",
+					requestContext.resolveApplicationUrl (
+						"/inbox")),
 
-		htmlTableRowClose ();
+				htmlStyleRuleEntry (
+					"display",
+					"none")
+
+			);
+
+			htmlTableCellWrite (
+				"—",
+				htmlIdAttribute (
+					"inboxCell"));
+
+			htmlTableRowClose ();
+
+		}
+
+	}
+
+	private
+	void renderOutboxRow (
+			@NonNull Transaction parentTransaction) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderOutboxRow");
+
+		) {
+
+			htmlTableRowOpen (
+
+				htmlIdAttribute (
+					"outboxRow"),
+
+				htmlAttribute (
+					"onmouseover",
+					"this.className='hover';"),
+
+				htmlAttribute (
+					"onmouseout",
+					"this.className='';"),
+
+				htmlAttributeFormat (
+					"onclick",
+					"top.frames.main.location='%j'",
+					requestContext.resolveApplicationUrl (
+						"/outboxes")),
+
+				htmlStyleRuleEntry (
+					"display",
+					"none")
+
+			);
+
+			htmlTableCellWrite (
+				"—",
+				htmlIdAttribute (
+					"outboxCell"));
+
+			htmlTableRowClose ();
+
+		}
 
 	}
 

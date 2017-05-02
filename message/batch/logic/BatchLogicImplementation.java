@@ -9,9 +9,10 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.object.core.model.ObjectTypeObjectHelper;
@@ -49,24 +50,25 @@ class BatchLogicImplementation
 	@Override
 	public
 	BatchSubjectRec batchSubject (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Record<?> parent,
+			@NonNull Transaction parentTransaction,
+			@NonNull Record <?> parent,
 			@NonNull String typeCode,
 			@NonNull String code) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"batchSubject");
 
 		) {
 
 			// lookup existing
 
-			Optional<BatchSubjectRec> batchSubjectOptional =
+			Optional <BatchSubjectRec> batchSubjectOptional =
 				batchSubjectHelper.findByCode (
+					transaction,
 					parent,
 					code);
 
@@ -81,16 +83,19 @@ class BatchLogicImplementation
 
 			ObjectTypeRec parentType =
 				objectTypeHelper.findRequired (
+					transaction,
 					objectManager.getObjectTypeId (
+						transaction,
 						parent));
 
 			BatchTypeRec batchType =
 				batchTypeHelper.findByCodeRequired (
+					transaction,
 					parentType,
 					typeCode);
 
 			return batchSubjectHelper.insert (
-				taskLogger,
+				transaction,
 				batchSubjectHelper.createInstance ()
 
 				.setCode (

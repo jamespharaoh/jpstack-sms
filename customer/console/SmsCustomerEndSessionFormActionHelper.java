@@ -15,9 +15,9 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -56,62 +56,87 @@ class SmsCustomerEndSessionFormActionHelper
 	@Override
 	public
 	Permissions canBePerformed (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		SmsCustomerRec customer =
-			smsCustomerHelper.findFromContextRequired ();
+		try (
 
-		boolean show = (
-			isNotNull (
-				customer.getActiveSession ())
-		);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"canBePerformed");
 
-		return new Permissions ()
-			.canView (show)
-			.canPerform (show);
+		) {
+
+			SmsCustomerRec customer =
+				smsCustomerHelper.findFromContextRequired (
+					transaction);
+
+			boolean show = (
+				isNotNull (
+					customer.getActiveSession ())
+			);
+
+			return new Permissions ()
+				.canView (show)
+				.canPerform (show);
+
+		}
 
 	}
 
 	@Override
 	public
 	void writePreamble (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull Boolean submit) {
 
-		SmsCustomerRec customer =
-			smsCustomerHelper.findFromContextRequired ();
+		try (
 
-		SmsCustomerSessionRec session =
-			customer.getActiveSession ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writePreamble");
 
-		htmlParagraphWriteFormat (
-			formatWriter,
-			"This customer has an active session since %s. ",
-			userConsoleLogic.timestampWithoutTimezoneString (
-				session.getStartTime ()),
-			"This action will end the customer's session.");
+		) {
+
+			SmsCustomerRec customer =
+				smsCustomerHelper.findFromContextRequired (
+					transaction);
+
+			SmsCustomerSessionRec session =
+				customer.getActiveSession ();
+
+			htmlParagraphWriteFormat (
+				formatWriter,
+				"This customer has an active session since %s. ",
+				userConsoleLogic.timestampWithoutTimezoneString (
+					transaction,
+					session.getStartTime ()),
+				"This action will end the customer's session.");
+
+		}
 
 	}
 
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerEndSessionForm formState) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"processFormSubmission ()");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"processFormSubmission");
 
 		) {
 
 			SmsCustomerRec customer =
-				smsCustomerHelper.findFromContextRequired ();
+				smsCustomerHelper.findFromContextRequired (
+					transaction);
 
 			if (
 				isNull (
@@ -124,8 +149,9 @@ class SmsCustomerEndSessionFormActionHelper
 			} else {
 
 				smsCustomerLogic.sessionEndManually (
-					taskLogger,
-					userConsoleLogic.userRequired (),
+					transaction,
+					userConsoleLogic.userRequired (
+						transaction),
 					customer,
 					formState.reason ());
 

@@ -16,9 +16,12 @@ import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -31,6 +34,9 @@ class MessageReportsPart
 	extends AbstractPagePart {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
@@ -51,80 +57,106 @@ class MessageReportsPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		message =
-			messageHelper.findFromContextRequired ();
+		try (
 
-		messageReports =
-			new TreeSet<> (
-				message.getReports ());
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			message =
+				messageHelper.findFromContextRequired (
+					transaction);
+
+			messageReports =
+				new TreeSet<> (
+					message.getReports ());
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		htmlTableOpenList ();
+		try (
 
-		htmlTableHeaderRowWrite (
-			"Time",
-			null,
-			"Status",
-			"Their code",
-			"Their description");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		if (messageReports.isEmpty ()) {
+		) {
 
-			htmlTableRowOpen ();
+			htmlTableOpenList ();
 
-			htmlTableCellWrite (
-				"No reports",
-				htmlColumnSpanAttribute (5l));
+			htmlTableHeaderRowWrite (
+				"Time",
+				null,
+				"Status",
+				"Their code",
+				"Their description");
 
-			htmlTableRowClose ();
-
-		} else {
-
-			for (
-				MessageReportRec messageReport
-					: messageReports
-			) {
+			if (messageReports.isEmpty ()) {
 
 				htmlTableRowOpen ();
 
 				htmlTableCellWrite (
-					userConsoleLogic.timestampWithTimezoneString (
-						messageReport.getReceivedTime ()));
-
-				htmlTableCellWrite (
-					userConsoleLogic.prettyDuration (
-						message.getProcessedTime (),
-						messageReport.getReceivedTime ()));
-
-				messageConsoleLogic.writeTdForMessageStatus (
-					formatWriter,
-					messageReport.getNewMessageStatus ());
-
-				htmlTableCellWrite (
-					ifNotNullThenElseEmDash (
-						messageReport.getTheirCode (),
-						() -> messageReport.getTheirCode ().getText ()));
-
-				htmlTableCellWrite (
-					ifNotNullThenElseEmDash (
-						messageReport.getTheirDescription (),
-						() -> messageReport.getTheirDescription ().getText ()));
+					"No reports",
+					htmlColumnSpanAttribute (5l));
 
 				htmlTableRowClose ();
 
+			} else {
+
+				for (
+					MessageReportRec messageReport
+						: messageReports
+				) {
+
+					htmlTableRowOpen ();
+
+					htmlTableCellWrite (
+						userConsoleLogic.timestampWithTimezoneString (
+							transaction,
+							messageReport.getReceivedTime ()));
+
+					htmlTableCellWrite (
+						userConsoleLogic.prettyDuration (
+							transaction,
+							message.getProcessedTime (),
+							messageReport.getReceivedTime ()));
+
+					messageConsoleLogic.writeTdForMessageStatus (
+						transaction,
+						formatWriter,
+						messageReport.getNewMessageStatus ());
+
+					htmlTableCellWrite (
+						ifNotNullThenElseEmDash (
+							messageReport.getTheirCode (),
+							() -> messageReport.getTheirCode ().getText ()));
+
+					htmlTableCellWrite (
+						ifNotNullThenElseEmDash (
+							messageReport.getTheirDescription (),
+							() -> messageReport.getTheirDescription ().getText ()));
+
+					htmlTableRowClose ();
+
+				}
+
 			}
 
-		}
+			htmlTableClose ();
 
-		htmlTableClose ();
+		}
 
 	}
 

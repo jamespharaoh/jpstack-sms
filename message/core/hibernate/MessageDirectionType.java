@@ -6,6 +6,7 @@ import org.hibernate.type.CustomType;
 import org.hibernate.type.Type;
 
 import wbs.framework.hibernate.EnumUserType;
+
 import wbs.sms.message.core.model.MessageDirection;
 
 public

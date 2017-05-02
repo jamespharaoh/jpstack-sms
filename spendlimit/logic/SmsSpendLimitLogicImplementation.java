@@ -26,10 +26,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -70,15 +70,15 @@ class SmsSpendLimitLogicImplementation
 	@Override
 	public
 	Optional <Long> spendCheck (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSpendLimiterRec spendLimiter,
 			@NonNull NumberRec number) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"spendCheck");
 
 		) {
@@ -92,13 +92,13 @@ class SmsSpendLimitLogicImplementation
 
 			SmsSpendLimiterNumberRec spendLimiterNumber =
 				smsSpendLimiterNumberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					spendLimiter,
 					number);
 
 			SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
 				numberToday (
-					taskLogger,
+					transaction,
 					spendLimiterNumber);
 
 			return optionalOf (
@@ -112,7 +112,7 @@ class SmsSpendLimitLogicImplementation
 	@Override
 	public
 	void spend (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSpendLimiterRec spendLimiter,
 			@NonNull NumberRec number,
 			@NonNull List <MessageRec> spendMessages,
@@ -121,22 +121,22 @@ class SmsSpendLimitLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"spend");
 
 		) {
 
 			SmsSpendLimiterNumberRec spendLimiterNumber =
 				smsSpendLimiterNumberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					spendLimiter,
 					number);
 
 			SmsSpendLimiterNumberDayRec spendLimiterNumberDay =
 				numberToday (
-					taskLogger,
+					transaction,
 					spendLimiterNumber);
 
 			// sanity check
@@ -171,7 +171,7 @@ class SmsSpendLimitLogicImplementation
 
 			Optional <Long> spendAvailable =
 				spendCheck (
-					taskLogger,
+					transaction,
 					spendLimiter,
 					number);
 
@@ -249,14 +249,16 @@ class SmsSpendLimitLogicImplementation
 						originator)
 
 					.routerResolve (
+						transaction,
 						spendLimiter.getRouter ())
 
 					.serviceLookup (
+						transaction,
 						spendLimiter,
 						"daily_limit")
 
 					.send (
-						taskLogger);
+						transaction);
 
 				spendLimiterNumber
 
@@ -305,14 +307,16 @@ class SmsSpendLimitLogicImplementation
 						originator)
 
 					.routerResolve (
+						transaction,
 						spendLimiter.getRouter ())
 
 					.serviceLookup (
+						transaction,
 						spendLimiter,
 						"daily_advice")
 
 					.send (
-						taskLogger);
+						transaction);
 
 				spendLimiterNumber
 
@@ -358,14 +362,16 @@ class SmsSpendLimitLogicImplementation
 						originator)
 
 					.routerResolve (
+						transaction,
 						spendLimiter.getRouter ())
 
 					.serviceLookup (
+						transaction,
 						spendLimiter,
 						"ongoing_advice")
 
 					.send (
-						taskLogger);
+						transaction);
 
 				spendLimiterNumber
 
@@ -393,20 +399,17 @@ class SmsSpendLimitLogicImplementation
 
 	private
 	SmsSpendLimiterNumberDayRec numberToday (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSpendLimiterNumberRec spendLimiterNumber) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"numberToday");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			SmsSpendLimiterRec spendLimiter =
 				spendLimiterNumber.getSmsSpendLimiter ();
@@ -432,6 +435,7 @@ class SmsSpendLimitLogicImplementation
 			) {
 
 				return smsSpendLimiterNumberDayHelper.find (
+					transaction,
 					spendLimiterNumber,
 					spendLimiterNumber.getLastSpendDate ());
 
@@ -447,7 +451,7 @@ class SmsSpendLimitLogicImplementation
 
 				SmsSpendLimiterNumberDayRec numberDay =
 					smsSpendLimiterNumberDayHelper.insert (
-						taskLogger,
+						transaction,
 						smsSpendLimiterNumberDayHelper.createInstance ()
 
 					.setSmsSpendLimiterNumber (

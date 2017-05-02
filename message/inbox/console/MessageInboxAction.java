@@ -63,18 +63,13 @@ class MessageInboxAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MessageInboxAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
@@ -100,6 +95,7 @@ class MessageInboxAction
 
 				InboxRec inbox =
 					inboxHelper.findRequired (
+						transaction,
 						messageId);
 
 				MessageRec message =

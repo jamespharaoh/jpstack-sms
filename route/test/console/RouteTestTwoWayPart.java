@@ -30,8 +30,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageDirection;
@@ -68,19 +69,20 @@ class RouteTestTwoWayPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
 
 			route =
-				routeHelper.findFromContextRequired ();
+				routeHelper.findFromContextRequired (
+					transaction);
 
 			Optional <String> numberOptional =
 				requestContext.parameter (
@@ -107,7 +109,7 @@ class RouteTestTwoWayPart
 
 			messages =
 				messageHelper.search (
-					taskLogger,
+					transaction,
 					search);
 
 		}
@@ -117,34 +119,34 @@ class RouteTestTwoWayPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
 
 			htmlParagraphWriteFormat (
-				"This facility can be used to insert an inbound message into the ",
-				"system, which will then be treated exactly as if we had received ",
-				"it from the aggregator. It will also show messages sent back out",
-				"by the system, allowing an interaction over several messages in ",
-				"and out.");
+				"This facility can be used to insert an inbound message into ",
+				"the system, which will then be treated exactly as if we had ",
+				"received it from the aggregator. It will also show messages ",
+				"sent back out by the system, allowing an interaction over ",
+				"several messages in and out.");
 
 			htmlParagraphWriteFormatWarning (
-				"Please note, that this is intended primarily for testing, and ",
-				"any other usage should instead be performed using a separate ",
-				"facility designed for that specific purpose.");
+				"Please note, that this is intended primarily for testing, ",
+				"and any other usage should instead be performed using a ",
+				"separate facility designed for that specific purpose.");
 
 			if (! route.getCanReceive ()) {
 
 				htmlParagraphWriteFormatError (
-					"This route is not configured for inbound messages, and so ",
-					"this facility is not available.");
+					"This route is not configured for inbound messages, and ",
+					"so this facility is not available.");
 
 				return;
 

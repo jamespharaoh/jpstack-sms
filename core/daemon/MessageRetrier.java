@@ -1,6 +1,6 @@
 package wbs.sms.core.daemon;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.text.model.TextRec;
 
@@ -11,7 +11,7 @@ public
 interface MessageRetrier {
 
 	MessageRec messageRetry (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec retry,
 			RouteRec rec,
 			TextRec textRec);

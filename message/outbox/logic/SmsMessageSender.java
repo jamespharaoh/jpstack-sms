@@ -1,5 +1,7 @@
 package wbs.sms.message.outbox.logic;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringInSafe;
@@ -20,12 +22,12 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -165,31 +167,33 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender deliveryTypeCode (
+			@NonNull Transaction parentTransaction,
 			@NonNull String deliveryTypeCode) {
 
 		return deliveryTypeCode (
-			Optional.of (
+			parentTransaction,
+			optionalOf (
 				deliveryTypeCode));
 
 	}
 
 	public
 	SmsMessageSender messageString (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull String messageString) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"messageString");
 
 		) {
 
 			return messageText (
 				textHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					messageString));
 
 		}
@@ -198,14 +202,14 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender subjectString (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Optional <String> subjectString) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"subjectString");
 
 		) {
@@ -213,7 +217,7 @@ class SmsMessageSender {
 			return subjectText (
 				optionalOrNull (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						subjectString)));
 
 		}
@@ -222,21 +226,21 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender subjectString (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull String subjectString) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"subjectString");
 
 		) {
 
 			return subjectText (
 				textHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					subjectString));
 
 		}
@@ -245,25 +249,29 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender deliveryTypeCode (
-			@NonNull Optional<String> deliveryTypeCode) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Optional <String> deliveryTypeCode) {
 
 		return deliveryType (
 			deliveryTypeCode.isPresent ()
 				? Optional.of (
 					deliveryTypeHelper.findByCodeRequired (
+						parentTransaction,
 						GlobalId.root,
 						deliveryTypeCode.get ()))
-				: Optional.<DeliveryTypeRec>absent ());
+				: optionalAbsent ());
 
 	}
 
 	public
 	SmsMessageSender serviceLookup (
-			@NonNull Record<?> parent,
+			@NonNull Transaction parentTransaction,
+			@NonNull Record <?> parent,
 			@NonNull String code) {
 
 		return service (
 			serviceHelper.findByCodeRequired (
+				parentTransaction,
 				parent,
 				code));
 
@@ -271,10 +279,12 @@ class SmsMessageSender {
 
 	public
 	SmsMessageSender routerResolve (
+			@NonNull Transaction parentTransaction,
 			@NonNull RouterRec router) {
 
 		return route (
 			routerLogic.resolveRouter (
+				parentTransaction,
 				router));
 
 	}
@@ -283,24 +293,22 @@ class SmsMessageSender {
 
 	public
 	MessageRec send (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"send");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			if (affiliate == null) {
 
 				affiliate =
 					affiliateHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"system");
 
@@ -310,6 +318,7 @@ class SmsMessageSender {
 
 				batch =
 					batchHelper.findRequired (
+						transaction,
 						0l);
 
 			}
@@ -478,6 +487,7 @@ class SmsMessageSender {
 
 				.setMessageType (
 					messageTypeHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						medias != null
 							? "mms"
@@ -516,13 +526,13 @@ class SmsMessageSender {
 			}
 
 			messageHelper.insert (
-				taskLogger,
+				transaction,
 				message);
 
 			if (sendNow) {
 
 				outboxHelper.insert (
-					taskLogger,
+					transaction,
 					outboxHelper.createInstance ()
 
 					.setMessage (

@@ -91,23 +91,19 @@ class NumberListNumberUpdateAction
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"goReal");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"NumberListNumberUpdateAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			int loop = 0;
 
 			NumberListRec numberList =
-				numberListHelper.findFromContextRequired ();
+				numberListHelper.findFromContextRequired (
+					transaction);
 
 			NumberListUpdateRec numberListUpdate =
 				numberListUpdateHelper.createInstance ()
@@ -119,7 +115,8 @@ class NumberListNumberUpdateAction
 					transaction.now ())
 
 				.setUser (
-					userConsoleLogic.userRequired ())
+					userConsoleLogic.userRequired (
+						transaction))
 
 				.setNumberCount (
 					0l);
@@ -171,12 +168,12 @@ class NumberListNumberUpdateAction
 
 					NumberRec number =
 						numberHelper.findOrCreate (
-							taskLogger,
+							transaction,
 							numberString);
 
 					NumberListNumberRec numberListNumber =
 						numberListNumberHelper.findOrCreate (
-							taskLogger,
+							transaction,
 							numberList,
 							number);
 
@@ -235,11 +232,12 @@ class NumberListNumberUpdateAction
 
 					NumberRec number =
 						numberHelper.findOrCreate (
-							taskLogger,
+							transaction,
 							numberString);
 
 					NumberListNumberRec numberListNumber =
 						numberListNumberHelper.find (
+							transaction,
 							numberList,
 							number);
 
@@ -275,7 +273,7 @@ class NumberListNumberUpdateAction
 			if (numberListUpdate.getNumberCount () > 0) {
 
 				numberListUpdateHelper.insert (
-					taskLogger,
+					transaction,
 					numberListUpdate);
 
 			}
@@ -285,9 +283,10 @@ class NumberListNumberUpdateAction
 			if (numAdded > 0) {
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"number_list_numbers_added",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					numAdded,
 					numberList);
 
@@ -296,9 +295,10 @@ class NumberListNumberUpdateAction
 			if (numRemoved > 0) {
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"number_list_numbers_removed",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					numRemoved,
 					numberList);
 

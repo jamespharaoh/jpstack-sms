@@ -1,5 +1,6 @@
 package wbs.sms.keyword.logic;
 
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.command.model.CommandRec;
@@ -10,10 +11,11 @@ public
 interface KeywordLogic {
 
 	boolean checkKeyword (
+			TaskLogger parentTaskLogger,
 			String keyword);
 
 	void createOrUpdateKeywordSetFallback (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			KeywordSetRec keywordSet,
 			NumberRec number,
 			CommandRec command);

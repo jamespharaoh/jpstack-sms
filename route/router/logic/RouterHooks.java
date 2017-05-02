@@ -13,7 +13,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -59,32 +61,34 @@ class RouterHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"setup");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"routerHooks.setup ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"setup");
 
 		) {
 
 			routerTypeIdsByParentTypeId =
-				routerTypeDao.findAll ().stream ().collect (
+				routerTypeDao.findAll (
+					transaction)
+
+				.stream ()
+
+				.collect (
 					Collectors.groupingBy (
 
-				routerType ->
-					routerType.getParentType ().getId (),
-
-				Collectors.mapping (
 					routerType ->
-						routerType.getId (),
-					Collectors.toList ())
+						routerType.getParentType ().getId (),
 
-			));
+					Collectors.mapping (
+						routerType ->
+							routerType.getId (),
+						Collectors.toList ())
+
+				)
+
+			);
 
 		}
 
@@ -95,7 +99,7 @@ class RouterHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull ObjectHelper <RouterRec> routerHelper,
 			@NonNull ObjectHelper <?> parentHelper,
 			@NonNull Record <?> parent) {
@@ -110,15 +114,16 @@ class RouterHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSingletons");
 
 		) {
 
 			ObjectTypeRec parentType =
 				objectTypeDao.findById (
+					transaction,
 					parentHelper.objectTypeId ());
 
 			for (
@@ -129,10 +134,11 @@ class RouterHooks
 
 				RouterTypeRec routerType =
 					routerTypeDao.findRequired (
+						transaction,
 						routerTypeId);
 
 				routerHelper.insert (
-					taskLogger,
+					transaction,
 					routerHelper.createInstance ()
 
 					.setRouterType (

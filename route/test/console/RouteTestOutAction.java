@@ -91,25 +91,19 @@ class RouteTestOutAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
-		MessageRec message = null;
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"RouteTestOutAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			RouteRec route =
-				routeHelper.findFromContextRequired ();
+				routeHelper.findFromContextRequired (
+					transaction);
 
 			// check params
 
@@ -125,22 +119,23 @@ class RouteTestOutAction
 
 			NumberRec number =
 				numberHelper.findOrCreate (
-					taskLogger,
+					transaction,
 					(String) params.get ("num_to"));
 
 			ServiceRec testService =
 				serviceHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					"test");
 
-			message =
+			MessageRec message =
 				messageSender.get ()
 
 				.number (
 					number)
 
 				.messageString (
-					taskLogger,
+					transaction,
 					requestContext.parameterRequired (
 						"message"))
 
@@ -155,7 +150,7 @@ class RouteTestOutAction
 					testService)
 
 				.send (
-					taskLogger);
+					transaction);
 
 			transaction.commit ();
 

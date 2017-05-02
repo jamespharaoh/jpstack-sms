@@ -4,7 +4,12 @@ import lombok.NonNull;
 
 import org.hibernate.criterion.Restrictions;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerNumberDao;
 import wbs.sms.tracker.model.SmsSimpleTrackerNumberRec;
@@ -15,31 +20,51 @@ class SmsSimpleTrackerNumberDaoHibernate
 	extends HibernateDao
 	implements SmsSimpleTrackerNumberDao {
 
+	// singleton dependency
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	SmsSimpleTrackerNumberRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number) {
 
-		return findOneOrNull (
-			"find (smsSimpleTracker, number)",
-			SmsSimpleTrackerNumberRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				SmsSimpleTrackerNumberRec.class,
-				"_smsSimpleTrackerNumber")
 
-			.add (
-				Restrictions.eq (
-					"_smsSimpleTrackerNumber.smsSimpleTracker",
-					smsSimpleTracker))
+				createCriteria (
+					transaction,
+					SmsSimpleTrackerNumberRec.class,
+					"_smsSimpleTrackerNumber")
 
-			.add (
-				Restrictions.eq (
-					"_smsSimpleTrackerNumber.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_smsSimpleTrackerNumber.smsSimpleTracker",
+						smsSimpleTracker))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_smsSimpleTrackerNumber.number",
+						number))
+
+			);
+
+		}
 
 	}
 

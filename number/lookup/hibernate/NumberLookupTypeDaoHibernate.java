@@ -3,7 +3,13 @@ package wbs.sms.number.lookup.hibernate;
 import java.util.List;
 
 import lombok.NonNull;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.number.lookup.model.NumberLookupTypeDao;
 import wbs.sms.number.lookup.model.NumberLookupTypeRec;
 
@@ -12,29 +18,62 @@ class NumberLookupTypeDaoHibernate
 	extends HibernateDao
 	implements NumberLookupTypeDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
-	List<NumberLookupTypeRec> findAll () {
+	List <NumberLookupTypeRec> findAll (
+			@NonNull Transaction parentTransaction) {
 
-		return findMany (
-			"findAll ()",
-			NumberLookupTypeRec.class,
+		try (
 
-			createCriteria (
-				NumberLookupTypeRec.class)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findAll");
 
-		);
+		) {
+
+			return findMany (
+				transaction,
+				NumberLookupTypeRec.class,
+
+				createCriteria (
+					transaction,
+					NumberLookupTypeRec.class)
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	NumberLookupTypeRec findRequired (
+			@NonNull Transaction parentTransaction,
 			@NonNull Long numberLookupTypeId) {
 
-		return get (
-			NumberLookupTypeRec.class,
-			numberLookupTypeId);
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findRequired");
+
+		) {
+
+			return get (
+				transaction,
+				NumberLookupTypeRec.class,
+				numberLookupTypeId);
+
+		}
 
 	}
 

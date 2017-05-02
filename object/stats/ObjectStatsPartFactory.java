@@ -23,10 +23,10 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.stats.console.GenericMessageStatsPart;
 import wbs.sms.message.stats.console.SmsStatsCriteria;
@@ -77,20 +77,14 @@ class ObjectStatsPartFactory
 	@Override
 	public
 	PagePart buildPagePart (
-			@NonNull TaskLogger parentTaskLogger) {
-
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"buildPagePart");
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			OwnedTransaction transaction =
-				database.beginReadOnly (
-					taskLogger,
-					"ObjectStatsPartFactory.get ()",
-					this);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"buildPagePart");
 
 		) {
 
@@ -98,6 +92,7 @@ class ObjectStatsPartFactory
 
 			Record <?> parent =
 				objectLookup.lookupObject (
+					transaction,
 					requestContext.consoleContextStuffRequired ());
 
 			// find its services
@@ -112,6 +107,7 @@ class ObjectStatsPartFactory
 
 				SmsStatsSource statsSource =
 					objectStatsSourceBuilder.buildStatsSource (
+						transaction,
 						parent);
 
 				if (statsSource == null)
@@ -141,8 +137,8 @@ class ObjectStatsPartFactory
 
 			// set up exclusions
 
-			Set<SmsStatsCriteria> excludes =
-				new HashSet<SmsStatsCriteria> ();
+			Set <SmsStatsCriteria> excludes =
+				new HashSet<> ();
 
 			// excludes.add (SmsStatsCriteria.service);
 

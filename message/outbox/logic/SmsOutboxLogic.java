@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.text.model.TextRec;
 
@@ -18,37 +18,37 @@ public
 interface SmsOutboxLogic {
 
 	MessageRec resendMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec old,
 			RouteRec route,
 			Optional <TextRec> newText,
 			Optional <MessageTypeRec> newMessageType);
 
 	void unholdMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message);
 
 	void cancelMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message);
 
 	OutboxRec claimNextMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			RouteRec route);
 
 	List <OutboxRec> claimNextMessages (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			RouteRec route,
 			Long limit);
 
 	void messageSuccess (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message,
 			Optional <List <String>> otherIds,
 			Optional <Long> simulateMultipart);
 
 	void messageFailure (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message,
 			String error,
 			FailureType failureType);
@@ -61,16 +61,16 @@ interface SmsOutboxLogic {
 	}
 
 	void retryMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageRec message);
 
 	SmsOutboxAttemptRec beginSendAttempt (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			OutboxRec smsOutbox,
 			Optional <byte[]> requestTrace);
 
 	void completeSendAttemptSuccess (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			Optional <List <String>> otherIds,
 			Optional <Long> simulateMultipart,
@@ -78,7 +78,7 @@ interface SmsOutboxLogic {
 			Optional <byte[]> responseTrace);
 
 	void completeSendAttemptFailure (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsOutboxAttemptRec smsOutboxAttempt,
 			FailureType failureType,
 			String errorMessage,

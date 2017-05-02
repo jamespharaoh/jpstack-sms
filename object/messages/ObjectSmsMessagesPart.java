@@ -43,8 +43,9 @@ import wbs.console.tab.TabList;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -99,13 +100,13 @@ class ObjectSmsMessagesPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
@@ -126,7 +127,7 @@ class ObjectSmsMessagesPart
 
 			viewTabsPrepared =
 				viewTabs.prepare (
-					taskLogger,
+					transaction,
 					viewMode.viewTab);
 
 			// get date
@@ -149,7 +150,7 @@ class ObjectSmsMessagesPart
 
 			messages =
 				messageSource.findMessages (
-					taskLogger,
+					transaction,
 					dateField.date.toInterval (),
 					viewMode.viewMode);
 
@@ -162,13 +163,13 @@ class ObjectSmsMessagesPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -269,6 +270,7 @@ class ObjectSmsMessagesPart
 
 					htmlTableCellWrite (
 						userConsoleLogic.dateStringLong (
+							transaction,
 							message.getCreatedTime ()),
 						htmlColumnSpanAttribute (7l));
 
@@ -291,6 +293,7 @@ class ObjectSmsMessagesPart
 
 				htmlTableCellWrite (
 					userConsoleLogic.timeString (
+						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
@@ -307,6 +310,7 @@ class ObjectSmsMessagesPart
 						message.getId ()));
 
 				messageConsoleLogic.writeTdForMessageStatus (
+					transaction,
 					formatWriter,
 					message.getStatus ());
 
@@ -325,7 +329,7 @@ class ObjectSmsMessagesPart
 						continue;
 
 					mediaConsoleLogic.writeMediaThumb32 (
-						taskLogger,
+						transaction,
 						formatWriter,
 						media);
 
@@ -343,7 +347,7 @@ class ObjectSmsMessagesPart
 
 					.href (
 						consoleObjectManager.localLink (
-							taskLogger,
+							transaction,
 							message))
 
 					.columnSpan (
@@ -390,7 +394,7 @@ class ObjectSmsMessagesPart
 		@Override
 		public
 		String getUrl (
-				@NonNull TaskLogger parentTaskLogger) {
+				@NonNull Transaction parentTransaction) {
 
 			return stringFormat (
 				"%s",

@@ -41,8 +41,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.utils.time.TimeFormatter;
 
@@ -138,13 +139,13 @@ class GenericMessageStatsPart
 
 	public
 	void prepareParams (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepareParams");
 
 		) {
@@ -198,7 +199,7 @@ class GenericMessageStatsPart
 				criteriaInfo.put (
 					crit.toString (),
 					statsConsoleLogic.lookupGroupName (
-						taskLogger,
+						transaction,
 						crit,
 						critId));
 
@@ -241,13 +242,13 @@ class GenericMessageStatsPart
 
 	public
 	void prepareTabs (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepareTabs");
 
 		) {
@@ -285,7 +286,7 @@ class GenericMessageStatsPart
 
 			splitTabsPrepared =
 				splitTabs.prepare (
-					taskLogger,
+					transaction,
 					splitTab);
 
 			// prepare view tabs
@@ -315,7 +316,7 @@ class GenericMessageStatsPart
 
 			viewTabsPrepared =
 				viewTabs.prepare (
-					taskLogger,
+					transaction,
 					viewTab);
 
 		}
@@ -325,13 +326,13 @@ class GenericMessageStatsPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
@@ -339,12 +340,12 @@ class GenericMessageStatsPart
 			// process page params
 
 			prepareParams (
-				taskLogger);
+				transaction);
 
 			// prepre tabs
 
 			prepareTabs (
-				taskLogger);
+				transaction);
 
 			// check inputs
 
@@ -369,13 +370,13 @@ class GenericMessageStatsPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -556,7 +557,7 @@ class GenericMessageStatsPart
 
 				.filterMap (
 					statsConsoleLogic.makeFilterMap (
-						taskLogger))
+						transaction))
 
 				.url (
 					url)
@@ -580,6 +581,7 @@ class GenericMessageStatsPart
 						smsStatsDailyTimeScheme)
 
 					.go (
+						transaction,
 						formatWriter);
 
 				break;
@@ -598,6 +600,7 @@ class GenericMessageStatsPart
 						smsStatsWeeklyTimeScheme)
 
 					.go (
+						transaction,
 						formatWriter);
 
 				break;
@@ -616,6 +619,7 @@ class GenericMessageStatsPart
 						smsStatsMonthlyTimeScheme)
 
 					.go (
+						transaction,
 						formatWriter);
 
 				break;
@@ -644,20 +648,31 @@ class GenericMessageStatsPart
 		@Override
 		public
 		String getUrl (
-				@NonNull TaskLogger parentTaskLogger) {
+				@NonNull Transaction parentTransaction) {
 
-			UrlParams myUrlParams =
-				new UrlParams (urlParams);
+			try (
 
-			myUrlParams.set (
-				"date",
-				dateField.text);
+				NestedTransaction transaction =
+					parentTransaction.nestTransaction (
+						logContext,
+						"getUrl");
 
-			myUrlParams.set (
-				"view",
-				viewParam);
+			) {
 
-			return myUrlParams.toUrl (url);
+				UrlParams myUrlParams =
+					new UrlParams (urlParams);
+
+				myUrlParams.set (
+					"date",
+					dateField.text);
+
+				myUrlParams.set (
+					"view",
+					viewParam);
+
+				return myUrlParams.toUrl (url);
+
+			}
 
 		}
 
@@ -676,43 +691,54 @@ class GenericMessageStatsPart
 		@Override
 		public
 		String getUrl (
-				@NonNull TaskLogger parentTaskLogger) {
+				@NonNull Transaction parentTransaction) {
 
-			UrlParams urlParams =
-				new UrlParams ();
+			try (
 
-			for (
-				Map.Entry <SmsStatsCriteria, Set <Long>> entry
-					: criteriaMap.entrySet ()
+				NestedTransaction transaction =
+					parentTransaction.nestTransaction (
+						logContext,
+						"getUrl");
+
 			) {
 
-				SmsStatsCriteria crit =
-					entry.getKey ();
+				UrlParams urlParams =
+					new UrlParams ();
 
-				Long critId =
-					entry.getValue ().iterator ().next ();
+				for (
+					Map.Entry <SmsStatsCriteria, Set <Long>> entry
+						: criteriaMap.entrySet ()
+				) {
+
+					SmsStatsCriteria crit =
+						entry.getKey ();
+
+					Long critId =
+						entry.getValue ().iterator ().next ();
+
+					urlParams.add (
+						crit.toString (),
+						Long.toString (
+							critId));
+
+				}
 
 				urlParams.add (
-					crit.toString (),
-					Long.toString (
-						critId));
+					"view",
+					optionalOrNull (
+						requestContext.parameter (
+							"view")));
+
+				urlParams.add (
+					"date",
+					optionalOrNull (
+						requestContext.parameter (
+							"date")));
+
+				return urlParams.toUrl (
+					url);
 
 			}
-
-			urlParams.add (
-				"view",
-				optionalOrNull (
-					requestContext.parameter (
-						"view")));
-
-			urlParams.add (
-				"date",
-				optionalOrNull (
-					requestContext.parameter (
-						"date")));
-
-			return urlParams.toUrl (
-				url);
 
 		}
 
@@ -737,49 +763,60 @@ class GenericMessageStatsPart
 		@Override
 		public
 		String getUrl (
-				@NonNull TaskLogger parentTaskLogger) {
+				@NonNull Transaction parentTransaction) {
 
-			UrlParams urlParams =
-				new UrlParams ();
+			try (
 
-			urlParams.add (
-				"split",
-				myCriteria.toString ());
+				NestedTransaction transaction =
+					parentTransaction.nestTransaction (
+						logContext,
+						"getUrl");
 
-			for (
-				Map.Entry <SmsStatsCriteria, Set <Long>> entry
-					: criteriaMap.entrySet ()
 			) {
 
-				SmsStatsCriteria crit =
-					entry.getKey ();
-
-				Long critId =
-					entry.getValue ().iterator ().next ();
-
-				if (crit == myCriteria)
-					continue;
+				UrlParams urlParams =
+					new UrlParams ();
 
 				urlParams.add (
-					crit.toString (),
-					Long.toString (
-						critId));
+					"split",
+					myCriteria.toString ());
+
+				for (
+					Map.Entry <SmsStatsCriteria, Set <Long>> entry
+						: criteriaMap.entrySet ()
+				) {
+
+					SmsStatsCriteria crit =
+						entry.getKey ();
+
+					Long critId =
+						entry.getValue ().iterator ().next ();
+
+					if (crit == myCriteria)
+						continue;
+
+					urlParams.add (
+						crit.toString (),
+						Long.toString (
+							critId));
+
+				}
+
+				urlParams.add (
+					"view",
+					optionalOrNull (
+						requestContext.parameter (
+							"view")));
+
+				urlParams.add (
+					"date",
+					optionalOrNull (
+						requestContext.parameter (
+							"date")));
+
+				return urlParams.toUrl (url);
 
 			}
-
-			urlParams.add (
-				"view",
-				optionalOrNull (
-					requestContext.parameter (
-						"view")));
-
-			urlParams.add (
-				"date",
-				optionalOrNull (
-					requestContext.parameter (
-						"date")));
-
-			return urlParams.toUrl (url);
 
 		}
 

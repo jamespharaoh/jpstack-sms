@@ -16,8 +16,9 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.command.model.CommandRec;
 import wbs.sms.magicnumber.model.MagicNumberObjectHelper;
@@ -92,13 +93,13 @@ class MagicNumberCommandTypeHandler
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"handle");
 
 		) {
@@ -110,12 +111,13 @@ class MagicNumberCommandTypeHandler
 
 			MagicNumberRec magicNumber =
 				magicNumberHelper.findByNumber (
+					transaction,
 					message.getNumTo ());
 
 			if (magicNumber == null) {
 
 				return smsInboxLogic.inboxNotProcessed (
-					taskLogger,
+					transaction,
 					inbox,
 					optionalAbsent (),
 					optionalAbsent (),
@@ -131,13 +133,14 @@ class MagicNumberCommandTypeHandler
 
 			MagicNumberUseRec magicNumberUse =
 				magicNumberUseHelper.find (
+					transaction,
 					magicNumber,
 					message.getNumber ());
 
 			if (magicNumberUse == null) {
 
 				return smsInboxLogic.inboxNotProcessed (
-					taskLogger,
+					transaction,
 					inbox,
 					optionalAbsent (),
 					optionalAbsent (),
@@ -150,7 +153,7 @@ class MagicNumberCommandTypeHandler
 			// and delegate
 
 			return commandManager.handle (
-				taskLogger,
+				transaction,
 				inbox,
 				magicNumberUse.getCommand (),
 				Optional.of (

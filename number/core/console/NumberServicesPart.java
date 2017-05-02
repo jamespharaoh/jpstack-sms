@@ -16,9 +16,10 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -54,22 +55,24 @@ class NumberServicesPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
 
 			NumberRec number =
-				numberHelper.findFromContextRequired ();
+				numberHelper.findFromContextRequired (
+					transaction);
 
 			List <ServiceRec> allServices =
 				messageHelper.projectServices (
+					transaction,
 					number);
 
 			services =
@@ -77,10 +80,13 @@ class NumberServicesPart
 					iterableFilter (
 						service ->
 							objectManager.canView (
-								taskLogger,
+								transaction,
 								service),
 						allServices),
-					objectManager::objectPathMini);
+					service ->
+						objectManager.objectPathMini (
+							transaction,
+							service));
 
 		}
 
@@ -89,13 +95,13 @@ class NumberServicesPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -156,6 +162,7 @@ class NumberServicesPart
 
 				Record <?> parent =
 					objectManager.getParentRequired (
+						transaction,
 						service);
 
 				// open table row
@@ -168,14 +175,14 @@ class NumberServicesPart
 				// write parent table cell
 
 				objectManager.writeTdForObjectLink (
-					taskLogger,
+					transaction,
 					formatWriter,
 					parent);
 
 				// write service table cell
 
 				objectManager.writeTdForObjectMiniLink (
-					taskLogger,
+					transaction,
 					formatWriter,
 					service,
 					parent);

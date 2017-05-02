@@ -6,15 +6,22 @@ import java.util.Map;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 @SingletonComponent ("messageConsolePluginManager")
 public
 class MessageConsolePluginManager {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	Map <String, MessageConsolePlugin> plugins;
@@ -27,12 +34,24 @@ class MessageConsolePluginManager {
 
 	@NormalLifecycleSetup
 	public
-	void init () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		pluginsByCode =
-			mapWithDerivedKey (
-				plugins.values (),
-				MessageConsolePlugin::getCode);
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+		) {
+
+			pluginsByCode =
+				mapWithDerivedKey (
+					plugins.values (),
+					MessageConsolePlugin::getCode);
+
+		}
 
 	}
 

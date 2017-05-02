@@ -6,67 +6,74 @@ import static wbs.web.utils.HtmlBlockUtils.htmlParagraphOpen;
 import static wbs.web.utils.HtmlFormUtils.htmlFormClose;
 import static wbs.web.utils.HtmlFormUtils.htmlFormOpenPostAction;
 import static wbs.web.utils.HtmlTableUtils.htmlTableClose;
+import static wbs.web.utils.HtmlTableUtils.htmlTableDetailsRowWriteHtml;
 import static wbs.web.utils.HtmlTableUtils.htmlTableOpenDetails;
 
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 @PrototypeComponent ("blacklistSearchPart")
 public
 class BlacklistSearchPart
 	extends AbstractPagePart {
 
-	@Override
-	public
-	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+	// singleton dependency
 
-	}
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		htmlFormOpenPostAction (
-			requestContext.resolveLocalUrl (
-				"/blacklist.search"));
+		try (
 
-		htmlTableOpenDetails ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		htmlTableDetailsRowHtml (
-			"Number",
-			stringFormat (
+		) {
+
+			htmlFormOpenPostAction (
+				requestContext.resolveLocalUrl (
+					"/blacklist.search"));
+
+			htmlTableOpenDetails ();
+
+			htmlTableDetailsRowWriteHtml (
+				"Number",
+				stringFormat (
+					"<input",
+					" type=\"text\"",
+					" name=\"number\"",
+					">"));
+
+			htmlTableClose ();
+
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
 				"<input",
-				" type=\"text\"",
-				" name=\"number\"",
-				">"));
+				" type=\"submit\"",
+				" name=\"Search\"",
+				" value=\"Search\">");
 
-		htmlTableClose ();
+			htmlParagraphClose ();
 
-		htmlParagraphOpen ();
+			htmlFormClose ();
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" name=\"Search\"",
-			" value=\"Search\">");
-
-		htmlParagraphClose ();
-
-		htmlFormClose ();
-
-	}
-
-	private void htmlTableDetailsRowHtml (
-			String string,
-			String stringFormat) {
-
-		// TODO Auto-generated method stub
+		}
 
 	}
 

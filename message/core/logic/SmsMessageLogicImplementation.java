@@ -4,9 +4,11 @@ import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveThreeEle
 import static wbs.utils.collection.CollectionUtils.listFirstElementRequired;
 import static wbs.utils.collection.CollectionUtils.listSecondElementRequired;
 import static wbs.utils.collection.CollectionUtils.listThirdElementRequired;
+import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.parseInteger;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
@@ -21,8 +23,9 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.scaffold.model.RootObjectHelper;
 import wbs.platform.scaffold.model.RootRec;
@@ -61,30 +64,42 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	boolean isChatMessage (
-			MessageRec message) {
+			@NonNull Transaction parentTransaction,
+			@NonNull MessageRec message) {
 
-		// TODO hard coded for now
+		try (
 
-		return message
-			.getService ()
-			.getParentType ()
-			.getCode ()
-			.equals ("chat");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"isChatMessage");
+
+		) {
+
+			// TODO hard coded for now
+
+			return message
+				.getService ()
+				.getParentType ()
+				.getCode ()
+				.equals ("chat");
+
+		}
 
 	}
 
 	@Override
 	public
 	void messageStatus (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newStatus) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"messageStatus");
 
 		) {
@@ -95,10 +110,15 @@ class SmsMessageLogicImplementation
 			// TODO wtf?
 			// store delivery status for number
 			// following code shouldn't be here really
-			if (isChatMessage (message)) {
+
+			if (
+				isChatMessage (
+					transaction,
+					message)
+			) {
 
 				numberLogic.updateDeliveryStatusForNumber (
-					taskLogger,
+					transaction,
 					message.getNumTo (),
 					newStatus);
 
@@ -111,26 +131,31 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	void blackListMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"blackListMessage");
 
 		) {
 
 			// check message state
 
-			if (message.getStatus () == MessageStatus.pending) {
+			if (
+				enumEqualSafe (
+					message.getStatus (),
+					MessageStatus.pending)
+			) {
 
 				// lookup outbox
 
 				OutboxRec smsOutbox =
 					smsOutboxHelper.findRequired (
+						transaction,
 						message.getId ());
 
 				// check message is not being sent
@@ -145,13 +170,14 @@ class SmsMessageLogicImplementation
 				// blacklist message
 
 				messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.blacklisted);
 
 				// remove outbox
 
 				smsOutboxHelper.remove (
+					transaction,
 					smsOutbox);
 
 			} else if (message.getStatus () == MessageStatus.held) {
@@ -159,7 +185,7 @@ class SmsMessageLogicImplementation
 				// blacklist message
 
 				messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.blacklisted);
 
@@ -177,27 +203,40 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	String mangleMessageId (
+			@NonNull Transaction parentTransaction,
 			@NonNull Long messageId) {
 
-		RootRec root =
-			rootHelper.findRequired (
-				0l);
+		try (
 
-		if (
-			isNull (
-				root.getFixturesSeed ())
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"mangleMessageId");
+
 		) {
 
-			return Long.toString (
-				messageId);
+			RootRec root =
+				rootHelper.findRequired (
+					transaction,
+					0l);
 
-		} else {
+			if (
+				isNull (
+					root.getFixturesSeed ())
+			) {
 
-			return stringFormat (
-				"test-%s-%s",
-				root.getFixturesSeed (),
-				integerToDecimalString (
-					messageId));
+				return Long.toString (
+					messageId);
+
+			} else {
+
+				return stringFormat (
+					"test-%s-%s",
+					root.getFixturesSeed (),
+					integerToDecimalString (
+						messageId));
+
+			}
 
 		}
 
@@ -205,49 +244,62 @@ class SmsMessageLogicImplementation
 
 	@Override
 	public
-	Optional<Long> unmangleMessageId (
+	Optional <Long> unmangleMessageId (
+			@NonNull Transaction parentTransaction,
 			@NonNull String mangledMessageId) {
 
-		RootRec root =
-			rootHelper.findRequired (
-				0l);
+		try (
 
-		if (
-			isNull (
-				root.getFixturesSeed ())
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"unmangleMessageId");
+
 		) {
 
-			return parseInteger (
-					mangledMessageId);
-
-		} else {
-
-			List <String> parts =
-				stringSplitHyphen (
-					mangledMessageId);
+			RootRec root =
+				rootHelper.findRequired (
+					transaction,
+					0l);
 
 			if (
-
-				collectionDoesNotHaveThreeElements (
-					parts)
-
-				|| stringNotEqualSafe (
-					listFirstElementRequired (
-						parts),
-					"test")
-
-				|| stringNotEqualSafe (
-					listSecondElementRequired (
-						parts),
+				isNull (
 					root.getFixturesSeed ())
-
 			) {
-				return Optional.absent ();
-			}
 
-			return parseInteger (
-				listThirdElementRequired (
-					parts));
+				return parseInteger (
+						mangledMessageId);
+
+			} else {
+
+				List <String> parts =
+					stringSplitHyphen (
+						mangledMessageId);
+
+				if (
+
+					collectionDoesNotHaveThreeElements (
+						parts)
+
+					|| stringNotEqualSafe (
+						listFirstElementRequired (
+							parts),
+						"test")
+
+					|| stringNotEqualSafe (
+						listSecondElementRequired (
+							parts),
+						root.getFixturesSeed ())
+
+				) {
+					return optionalAbsent ();
+				}
+
+				return parseInteger (
+					listThirdElementRequired (
+						parts));
+
+			}
 
 		}
 
@@ -256,21 +308,35 @@ class SmsMessageLogicImplementation
 	@Override
 	public
 	Optional <MessageRec> findMessageByMangledId (
+			@NonNull Transaction parentTransaction,
 			@NonNull String mangledMessageId) {
 
-		Optional <Long> messageIdOptional =
-			unmangleMessageId (
-				mangledMessageId);
+		try (
 
-		if (
-			optionalIsNotPresent (
-				messageIdOptional)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findMessageByMangledId");
+
 		) {
-			return Optional.absent ();
-		}
 
-		return smsMessageHelper.find (
-			messageIdOptional.get ());
+			Optional <Long> messageIdOptional =
+				unmangleMessageId (
+					transaction,
+					mangledMessageId);
+
+			if (
+				optionalIsNotPresent (
+					messageIdOptional)
+			) {
+				return optionalAbsent ();
+			}
+
+			return smsMessageHelper.find (
+				transaction,
+				messageIdOptional.get ());
+
+		}
 
 	}
 

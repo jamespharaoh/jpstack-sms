@@ -4,7 +4,10 @@ import lombok.NonNull;
 
 import org.joda.time.DateTime;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHooks;
 
 import wbs.sms.message.core.model.MessageRec;
@@ -13,25 +16,41 @@ public
 class MessageHooks
 	implements ObjectHooks<MessageRec> {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// implementation
 
 	@Override
 	public
 	void beforeInsert (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
-		// set date
+		try (
 
-		if (message.getDate () == null) {
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"beforeInsert");
 
-			if (message.getCreatedTime () == null)
-				throw new RuntimeException ();
+		) {
 
-			message.setDate (
-				new DateTime (
-					message.getCreatedTime ()
-				).toLocalDate ());
+			// set date
+
+			if (message.getDate () == null) {
+
+				if (message.getCreatedTime () == null)
+					throw new RuntimeException ();
+
+				message.setDate (
+					new DateTime (
+						message.getCreatedTime ()
+					).toLocalDate ());
+
+			}
 
 		}
 

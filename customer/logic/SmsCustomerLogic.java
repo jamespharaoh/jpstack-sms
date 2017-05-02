@@ -2,7 +2,7 @@ package wbs.sms.customer.logic;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.user.model.UserRec;
@@ -16,25 +16,26 @@ public
 interface SmsCustomerLogic {
 
 	void sessionStart (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsCustomerRec customer,
 			Optional <Long> threadId);
 
 	void sessionEndManually (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			UserRec user,
 			SmsCustomerRec customer,
 			String reason);
 
 	void sessionTimeoutAuto (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsCustomerSessionRec session);
 
 	Optional <AffiliateRec> customerAffiliate (
+			Transaction parentTransaction,
 			SmsCustomerRec customer);
 
 	void customerAffiliateUpdate (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsCustomerRec customer,
 			SmsCustomerAffiliateRec affiliate,
 			MessageRec message);

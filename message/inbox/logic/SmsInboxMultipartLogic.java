@@ -1,8 +1,10 @@
 package wbs.sms.message.inbox.logic;
 
+import com.google.common.base.Optional;
+
 import org.joda.time.Instant;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
 import wbs.sms.network.model.NetworkRec;
@@ -12,20 +14,20 @@ public
 interface SmsInboxMultipartLogic {
 
 	InboxMultipartBufferRec insertInboxMultipart (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			RouteRec route,
 			long multipartId,
 			long multipartSegMax,
 			long multipartSeg,
-			String msgTo,
-			String msgFrom,
-			Instant msgNetworkTime,
-			NetworkRec msgNetwork,
-			String msgOtherId,
-			String msgText);
+			String numTo,
+			String numFrom,
+			Optional <Instant> networkTime,
+			Optional <NetworkRec> network,
+			Optional <String> oherId,
+			String message);
 
 	boolean insertInboxMultipartMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			InboxMultipartBufferRec inboxMultipartBuffer);
 
 }

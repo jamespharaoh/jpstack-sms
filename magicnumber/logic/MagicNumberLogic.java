@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
@@ -23,38 +23,38 @@ public
 interface MagicNumberLogic {
 
 	MagicNumberRec allocateMagicNumber (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec command,
-			long ref);
+			Long ref);
 
 	MessageRec sendMessage (
-			TaskLogger parentTaskLogger,
-			MagicNumberSetRec magicNumberSet,
-			NumberRec number,
-			CommandRec magicCommand,
-			long magicRef,
-			Optional<Long> threadId,
-			TextRec messageText,
-			RouterRec router,
-			ServiceRec service,
-			Optional<BatchRec> batch,
-			AffiliateRec affiliate,
-			Optional<UserRec> user);
-
-	Long sendMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MagicNumberSetRec magicNumberSet,
 			NumberRec number,
 			CommandRec magicCommand,
 			Long magicRef,
-			Optional<Long> threadId,
-			Collection<TextRec> parts,
+			Optional <Long> threadId,
+			TextRec messageText,
 			RouterRec router,
 			ServiceRec service,
-			Optional<BatchRec> batch,
+			Optional <BatchRec> batch,
 			AffiliateRec affiliate,
-			Optional<UserRec> user);
+			Optional <UserRec> user);
+
+	Long sendMessage (
+			Transaction parentTransaction,
+			MagicNumberSetRec magicNumberSet,
+			NumberRec number,
+			CommandRec magicCommand,
+			Long magicRef,
+			Optional <Long> threadId,
+			Collection <TextRec> parts,
+			RouterRec router,
+			ServiceRec service,
+			Optional <BatchRec> batch,
+			AffiliateRec affiliate,
+			Optional <UserRec> user);
 
 }

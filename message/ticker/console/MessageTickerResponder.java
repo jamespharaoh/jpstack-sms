@@ -28,8 +28,9 @@ import wbs.console.responder.ConsoleHtmlResponder;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 @PrototypeComponent ("messageTickerResponder")
 public
@@ -79,46 +80,57 @@ class MessageTickerResponder
 	@Override
 	public
 	void renderHtmlBodyContents (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		// heading
+		try (
 
-		htmlHeadingTwoWrite (
-			"Message ticker");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContents");
 
-		// table
+		) {
 
-		htmlTableOpenList (
-			htmlIdAttribute (
-				"tickerTable"));
+			// heading
 
-		htmlTableHeadOpen ();
+			htmlHeadingTwoWrite (
+				"Message ticker");
 
-		htmlTableHeaderRowWrite (
-			"",
-			"Time",
-			"From",
-			"To",
-			"Message",
-			"S");
+			// table
 
-		htmlTableHeadClose ();
+			htmlTableOpenList (
+				htmlIdAttribute (
+					"tickerTable"));
 
-		htmlTableBodyOpen ();
+			htmlTableHeadOpen ();
 
-		htmlTableRowOpen (
-			htmlClassAttribute (
-				"message-ticker-loading"));
+			htmlTableHeaderRowWrite (
+				"",
+				"Time",
+				"From",
+				"To",
+				"Message",
+				"S");
 
-		htmlTableCellWrite (
-			"Loading, please wait...",
-			htmlColumnSpanAttribute (6l));
+			htmlTableHeadClose ();
 
-		htmlTableRowClose ();
+			htmlTableBodyOpen ();
 
-		htmlTableBodyClose ();
+			htmlTableRowOpen (
+				htmlClassAttribute (
+					"message-ticker-loading"));
 
-		htmlTableClose ();
+			htmlTableCellWrite (
+				"Loading, please wait...",
+				htmlColumnSpanAttribute (6l));
+
+			htmlTableRowClose ();
+
+			htmlTableBodyClose ();
+
+			htmlTableClose ();
+
+		}
 
 	}
 

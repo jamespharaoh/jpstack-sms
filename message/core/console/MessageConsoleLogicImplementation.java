@@ -15,8 +15,9 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.logic.MediaLogic;
@@ -55,26 +56,39 @@ class MessageConsoleLogicImplementation
 	@Override
 	public
 	void writeMessageContentText (
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
-		MessageConsolePlugin messageConsolePlugin =
-			messageConsolePluginManager.getPlugin (
-				message.getMessageType ().getCode ());
+		try (
 
-		if (
-			isNotNull (
-				messageConsolePlugin)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writeMessageContentText");
+
 		) {
 
-			messageConsolePlugin.writeMessageSummaryText (
-				formatWriter,
-				message);
+			MessageConsolePlugin messageConsolePlugin =
+				messageConsolePluginManager.getPlugin (
+					message.getMessageType ().getCode ());
 
-		} else {
+			if (
+				isNotNull (
+					messageConsolePlugin)
+			) {
 
-			formatWriter.writeString (
-				message.getText ().getText ());
+				messageConsolePlugin.writeMessageSummaryText (
+					transaction,
+					formatWriter,
+					message);
+
+			} else {
+
+				formatWriter.writeString (
+					message.getText ().getText ());
+
+			}
 
 		}
 
@@ -83,15 +97,15 @@ class MessageConsoleLogicImplementation
 	@Override
 	public
 	void writeMessageContentHtml (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"writeMessageContentHtml");
 
 		) {
@@ -103,6 +117,7 @@ class MessageConsoleLogicImplementation
 			if (messageConsolePlugin != null) {
 
 				messageConsolePlugin.writeMessageSummaryHtml (
+					transaction,
 					formatWriter,
 					message);
 
@@ -144,7 +159,7 @@ class MessageConsoleLogicImplementation
 					) {
 
 						mediaConsoleLogic.writeMediaThumb32OrText (
-							taskLogger,
+							transaction,
 							formatWriter,
 							media);
 
@@ -163,7 +178,7 @@ class MessageConsoleLogicImplementation
 									integerToDecimalString (
 										index ++))),
 							() -> mediaConsoleLogic.writeMediaThumb32OrText (
-								taskLogger,
+								transaction,
 								formatWriter,
 								media));
 
@@ -187,15 +202,27 @@ class MessageConsoleLogicImplementation
 	@Override
 	public
 	void writeTdForMessageStatus (
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull MessageStatus messageStatus) {
 
-		formatWriter.writeLineFormat (
-			"<td class=\"%h\">%h</td>",
-			classForMessageStatus (
-				messageStatus),
-			textForMessageStatus (
-				messageStatus));
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writeTdForMessageStatus");
+
+		) {
+
+			formatWriter.writeLineFormat (
+				"<td class=\"%h\">%h</td>",
+				classForMessageStatus (
+					messageStatus),
+				textForMessageStatus (
+					messageStatus));
+
+		}
 
 	}
 

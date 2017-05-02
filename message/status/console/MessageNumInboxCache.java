@@ -11,14 +11,16 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
-import wbs.framework.database.Database;
+import wbs.framework.database.DatabaseCachedGetter;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
-import wbs.platform.misc.CachedGetter;
 import wbs.platform.scaffold.console.SliceConsoleHelper;
 import wbs.platform.scaffold.model.SliceRec;
 
@@ -26,16 +28,15 @@ import wbs.sms.message.inbox.console.InboxConsoleHelper;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.cache.CachedGetter;
+
 @Accessors (fluent = true)
 @PrototypeComponent ("messageNumInboxCache")
 public
 class MessageNumInboxCache
-	extends CachedGetter <Long> {
+	implements CachedGetter <Transaction, Long> {
 
 	// singleton dependencies
-
-	@SingletonDependency
-	Database database;
 
 	@SingletonDependency
 	InboxConsoleHelper inboxHelper;
@@ -54,38 +55,73 @@ class MessageNumInboxCache
 	@Getter @Setter
 	Long sliceId;
 
-	// constructors
+	// state
 
+	private
+	CachedGetter <Transaction, Long> delegate;
+
+	// life cycle
+
+	@NormalLifecycleSetup
 	public
-	MessageNumInboxCache () {
-		super (5000l);
-	}
-
-	// implementation
-
-	@Override
-	public
-	Long refresh (
+	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
+					"setup");
+
+		) {
+
+			delegate =
+				new DatabaseCachedGetter<> (
+					logContext,
+					this::refresh,
+					Duration.standardSeconds (
+						2l));
+
+		}
+
+	}
+
+	// public implementation
+
+	@Override
+	public
+	Long get (
+			@NonNull Transaction context) {
+
+		return delegate.get (
+			context);
+
+	}
+
+	// private implementation
+
+	private
+	Long refresh (
+			@NonNull Transaction parentTransaction) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"refresh");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			SliceRec slice =
 				sliceHelper.findRequired (
+					transaction,
 					sliceId);
 
 			List <RouteRec> routes =
 				routeHelper.findByParent (
+					transaction,
 					slice);
 
 			Instant olderThan =
@@ -98,6 +134,7 @@ class MessageNumInboxCache
 				.mapToLong (
 					route ->
 						inboxHelper.countPendingOlderThan (
+							transaction,
 							route,
 							olderThan))
 

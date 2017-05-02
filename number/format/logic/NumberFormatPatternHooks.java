@@ -2,7 +2,10 @@ package wbs.sms.number.format.logic;
 
 import lombok.NonNull;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHooks;
 
 import wbs.sms.number.format.model.NumberFormatPatternRec;
@@ -12,20 +15,38 @@ public
 class NumberFormatPatternHooks
 	implements ObjectHooks<NumberFormatPatternRec> {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	void beforeInsert (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberFormatPatternRec numberFormatPattern) {
 
-		NumberFormatRec numberFormat =
-			numberFormatPattern.getNumberFormat ();
+		try (
 
-		numberFormatPattern.setIndex (
-			numberFormat.getNumPatterns ());
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"beforeInesrt");
 
-		numberFormat.setNumPatterns (
-			numberFormat.getNumPatterns () + 1);
+		) {
+
+			NumberFormatRec numberFormat =
+				numberFormatPattern.getNumberFormat ();
+
+			numberFormatPattern.setIndex (
+				numberFormat.getNumPatterns ());
+
+			numberFormat.setNumPatterns (
+				numberFormat.getNumPatterns () + 1);
+
+		}
 
 	}
 

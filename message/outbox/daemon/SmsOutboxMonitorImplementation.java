@@ -1,12 +1,11 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.string.StringUtils.keyEqualsDecimalInteger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-
-import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
@@ -16,8 +15,8 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
-import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -151,83 +150,95 @@ class SmsOutboxMonitorImplementation
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.createTaskLogger (
-						"runOnce ()");
+						"runOnce");
 
 			) {
 
 				taskLogger.debugFormat (
 					"Polling database");
 
-				// query database
+				Map <Long, Long> routeSummaries =
+					getRouteSummaries (
+						taskLogger);
 
-				try (
+				synchronized (waitersLock) {
 
-					OwnedTransaction transaction =
-						database.beginReadOnly (
-							taskLogger,
-							"SmsOutboxMonitorImplementation.runOnce ()",
-							this);
+					routeSummaries.entrySet ().forEach (
+						routeSummary ->
+							doRouteSummary (
+								taskLogger,
+								routeSummary));
 
-				) {
+				}
 
-					Map <Long, Long> routeSummary =
-						outboxHelper.generateRouteSummary (
-							transaction.now ());
+			}
 
-					transaction.close ();
+		}
 
-					// now set off and discard all affected latches
+		private
+		Map <Long, Long> getRouteSummaries (
+				@NonNull TaskLogger parentTaskLogger) {
 
-					synchronized (waitersLock) {
+			try (
 
-						for (
-							Map.Entry<Long,Long> routeSummaryEntry
-								: routeSummary.entrySet ()
-						) {
+				OwnedTransaction transaction =
+					database.beginReadOnly (
+						logContext,
+						parentTaskLogger,
+						"getRouteSummaries");
 
-							long routeId =
-								routeSummaryEntry.getKey ();
+			) {
 
-							long count =
-								routeSummaryEntry.getValue ();
+				return outboxHelper.generateRouteSummary (
+					transaction,
+					transaction.now ());
 
-							taskLogger.debugFormat (
-								"Route %s has %s messages",
-								integerToDecimalString (
-									routeId),
-								integerToDecimalString (
-									count));
+			}
 
-							CountDownLatch countDownLatch =
-								waiters.get (
-									routeId);
+		}
 
-							if (countDownLatch != null) {
+		private
+		void doRouteSummary (
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull Map.Entry <Long, Long> routeSummary) {
 
-								countDownLatch.countDown ();
+			try (
 
-								waiters.remove (
-									routeId);
+				OwnedTaskLogger taskLogger =
+					logContext.nestTaskLoggerFormat (
+						parentTaskLogger,
+						"doRouteSummary",
+						keyEqualsDecimalInteger (
+							"routeId",
+							routeSummary.getKey ()));
 
-							}
+			) {
 
-						}
+				long routeId =
+					routeSummary.getKey ();
 
-					}
+				long count =
+					routeSummary.getValue ();
 
-				} catch (Exception exception) {
+				taskLogger.debugFormat (
+					"Route %s has %s messages",
+					integerToDecimalString (
+						routeId),
+					integerToDecimalString (
+						count));
 
-					// log error
+				CountDownLatch countDownLatch =
+					waiters.get (
+						routeId);
 
-					exceptionLogger.logThrowable (
-						taskLogger,
-						"daemon",
-						"Outbox monitor",
-						exception,
-						Optional.absent (),
-						GenericExceptionResolution.tryAgainLater);
+				if (countDownLatch != null) {
+
+					countDownLatch.countDown ();
+
+					waiters.remove (
+						routeId);
 
 				}
 

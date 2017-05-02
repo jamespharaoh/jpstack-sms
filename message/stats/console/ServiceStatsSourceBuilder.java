@@ -9,13 +9,22 @@ import javax.inject.Provider;
 
 import com.google.common.collect.ImmutableMap;
 
+import lombok.NonNull;
+
 import wbs.console.helper.manager.ConsoleObjectManager;
+
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHelper;
+
 import wbs.platform.service.model.ServiceRec;
+
 import wbs.sms.object.stats.ObjectStatsSourceBuilder;
 
 @SingletonComponent ("serviceStatsSourceBuilder")
@@ -24,6 +33,9 @@ class ServiceStatsSourceBuilder
 	implements ObjectStatsSourceBuilder {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
@@ -38,82 +50,97 @@ class ServiceStatsSourceBuilder
 	@Override
 	public
 	SmsStatsSource buildStatsSource (
-			Record<?> parent) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Record <?> parent) {
 
-		List<ServiceRec> services;
+		try (
 
-		if (parent instanceof ServiceRec) {
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"buildStatsSource");
 
-			services =
-				Collections.singletonList (
-					(ServiceRec)
-					parent);
-
-		} else {
-
-			services =
-				objectManager.getChildren (
-					parent,
-					ServiceRec.class);
-
-		}
-
-		if (services.isEmpty ())
-			return null;
-
-		for (
-			ObjectHelper<?> objectHelper
-				: objectManager.objectHelpers ()
 		) {
 
-			if (
-				! objectHelper.major ()
-				|| objectHelper.isRoot ()
-				|| ! objectHelper.parentClass ().isInstance (parent)
-			) {
-				continue;
-			}
+			List <ServiceRec> services;
 
-			List<? extends Record<?>> children =
-				objectHelper.findByParent (
-					parent);
+			if (parent instanceof ServiceRec) {
 
-			for (
-				Record<?> child
-					: children
-			) {
+				services =
+					Collections.singletonList (
+						(ServiceRec)
+						parent);
 
-				List<ServiceRec> childServices =
+			} else {
+
+				services =
 					objectManager.getChildren (
-						child,
+						transaction,
+						parent,
 						ServiceRec.class);
 
-				services.addAll (
-					childServices);
+			}
+
+			if (services.isEmpty ())
+				return null;
+
+			for (
+				ObjectHelper<?> objectHelper
+					: objectManager.objectHelpers ()
+			) {
+
+				if (
+					! objectHelper.major ()
+					|| objectHelper.isRoot ()
+					|| ! objectHelper.parentClass ().isInstance (parent)
+				) {
+					continue;
+				}
+
+				List <? extends Record <?>> children =
+					objectHelper.findByParent (
+						transaction,
+						parent);
+
+				for (
+					Record <?> child
+						: children
+				) {
+
+					List <ServiceRec> childServices =
+						objectManager.getChildren (
+							transaction,
+							child,
+							ServiceRec.class);
+
+					services.addAll (
+						childServices);
+
+				}
 
 			}
 
+			Set<Long> serviceIds =
+				new HashSet<> ();
+
+			for (
+				ServiceRec service
+					: services
+			) {
+
+				serviceIds.add (
+					service.getId ());
+
+			}
+
+			return smsStatsSourceProvider.get ()
+
+				.fixedCriteriaMap (
+					ImmutableMap.of (
+						SmsStatsCriteria.service,
+						serviceIds));
+
 		}
-
-		Set<Long> serviceIds =
-			new HashSet<> ();
-
-		for (
-			ServiceRec service
-				: services
-		) {
-
-			serviceIds.add (
-				service.getId ());
-
-		}
-
-		return smsStatsSourceProvider.get ()
-
-			.fixedCriteriaMap (
-				ImmutableMap.of (
-					SmsStatsCriteria.service,
-					serviceIds));
 
 	}
 

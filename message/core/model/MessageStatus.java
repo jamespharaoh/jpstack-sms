@@ -2,9 +2,9 @@ package wbs.sms.message.core.model;
 
 import java.util.Set;
 
-import lombok.Getter;
-
 import com.google.common.collect.ImmutableSet;
+
+import lombok.Getter;
 
 public
 enum MessageStatus {

@@ -2,7 +2,6 @@ package wbs.sms.network.logic;
 
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.laterThan;
 import static wbs.utils.time.TimeUtils.millisToInstant;
 
@@ -11,13 +10,17 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
 
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.network.model.NetworkObjectHelper;
 import wbs.sms.network.model.NetworkPrefixObjectHelper;
@@ -26,12 +29,14 @@ import wbs.sms.network.model.NetworkRec;
 
 // TODO what to do with this :-(
 
-@Log4j
 @SingletonComponent ("networkPrefixCache")
 public
 class NetworkPrefixCache {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NetworkObjectHelper networkHelper;
@@ -56,100 +61,142 @@ class NetworkPrefixCache {
 	// implementation
 
 	private synchronized
-	void reloadEntries () {
+	void reloadEntries (
+			@NonNull Transaction parentTransaction) {
 
-		entries =
-			new HashMap<> ();
+		try (
 
-		List<NetworkPrefixRec> list =
-			networkPrefixHelper.findAll ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"reloadEntries");
 
-		for (
-			NetworkPrefixRec networkPrefix
-				: list
 		) {
 
-			entries.put (
-				networkPrefix.getPrefix (),
-				networkPrefix.getNetwork ().getId ());
+			entries =
+				new HashMap<> ();
+
+			List <NetworkPrefixRec> list =
+				networkPrefixHelper.findAll (
+					transaction);
+
+			for (
+				NetworkPrefixRec networkPrefix
+					: list
+			) {
+
+				entries.put (
+					networkPrefix.getPrefix (),
+					networkPrefix.getNetwork ().getId ());
+
+			}
 
 		}
 
 	}
 
 	private synchronized
-	Map<String,Long> getEntries () {
+	Map <String, Long> getEntries (
+			@NonNull Transaction parentTransaction) {
 
-		Instant now =
-			Instant.now ();
+		try (
 
-		if (
-			laterThan (
-				now,
-				lastReload.plus (
-					reloadSecs * 1000))
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"getEntries");
+
 		) {
 
-			reloadEntries ();
+			if (
+				laterThan (
+					transaction.now (),
+					lastReload.plus (
+						reloadSecs * 1000))
+			) {
 
-			lastReload = now;
+				reloadEntries (
+					transaction);
+
+				lastReload =
+					transaction.now ();
+
+			}
+
+			return entries;
 
 		}
-
-		return entries;
 
 	}
 
 	public
 	NetworkRec lookupNetwork (
-			String number) {
+			@NonNull Transaction parentTransaction,
+			@NonNull String number) {
 
-		Map <String, Long> entries =
-			getEntries ();
+		try (
 
-		for (
-
-			String prefixToTry =
-				number;
-
-			prefixToTry.length () > 0;
-
-			prefixToTry =
-				prefixToTry.substring (
-					0,
-					prefixToTry.length () - 1)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"lookupNetwork");
 
 		) {
 
-			log.debug ("Trying " + prefixToTry + " for " + number);
+			Map <String, Long> entries =
+				getEntries (
+					transaction);
 
-			Long networkId =
-				entries.get (
-					prefixToTry);
+			for (
 
-			if (
-				isNotNull (
-					networkId)
+				String prefixToTry =
+					number;
+
+				prefixToTry.length () > 0;
+
+				prefixToTry =
+					prefixToTry.substring (
+						0,
+						prefixToTry.length () - 1)
+
 			) {
 
-				log.debug (
-					stringFormat (
+				transaction.debugFormat (
+					"Trying %s for %s",
+					prefixToTry,
+					number);
+
+				Long networkId =
+					entries.get (
+						prefixToTry);
+
+				if (
+					isNotNull (
+						networkId)
+				) {
+
+					transaction.debugFormat (
 						"Found %s, networkId = %s for %s",
 						prefixToTry,
 						integerToDecimalString (
 							networkId),
-						number));
+						number);
 
-				return networkHelper.findRequired (
-					networkId);
+					return networkHelper.findRequired (
+						transaction,
+						networkId);
+
+				}
 
 			}
 
+			transaction.debugFormat (
+				"Found nothing for %s",
+				number);
+
+			return null;
+
 		}
-
-		log.debug ("Found nothing for " + number);
-
-		return null;
 
 	}
 

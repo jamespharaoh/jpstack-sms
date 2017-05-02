@@ -7,8 +7,9 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -39,7 +40,8 @@ class KeywordLogicImplementation
 	@Override
 	public
 	boolean checkKeyword (
-			String keyword) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull String keyword) {
 
 		return keywordPattern
 			.matcher (keyword)
@@ -50,27 +52,25 @@ class KeywordLogicImplementation
 	@Override
 	public
 	void createOrUpdateKeywordSetFallback (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull KeywordSetRec keywordSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createOrUpdateKeywordSetFallback");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// try and update an existing one
 
 			KeywordSetFallbackRec keywordSetFallback =
 				keywordSetFallbackHelper.find (
+					transaction,
 					keywordSet,
 					number);
 
@@ -91,7 +91,7 @@ class KeywordLogicImplementation
 			// create a new one
 
 			keywordSetFallbackHelper.insert (
-				taskLogger,
+				transaction,
 				keywordSetFallbackHelper.createInstance ()
 
 				.setKeywordSet (

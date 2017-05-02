@@ -7,8 +7,6 @@ import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
-import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
-import static wbs.utils.string.StringUtils.joinWithFullStop;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
@@ -28,6 +26,7 @@ import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -131,7 +130,7 @@ class ReceivedManager
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"dumpMessageInfo");
@@ -156,29 +155,26 @@ class ReceivedManager
 
 			try (
 
-				TaskLogger taskLogger =
-					logContext.nestTaskLogger (
-						parentTaskLogger,
-						"doMessage");
-
 				OwnedTransaction transaction =
 					database.beginReadWrite (
-						taskLogger,
-						"ReceivedManager.ReceivedThread.doMessage (messageId)",
-						this);
+						logContext,
+						parentTaskLogger,
+						"ReceivedThread.doMessage");
 
 			) {
 
 				InboxRec inbox =
 					inboxHelper.findRequired (
+						transaction,
 						messageId);
 
 				MessageRec message =
 					messageHelper.findRequired (
+						transaction,
 						messageId);
 
 				dumpMessageInfo (
-					taskLogger,
+					transaction,
 					message);
 
 				RouteRec route =
@@ -188,7 +184,7 @@ class ReceivedManager
 
 					InboxAttemptRec inboxAttempt =
 						commandManager.handle (
-							taskLogger,
+							transaction,
 							inbox,
 							route.getCommand (),
 							Optional.fromNullable (
@@ -201,7 +197,7 @@ class ReceivedManager
 				} else {
 
 					smsInboxLogic.inboxNotProcessed (
-						taskLogger,
+						transaction,
 						inbox,
 						optionalAbsent (),
 						optionalAbsent (),
@@ -223,33 +219,22 @@ class ReceivedManager
 
 			try (
 
-				TaskLogger taskLogger =
-					logContext.nestTaskLogger (
-						parentTaskLogger,
-						"doError");
-
 				OwnedTransaction transaction =
-					database.beginReadWrite (
-						taskLogger,
+					database.beginReadWriteFormat (
+						logContext,
+						parentTaskLogger,
+						"ReceivedThread.doError (%s, %s)",
 						stringFormat (
-							"%s (%s)",
-							joinWithFullStop (
-								"ReceivedManager",
-								"ReceivedThread",
-								"doError"),
-							joinWithCommaAndSpace (
-								stringFormat (
-									"messageId = %s",
-									integerToDecimalString (
-										messageId)),
-								stringFormat (
-									"exception = %s",
-									exception.getClass ().getSimpleName ()))),
-						this);
+							"messageId = %s",
+							integerToDecimalString (
+								messageId)),
+						stringFormat (
+							"exception = %s",
+							exception.getClass ().getSimpleName ()));
 
 			) {
 
-				taskLogger.errorFormatException (
+				transaction.errorFormatException (
 					exception,
 					"Error processing command for message %s",
 					integerToDecimalString (
@@ -257,6 +242,7 @@ class ReceivedManager
 
 				InboxRec inbox =
 					inboxHelper.findRequired (
+						transaction,
 						messageId);
 
 				MessageRec message =
@@ -266,7 +252,7 @@ class ReceivedManager
 					message.getRoute ();
 
 				exceptionLogger.logThrowable (
-					taskLogger,
+					transaction,
 					"daemon",
 					stringFormat (
 						"Route %s",
@@ -276,7 +262,7 @@ class ReceivedManager
 					GenericExceptionResolution.tryAgainLater);
 
 				smsInboxLogic.inboxProcessingFailed (
-					taskLogger,
+					transaction,
 					inbox,
 					stringFormat (
 						"Threw %s: %s",
@@ -313,7 +299,7 @@ class ReceivedManager
 
 				try (
 
-					TaskLogger taskLogger =
+					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
 							"run");
 
@@ -349,26 +335,21 @@ class ReceivedManager
 
 	boolean doQuery () {
 
-		TaskLogger taskLogger =
-			logContext.createTaskLogger (
-				"doQuery");
-
-		final
-		Set <Long> activeMessageids =
-			buffer.getKeys ();
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"ReceivedManager.doQuery ()",
-					this);
+					logContext,
+					"doQuery");
 
 		) {
 
+			Set <Long> activeMessageids =
+				buffer.getKeys ();
+
 			List <InboxRec> inboxes =
 				inboxHelper.findPendingLimit (
+					transaction,
 					transaction.now (),
 					buffer.getFullSize ());
 

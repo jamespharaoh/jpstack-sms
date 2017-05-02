@@ -23,9 +23,12 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.service.model.ServiceRec;
 
@@ -44,597 +47,692 @@ class MessageDaoHibernate
 	extends HibernateDao
 	implements MessageDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// implementation
 
 	@Override
 	public
-	List <MessageRec> findNotProcessed () {
+	List <MessageRec> findNotProcessed (
+			@NonNull Transaction parentTransaction) {
 
-		return findMany (
-			"findNotProcessed",
-			MessageRec.class,
+		try (
 
-			createCriteria (
-				MessageRec.class)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findNotProcessed");
 
-			.add (
-				Restrictions.eq (
-					"status",
-					MessageStatus.notProcessed))
+		) {
 
-			.addOrder (
-				Order.desc (
-					"createdTime"))
+			return findMany (
+				transaction,
+				MessageRec.class,
 
-		);
+				createCriteria (
+					transaction,
+					MessageRec.class)
+
+				.add (
+					Restrictions.eq (
+						"status",
+						MessageStatus.notProcessed))
+
+				.addOrder (
+					Order.desc (
+						"createdTime"))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
-	Long countNotProcessed () {
+	Long countNotProcessed (
+			@NonNull Transaction parentTransaction) {
 
-		return findOneOrNull (
-			"countNotProcessed ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				MessageRec.class,
-				"_message")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"countNotProcessed");
 
-			.add (
-				Restrictions.eq (
-					"_message.status",
-					MessageStatus.notProcessed))
+		) {
 
-			.setProjection (
-				Projections.rowCount ())
+			return findOneOrNull (
+				transaction,
+				Long.class,
 
-		);
+				createCriteria (
+					transaction,
+					MessageRec.class,
+					"_message")
+
+				.add (
+					Restrictions.eq (
+						"_message.status",
+						MessageStatus.notProcessed))
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	MessageRec findByOtherId (
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageDirection direction,
 			@NonNull RouteRec route,
 			@NonNull String otherId) {
 
-		return findOneOrNull (
-			"findByOtherId (direction, route, otherId)",
-			MessageRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findByOtherId");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				MessageRec.class,
-				"_message")
 
-			.add (
-				Restrictions.eq (
-					"_message.direction",
-					direction))
+				createCriteria (
+					transaction,
+					MessageRec.class,
+					"_message")
 
-			.add (
-				Restrictions.eq (
-					"_message.route",
-					route))
+				.add (
+					Restrictions.eq (
+						"_message.direction",
+						direction))
 
-			.add (
-				Restrictions.eq (
-					"_message.otherId",
-					otherId))
+				.add (
+					Restrictions.eq (
+						"_message.route",
+						route))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_message.otherId",
+						otherId))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <MessageRec> findByThreadId (
+			@NonNull Transaction parentTransaction,
 			@NonNull Long threadId) {
 
-		return findMany (
-			"findByThreadId",
-			MessageRec.class,
+		try (
 
-			createCriteria (
-				MessageRec.class)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findByThreadId");
 
-			.add (
-				Restrictions.eq (
-					"threadId",
-					threadId))
+		) {
 
-		);
+			return findMany (
+				transaction,
+				MessageRec.class,
+
+				createCriteria (
+					transaction,
+					MessageRec.class)
+
+				.add (
+					Restrictions.eq (
+						"threadId",
+						threadId))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <MessageRec> findRecentLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findRecentLimit",
-			MessageRec.class,
+		try (
 
-			createCriteria (
-				MessageRec.class)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findRecentLimit");
 
-			.addOrder (
-				Order.desc ("id"))
+		) {
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+			return findMany (
+				transaction,
+				MessageRec.class,
 
-		);
+				createCriteria (
+					transaction,
+					MessageRec.class)
+
+				.addOrder (
+					Order.desc ("id"))
+
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <ServiceRec> projectServices (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberRec number) {
 
-		return findMany (
-			"projectServices",
-			ServiceRec.class,
+		try (
 
-			createCriteria (
-				MessageRec.class,
-				"_message")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"projectServices");
 
-			.createAlias (
-				"service",
-				"_service")
+		) {
 
-			.add (
-				Restrictions.eq (
-					"_message.number",
-					number))
+			return findMany (
+				transaction,
+				ServiceRec.class,
 
-			.setProjection (
-				Projections.projectionList ()
+				createCriteria (
+					transaction,
+					MessageRec.class,
+					"_message")
 
-					.add (
-						Projections.groupProperty (
-							"_message.service")))
+				.createAlias (
+					"service",
+					"_service")
 
-		);
+				.add (
+					Restrictions.eq (
+						"_message.number",
+						number))
+
+				.setProjection (
+					Projections.projectionList ()
+
+						.add (
+							Projections.groupProperty (
+								"_message.service")))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <Long> searchIds (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageSearch search) {
 
-		Criteria criteria =
-			createCriteria (
-				MessageRec.class,
-				"_message")
+		try (
 
-			.createAlias (
-				"_message.network",
-				"_network",
-				JoinType.LEFT_OUTER_JOIN)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"searchIds");
 
-			.createAlias (
-				"_message.number",
-				"_number",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_message.route",
-				"_route",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_route.slice",
-				"_routeSlice")
-
-			.createAlias (
-				"_message.service",
-				"_service",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_service.slice",
-				"_serviceSlice",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_message.affiliate",
-				"_affiliate",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_message.batch",
-				"_batch",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_message.text",
-				"_text",
-				JoinType.LEFT_OUTER_JOIN)
-
-			.createAlias (
-				"_message.user",
-				"_user",
-				JoinType.LEFT_OUTER_JOIN);
-
-		if (search.messageId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_message.id",
-					search.messageId ()));
-
-		}
-
-		if (search.number () != null) {
-
-			criteria.add (
-				Restrictions.ilike (
-					"_number.number",
-					search.number ()));
-
-		}
-
-		if (search.numberId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_number.id",
-					search.numberId ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.serviceSliceId ())
 		) {
 
-			criteria.add (
-				Restrictions.eq (
-					"_serviceSlice.id",
-					search.serviceSliceId ()));
+			Criteria criteria =
+				createCriteria (
+					transaction,
+					MessageRec.class,
+					"_message")
 
-		}
+				.createAlias (
+					"_message.network",
+					"_network",
+					JoinType.LEFT_OUTER_JOIN)
 
-		if (
-			isNotNull (
-				search.serviceParentTypeId ())
-		) {
+				.createAlias (
+					"_message.number",
+					"_number",
+					JoinType.LEFT_OUTER_JOIN)
 
-			criteria.add (
-				Restrictions.eq (
-					"_service.parentType.id",
-					search.serviceParentTypeId ()));
+				.createAlias (
+					"_message.route",
+					"_route",
+					JoinType.LEFT_OUTER_JOIN)
 
-		}
+				.createAlias (
+					"_route.slice",
+					"_routeSlice")
 
-		if (search.serviceId () != null) {
+				.createAlias (
+					"_message.service",
+					"_service",
+					JoinType.LEFT_OUTER_JOIN)
 
-			criteria.add (
-				Restrictions.eq (
-					"_service.id",
-					search.serviceId ()));
+				.createAlias (
+					"_service.slice",
+					"_serviceSlice",
+					JoinType.LEFT_OUTER_JOIN)
 
-		}
+				.createAlias (
+					"_message.affiliate",
+					"_affiliate",
+					JoinType.LEFT_OUTER_JOIN)
 
-		if (search.serviceIdIn () != null) {
+				.createAlias (
+					"_message.batch",
+					"_batch",
+					JoinType.LEFT_OUTER_JOIN)
 
-			if (search.serviceIdIn ().isEmpty ())
-				return Collections.emptyList ();
+				.createAlias (
+					"_message.text",
+					"_text",
+					JoinType.LEFT_OUTER_JOIN)
 
-			criteria.add (
-				Restrictions.in (
-					"_service.id",
-					search.serviceIdIn ()));
+				.createAlias (
+					"_message.user",
+					"_user",
+					JoinType.LEFT_OUTER_JOIN);
 
-		}
-
-		if (search.affiliateId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_affiliate.id",
-					search.affiliateId ()));
-
-		}
-
-		if (search.affiliateIdIn () != null) {
-
-			criteria.add (
-				Restrictions.in (
-					"affiliate.id",
-					search.affiliateIdIn ()));
-
-		}
-
-		if (search.batchId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_batch.id",
-					search.batchId ()));
-
-		}
-
-		if (search.batchIdIn () != null) {
-
-			criteria.add (
-				Restrictions.in (
-					"_batch.id",
-					search.batchIdIn ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.routeSliceId ())
-		) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_routeSlice.id",
-					search.routeSliceId ()));
-
-		}
-
-		if (search.routeId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_route.id",
-					search.routeId ()));
-
-		}
-
-		if (search.routeIdIn () != null) {
-
-			criteria.add (
-				Restrictions.in (
-					"_route.id",
-					search.routeIdIn ()));
-
-		}
-
-		if (search.networkId () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_network.id",
-					search.networkId ()));
-		}
-
-		if (search.status () != null) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_message.status",
-					search.status ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.createdTime ())
-		) {
-
-			if (
-				moreThan (
-					search.createdTime ().start ().getMillis (),
-					minimumInteger)
-			) {
+			if (search.messageId () != null) {
 
 				criteria.add (
-					Restrictions.ge (
-						"_message.createdTime",
-						search.createdTime ().start ()));
+					Restrictions.eq (
+						"_message.id",
+						search.messageId ()));
+
+			}
+
+			if (search.number () != null) {
+
+				criteria.add (
+					Restrictions.ilike (
+						"_number.number",
+						search.number ()));
+
+			}
+
+			if (search.numberId () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_number.id",
+						search.numberId ()));
 
 			}
 
 			if (
-				lessThan (
-					search.createdTime ().end ().getMillis (),
-					maximumInteger)
+				isNotNull (
+					search.serviceSliceId ())
 			) {
 
 				criteria.add (
-					Restrictions.lt (
-						"_message.createdTime",
-						search.createdTime ().end ()));
+					Restrictions.eq (
+						"_serviceSlice.id",
+						search.serviceSliceId ()));
 
 			}
 
-		}
-
-		if (
-			isNotNull (
-				search.direction ())
-		) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_message.direction",
-					search.direction ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.statusIn ())
-		) {
-
-			criteria.add (
-				Restrictions.in (
-					"_message.status",
-					search.statusIn ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.statusNotIn ())
-		) {
-
-			criteria.add (
-				Restrictions.not (
-					Restrictions.in (
-						"_message.status",
-						search.statusNotIn ())));
-
-		}
-
-		if (
-			isNotNull (
-				search.textLike ())
-		) {
-
-			criteria.add (
-				Restrictions.like (
-					"_text.text",
-					search.textLike ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.textILike ())
-		) {
-
-			criteria.add (
-				Restrictions.ilike (
-					"_text.text",
-					search.textILike ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.textContains ())
-		) {
-
-			criteria.add (
-				Restrictions.ilike (
-					"_text.text",
-					stringFormat (
-						"%%%s%%",
-						search.textContains ())));
-
-		}
-
-		if (
-			isNotNull (
-				search.userId ())
-		) {
-
-			criteria.add (
-				Restrictions.eq (
-					"_user.id",
-					search.userId ()));
-
-		}
-
-		if (
-			isNotNull (
-				search.maxResults ())
-		) {
-
-			criteria.setMaxResults (
-				toJavaIntegerRequired (
-					search.maxResults ()));
-
-		}
-
-		switch (
-			ifNull (
-				search.orderBy (),
-				MessageSearchOrder.createdTimeDesc)
-		) {
-
-		case createdTime:
-
-			criteria.addOrder (
-				Order.asc (
-					"_message.createdTime"));
-
-			break;
-
-		case createdTimeDesc:
-
-			criteria.addOrder (
-				Order.desc (
-					"_message.createdTime"));
-
-			break;
-
-		default:
-
-			throw new IllegalArgumentException (
-				search.orderBy ().toString ());
-
-		}
-
-		if (search.filter ()) {
-
-			List <Criterion> filterCriteria =
-				new ArrayList<> ();
-
 			if (
-				collectionIsNotEmpty (
-					search.filterServiceIds ())
+				isNotNull (
+					search.serviceParentTypeId ())
 			) {
 
-				filterCriteria.add (
+				criteria.add (
+					Restrictions.eq (
+						"_service.parentType.id",
+						search.serviceParentTypeId ()));
+
+			}
+
+			if (search.serviceId () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_service.id",
+						search.serviceId ()));
+
+			}
+
+			if (search.serviceIdIn () != null) {
+
+				if (search.serviceIdIn ().isEmpty ())
+					return Collections.emptyList ();
+
+				criteria.add (
 					Restrictions.in (
 						"_service.id",
-						search.filterServiceIds ()));
+						search.serviceIdIn ()));
 
 			}
 
-			if (
-				collectionIsNotEmpty (
-					search.filterAffiliateIds ())
-			) {
+			if (search.affiliateId () != null) {
 
-				filterCriteria.add (
-					Restrictions.in (
+				criteria.add (
+					Restrictions.eq (
 						"_affiliate.id",
-						search.filterAffiliateIds ()));
+						search.affiliateId ()));
+
+			}
+
+			if (search.affiliateIdIn () != null) {
+
+				criteria.add (
+					Restrictions.in (
+						"affiliate.id",
+						search.affiliateIdIn ()));
+
+			}
+
+			if (search.batchId () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_batch.id",
+						search.batchId ()));
+
+			}
+
+			if (search.batchIdIn () != null) {
+
+				criteria.add (
+					Restrictions.in (
+						"_batch.id",
+						search.batchIdIn ()));
 
 			}
 
 			if (
-				collectionIsNotEmpty (
-					search.filterRouteIds ())
+				isNotNull (
+					search.routeSliceId ())
 			) {
 
-				filterCriteria.add (
+				criteria.add (
+					Restrictions.eq (
+						"_routeSlice.id",
+						search.routeSliceId ()));
+
+			}
+
+			if (search.routeId () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_route.id",
+						search.routeId ()));
+
+			}
+
+			if (search.routeIdIn () != null) {
+
+				criteria.add (
 					Restrictions.in (
 						"_route.id",
-						search.filterRouteIds ()));
+						search.routeIdIn ()));
 
 			}
 
-			criteria.add (
-				Restrictions.or (
-					filterCriteria.toArray (
-						new Criterion [] {})));
+			if (search.networkId () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_network.id",
+						search.networkId ()));
+			}
+
+			if (search.status () != null) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_message.status",
+						search.status ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.createdTime ())
+			) {
+
+				if (
+					moreThan (
+						search.createdTime ().start ().getMillis (),
+						minimumInteger)
+				) {
+
+					criteria.add (
+						Restrictions.ge (
+							"_message.createdTime",
+							search.createdTime ().start ()));
+
+				}
+
+				if (
+					lessThan (
+						search.createdTime ().end ().getMillis (),
+						maximumInteger)
+				) {
+
+					criteria.add (
+						Restrictions.lt (
+							"_message.createdTime",
+							search.createdTime ().end ()));
+
+				}
+
+			}
+
+			if (
+				isNotNull (
+					search.direction ())
+			) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_message.direction",
+						search.direction ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.statusIn ())
+			) {
+
+				criteria.add (
+					Restrictions.in (
+						"_message.status",
+						search.statusIn ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.statusNotIn ())
+			) {
+
+				criteria.add (
+					Restrictions.not (
+						Restrictions.in (
+							"_message.status",
+							search.statusNotIn ())));
+
+			}
+
+			if (
+				isNotNull (
+					search.textLike ())
+			) {
+
+				criteria.add (
+					Restrictions.like (
+						"_text.text",
+						search.textLike ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.textILike ())
+			) {
+
+				criteria.add (
+					Restrictions.ilike (
+						"_text.text",
+						search.textILike ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.textContains ())
+			) {
+
+				criteria.add (
+					Restrictions.ilike (
+						"_text.text",
+						stringFormat (
+							"%%%s%%",
+							search.textContains ())));
+
+			}
+
+			if (
+				isNotNull (
+					search.userId ())
+			) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_user.id",
+						search.userId ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.maxResults ())
+			) {
+
+				criteria.setMaxResults (
+					toJavaIntegerRequired (
+						search.maxResults ()));
+
+			}
+
+			switch (
+				ifNull (
+					search.orderBy (),
+					MessageSearchOrder.createdTimeDesc)
+			) {
+
+			case createdTime:
+
+				criteria.addOrder (
+					Order.asc (
+						"_message.createdTime"));
+
+				break;
+
+			case createdTimeDesc:
+
+				criteria.addOrder (
+					Order.desc (
+						"_message.createdTime"));
+
+				break;
+
+			default:
+
+				throw new IllegalArgumentException (
+					search.orderBy ().toString ());
+
+			}
+
+			if (search.filter ()) {
+
+				List <Criterion> filterCriteria =
+					new ArrayList<> ();
+
+				if (
+					collectionIsNotEmpty (
+						search.filterServiceIds ())
+				) {
+
+					filterCriteria.add (
+						Restrictions.in (
+							"_service.id",
+							search.filterServiceIds ()));
+
+				}
+
+				if (
+					collectionIsNotEmpty (
+						search.filterAffiliateIds ())
+				) {
+
+					filterCriteria.add (
+						Restrictions.in (
+							"_affiliate.id",
+							search.filterAffiliateIds ()));
+
+				}
+
+				if (
+					collectionIsNotEmpty (
+						search.filterRouteIds ())
+				) {
+
+					filterCriteria.add (
+						Restrictions.in (
+							"_route.id",
+							search.filterRouteIds ()));
+
+				}
+
+				criteria.add (
+					Restrictions.or (
+						filterCriteria.toArray (
+							new Criterion [] {})));
+
+			}
+
+			criteria.setProjection (
+				Projections.id ());
+
+			return findMany (
+				transaction,
+				Long.class,
+				criteria);
 
 		}
-
-		criteria.setProjection (
-			Projections.id ());
-
-		return findMany (
-			"searchIds",
-			Long.class,
-			criteria);
 
 	}
 

@@ -23,6 +23,7 @@ import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -80,8 +81,9 @@ class DeliveryDaemon
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
+			OwnedTransaction transaction =
+				database.beginReadOnly (
+					logContext,
 					parentTaskLogger,
 					"setupService");
 
@@ -94,41 +96,28 @@ class DeliveryDaemon
 			handlersById =
 				new HashMap<> ();
 
-			try (
-
-				OwnedTransaction transaction =
-					database.beginReadOnly (
-						taskLogger,
-						"DeliveryDaemon.init ()",
-						this);
-
+			for (
+				Map.Entry <String, Provider <DeliveryHandler>> handlerEntry
+					: handlersByBeanName.entrySet ()
 			) {
 
+				DeliveryHandler handler =
+					handlerEntry.getValue ().get ();
+
 				for (
-					Map.Entry<String,Provider<DeliveryHandler>> handlerEntry
-						: handlersByBeanName.entrySet ()
+					String deliveryTypeCode
+						: handler.getDeliveryTypeCodes ()
 				) {
 
-					//String beanName = ent.getKey ();
+					DeliveryTypeRec deliveryType =
+						deliveryTypeHelper.findByCodeRequired (
+							transaction,
+							GlobalId.root,
+							deliveryTypeCode);
 
-					DeliveryHandler handler =
-						handlerEntry.getValue ().get ();
-
-					for (
-						String deliveryTypeCode
-							: handler.getDeliveryTypeCodes ()
-					) {
-
-						DeliveryTypeRec deliveryType =
-							deliveryTypeHelper.findByCodeRequired (
-								GlobalId.root,
-								deliveryTypeCode);
-
-						handlersById.put (
-							deliveryType.getId (),
-							handler);
-
-					}
+					handlersById.put (
+						deliveryType.getId (),
+						handler);
 
 				}
 
@@ -214,24 +203,20 @@ class DeliveryDaemon
 		int pollDatabase (
 				@NonNull Set <Long> activeIds) {
 
-			TaskLogger taskLogger =
-				logContext.createTaskLogger (
-					"pollDatabase");
-
-			int numFound = 0;
-
 			try (
 
 				OwnedTransaction transaction =
 					database.beginReadOnly (
-						taskLogger,
-						"DeliveryDaemon.QueryThread.pollDatabase (activeIds)",
-						this);
+						logContext,
+						"QueryThread.pollDatabase");
 
 			) {
 
+				int numFound = 0;
+
 				List <DeliveryRec> deliveries =
 					deliveryHelper.findAllLimit (
+						transaction,
 						buffer.getFullSize ());
 
 				for (
@@ -289,7 +274,7 @@ class DeliveryDaemon
 
 				try (
 
-					TaskLogger taskLogger =
+					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
 							"worker.run");
 

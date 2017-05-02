@@ -10,7 +10,11 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.spendlimit.model.SmsSpendLimiterNumberDaoMethods;
@@ -23,80 +27,113 @@ class SmsSpendLimiterNumberDaoHibernate
 	extends HibernateDao
 	implements SmsSpendLimiterNumberDaoMethods {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	SmsSpendLimiterNumberRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSpendLimiterRec smsSpendLimiter,
 			@NonNull NumberRec number) {
 
-		return findOneOrNull (
-			"find (smsSpendLimiter, number)",
-			SmsSpendLimiterNumberRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				SmsSpendLimiterNumberRec.class,
-				"_smsSpendLimiterNumber")
 
-			.add (
-				Restrictions.eq (
-					"_smsSpendLimiterNumber.smsSpendLimiter",
-					smsSpendLimiter))
+				createCriteria (
+					transaction,
+					SmsSpendLimiterNumberRec.class,
+					"_smsSpendLimiterNumber")
 
-			.add (
-				Restrictions.eq (
-					"_smsSpendLimiterNumber.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_smsSpendLimiterNumber.smsSpendLimiter",
+						smsSpendLimiter))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_smsSpendLimiterNumber.number",
+						number))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <Long> searchIds (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSpendLimiterNumberSearch search) {
 
-		Criteria criteria =
+		try (
 
-			createCriteria (
-				SmsSpendLimiterNumberRec.class,
-				"_smsSpendLimiterNumber")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"searchIds");
 
-			.createAlias (
-				"_smsSpendLimiterNumber.smsSpendLimiter",
-				"_smsSpendLimiter");
-
-		if (
-			isNotNull (
-				search.smsSpendLimiterId ())
 		) {
 
-			criteria.add (
-				Restrictions.eq (
-					"_smsSpendLimiter.id",
-					search.smsSpendLimiterId ()));
+			Criteria criteria =
+
+				createCriteria (
+					transaction,
+					SmsSpendLimiterNumberRec.class,
+					"_smsSpendLimiterNumber")
+
+				.createAlias (
+					"_smsSpendLimiterNumber.smsSpendLimiter",
+					"_smsSpendLimiter");
+
+			if (
+				isNotNull (
+					search.smsSpendLimiterId ())
+			) {
+
+				criteria.add (
+					Restrictions.eq (
+						"_smsSpendLimiter.id",
+						search.smsSpendLimiterId ()));
+
+			}
+
+			if (
+				isNotNull (
+					search.numberLike ())
+			) {
+
+				criteria.add (
+					Restrictions.ilike (
+						"_smsSpendLimiterNumber.number",
+						search.numberLike ()));
+
+			}
+
+			criteria.setProjection (
+				Projections.id ());
+
+			return findMany (
+				transaction,
+				Long.class,
+				criteria);
 
 		}
-
-		if (
-			isNotNull (
-				search.numberLike ())
-		) {
-
-			criteria.add (
-				Restrictions.ilike (
-					"_smsSpendLimiterNumber.number",
-					search.numberLike ()));
-
-		}
-
-		criteria.setProjection (
-			Projections.id ());
-
-		return findMany (
-			"searchIds (smsSpendLimiterNumberSearch)",
-			Long.class,
-			criteria);
 
 	}
 

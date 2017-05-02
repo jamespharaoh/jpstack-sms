@@ -19,10 +19,10 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
@@ -56,25 +56,23 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	boolean simpleTrackerConsult (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number,
 			@NonNull Optional<Instant> date) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"simpleTrackerConsult");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			SmsSimpleTrackerNumberRec smsSimpleTrackerNumber =
 				smsSimpleTrackerNumberHelper.find (
+					transaction,
 					smsSimpleTracker,
 					number);
 
@@ -96,11 +94,11 @@ class SmsTrackerLogicImplementation
 
 				boolean result =
 					simpleTrackerNumberScanAndUpdate (
-						taskLogger,
+						transaction,
 						smsSimpleTrackerNumber);
 
 				smsSimpleTrackerNumberHelper.insert (
-					taskLogger,
+					transaction,
 					smsSimpleTrackerNumber);
 
 				return result;
@@ -126,7 +124,7 @@ class SmsTrackerLogicImplementation
 			) {
 
 				return simpleTrackerNumberScanAndUpdate (
-					taskLogger,
+					transaction,
 					smsSimpleTrackerNumber);
 
 			}
@@ -139,33 +137,23 @@ class SmsTrackerLogicImplementation
 
 	}
 
-	/**
-	 * Performs an immediate scan on the given tracker number and updates it
-	 * accordingley.
-	 *
-	 * @param trackerNumber
-	 *            The tracker number to update.
-	 * @return True if the number should be sent to.
-	 */
 	private
 	boolean simpleTrackerNumberScanAndUpdate (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSimpleTrackerNumberRec trackerNumber) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"simpleTrackerNumberScanAndUpdate");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			boolean result =
 				simpleTrackerScan (
+					transaction,
 					trackerNumber.getSmsSimpleTracker (),
 					trackerNumber.getNumber ());
 
@@ -186,149 +174,175 @@ class SmsTrackerLogicImplementation
 	@Override
 	public
 	boolean simpleTrackerScan (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number) {
 
-		// get the messages
+		try (
 
-		List<MessageRec> messages =
-			smsSimpleTrackerHelper.findMessages (
-				smsSimpleTracker,
-				number);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"simpleTrackerScan");
 
-		// delegate to simpleTrackerScanCode()
+		) {
 
-		SimpleTrackerResult result =
-			simpleTrackerScanCore (
-				messages,
-				smsSimpleTracker.getFailureCountMin (),
-				1000L * smsSimpleTracker.getFailureSingleSecsMin (),
-				1000L * smsSimpleTracker.getFailureTotalSecsMin ());
+			// get the messages
 
-		// and return
+			List <MessageRec> messages =
+				smsSimpleTrackerHelper.findMessages (
+					transaction,
+					smsSimpleTracker,
+					number);
 
-		return result != SimpleTrackerResult.notOk;
+			// delegate to simpleTrackerScanCode()
+
+			SimpleTrackerResult result =
+				simpleTrackerScanCore (
+					transaction,
+					messages,
+					smsSimpleTracker.getFailureCountMin (),
+					1000L * smsSimpleTracker.getFailureSingleSecsMin (),
+					1000L * smsSimpleTracker.getFailureTotalSecsMin ());
+
+			// and return
+
+			return result != SimpleTrackerResult.notOk;
+
+		}
 
 	}
 
 	@Override
 	public
 	SimpleTrackerResult simpleTrackerScanCore (
-			@NonNull Collection<? extends MessageRec> messagesSource,
+			@NonNull Transaction parentTransaction,
+			@NonNull Collection <? extends MessageRec> messagesSource,
 			long failureCountMin,
 			long failureSingleMsMin,
 			long failureTotalMsMin) {
 
-		// sort the messages
+		try (
 
-		List<MessageRec> messages =
-			new ArrayList<MessageRec> ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"simpleTrackerScanCore");
 
-		messages.addAll (
-			messagesSource);
-
-		Collections.sort (
-			messages);
-
-		Instant lastTime =
-			new Instant (0);
-
-		Instant lastCountedTime =
-			new Instant (0);
-
-		Instant firstTime =
-			new Instant (0);
-
-		int numFound = 0;
-
-		for (
-			MessageRec message
-				: messages
 		) {
 
-			Instant thisTime =
-				message.getCreatedTime ();
+			// sort the messages
 
-			// if we see a message delivered we stop straight away
+			List <MessageRec> messages =
+				new ArrayList<> ();
 
-			if (
-				simpleTrackerStatusIsPositive (
-					message.getStatus ())
+			messages.addAll (
+				messagesSource);
+
+			Collections.sort (
+				messages);
+
+			Instant lastTime =
+				new Instant (0);
+
+			Instant lastCountedTime =
+				new Instant (0);
+
+			Instant firstTime =
+				new Instant (0);
+
+			int numFound = 0;
+
+			for (
+				MessageRec message
+					: messages
 			) {
-				return SimpleTrackerResult.ok;
+
+				Instant thisTime =
+					message.getCreatedTime ();
+
+				// if we see a message delivered we stop straight away
+
+				if (
+					simpleTrackerStatusIsPositive (
+						message.getStatus ())
+				) {
+					return SimpleTrackerResult.ok;
+				}
+
+				// then we are only interested in undelivereds
+
+				if (
+					! simpleTrackerStatusIsNegative (
+						message.getStatus ())
+				) {
+					continue;
+				}
+
+				if (
+
+					// if its the first one we always pick it up
+
+					integerEqualSafe (
+						lastTime.getMillis (),
+						0l)
+
+				) {
+
+					lastCountedTime =
+						thisTime;
+
+					firstTime =
+						thisTime;
+
+					numFound ++;
+
+				} else if (
+
+					// otherwise we only care if it is far enough back from the last
+					// one we counted
+
+					earlierThan (
+						thisTime.plus (
+							failureSingleMsMin),
+						lastCountedTime)
+
+				) {
+
+					lastCountedTime =
+						thisTime;
+
+					numFound ++;
+
+				}
+
+				// if we have counted enough return affirmative
+
+				if (
+
+					numFound
+						>= failureCountMin
+
+					&& earlierThan (
+						thisTime.plus (
+							failureTotalMsMin),
+						firstTime)
+
+				) {
+
+					return SimpleTrackerResult.notOk;
+
+				}
+
+				lastTime = thisTime;
+
 			}
 
-			// then we are only interested in undelivereds
+			// if we make it here there can't have been enough messages to decide
 
-			if (
-				! simpleTrackerStatusIsNegative (
-					message.getStatus ())
-			) {
-				continue;
-			}
-
-			if (
-
-				// if its the first one we always pick it up
-
-				integerEqualSafe (
-					lastTime.getMillis (),
-					0l)
-
-			) {
-
-				lastCountedTime =
-					thisTime;
-
-				firstTime =
-					thisTime;
-
-				numFound ++;
-
-			} else if (
-
-				// otherwise we only care if it is far enough back from the last
-				// one we counted
-
-				earlierThan (
-					thisTime.plus (
-						failureSingleMsMin),
-					lastCountedTime)
-
-			) {
-
-				lastCountedTime =
-					thisTime;
-
-				numFound ++;
-
-			}
-
-			// if we have counted enough return affirmative
-
-			if (
-
-				numFound
-					>= failureCountMin
-
-				&& earlierThan (
-					thisTime.plus (
-						failureTotalMsMin),
-					firstTime)
-
-			) {
-
-				return SimpleTrackerResult.notOk;
-
-			}
-
-			lastTime = thisTime;
+			return SimpleTrackerResult.okSoFar;
 
 		}
-
-		// if we make it here there can't have been enough messages to decide
-
-		return SimpleTrackerResult.okSoFar;
 
 	}
 

@@ -25,9 +25,12 @@ import lombok.experimental.Accessors;
 import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
 import wbs.sms.gazetteer.model.GazetteerRec;
@@ -49,6 +52,9 @@ class GazetteerFormFieldInterfaceMapping <Container>
 	@SingletonDependency
 	GazetteerEntryConsoleHelper gazetteerEntryHelper;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
@@ -62,71 +68,85 @@ class GazetteerFormFieldInterfaceMapping <Container>
 	@Override
 	public
 	Either <Optional <GazetteerEntryRec>, String> interfaceToGeneric (
+			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <String> interfaceValue) {
 
-		if (
+		try (
 
-			optionalIsNotPresent (
-				interfaceValue)
-
-			|| stringIsEmpty (
-				interfaceValue.get ())
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"interfaceToGeneric");
 
 		) {
+
+			if (
+
+				optionalIsNotPresent (
+					interfaceValue)
+
+				|| stringIsEmpty (
+					interfaceValue.get ())
+
+			) {
+
+				return successResult (
+					optionalAbsent ());
+
+			}
+
+			Optional <GazetteerRec> gazetteerOptional =
+				genericCastUnchecked (
+					objectManager.dereference (
+						transaction,
+						container,
+						gazetteerFieldName));
+
+			if (
+				isNotPresent (
+					gazetteerOptional)
+			) {
+
+				return errorResultFormat (
+					"You must configure a gazetteer first");
+
+			}
+
+			GazetteerRec gazetteer =
+				optionalGetRequired (
+					gazetteerOptional);
+
+			String entryCode =
+				simplifyToCodeRelaxed (
+					interfaceValue.get ());
+
+			Optional <GazetteerEntryRec> entryOptional =
+				gazetteerEntryHelper.findByCode (
+					transaction,
+					gazetteer,
+					entryCode);
+
+			if (
+				optionalIsNotPresent (
+					entryOptional)
+			) {
+
+				return errorResult (
+					stringFormat (
+						"Location not found"));
+
+			}
+
+			GazetteerEntryRec entry =
+				entryOptional.get ();
 
 			return successResult (
-				optionalAbsent ());
+				optionalOf (
+					entry));
 
 		}
-
-		Optional <GazetteerRec> gazetteerOptional =
-			genericCastUnchecked (
-				objectManager.dereference (
-					container,
-					gazetteerFieldName));
-
-		if (
-			isNotPresent (
-				gazetteerOptional)
-		) {
-
-			return errorResultFormat (
-				"You must configure a gazetteer first");
-
-		}
-
-		GazetteerRec gazetteer =
-			optionalGetRequired (
-				gazetteerOptional);
-
-		String entryCode =
-			simplifyToCodeRelaxed (
-				interfaceValue.get ());
-
-		Optional <GazetteerEntryRec> entryOptional =
-			gazetteerEntryHelper.findByCode (
-				gazetteer,
-				entryCode);
-
-		if (
-			optionalIsNotPresent (
-				entryOptional)
-		) {
-
-			return errorResult (
-				stringFormat (
-					"Location not found"));
-
-		}
-
-		GazetteerEntryRec entry =
-			entryOptional.get ();
-
-		return successResult (
-			optionalOf (
-				entry));
 
 	}
 
@@ -140,24 +160,35 @@ class GazetteerFormFieldInterfaceMapping <Container>
 	@Override
 	public
 	Either <Optional <String>, String> genericToInterface (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <GazetteerEntryRec> genericValue) {
 
-		if (
-			optionalIsPresent (
-				genericValue)
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"genericToInterface");
+
 		) {
 
-			return successResult (
-				optionalOf (
-					genericValue.get ().getName ()));
+			if (
+				optionalIsPresent (
+					genericValue)
+			) {
 
-		} else {
+				return successResult (
+					optionalOf (
+						genericValue.get ().getName ()));
 
-			return successResult (
-				optionalAbsent ());
+			} else {
+
+				return successResult (
+					optionalAbsent ());
+
+			}
 
 		}
 

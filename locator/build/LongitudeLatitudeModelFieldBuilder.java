@@ -6,11 +6,15 @@ import static wbs.utils.string.StringUtils.camelToSpaces;
 
 import com.google.common.collect.ImmutableList;
 
+import lombok.NonNull;
+
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.scaffold.PluginManager;
@@ -19,15 +23,23 @@ import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;
 import wbs.framework.entity.model.ModelField;
 import wbs.framework.entity.model.ModelFieldType;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.locator.metamodel.LongitudeLatitudeFieldSpec;
 import wbs.sms.locator.model.LongLat;
 
 @PrototypeComponent ("longitudeLatitudeModelFieldBuilder")
 @ModelBuilder
 public
-class LongitudeLatitudeModelFieldBuilder {
+class LongitudeLatitudeModelFieldBuilder
+	implements BuilderComponent {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	PluginManager pluginManager;
@@ -45,74 +57,87 @@ class LongitudeLatitudeModelFieldBuilder {
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Builder <TaskLogger> builder) {
 
-		String columnNamesPattern =
-			ifNull (
-				spec.columnNames (),
-				"%");
+		try (
 
-		String longitudeColumnName =
-			columnNamesPattern.replace ("%", "longitude");
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-		String latitudeColumnName =
-			columnNamesPattern.replace ("%", "latitude");
+		) {
 
-		// create model field
-
-		ModelField modelField =
-			new ModelField ()
-
-			.model (
-				target.model ())
-
-			.parentField (
-				context.parentModelField ())
-
-			.name (
-				spec.name ())
-
-			.label (
-				camelToSpaces (
-					spec.name ()))
-
-			.type (
-				ModelFieldType.simple)
-
-			.parent (
-				false)
-
-			.identity (
-				false)
-
-			.valueType (
-				LongLat.class)
-
-			.nullable (
+			String columnNamesPattern =
 				ifNull (
-					spec.nullable (),
-					false))
+					spec.columnNames (),
+					"%");
 
-			.columnNames (
-				ImmutableList.of (
-					longitudeColumnName,
-					latitudeColumnName))
+			String longitudeColumnName =
+				columnNamesPattern.replace ("%", "longitude");
 
-			.hibernateTypeHelper (
-				classForNameRequired (
-					"wbs.sms.locator.hibernate.LongLatType"));
+			String latitudeColumnName =
+				columnNamesPattern.replace ("%", "latitude");
 
-		// store field
+			// create model field
 
-		target.fields ().add (
-			modelField);
+			ModelField modelField =
+				new ModelField ()
 
-		target.fieldsByName ().put (
-			modelField.name (),
-			modelField);
+				.model (
+					target.model ())
+
+				.parentField (
+					context.parentModelField ())
+
+				.name (
+					spec.name ())
+
+				.label (
+					camelToSpaces (
+						spec.name ()))
+
+				.type (
+					ModelFieldType.simple)
+
+				.parent (
+					false)
+
+				.identity (
+					false)
+
+				.valueType (
+					LongLat.class)
+
+				.nullable (
+					ifNull (
+						spec.nullable (),
+						false))
+
+				.columnNames (
+					ImmutableList.of (
+						longitudeColumnName,
+						latitudeColumnName))
+
+				.hibernateTypeHelper (
+					classForNameRequired (
+						"wbs.sms.locator.hibernate.LongLatType"));
+
+			// store field
+
+			target.fields ().add (
+				modelField);
+
+			target.fieldsByName ().put (
+				modelField.name (),
+				modelField);
+
+		}
 
 	}
 

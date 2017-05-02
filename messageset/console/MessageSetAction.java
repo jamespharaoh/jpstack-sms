@@ -112,16 +112,11 @@ class MessageSetAction
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"goReal");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MessageSetAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
@@ -143,6 +138,7 @@ class MessageSetAction
 
 			MessageSetRec messageSet =
 				messageSetFinder.findMessageSet (
+					transaction,
 					requestContext);
 
 			// iterate over the input and check them
@@ -247,15 +243,17 @@ class MessageSetAction
 					// delete existing message
 
 					messageSetMessageHelper.remove (
+						transaction,
 						messageSetMessage);
 
 	//				messageSet.getMessages ().remove (
 	//					new Integer (index));
 
 					eventLogic.createEvent (
-						taskLogger,
+						transaction,
 						"messageset_message_removed",
-						userConsoleLogic.userRequired (),
+						userConsoleLogic.userRequired (
+							transaction),
 						index,
 						messageSet);
 
@@ -265,6 +263,7 @@ class MessageSetAction
 
 					RouteRec newRoute =
 						routeHelper.findRequired (
+							transaction,
 							requestContext.parameterIntegerRequired (
 								"route_" + index));
 
@@ -302,7 +301,7 @@ class MessageSetAction
 								newMessage);
 
 						messageSetMessageHelper.insert (
-							taskLogger,
+							transaction,
 							messageSetMessage);
 
 						messageSet.getMessages ().add (
@@ -311,9 +310,10 @@ class MessageSetAction
 						// and create event
 
 						eventLogic.createEvent (
-							taskLogger,
+							transaction,
 							"messageset_message_created",
-							userConsoleLogic.userRequired (),
+							userConsoleLogic.userRequired (
+								transaction),
 							index,
 							messageSet,
 							newRoute,
@@ -338,9 +338,10 @@ class MessageSetAction
 									newRoute);
 
 							eventLogic.createEvent (
-								taskLogger,
+								transaction,
 								"messageset_message_route",
-								userConsoleLogic.userRequired (),
+								userConsoleLogic.userRequired (
+									transaction),
 								index,
 								messageSet,
 								newRoute);
@@ -359,9 +360,10 @@ class MessageSetAction
 									newNumber);
 
 							eventLogic.createEvent (
-								taskLogger,
+								transaction,
 								"messageset_message_number",
-								userConsoleLogic.userRequired (),
+								userConsoleLogic.userRequired (
+									transaction),
 								index,
 								messageSet,
 								newNumber);
@@ -381,9 +383,10 @@ class MessageSetAction
 									newMessage);
 
 							eventLogic.createEvent (
-								taskLogger,
+								transaction,
 								"messageset_message_message",
-								userConsoleLogic.userRequired (),
+								userConsoleLogic.userRequired (
+									transaction),
 								index,
 								messageSet,
 								newMessage);

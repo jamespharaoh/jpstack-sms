@@ -13,7 +13,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -59,32 +61,32 @@ class MessageSetHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"setup");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"privHooks.init ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"setup");
 
 		) {
 
 			messageSetTypeIdsByParentTypeId =
-				messageSetTypeDao.findAll ().stream ().collect (
+				messageSetTypeDao.findAll (
+					transaction)
+
+				.stream ().collect (
 					Collectors.groupingBy (
 
-				messageSetType ->
-					messageSetType.getParentType ().getId (),
-
-				Collectors.mapping (
 					messageSetType ->
-						messageSetType.getId (),
-					Collectors.toList ())
+						messageSetType.getParentType ().getId (),
 
-			));
+					Collectors.mapping (
+						messageSetType ->
+							messageSetType.getId (),
+						Collectors.toList ())
+
+				)
+
+			);
 
 		}
 
@@ -95,10 +97,10 @@ class MessageSetHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull ObjectHelper<MessageSetRec> messageSetHelper,
-			@NonNull ObjectHelper<?> parentHelper,
-			@NonNull Record<?> parent) {
+			@NonNull Transaction parentTransaction,
+			@NonNull ObjectHelper <MessageSetRec> messageSetHelper,
+			@NonNull ObjectHelper <?> parentHelper,
+			@NonNull Record <?> parent) {
 
 		if (
 			doesNotContain (
@@ -110,15 +112,16 @@ class MessageSetHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSingletons");
 
 		) {
 
 			ObjectTypeRec parentType =
 				objectTypeDao.findById (
+					transaction,
 					parentHelper.objectTypeId ());
 
 			for (
@@ -129,10 +132,11 @@ class MessageSetHooks
 
 				MessageSetTypeRec messageSetType =
 					messageSetTypeDao.findRequired (
+						transaction,
 						messageSetTypeId);
 
 				messageSetHelper.insert (
-					taskLogger,
+					transaction,
 					messageSetHelper.createInstance ()
 
 					.setMessageSetType (

@@ -32,8 +32,12 @@ import org.joda.time.LocalDate;
 
 import wbs.console.request.ConsoleRequestContext;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.currency.logic.CurrencyLogic;
 
@@ -62,6 +66,9 @@ class SmsStatsFormatter {
 	@SingletonDependency
 	CurrencyLogic currencyLogic;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
@@ -86,39 +93,80 @@ class SmsStatsFormatter {
 
 	public
 	void go (
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter) {
 
-		setupDates ();
+		try (
 
-		loadStats ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"go");
 
-		goOutput (
-			formatWriter);
+		) {
 
-	}
+			setupDates (
+				transaction);
 
-	void setupDates () {
+			loadStats (
+				transaction);
 
-		DateRange dateRange =
-			timeScheme.dateRange (mainDate);
+			goOutput (
+				formatWriter);
 
-		startDate =
-			LocalDate.fromDateFields (
-				dateRange.getStart ());
-
-		endDate =
-			LocalDate.fromDateFields (
-				dateRange.getEnd ());
+		}
 
 	}
 
-	void loadStats () {
+	private
+	void setupDates (
+			@NonNull Transaction parentTransaction) {
 
-		stats =
-			groupedStatsSource.load (
-				timeScheme,
-				startDate,
-				endDate);
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"setupDates");
+
+		) {
+
+			DateRange dateRange =
+				timeScheme.dateRange (mainDate);
+
+			startDate =
+				LocalDate.fromDateFields (
+					dateRange.getStart ());
+
+			endDate =
+				LocalDate.fromDateFields (
+					dateRange.getEnd ());
+
+		}
+
+	}
+
+	private
+	void loadStats (
+			@NonNull Transaction parentTransaction) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"loadStats");
+
+		) {
+
+			stats =
+				groupedStatsSource.load (
+					transaction,
+					timeScheme,
+					startDate,
+					endDate);
+
+		}
 
 	}
 

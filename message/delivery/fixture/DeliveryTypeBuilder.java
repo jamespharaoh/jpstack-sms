@@ -3,11 +3,10 @@ package wbs.sms.message.delivery.fixture;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 import static wbs.utils.string.StringUtils.stringFormat;
 
-import java.sql.SQLException;
-
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.TransactionBuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -16,13 +15,13 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.delivery.metamodel.DeliveryTypeSpec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
@@ -30,7 +29,8 @@ import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 @PrototypeComponent ("deliveryTypeBuilder")
 @ModelMetaBuilderHandler
 public
-class DeliveryTypeBuilder {
+class DeliveryTypeBuilder
+	implements TransactionBuilderComponent {
 
 	// singleton dependencies
 
@@ -59,28 +59,29 @@ class DeliveryTypeBuilder {
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull Builder builder) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Builder <Transaction> builder) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"build");
 
 		) {
 
-			taskLogger.noticeFormat (
+			transaction.noticeFormat (
 				"Create delivery type %s",
 				simplifyToCodeRequired (
 					spec.name ()));
 
 			createDeliveryType (
-				taskLogger);
+				transaction);
 
 		} catch (Exception exception) {
 
@@ -97,28 +98,21 @@ class DeliveryTypeBuilder {
 
 	private
 	void createDeliveryType (
-			@NonNull TaskLogger parentTaskLogger)
-		throws SQLException {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createDeliveryType");
-
-			OwnedTransaction transaction =
-				database.beginReadWrite (
-					taskLogger,
-					"DeliveryTypeBuilder.createDeliveryType ()",
-					this);
 
 		) {
 
 			// create delivery type
 
 			deliveryTypeHelper.insert (
-				taskLogger,
+				transaction,
 				deliveryTypeHelper.createInstance ()
 
 				.setCode (
@@ -129,10 +123,6 @@ class DeliveryTypeBuilder {
 					spec.description ())
 
 			);
-
-			// commit transaction
-
-			transaction.commit ();
 
 		}
 

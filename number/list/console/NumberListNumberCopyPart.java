@@ -23,7 +23,10 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.list.model.NumberListRec;
@@ -59,13 +62,13 @@ class NumberListNumberCopyPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
@@ -73,12 +76,14 @@ class NumberListNumberCopyPart
 			// this number list
 
 			thisNumberList =
-				numberListHelper.findFromContextRequired ();
+				numberListHelper.findFromContextRequired (
+					transaction);
 
 			// browseable number lists
 
 			List <NumberListRec> allNumberLists =
-				numberListHelper.findAll ();
+				numberListHelper.findAll (
+					transaction);
 
 			ImmutableList.Builder <NumberListRec> browseableNumberListsBuilder =
 				ImmutableList.builder ();
@@ -93,7 +98,7 @@ class NumberListNumberCopyPart
 
 				if (
 					! privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						someNumberList,
 						"number_list_browse")
 				) {
@@ -115,22 +120,22 @@ class NumberListNumberCopyPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
 
 			goDetails (
-				taskLogger);
+				transaction);
 
 			goForm (
-				taskLogger);
+				transaction);
 
 		}
 
@@ -141,7 +146,7 @@ class NumberListNumberCopyPart
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"goDetails");
@@ -166,7 +171,7 @@ class NumberListNumberCopyPart
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"goForm");

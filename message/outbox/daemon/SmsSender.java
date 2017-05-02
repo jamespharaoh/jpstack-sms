@@ -9,6 +9,6 @@ interface SmsSender {
 			Long smsMessageId);
 
 	void send (
-			TaskLogger taskLogger);
+			TaskLogger parentTaskLogger);
 
 }

@@ -73,34 +73,30 @@ class RouteTestInAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"RouteTestInAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			RouteRec route =
-				routeHelper.findFromContextRequired ();
+				routeHelper.findFromContextRequired (
+					transaction);
 
 			MessageRec message =
 				smsInboxLogic.inboxInsert (
-					taskLogger,
+					transaction,
 					optionalAbsent (),
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						requestContext.parameterRequired (
 							"message")),
 					smsNumberHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						requestContext.parameterRequired (
 							"num_from")),
 					requestContext.parameterRequired (

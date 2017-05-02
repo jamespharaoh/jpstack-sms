@@ -15,9 +15,9 @@ import wbs.console.request.ConsoleRequestContext;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
 import wbs.platform.user.console.UserConsoleLogic;
@@ -61,58 +61,81 @@ class MessageManuallyUnholdFormActionHelper
 	@Override
 	public
 	Permissions canBePerformed (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		boolean show =(
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"canBePerformed");
 
-			enumEqualSafe (
-				smsMessage.getDirection (),
-				MessageDirection.out)
+		) {
 
-			&& enumEqualSafe (
-				smsMessage.getStatus (),
-				MessageStatus.held)
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
-		);
+			boolean show =(
 
-		return new Permissions ()
-			.canView (show)
-			.canPerform (show);
+				enumEqualSafe (
+					smsMessage.getDirection (),
+					MessageDirection.out)
+
+				&& enumEqualSafe (
+					smsMessage.getStatus (),
+					MessageStatus.held)
+
+			);
+
+			return new Permissions ()
+				.canView (show)
+				.canPerform (show);
+
+		}
 
 	}
 
 	@Override
 	public
 	void writePreamble (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
 			@NonNull Boolean submit) {
 
-		MessageRec smsMessage =
-			smsMessageHelper.findFromContextRequired ();
+		try (
 
-		htmlParagraphWriteFormat (
-			"This outbound message is in the \"%h\" ",
-			smsMessage.getStatus ().getDescription (),
-			"state, and can be manually unheld.");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"writePreamble");
+
+		) {
+
+			MessageRec smsMessage =
+				smsMessageHelper.findFromContextRequired (
+					transaction);
+
+			htmlParagraphWriteFormat (
+				"This outbound message is in the \"%h\" ",
+				smsMessage.getStatus ().getDescription (),
+				"state, and can be manually unheld.");
+
+		}
 
 	}
 
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction,
+			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"processFormSubmission");
 
 		) {
@@ -120,7 +143,8 @@ class MessageManuallyUnholdFormActionHelper
 			// load data
 
 			MessageRec smsMessage =
-				smsMessageHelper.findFromContextRequired ();
+				smsMessageHelper.findFromContextRequired (
+					transaction);
 
 			// check state
 
@@ -140,13 +164,14 @@ class MessageManuallyUnholdFormActionHelper
 			// unhold message
 
 			smsOutboxLogic.unholdMessage (
-				taskLogger,
+				transaction,
 				smsMessage);
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"message_manually_unheld",
-				userConsoleLogic.userRequired (),
+				userConsoleLogic.userRequired (
+					transaction),
 				smsMessage);
 
 			// commit and return

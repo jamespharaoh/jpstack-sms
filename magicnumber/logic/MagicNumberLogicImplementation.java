@@ -16,10 +16,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.lock.logic.LockLogic;
@@ -71,27 +71,25 @@ class MagicNumberLogicImplementation
 	@Override
 	public
 	MagicNumberRec allocateMagicNumber (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec command,
-			long ref) {
+			@NonNull Long ref) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"allocateMagicNumber");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			// create a lock over the magic number set and number
 
 			coreLogic.magicLock (
+				transaction,
 				magicNumberSet,
 				number);
 
@@ -99,6 +97,7 @@ class MagicNumberLogicImplementation
 
 			MagicNumberUseRec magicNumberUse =
 				magicNumberUseHelper.findExistingByRef (
+					transaction,
 					magicNumberSet,
 					number,
 					command,
@@ -125,6 +124,7 @@ class MagicNumberLogicImplementation
 
 			MagicNumberRec magicNumber =
 				magicNumberHelper.findExistingUnused (
+					transaction,
 					magicNumberSet,
 					number);
 
@@ -132,7 +132,7 @@ class MagicNumberLogicImplementation
 
 				magicNumberUse =
 					magicNumberUseHelper.insert (
-						taskLogger,
+						transaction,
 						magicNumberUseHelper.createInstance ()
 
 					.setNumber (
@@ -160,12 +160,13 @@ class MagicNumberLogicImplementation
 
 			magicNumberUse =
 				magicNumberUseHelper.findExistingLeastRecentlyUsed (
+					transaction,
 					magicNumberSet,
 					number);
 
 			if (magicNumberUse == null) {
 
-				taskLogger.fatalFormat (
+				transaction.fatalFormat (
 					"No magic numbers found for %s",
 					integerToDecimalString (
 						magicNumberSet.getId ()));
@@ -194,7 +195,7 @@ class MagicNumberLogicImplementation
 	@Override
 	public
 	Long sendMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
@@ -209,9 +210,9 @@ class MagicNumberLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sendMessage");
 
 		) {
@@ -220,7 +221,7 @@ class MagicNumberLogicImplementation
 
 			MagicNumberRec magicNumber =
 				allocateMagicNumber (
-					taskLogger,
+					transaction,
 					magicNumberSet,
 					number,
 					magicCommand,
@@ -249,6 +250,7 @@ class MagicNumberLogicImplementation
 						magicNumber.getNumber ())
 
 					.routerResolve (
+						transaction,
 						router)
 
 					.service (
@@ -264,7 +266,7 @@ class MagicNumberLogicImplementation
 						user.orNull ())
 
 					.send (
-						taskLogger);
+						transaction);
 
 				if (
 					optionalIsNotPresent (
@@ -288,11 +290,11 @@ class MagicNumberLogicImplementation
 	@Override
 	public
 	MessageRec sendMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MagicNumberSetRec magicNumberSet,
 			@NonNull NumberRec number,
 			@NonNull CommandRec magicCommand,
-			long magicRef,
+			@NonNull Long magicRef,
 			@NonNull Optional <Long> threadId,
 			@NonNull TextRec messageText,
 			@NonNull RouterRec router,
@@ -303,9 +305,9 @@ class MagicNumberLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sendMessage");
 
 		) {
@@ -314,7 +316,7 @@ class MagicNumberLogicImplementation
 
 			MagicNumberRec magicNumber =
 				allocateMagicNumber (
-					taskLogger,
+					transaction,
 					magicNumberSet,
 					number,
 					magicCommand,
@@ -337,6 +339,7 @@ class MagicNumberLogicImplementation
 					magicNumber.getNumber ())
 
 				.routerResolve (
+					transaction,
 					router)
 
 				.service (
@@ -349,7 +352,7 @@ class MagicNumberLogicImplementation
 					affiliate)
 
 				.send (
-					taskLogger);
+					transaction);
 
 		}
 

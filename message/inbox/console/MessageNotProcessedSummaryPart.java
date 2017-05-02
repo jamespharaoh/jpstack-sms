@@ -18,8 +18,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -59,23 +60,35 @@ class MessageNotProcessedSummaryPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		message =
-			messageHelper.findFromContextRequired ();
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			message =
+				messageHelper.findFromContextRequired (
+					transaction);
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -115,12 +128,13 @@ class MessageNotProcessedSummaryPart
 			htmlTableDetailsRowWriteRaw (
 				"Route",
 				() -> objectManager.writeTdForObjectMiniLink (
-					taskLogger,
+					transaction,
 					message.getRoute ()));
 
 			htmlTableDetailsRowWriteRaw (
 				"Status",
 				() -> messageConsoleLogic.writeTdForMessageStatus (
+					transaction,
 					formatWriter,
 					message.getStatus ()));
 
@@ -129,11 +143,13 @@ class MessageNotProcessedSummaryPart
 				ifNotNullThenElseEmDash (
 					message.getNetworkTime (),
 					() -> userConsoleLogic.timestampWithTimezoneString (
+						transaction,
 						message.getNetworkTime ())));
 
 			htmlTableDetailsRowWrite (
 				"Time received",
 				userConsoleLogic.timestampWithTimezoneString (
+					transaction,
 					message.getCreatedTime ()));
 
 			htmlTableDetailsRowWrite (

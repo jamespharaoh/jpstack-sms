@@ -4,7 +4,12 @@ import java.util.List;
 
 import lombok.NonNull;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.message.core.hibernate.MessageDirectionType;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -17,39 +22,59 @@ class SmsSimpleTrackerDaoHibernate
 	extends HibernateDao
 	implements SmsSimpleTrackerDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
-	List<MessageRec> findMessages (
+	List <MessageRec> findMessages (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsSimpleTrackerRec smsSimpleTracker,
 			@NonNull NumberRec number) {
 
-		return findMany (
-			MessageRec.class,
+		try (
 
-			createQuery (
-				"SELECT message " +
-				"FROM MessageRec message, " +
-					"SmsSimpleTrackerRouteRec smsSimpleTrackerRoute " +
-				"WHERE smsSimpleTrackerRoute.smsSimpleTracker = :smsSimpleTracker " +
-					"AND message.number.id = :number " +
-					"AND message.direction = :direction " +
-					"AND message.route = smsSimpleTrackerRoute.route " +
-					"AND smsSimpleTrackerRoute.smsSimpleTracker = :smsSimpleTracker")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findMessages");
 
-			.setEntity (
-				"smsSimpleTracker",
-				smsSimpleTracker)
+		) {
 
-			.setEntity (
-				"number",
-				number)
+			return findMany (
+				MessageRec.class,
 
-			.setParameter (
-				"direction",
-				MessageDirection.out,
-				MessageDirectionType.INSTANCE)
+				createQuery (
+					transaction,
+					"SELECT message " +
+					"FROM MessageRec message, " +
+						"SmsSimpleTrackerRouteRec smsSimpleTrackerRoute " +
+					"WHERE smsSimpleTrackerRoute.smsSimpleTracker = :smsSimpleTracker " +
+						"AND message.number.id = :number " +
+						"AND message.direction = :direction " +
+						"AND message.route = smsSimpleTrackerRoute.route " +
+						"AND smsSimpleTrackerRoute.smsSimpleTracker = :smsSimpleTracker")
 
-			.list ());
+				.setEntity (
+					"smsSimpleTracker",
+					smsSimpleTracker)
+
+				.setEntity (
+					"number",
+					number)
+
+				.setParameter (
+					"direction",
+					MessageDirection.out,
+					MessageDirectionType.INSTANCE)
+
+				.list ());
+
+		}
 
 	}
 

@@ -2,7 +2,7 @@ package wbs.sms.messageset.logic;
 
 import lombok.NonNull;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.platform.affiliate.model.AffiliateRec;
 import wbs.platform.service.model.ServiceRec;
@@ -14,7 +14,7 @@ public
 interface MessageSetLogic {
 
 	Long sendMessageSet (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			MessageSetRec messageSet,
 			Long threadId,
 			NumberRec number,
@@ -23,14 +23,14 @@ interface MessageSetLogic {
 
 	default
 	Long sendMessageSet (
-			@NonNull TaskLogger parentTaskLogger,
-			MessageSetRec messageSet,
+			@NonNull Transaction parentTransaction,
+			@NonNull MessageSetRec messageSet,
 			Long threadId,
-			NumberRec number,
+			@NonNull NumberRec number,
 			ServiceRec service) {
 
 		return sendMessageSet (
-			parentTaskLogger,
+			parentTransaction,
 			messageSet,
 			threadId,
 			number,

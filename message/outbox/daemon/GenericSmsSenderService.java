@@ -7,7 +7,6 @@ import static wbs.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.TypeUtils.classNameSimple;
-import static wbs.utils.string.StringUtils.joinWithFullStop;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.underscoreToHyphen;
 
@@ -35,6 +34,7 @@ import wbs.framework.entity.record.GlobalId;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -116,18 +116,11 @@ class GenericSmsSenderService
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"createThreads");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					stringFormat (
-						"%s.createThreads ()",
-						getClass ().getSimpleName ()),
-					this);
+					logContext,
+					parentTaskLogger,
+					"createThreads");
 
 		) {
 
@@ -135,6 +128,7 @@ class GenericSmsSenderService
 
 			SenderRec sender =
 				senderHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					smsSenderHelper.senderCode ());
 
@@ -155,7 +149,7 @@ class GenericSmsSenderService
 						smsRoute.getId ())
 
 					.start (
-						taskLogger);
+						transaction);
 
 				routeSenderServices.add (
 					routeSenderService);
@@ -180,27 +174,19 @@ class GenericSmsSenderService
 		RouteSenderService start (
 				@NonNull TaskLogger parentTaskLogger) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"start");
-
 			try (
 
 				OwnedTransaction transaction =
 					database.beginReadOnly (
-						taskLogger,
-						stringFormat (
-							"%s.start ()",
-							joinWithFullStop (
-								"GenericSmsSenderService",
-								"RouteSenderService")),
-						this);
+						logContext,
+						parentTaskLogger,
+						"start");
 
 			) {
 
 				RouteRec smsRoute =
 					smsRouteHelper.findRequired (
+						transaction,
 						smsRouteId);
 
 				createThread (
@@ -258,7 +244,7 @@ class GenericSmsSenderService
 
 				try (
 
-					TaskLogger taskLogger =
+					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
 							"claimAllMessages ()");
 
@@ -319,39 +305,26 @@ class GenericSmsSenderService
 
 			try (
 
-				TaskLogger taskLogger =
-					logContext.nestTaskLoggerFormat (
+				OwnedTransaction transaction =
+					database.beginReadWrite (
+						logContext,
 						parentTaskLogger,
-						"RouteSenderService.claimSomeMessages (%s)",
-						integerToDecimalString (
-							numToGet));
+						"claimSomeMessages");
 
 			) {
 
-				// begin transaction
-
-				try (
-
-					OwnedTransaction transaction =
-						database.beginReadWrite (
-							taskLogger,
-							stringFormat (
-								"%s.claimMessages ()",
-								joinWithFullStop (
-									"GenericSmsSenderService",
-									"RouteSenderService")),
-							this);
-
-				) {
+				try {
 
 					// get some messages
 
 					RouteRec route =
 						smsRouteHelper.findRequired (
+							transaction,
 							smsRouteId);
 
 					List <OutboxRec> smsOutboxes =
 						smsOutboxHelper.findNextLimit (
+							transaction,
 							transaction.now (),
 							route,
 							numToGet);
@@ -396,7 +369,7 @@ class GenericSmsSenderService
 				} catch (Exception exception) {
 
 					exceptionLogger.logThrowable (
-						taskLogger,
+						transaction,
 						"daemon",
 						classNameSimple (
 							this.getClass ()),
@@ -429,7 +402,7 @@ class GenericSmsSenderService
 
 				try (
 
-					TaskLogger taskLogger =
+					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
 							"messageSendLoop");
 
@@ -479,7 +452,7 @@ class GenericSmsSenderService
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"sendOneMessage");

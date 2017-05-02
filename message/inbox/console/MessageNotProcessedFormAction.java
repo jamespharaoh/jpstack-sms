@@ -80,25 +80,19 @@ class MessageNotProcessedFormAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
-		// begin transaction
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MessageNotProcessedFormAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			MessageRec message =
-				messageHelper.findFromContextRequired ();
+				messageHelper.findFromContextRequired (
+					transaction);
 
 			// check the message status is correct
 
@@ -119,12 +113,13 @@ class MessageNotProcessedFormAction
 			) {
 
 				queueLogic.processQueueItem (
-					taskLogger,
+					transaction,
 					message.getNotProcessedQueueItem (),
-					userConsoleLogic.userRequired ());
+					userConsoleLogic.userRequired (
+						transaction));
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.pending);
 
@@ -134,7 +129,7 @@ class MessageNotProcessedFormAction
 						null);
 
 				inboxHelper.insert (
-					taskLogger,
+					transaction,
 					inboxHelper.createInstance ()
 
 					.setMessage (
@@ -143,9 +138,10 @@ class MessageNotProcessedFormAction
 				);
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"message_processed_again",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					message);
 
 				transaction.commit ();
@@ -165,12 +161,13 @@ class MessageNotProcessedFormAction
 			) {
 
 				queueLogic.processQueueItem (
-					taskLogger,
+					transaction,
 					message.getNotProcessedQueueItem (),
-					userConsoleLogic.userRequired ());
+					userConsoleLogic.userRequired (
+						transaction));
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.ignored);
 
@@ -180,9 +177,10 @@ class MessageNotProcessedFormAction
 						null);
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"message_ignored",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					message);
 
 				transaction.commit ();
@@ -202,12 +200,13 @@ class MessageNotProcessedFormAction
 			) {
 
 				queueLogic.processQueueItem (
-					taskLogger,
+					transaction,
 					message.getNotProcessedQueueItem (),
-					userConsoleLogic.userRequired ());
+					userConsoleLogic.userRequired (
+						transaction));
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.manuallyProcessed);
 
@@ -217,9 +216,10 @@ class MessageNotProcessedFormAction
 						null);
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"message_manually_processed",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					message);
 
 				transaction.commit ();

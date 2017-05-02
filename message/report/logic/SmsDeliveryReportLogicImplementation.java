@@ -21,10 +21,10 @@ import org.joda.time.ReadableInstant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.text.model.TextObjectHelper;
@@ -80,7 +80,7 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	void deliveryReport (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message,
 			@NonNull MessageStatus newMessageStatus,
 			@NonNull Optional <String> theirCode,
@@ -93,15 +93,12 @@ class SmsDeliveryReportLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"deliveryReport");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// check arguments
 
@@ -131,14 +128,16 @@ class SmsDeliveryReportLogicImplementation
 				throw new RuntimeException (
 					stringFormat (
 						"Not expecting delivery reports on %s",
-						objectManager.objectPath (message.getRoute ())));
+						objectManager.objectPath (
+							transaction,
+							message.getRoute ())));
 
 			}
 
 			// create message report thingy
 
 			messageReportHelper.insert (
-				taskLogger,
+				transaction,
 				messageReportHelper.createInstance ()
 
 				.setMessage (
@@ -153,13 +152,13 @@ class SmsDeliveryReportLogicImplementation
 				.setTheirCode (
 					optionalOrNull (
 						textHelper.findOrCreate (
-							taskLogger,
+							transaction,
 							theirCode)))
 
 				.setTheirDescription (
 					optionalOrNull (
 						textHelper.findOrCreate (
-							taskLogger,
+							transaction,
 							theirDescription)))
 
 				.setTheirTimestamp (
@@ -209,7 +208,7 @@ class SmsDeliveryReportLogicImplementation
 					) {
 
 						messageLogic.messageStatus (
-							taskLogger,
+							transaction,
 							message,
 							newMessageStatus);
 
@@ -228,7 +227,7 @@ class SmsDeliveryReportLogicImplementation
 					) {
 
 						messageLogic.messageStatus (
-							taskLogger,
+							transaction,
 							message,
 							newMessageStatus);
 
@@ -246,7 +245,7 @@ class SmsDeliveryReportLogicImplementation
 					) {
 
 						messageLogic.messageStatus (
-							taskLogger,
+							transaction,
 							message,
 							newMessageStatus);
 
@@ -263,7 +262,7 @@ class SmsDeliveryReportLogicImplementation
 					) {
 
 						messageLogic.messageStatus (
-							taskLogger,
+							transaction,
 							message,
 							newMessageStatus);
 
@@ -292,7 +291,7 @@ class SmsDeliveryReportLogicImplementation
 
 			// write to log file
 
-			taskLogger.noticeFormat (
+			transaction.noticeFormat (
 				"DLV %s %s %s %s",
 				integerToDecimalString (
 					message.getId ()),
@@ -314,7 +313,7 @@ class SmsDeliveryReportLogicImplementation
 				.forEach (
 					link ->
 						deliveryReport (
-							taskLogger,
+							transaction,
 							link.getMessage (),
 							newMessageStatus,
 							theirCode,
@@ -329,7 +328,7 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	MessageRec deliveryReport (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteRec route,
 			@NonNull String otherId,
 			@NonNull MessageStatus newMessageStatus,
@@ -343,9 +342,9 @@ class SmsDeliveryReportLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"deliveryReport");
 
 		) {
@@ -354,6 +353,7 @@ class SmsDeliveryReportLogicImplementation
 
 			MessageRec message =
 				messageHelper.findByOtherId (
+					transaction,
 					MessageDirection.out,
 					route,
 					otherId);
@@ -374,7 +374,7 @@ class SmsDeliveryReportLogicImplementation
 			// process the report
 
 			deliveryReport (
-				taskLogger,
+				transaction,
 				message,
 				newMessageStatus,
 				theirCode,
@@ -391,7 +391,7 @@ class SmsDeliveryReportLogicImplementation
 	@Override
 	public
 	void deliveryReport (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull Long messageId,
 			@NonNull MessageStatus newMessageStatus,
 			@NonNull Optional <String> theirCode,
@@ -404,9 +404,9 @@ class SmsDeliveryReportLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"deliveryReport");
 
 		) {
@@ -415,6 +415,7 @@ class SmsDeliveryReportLogicImplementation
 
 			MessageRec message =
 				messageHelper.findOrThrow (
+					transaction,
 					messageId,
 					() -> new NoSuchMessageException (
 						stringFormat (
@@ -423,7 +424,7 @@ class SmsDeliveryReportLogicImplementation
 			// process the report
 
 			deliveryReport (
-				taskLogger,
+				transaction,
 				message,
 				newMessageStatus,
 				theirCode,

@@ -23,8 +23,12 @@ import lombok.experimental.Accessors;
 
 import org.joda.time.LocalDate;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.stats.model.MessageStatsObjectHelper;
 import wbs.sms.message.stats.model.MessageStatsRec;
@@ -39,6 +43,9 @@ class SmsStatsSourceImplementation
 	implements SmsStatsSource {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageStatsObjectHelper messageStatsHelper;
@@ -59,98 +66,126 @@ class SmsStatsSourceImplementation
 
 	@Override
 	public
-	List<MessageStatsRec> findMessageStats (
+	List <MessageStatsRec> findMessageStats (
+			@NonNull Transaction parentTransaction,
 			@NonNull LocalDate startDate,
 			@NonNull LocalDate endDate,
 			@NonNull SmsStatsTimeScheme timeScheme,
-			@NonNull Optional<SmsStatsCriteria> groupCriteria,
-			@NonNull Map<SmsStatsCriteria,Set<Long>> dynamicCriteriaMap,
-			@NonNull Optional<Map<SmsStatsCriteria,Set<Long>>> filterMap) {
+			@NonNull Optional <SmsStatsCriteria> groupCriteria,
+			@NonNull Map <SmsStatsCriteria, Set <Long>> dynamicCriteriaMap,
+			@NonNull Optional <Map <SmsStatsCriteria, Set <Long>>> filterMap) {
 
-		Map<SmsStatsCriteria,Set<Long>> intersectedCriteriaMap =
-			smsStatsConsoleLogic.criteriaMapIntersect (
-				ImmutableList.of (
-					fixedCriteriaMap,
-					dynamicCriteriaMap));
+		try (
 
-		MessageStatsSearch search =
-			smsStatsConsoleLogic.critMapToMessageStatsSearch (
-				intersectedCriteriaMap,
-				filterMap);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findMessageStats");
 
-		search
+		) {
 
-			.dateAfter (
-				startDate)
+			Map <SmsStatsCriteria, Set <Long>> intersectedCriteriaMap =
+				smsStatsConsoleLogic.criteriaMapIntersect (
+					transaction,
+					ImmutableList.of (
+						fixedCriteriaMap,
+						dynamicCriteriaMap));
 
-			.dateBefore (
-				endDate)
+			MessageStatsSearch search =
+				smsStatsConsoleLogic.critMapToMessageStatsSearch (
+					transaction,
+					intersectedCriteriaMap,
+					filterMap);
 
-			.group (
-				true)
+			search
 
-			.groupByDate (
-				timeScheme.groupByDate ())
+				.dateAfter (
+					startDate)
 
-			.groupByMonth (
-				timeScheme.groupByMonth ())
+				.dateBefore (
+					endDate)
 
-			.groupByAffiliate (
-				optionalValueEqualSafe (
-					groupCriteria,
-					SmsStatsCriteria.affiliate))
+				.group (
+					true)
 
-			.groupByBatch (
-				optionalValueEqualSafe (
-					groupCriteria,
-					SmsStatsCriteria.batch))
+				.groupByDate (
+					timeScheme.groupByDate ())
 
-			.groupByNetwork (
-				optionalValueEqualSafe (
-					groupCriteria,
-					SmsStatsCriteria.network))
+				.groupByMonth (
+					timeScheme.groupByMonth ())
 
-			.groupByRoute (
-				optionalValueEqualSafe (
-					groupCriteria,
-					SmsStatsCriteria.route))
+				.groupByAffiliate (
+					optionalValueEqualSafe (
+						groupCriteria,
+						SmsStatsCriteria.affiliate))
 
-			.groupByService (
-				optionalValueEqualSafe (
-					groupCriteria,
-					SmsStatsCriteria.service));
+				.groupByBatch (
+					optionalValueEqualSafe (
+						groupCriteria,
+						SmsStatsCriteria.batch))
 
-		return messageStatsHelper.search (
-			search);
+				.groupByNetwork (
+					optionalValueEqualSafe (
+						groupCriteria,
+						SmsStatsCriteria.network))
+
+				.groupByRoute (
+					optionalValueEqualSafe (
+						groupCriteria,
+						SmsStatsCriteria.route))
+
+				.groupByService (
+					optionalValueEqualSafe (
+						groupCriteria,
+						SmsStatsCriteria.service));
+
+			return messageStatsHelper.search (
+				transaction,
+				search);
+
+		}
 
 	}
 
 	@Override
 	public
-	Optional <RouteRec> findRoute () {
+	Optional <RouteRec> findRoute (
+			@NonNull Transaction parentTransaction) {
 
-		Collection <Long> routeIds =
-			fixedCriteriaMap.get (
-				SmsStatsCriteria.route);
+		try (
 
-		if (
-
-			isNull (
-				routeIds)
-
-			|| collectionDoesNotHaveOneElement (
-				routeIds)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findRoute");
 
 		) {
 
-			return optionalAbsent ();
+			Collection <Long> routeIds =
+				fixedCriteriaMap.get (
+					SmsStatsCriteria.route);
 
-		} else {
+			if (
 
-			return optionalOf (
-				routeHelper.findRequired (
-					iterableFirstElementRequired (
-						routeIds)));
+				isNull (
+					routeIds)
+
+				|| collectionDoesNotHaveOneElement (
+					routeIds)
+
+			) {
+
+				return optionalAbsent ();
+
+			} else {
+
+				return optionalOf (
+					routeHelper.findRequired (
+						transaction,
+						iterableFirstElementRequired (
+							routeIds)));
+
+			}
 
 		}
 

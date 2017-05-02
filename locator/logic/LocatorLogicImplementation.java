@@ -12,6 +12,7 @@ import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.tan;
 
 import wbs.framework.component.annotations.SingletonComponent;
+
 import wbs.sms.locator.model.BiaxialEllipsoid;
 import wbs.sms.locator.model.EastNorth;
 import wbs.sms.locator.model.LongLat;

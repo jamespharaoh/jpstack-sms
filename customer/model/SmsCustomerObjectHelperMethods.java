@@ -1,6 +1,6 @@
 package wbs.sms.customer.model;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.number.core.model.NumberRec;
 
@@ -8,7 +8,7 @@ public
 interface SmsCustomerObjectHelperMethods {
 
 	SmsCustomerRec findOrCreate (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsCustomerManagerRec manager,
 			NumberRec number);
 

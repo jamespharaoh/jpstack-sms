@@ -21,9 +21,13 @@ import org.joda.time.LocalDate;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.stats.logic.MessageStatsLogic;
 import wbs.sms.message.stats.model.MessageStatsData;
@@ -40,6 +44,9 @@ class GroupedStatsSourceImplementation
 	implements GroupedStatsSource {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	MessageStatsLogic messageStatsLogic;
@@ -75,150 +82,182 @@ class GroupedStatsSourceImplementation
 	@Override
 	public
 	Map <String, GroupStats> load (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsStatsTimeScheme timeScheme,
 			@NonNull LocalDate start,
 			@NonNull LocalDate end) {
 
-		Map <String, GroupStats> ret =
-			new TreeMap<> ();
+		try (
 
-		Optional <RouteRec> route =
-			statsSource.findRoute ();
-
-		if (
-
-			optionalIsPresent (
-				route)
-
-			&& critMap.containsKey (
-				SmsStatsCriteria.route)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"load");
 
 		) {
 
-			Set <Long> routeIds =
-				critMap.get (
-					SmsStatsCriteria.route);
+			Map <String, GroupStats> ret =
+				new TreeMap<> ();
 
-			if (routeIds.size () == 1) {
+			Optional <RouteRec> route =
+				statsSource.findRoute (
+					transaction);
 
-				route =
-					optionalOf (
-						routeHelper.findRequired (
-							routeIds.iterator ().next ()));
+			if (
+
+				optionalIsPresent (
+					route)
+
+				&& critMap.containsKey (
+					SmsStatsCriteria.route)
+
+			) {
+
+				Set <Long> routeIds =
+					critMap.get (
+						SmsStatsCriteria.route);
+
+				if (routeIds.size () == 1) {
+
+					route =
+						optionalOf (
+							routeHelper.findRequired (
+								transaction,
+								routeIds.iterator ().next ()));
+
+				}
 
 			}
+
+			List<MessageStatsRec> allMessageStats =
+				statsSource.findMessageStats (
+					transaction,
+					start,
+					end,
+					timeScheme,
+					Optional.fromNullable (
+						groupCriteria),
+					critMap,
+					Optional.fromNullable (
+						filterMap));
+
+			for (
+				MessageStatsRec messageStats
+					: allMessageStats
+			) {
+
+				String groupName =
+					groupName (
+						transaction,
+						messageStats);
+
+				if (groupCriteria == SmsStatsCriteria.route) {
+
+					route =
+						optionalOf (
+							messageStats.getMessageStatsId ().getRoute ());
+
+				}
+
+				GroupStats groupStats =
+					ret.get (groupName);
+
+				if (groupStats == null) {
+
+					groupStats =
+						new GroupStats (
+							route,
+							groupUrl (
+								messageStats));
+
+					ret.put (
+						groupName,
+						groupStats);
+
+				}
+
+				Map<LocalDate,MessageStatsData> statsByDate =
+					groupStats.getStatsByDate ();
+
+				LocalDate date =
+					messageStats.getMessageStatsId ().getDate ();
+
+				MessageStatsData stats =
+					statsByDate.get (date);
+
+				if (stats == null) {
+
+					stats =
+						new MessageStatsData ();
+
+					statsByDate.put (
+						date,
+						stats);
+
+				}
+
+				messageStatsLogic.addTo (
+					stats,
+					messageStats.getStats ());
+
+			}
+
+			return ret;
 
 		}
-
-		List<MessageStatsRec> allMessageStats =
-			statsSource.findMessageStats (
-				start,
-				end,
-				timeScheme,
-				Optional.fromNullable (
-					groupCriteria),
-				critMap,
-				Optional.fromNullable (
-					filterMap));
-
-		for (
-			MessageStatsRec messageStats
-				: allMessageStats
-		) {
-
-			String groupName =
-				groupName (
-					messageStats);
-
-			if (groupCriteria == SmsStatsCriteria.route) {
-
-				route =
-					optionalOf (
-						messageStats.getMessageStatsId ().getRoute ());
-
-			}
-
-			GroupStats groupStats =
-				ret.get (groupName);
-
-			if (groupStats == null) {
-
-				groupStats =
-					new GroupStats (
-						route,
-						groupUrl (
-							messageStats));
-
-				ret.put (
-					groupName,
-					groupStats);
-
-			}
-
-			Map<LocalDate,MessageStatsData> statsByDate =
-				groupStats.getStatsByDate ();
-
-			LocalDate date =
-				messageStats.getMessageStatsId ().getDate ();
-
-			MessageStatsData stats =
-				statsByDate.get (date);
-
-			if (stats == null) {
-
-				stats =
-					new MessageStatsData ();
-
-				statsByDate.put (
-					date,
-					stats);
-
-			}
-
-			messageStatsLogic.addTo (
-				stats,
-				messageStats.getStats ());
-
-		}
-
-		return ret;
 
 	}
 
+	private
 	String groupName (
-			MessageStatsRec mse) {
+			@NonNull Transaction parentTransaction,
+			@NonNull MessageStatsRec messageStats) {
 
-		if (groupCriteria == null)
-			return "Total";
+		try (
 
-		switch (groupCriteria) {
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"groupName");
 
-			case route:
+		) {
 
-				return objectName (
-					mse.getMessageStatsId ().getRoute ());
+			if (groupCriteria == null)
+				return "Total";
 
-			case service:
+			switch (groupCriteria) {
 
-				return objectName (
-					mse.getMessageStatsId ().getService ());
+				case route:
 
-			case affiliate:
+					return objectName (
+						transaction,
+						messageStats.getMessageStatsId ().getRoute ());
 
-				return objectName (
-					mse.getMessageStatsId ().getAffiliate ());
+				case service:
 
-			case batch:
+					return objectName (
+						transaction,
+						messageStats.getMessageStatsId ().getService ());
 
-				return mse.getMessageStatsId ().getBatch ().getId ().toString ();
+				case affiliate:
 
-			case network:
+					return objectName (
+						transaction,
+						messageStats.getMessageStatsId ().getAffiliate ());
 
-				return mse.getMessageStatsId ().getNetwork ().getDescription ();
+				case batch:
+
+					return messageStats.getMessageStatsId ().getBatch ().getId ().toString ();
+
+				case network:
+
+					return messageStats.getMessageStatsId ().getNetwork ().getDescription ();
+
+			}
+
+			throw new IllegalArgumentException ();
 
 		}
-
-		throw new IllegalArgumentException ();
 
 	}
 
@@ -279,11 +318,25 @@ class GroupedStatsSourceImplementation
 
 	}
 
+	private
 	String objectName (
-			Record<?> object) {
+			@NonNull Transaction parentTransaction,
+			@NonNull Record <?> object) {
 
-		return objectManager.objectPathMini (
-			object);
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"objectName");
+
+		) {
+
+			return objectManager.objectPathMini (
+				transaction,
+				object);
+
+		}
 
 	}
 

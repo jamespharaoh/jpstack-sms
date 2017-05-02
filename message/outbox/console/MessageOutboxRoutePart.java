@@ -28,8 +28,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -70,31 +71,44 @@ class MessageOutboxRoutePart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		route =
-			routeHelper.findRequired (
-				requestContext.parameterIntegerRequired (
-					"routeId"));
+		try (
 
-		outboxes =
-			new TreeSet <> (
-				outboxHelper.findLimit (
-					route,
-					30l));
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			route =
+				routeHelper.findRequired (
+					transaction,
+					requestContext.parameterIntegerRequired (
+						"routeId"));
+
+			outboxes =
+				new TreeSet <> (
+					outboxHelper.findLimit (
+						transaction,
+						route,
+						30l));
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -146,6 +160,7 @@ class MessageOutboxRoutePart
 
 				htmlTableCellWrite (
 					userConsoleLogic.timestampWithTimezoneString (
+						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
@@ -159,7 +174,7 @@ class MessageOutboxRoutePart
 				) {
 
 					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getNumber ());
 
 				} else {
@@ -176,7 +191,7 @@ class MessageOutboxRoutePart
 				) {
 
 					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getNumber ());
 
 				} else {

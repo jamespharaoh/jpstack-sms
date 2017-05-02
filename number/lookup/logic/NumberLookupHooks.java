@@ -13,7 +13,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -59,38 +61,41 @@ class NumberLookupHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"setup");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"numberLookupHooks.init ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"setup");
 
 		) {
 
 			// preload object types
 
-			objectTypeDao.findAll ();
+			objectTypeDao.findAll (
+				transaction);
 
 			// load number lookup types and construct index
 
 			numberLookupTypeIdsByParentTypeId =
-				numberLookupTypeDao.findAll ().stream ().collect (
+				numberLookupTypeDao.findAll (
+					transaction)
+
+				.stream ()
+
+				.collect (
 					Collectors.groupingBy (
 
-				numberLookupType ->
-					numberLookupType.getParentType ().getId (),
-
-				Collectors.mapping (
 					numberLookupType ->
-						numberLookupType.getId (),
-					Collectors.toList ())
+						numberLookupType.getParentType ().getId (),
 
-			));
+					Collectors.mapping (
+						numberLookupType ->
+							numberLookupType.getId (),
+						Collectors.toList ())
+
+				)
+
+			);
 
 		}
 
@@ -101,10 +106,10 @@ class NumberLookupHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull ObjectHelper<NumberLookupRec> numberLookupHelper,
-			@NonNull ObjectHelper<?> parentHelper,
-			@NonNull Record<?> parent) {
+			@NonNull Transaction parentTransaction,
+			@NonNull ObjectHelper <NumberLookupRec> numberLookupHelper,
+			@NonNull ObjectHelper <?> parentHelper,
+			@NonNull Record <?> parent) {
 
 		if (
 			doesNotContain (
@@ -116,15 +121,16 @@ class NumberLookupHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSingletons");
 
 		) {
 
 			ObjectTypeRec parentType =
 				objectTypeDao.findById (
+					transaction,
 					parentHelper.objectTypeId ());
 
 			for (
@@ -135,10 +141,11 @@ class NumberLookupHooks
 
 				NumberLookupTypeRec numberLookupType =
 					numberLookupTypeDao.findRequired (
+						transaction,
 						numberLookupTypeId);
 
 				numberLookupHelper.insert (
-					taskLogger,
+					transaction,
 					numberLookupHelper.createInstance ()
 
 					.setParentType (

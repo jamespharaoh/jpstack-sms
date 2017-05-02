@@ -74,23 +74,19 @@ class RouteTestTwoWayAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"RouteTestTwoWayAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			RouteRec route =
-				routeHelper.findFromContextRequired ();
+				routeHelper.findFromContextRequired (
+					transaction);
 
 			String messageString =
 				requestContext.parameterRequired (
@@ -106,13 +102,13 @@ class RouteTestTwoWayAction
 
 			MessageRec messageRecord =
 				smsInboxLogic.inboxInsert (
-					taskLogger,
+					transaction,
 					optionalAbsent (),
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						messageString),
 					smsNumberHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						numFrom),
 					numTo,
 					route,

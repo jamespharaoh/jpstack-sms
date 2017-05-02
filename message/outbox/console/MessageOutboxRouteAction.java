@@ -87,23 +87,19 @@ class MessageOutboxRouteAction
 	Responder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"goReal");
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MessageOutboxRouteAction.goReal ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"goReal");
 
 		) {
 
 			OutboxRec outbox =
 				outboxHelper.findRequired (
+					transaction,
 					requestContext.parameterIntegerRequired (
 						"messageId"));
 
@@ -124,11 +120,12 @@ class MessageOutboxRouteAction
 			if (
 
 				! privChecker.canRecursive (
-					taskLogger,
+					transaction,
 					ImmutableMap.<Object, Collection <String>> builder ()
 
 					.put (
 						objectManager.getParentRequired (
+							transaction,
 							message.getService ()),
 						ImmutableSet.of ("manage"))
 
@@ -187,13 +184,14 @@ class MessageOutboxRouteAction
 				// cancel message
 
 				outboxLogic.cancelMessage (
-					taskLogger,
+					transaction,
 					outbox.getMessage ());
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"sms_outbox_cancelled",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					outbox.getMessage ());
 
 				transaction.commit ();
@@ -210,13 +208,14 @@ class MessageOutboxRouteAction
 				// retry message
 
 				outboxLogic.retryMessage (
-					taskLogger,
+					transaction,
 					outbox.getMessage ());
 
 				eventLogic.createEvent (
-					taskLogger,
+					transaction,
 					"sms_outbox_retried",
-					userConsoleLogic.userRequired (),
+					userConsoleLogic.userRequired (
+						transaction),
 					outbox.getMessage ());
 
 				transaction.commit ();

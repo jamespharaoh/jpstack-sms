@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.google.common.base.Optional;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.message.stats.model.MessageStatsSearch;
 
@@ -15,22 +15,25 @@ public
 interface SmsStatsConsoleLogic {
 
 	Map <SmsStatsCriteria, Set <Long>> makeFilterMap (
-			TaskLogger parentTaskLogger);
+			Transaction parentTransaction);
 
 	String lookupGroupName (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			SmsStatsCriteria crit,
 			Long id);
 
 	Map <SmsStatsCriteria, Set <Long>> criteriaMapIntersect (
+			Transaction parentTransaction,
 			List <Map <SmsStatsCriteria, Set <Long>>> critMaps);
 
 	MessageStatsSearch setSearchCriteria (
+			Transaction parentTransaction,
 			MessageStatsSearch messageStatsSearch,
 			SmsStatsCriteria statsCriteria,
 			Collection <Long> value);
 
 	MessageStatsSearch critMapToMessageStatsSearch (
+			Transaction parentTransaction,
 			Map <SmsStatsCriteria, Set <Long>> critMap,
 			Optional <Map <SmsStatsCriteria, Set <Long>>> filterMap);
 

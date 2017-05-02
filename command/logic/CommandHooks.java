@@ -13,7 +13,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
@@ -54,37 +56,39 @@ class CommandHooks
 
 	@NormalLifecycleSetup
 	public
-	void init (
+	void setup (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"init");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"commandHooks.init ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"setup");
 
 		) {
 
 			commandTypeIdsByParentTypeId =
-				commandTypeDao.findAll ().stream ().collect (
+				commandTypeDao.findAll (
+					transaction)
+
+				.stream ()
+
+				.collect (
 					Collectors.groupingBy (
 
-				commandType ->
-					commandType.getParentType ().getId (),
-
-				Collectors.mapping (
 					commandType ->
-						commandType.getId (),
-					Collectors.toList ())
+						commandType.getParentType ().getId (),
 
-			));
+					Collectors.mapping (
+						commandType ->
+							commandType.getId (),
+						Collectors.toList ())
+
+				)
+
+			);
 
 		}
 
@@ -95,7 +99,7 @@ class CommandHooks
 	@Override
 	public
 	void createSingletons (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull ObjectHelper<CommandRec> commandHelper,
 			@NonNull ObjectHelper<?> parentHelper,
 			@NonNull Record<?> parent) {
@@ -110,15 +114,16 @@ class CommandHooks
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"createSingletons");
 
 		) {
 
 			ObjectTypeRec parentType =
 				objectTypeDao.findById (
+					transaction,
 					parentHelper.objectTypeId ());
 
 			for (
@@ -129,10 +134,11 @@ class CommandHooks
 
 				CommandTypeRec commandType =
 					commandTypeDao.findRequired (
+						transaction,
 						commandTypeId);
 
 				commandHelper.insert (
-					taskLogger,
+					transaction,
 					commandHelper.createInstance ()
 
 					.setCommandType (

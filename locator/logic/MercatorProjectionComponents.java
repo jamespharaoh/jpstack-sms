@@ -2,6 +2,7 @@ package wbs.sms.locator.logic;
 
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+
 import wbs.sms.locator.model.BiaxialEllipsoid;
 import wbs.sms.locator.model.MercatorProjectionImplementation;
 

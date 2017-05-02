@@ -3,10 +3,10 @@ package wbs.sms.message.stats.model;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.joda.time.LocalDate;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import org.joda.time.LocalDate;
 
 @Accessors (fluent = true)
 @Data

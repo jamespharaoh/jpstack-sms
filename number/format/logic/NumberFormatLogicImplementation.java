@@ -13,6 +13,7 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import wbs.framework.component.annotations.SingletonComponent;
+
 import wbs.sms.number.format.model.NumberFormatPatternRec;
 import wbs.sms.number.format.model.NumberFormatRec;
 
@@ -26,14 +27,14 @@ class NumberFormatLogicImplementation
 	public
 	String parse (
 			@NonNull NumberFormatRec numberFormat,
-			@NonNull String number)
+			@NonNull String originalNumber)
 		throws WbsNumberFormatException {
 
 		// remove ignorable characters
 
-		number =
+		String number =
 			ignorableCharactersPattern
-				.matcher (number)
+				.matcher (originalNumber)
 				.replaceAll ("");
 
 		// try each pattern

@@ -19,8 +19,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -106,7 +108,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 	protected abstract
 	MessageContainer getMessage (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			OutboxRec smsOutbox)
 		throws SendFailureException;
 
@@ -123,16 +125,11 @@ class AbstractSmsSender1 <MessageContainer>
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"createThreads");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"AbstractSmsSender1.createThreads ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"createThreads");
 
 		) {
 
@@ -140,6 +137,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 			SenderRec sender =
 				smsSenderHelper.findByCodeRequired (
+					transaction,
 					GlobalId.root,
 					getSenderCode ());
 
@@ -249,7 +247,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.createTaskLogger (
 						"processMessages");
 
@@ -257,9 +255,9 @@ class AbstractSmsSender1 <MessageContainer>
 
 				while (! Thread.interrupted ()) {
 
-					// get the next message from the database, synchronize to stop
-					// deadlocks because all threads go for the
-					// same message
+					// get the next message from the database, synchronize to
+					// stop deadlocks because all threads go for the same
+					// message
 
 					OutboxRec outbox;
 
@@ -273,21 +271,22 @@ class AbstractSmsSender1 <MessageContainer>
 
 							OwnedTransaction transaction =
 								database.beginReadWrite (
+									logContext,
 									taskLogger,
-									"AbstractSmsSender1.Worker.processMessages ()",
-									this);
+									"loop");
 
 						) {
 
 							RouteRec route =
 								smsRouteHelper.findRequired (
+									transaction,
 									routeId);
 
 							// get the next message
 
 							outbox =
 								smsOutboxLogic.claimNextMessage (
-									taskLogger,
+									transaction,
 									route);
 
 							if (outbox == null) {
@@ -314,6 +313,7 @@ class AbstractSmsSender1 <MessageContainer>
 								route.getBlockNumberLookup () != null
 
 								&& numberLookupManager.lookupNumber (
+									transaction,
 									route.getBlockNumberLookup (),
 									outbox.getMessage ().getNumber ())
 
@@ -322,7 +322,7 @@ class AbstractSmsSender1 <MessageContainer>
 								outbox.setSending (null);
 
 								smsMessageLogic.blackListMessage (
-									taskLogger,
+									transaction,
 									outbox.getMessage ());
 
 								transaction.commit ();
@@ -335,6 +335,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 							Optional<BlacklistRec> blacklistOptional =
 								smsBlacklistHelper.findByCode (
+									transaction,
 									GlobalId.root,
 									number);
 
@@ -346,7 +347,7 @@ class AbstractSmsSender1 <MessageContainer>
 								outbox.setSending (null);
 
 								smsMessageLogic.blackListMessage (
-									taskLogger,
+									transaction,
 									outbox.getMessage ());
 
 								transaction.commit ();
@@ -361,13 +362,13 @@ class AbstractSmsSender1 <MessageContainer>
 
 								messageContainer =
 									getMessage (
-										taskLogger,
+										transaction,
 										outbox);
 
 							} catch (SendFailureException exception) {
 
 								smsOutboxLogic.messageFailure (
-									taskLogger,
+									transaction,
 									outbox.getMessage (),
 									exception.errorMessage,
 									exception.failureType);
@@ -386,7 +387,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 					// now send it
 
-					Optional<List<String>> otherIds;
+					Optional <List <String>> otherIds;
 
 					try {
 
@@ -428,73 +429,80 @@ class AbstractSmsSender1 <MessageContainer>
 				@NonNull Long messageId,
 				@NonNull Optional <List <String>> otherIds) {
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"reliableOutboxSuccess");
+			try (
 
-			boolean interrupted = false;
+				OwnedTaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
+						"reliableOutboxSuccess");
 
-			for (int tries = 0;;) {
+			) {
 
-				try (
+				boolean interrupted = false;
 
-					OwnedTransaction transaction =
-						database.beginReadWrite (
-							taskLogger,
-							"AbstractSmsSender1.Worker.reliableOutboxSuccess (...)",
-							this);
+				for (int tries = 0;;) {
 
-				) {
+					try (
 
-					MessageRec message =
-						smsMessageHelper.findRequired (
-							messageId);
+						OwnedTransaction transaction =
+							database.beginReadWrite (
+								logContext,
+								taskLogger,
+								"loop");
 
-					smsOutboxLogic.messageSuccess (
-						taskLogger,
-						message,
-						otherIds,
-						optionalAbsent ());
+					) {
 
-					if (interrupted)
-						Thread.currentThread ().interrupt ();
+						MessageRec message =
+							smsMessageHelper.findRequired (
+								transaction,
+								messageId);
 
-					transaction.commit ();
+						smsOutboxLogic.messageSuccess (
+							transaction,
+							message,
+							otherIds,
+							optionalAbsent ());
 
-					return;
+						if (interrupted)
+							Thread.currentThread ().interrupt ();
 
-				} catch (Exception updateException) {
+						transaction.commit ();
 
-					if (++ tries == maxTries) {
+						return;
 
-						log.fatal (
+					} catch (Exception updateException) {
+
+						if (++ tries == maxTries) {
+
+							log.fatal (
+								stringFormat (
+									"Outbox success for message %s failed %s ",
+									integerToDecimalString (
+										messageId),
+									integerToDecimalString (
+										maxTries),
+									"times, giving up"),
+								updateException);
+
+						}
+
+						log.warn (
 							stringFormat (
-								"Outbox success for message %s failed %s ",
+								"Outbox success for message %s failed, retrying",
 								integerToDecimalString (
-									messageId),
-								integerToDecimalString (
-									maxTries),
-								"times, giving up"),
+									messageId)),
 							updateException);
 
-					}
+						try {
 
-					log.warn (
-						stringFormat (
-							"Outbox success for message %s failed, retrying",
-							integerToDecimalString (
-								messageId)),
-						updateException);
+							Thread.sleep (
+								retryTimeMs);
 
-					try {
+						} catch (InterruptedException interruptException) {
 
-						Thread.sleep (
-							retryTimeMs);
+							interrupted = true;
 
-					} catch (InterruptedException interruptException) {
-
-						interrupted = true;
+						}
 
 					}
 
@@ -515,7 +523,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 			try (
 
-				TaskLogger taskLogger =
+				OwnedTaskLogger taskLogger =
 					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"reliableOutboxFailure");
@@ -530,18 +538,19 @@ class AbstractSmsSender1 <MessageContainer>
 
 						OwnedTransaction transaction =
 							database.beginReadWrite (
+								logContext,
 								taskLogger,
-								"AbstractSmsSender1.Worker.reliableOutboxFailure (...)",
-								this);
+								"loop");
 
 					) {
 
 						MessageRec message =
 							smsMessageHelper.findRequired (
+								transaction,
 								messageId);
 
 						smsOutboxLogic.messageFailure (
-							taskLogger,
+							transaction,
 							message,
 							sendException.errorMessage,
 							sendException.failureType);

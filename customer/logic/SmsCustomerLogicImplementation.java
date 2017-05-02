@@ -4,7 +4,9 @@ import static wbs.utils.etc.LogicUtils.ifThenElse;
 import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 
 import javax.inject.Provider;
@@ -20,10 +22,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
 import wbs.platform.affiliate.model.AffiliateRec;
@@ -75,24 +77,21 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionStart (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerRec customer,
 			@NonNull Optional <Long> threadId) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sessionStart");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			sessionTimeoutAuto (
-				taskLogger,
+				transaction,
 				customer);
 
 			if (customer.getActiveSession () != null) {
@@ -108,7 +107,7 @@ class SmsCustomerLogicImplementation
 
 			SmsCustomerSessionRec newSession =
 				smsCustomerSessionHelper.insert (
-					taskLogger,
+					transaction,
 					smsCustomerSessionHelper.createInstance ()
 
 				.setCustomer (
@@ -134,12 +133,12 @@ class SmsCustomerLogicImplementation
 					customer.getNumSessions () + 1);
 
 			sendWelcomeMessage (
-				taskLogger,
+				transaction,
 				newSession,
 				threadId);
 
 			sendWarningMessage (
-				taskLogger,
+				transaction,
 				newSession,
 				threadId);
 
@@ -147,16 +146,17 @@ class SmsCustomerLogicImplementation
 
 	}
 
+	private
 	void sendWelcomeMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerSessionRec session,
 			@NonNull Optional <Long> threadId) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sendWelcomeMessage");
 
 		) {
@@ -180,6 +180,7 @@ class SmsCustomerLogicImplementation
 
 			Optional<SmsCustomerTemplateRec> templateOptional =
 				smsCustomerTemplateHelper.findByCode (
+					transaction,
 					manager,
 					"welcome");
 
@@ -211,19 +212,22 @@ class SmsCustomerLogicImplementation
 					template.getNumber ())
 
 				.routerResolve (
+					transaction,
 					template.getRouter ())
 
 				.serviceLookup (
+					transaction,
 					manager,
 					"welcome")
 
 				.affiliate (
 					optionalOrNull (
 						customerAffiliate (
+							transaction,
 							customer)))
 
 				.send (
-					taskLogger);
+					transaction);
 
 			session
 
@@ -237,15 +241,15 @@ class SmsCustomerLogicImplementation
 	}
 
 	void sendWarningMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerSessionRec session,
 			@NonNull Optional<Long> threadId) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sendWarningMessage");
 
 		) {
@@ -256,8 +260,9 @@ class SmsCustomerLogicImplementation
 			SmsCustomerManagerRec manager =
 				customer.getSmsCustomerManager ();
 
-			Optional<SmsCustomerTemplateRec> templateOptional =
+			Optional <SmsCustomerTemplateRec> templateOptional =
 				smsCustomerTemplateHelper.findByCode (
+					transaction,
 					manager,
 					"warning");
 
@@ -287,19 +292,22 @@ class SmsCustomerLogicImplementation
 					template.getNumber ())
 
 				.routerResolve (
+					transaction,
 					template.getRouter ())
 
 				.serviceLookup (
+					transaction,
 					manager,
 					"warning")
 
 				.affiliate (
 					optionalOrNull (
 						customerAffiliate (
+							transaction,
 							customer)))
 
 				.send (
-					taskLogger);
+					transaction);
 
 			session
 
@@ -315,22 +323,19 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionEndManually (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull UserRec user,
 			@NonNull SmsCustomerRec customer,
 			@NonNull String reason) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sessionEndManually");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			if (
 				isNull (
@@ -357,7 +362,7 @@ class SmsCustomerLogicImplementation
 			;
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"sms_customer_session_end_manually",
 				user,
 				customer,
@@ -369,14 +374,14 @@ class SmsCustomerLogicImplementation
 
 	public
 	void sessionTimeoutAuto (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerRec customer) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sessionTimeoutAuto");
 
 		) {
@@ -385,7 +390,7 @@ class SmsCustomerLogicImplementation
 				return;
 
 			sessionTimeoutAuto (
-				taskLogger,
+				transaction,
 				customer.getActiveSession ());
 
 		}
@@ -395,25 +400,22 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	void sessionTimeoutAuto (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerSessionRec session) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"sessionTimeoutAuto");
 
 		) {
 
-			taskLogger.debugFormat (
+			transaction.debugFormat (
 				"Automatic session timeout for %s",
 				integerToDecimalString (
 					session.getId ()));
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			SmsCustomerRec customer =
 				session.getCustomer ();
@@ -423,7 +425,7 @@ class SmsCustomerLogicImplementation
 
 			if (session.getEndTime () != null) {
 
-				taskLogger.debugFormat (
+				transaction.debugFormat (
 					"Not timing out session %s ",
 					integerToDecimalString (
 						session.getId ()),
@@ -435,7 +437,7 @@ class SmsCustomerLogicImplementation
 
 			if (manager.getSessionTimeout () == null) {
 
-				taskLogger.debugFormat (
+				transaction.debugFormat (
 					"Not timing out session %s ",
 					integerToDecimalString (
 						session.getId ()),
@@ -456,7 +458,7 @@ class SmsCustomerLogicImplementation
 			if (! session.getStartTime ().isBefore (
 					startTimeBefore)) {
 
-				taskLogger.debugFormat (
+				transaction.debugFormat (
 					"Not timing out session %s, ",
 					integerToDecimalString (
 						session.getId ()),
@@ -469,7 +471,7 @@ class SmsCustomerLogicImplementation
 
 			}
 
-			taskLogger.warningFormat (
+			transaction.warningFormat (
 				"Timing out sms customer session %s",
 				integerToDecimalString (
 					session.getId ()));
@@ -495,36 +497,49 @@ class SmsCustomerLogicImplementation
 	@Override
 	public
 	Optional <AffiliateRec> customerAffiliate (
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerRec customer) {
 
-		return ifThenElse (
-			isNotNull (
-				customer.getSmsCustomerAffiliate ()),
+		try (
 
-			() -> Optional.of (
-				affiliateHelper.findByCodeRequired (
-					customer.getSmsCustomerAffiliate (),
-					"default")),
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"customerAffiliate");
 
-			() -> Optional.absent ()
+		) {
 
-		);
+			return ifThenElse (
+				isNotNull (
+					customer.getSmsCustomerAffiliate ()),
+
+				() -> optionalOf (
+					affiliateHelper.findByCodeRequired (
+						transaction,
+						customer.getSmsCustomerAffiliate (),
+						"default")),
+
+				() -> optionalAbsent ()
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	void customerAffiliateUpdate (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerRec customer,
 			@NonNull SmsCustomerAffiliateRec affiliate,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"customerAffiliateUpdate");
 
 		) {
@@ -542,7 +557,7 @@ class SmsCustomerLogicImplementation
 					affiliate);
 
 			eventLogic.createEvent (
-				taskLogger,
+				transaction,
 				"sms_customer_affiliate_update_message",
 				customer,
 				affiliate,

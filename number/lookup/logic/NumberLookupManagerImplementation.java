@@ -6,8 +6,12 @@ import lombok.NonNull;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.number.lookup.model.NumberLookupRec;
@@ -19,6 +23,9 @@ class NumberLookupManagerImplementation
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	NumberLookupHelperManager numberLookupHelperManager;
 
@@ -27,34 +34,60 @@ class NumberLookupManagerImplementation
 	@Override
 	public
 	boolean lookupNumber (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberLookupRec numberLookup,
 			@NonNull NumberRec number) {
 
-		NumberLookupHelper helper =
-			numberLookupHelperManager.forParentObjectTypeCode (
-				numberLookup.getParentType ().getCode (),
-				true);
+		try (
 
-		return helper.lookupNumber (
-			numberLookup,
-			number);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"lookupNumber");
+
+		) {
+
+			NumberLookupHelper helper =
+				numberLookupHelperManager.forParentObjectTypeCode (
+					numberLookup.getParentType ().getCode (),
+					true);
+
+			return helper.lookupNumber (
+				transaction,
+				numberLookup,
+				number);
+
+		}
 
 	}
 
 	@Override
 	public
 	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberLookupRec numberLookup,
 			@NonNull List <NumberRec> numbers) {
 
-		NumberLookupHelper helper =
-			numberLookupHelperManager.forParentObjectTypeCode (
-				numberLookup.getParentType ().getCode (),
-				true);
+		try (
 
-		return helper.splitNumbersPresent (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"splitNumbersPresent");
+
+		) {
+
+			NumberLookupHelper helper =
+				numberLookupHelperManager.forParentObjectTypeCode (
+					numberLookup.getParentType ().getCode (),
+					true);
+
+			return helper.splitNumbersPresent (
+				transaction,
 				numberLookup,
 				numbers);
+
+		}
 
 	}
 

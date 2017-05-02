@@ -27,8 +27,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -67,28 +68,41 @@ class MessageThreadPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		MessageRec message =
-			messageHelper.findFromContextRequired ();
+		try (
 
-		messages =
-			new TreeSet<> (
-				messageHelper.findByThreadId (
-					message.getThreadId ()));
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			MessageRec message =
+				messageHelper.findFromContextRequired (
+					transaction);
+
+			messages =
+				new TreeSet<> (
+					messageHelper.findByThreadId (
+						transaction,
+						message.getThreadId ()));
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -135,12 +149,14 @@ class MessageThreadPart
 
 				htmlTableCellWrite (
 					userConsoleLogic.timestampWithTimezoneString (
+						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
 					message.getRoute ().getCode ());
 
 				messageConsoleLogic.writeTdForMessageStatus (
+					transaction,
 					formatWriter,
 					message.getStatus ());
 
@@ -174,7 +190,7 @@ class MessageThreadPart
 					} else {
 
 						mediaConsoleLogic.writeMediaThumb32OrText (
-							taskLogger,
+							transaction,
 							media);
 
 					}
@@ -208,7 +224,7 @@ class MessageThreadPart
 						formatWriter);
 
 				messageConsoleLogic.writeMessageContentHtml (
-					taskLogger,
+					transaction,
 					formatWriter,
 					message);
 

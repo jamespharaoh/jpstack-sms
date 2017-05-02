@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.joda.time.Interval;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.message.core.model.MessageRec;
 
@@ -22,7 +22,7 @@ interface MessageSource {
 	};
 
 	List <MessageRec> findMessages (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			Interval interval,
 			ViewMode viewMode);
 

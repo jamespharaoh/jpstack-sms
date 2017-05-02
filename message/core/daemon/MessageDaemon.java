@@ -24,6 +24,7 @@ import wbs.framework.database.OwnedTransaction;
 import wbs.framework.exception.ExceptionLogger;
 import wbs.framework.exception.GenericExceptionResolution;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -76,10 +77,10 @@ class MessageDaemon
 	// properties
 
 	@Getter @Setter
-	int sleepSecs = 60;
+	Long sleepSecs = 60l;
 
 	@Getter @Setter
-	int batchSize = 100;
+	Long batchSize = 100l;
 
 	@Override
 	protected
@@ -109,7 +110,7 @@ class MessageDaemon
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.createTaskLogger (
 					"runOnce ()");
 
@@ -142,21 +143,17 @@ class MessageDaemon
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"expireMessages");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"MessageDaemon.expiresMessages ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"expireMessages");
 
 		) {
 
 			Collection <MessageExpiryRec> messageExpiries =
 				messageExpiryHelper.findPendingLimit (
+					transaction,
 					transaction.now (),
 					batchSize);
 
@@ -184,11 +181,11 @@ class MessageDaemon
 					// perform expiry
 
 					messageLogic.messageStatus (
-						taskLogger,
+						transaction,
 						message,
 						MessageStatus.reportTimedOut);
 
-					taskLogger.debugFormat (
+					transaction.debugFormat (
 						"Message %s expired from state %s",
 						integerToDecimalString (
 							message.getId ()),
@@ -206,7 +203,7 @@ class MessageDaemon
 
 					// ignore expiry
 
-					taskLogger.debugFormat (
+					transaction.debugFormat (
 						"Message %s expiry ignored due to state %s",
 						integerToDecimalString (
 							message.getId ()),
@@ -228,6 +225,7 @@ class MessageDaemon
 				}
 
 				messageExpiryHelper.remove (
+					transaction,
 					messageExpiry);
 
 			}

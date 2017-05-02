@@ -8,8 +8,12 @@ import lombok.NonNull;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectManager;
 
 import wbs.sms.number.core.model.NumberRec;
@@ -23,6 +27,9 @@ class NumberListNumberLookupHelper
 	implements NumberLookupHelper {
 
 	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	@SingletonDependency
 	NumberListLogic numberListLogic;
@@ -43,34 +50,62 @@ class NumberListNumberLookupHelper
 	@Override
 	public
 	boolean lookupNumber (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberLookupRec numberLookup,
 			@NonNull NumberRec number) {
 
-		NumberListRec numberList =
-			genericCastUnchecked (
-				objectManager.getParentRequired (
-					numberLookup));
+		try (
 
-		return numberListLogic.includesNumber (
-			numberList,
-			number);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"lookupNumber");
+
+		) {
+
+			NumberListRec numberList =
+				genericCastUnchecked (
+					objectManager.getParentRequired (
+						transaction,
+						numberLookup));
+
+			return numberListLogic.includesNumber (
+				transaction,
+				numberList,
+				number);
+
+		}
 
 	}
 
 	@Override
 	public
 	Pair <List <NumberRec>, List <NumberRec>> splitNumbersPresent (
+			@NonNull Transaction parentTransaction,
 			@NonNull NumberLookupRec numberLookup,
 			@NonNull List <NumberRec> numbers) {
 
-		NumberListRec numberList =
-			genericCastUnchecked (
-				objectManager.getParentRequired (
-					numberLookup));
+		try (
 
-		return numberListLogic.splitNumbersPresent (
-			numberList,
-			numbers);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"splitNumbersPresent");
+
+		) {
+
+			NumberListRec numberList =
+				genericCastUnchecked (
+					objectManager.getParentRequired (
+						transaction,
+						numberLookup));
+
+			return numberListLogic.splitNumbersPresent (
+				transaction,
+				numberList,
+				numbers);
+
+		}
 
 	}
 

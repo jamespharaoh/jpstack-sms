@@ -15,12 +15,12 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -98,22 +98,18 @@ final class RouteTesterDaemon
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.createTaskLogger (
-					"runOnce ()");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"RouteTesterDaemon.runOnce ()",
-					this);
+					logContext,
+					"runOnce");
 
 		) {
 
 			// retrieve all route testers
 
-			List<RouteTesterRec> routeTesters =
-				routeTesterHelper.findAll ();
+			List <RouteTesterRec> routeTesters =
+				routeTesterHelper.findAll (
+					transaction);
 
 			// for each one...
 
@@ -147,7 +143,7 @@ final class RouteTesterDaemon
 				// ok, do this one
 
 				doOne (
-					taskLogger,
+					transaction,
 					routeTester);
 
 			}
@@ -160,26 +156,23 @@ final class RouteTesterDaemon
 
 	private
 	void doOne (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteTesterRec routeTester) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"doOne");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			// create the RouteTest
 
 			RouteTestRec routeTest =
 				routeTestHelper.insert (
-					taskLogger,
+					transaction,
 					routeTestHelper.createInstance ()
 
 				.setRoute (
@@ -205,7 +198,8 @@ final class RouteTesterDaemon
 
 			}
 
-			text.append ("ROUTETEST ID=" + routeTest.getId ());
+			text.append (
+				"ROUTETEST ID=" + routeTest.getId ());
 
 			// send the message
 
@@ -214,11 +208,11 @@ final class RouteTesterDaemon
 
 				.number (
 					numberHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						routeTester.getDestNumber ()))
 
 				.messageString (
-					taskLogger,
+					transaction,
 					text.toString ())
 
 				.numFrom (
@@ -229,11 +223,12 @@ final class RouteTesterDaemon
 
 				.service (
 					serviceHelper.findByCodeRequired (
+						transaction,
 						GlobalId.root,
 						"test"))
 
 				.send (
-					taskLogger);
+					transaction);
 
 			// connect the message to the RouteTest
 

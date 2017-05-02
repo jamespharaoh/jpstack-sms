@@ -1,6 +1,6 @@
 package wbs.sms.message.core.console;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
@@ -12,15 +12,17 @@ public
 interface MessageConsoleLogic {
 
 	void writeMessageContentText (
+			Transaction parentTransaction,
 			FormatWriter formatWriter,
 			MessageRec message);
 
 	void writeMessageContentHtml (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			FormatWriter formatWriter,
 			MessageRec message);
 
 	void writeTdForMessageStatus (
+			Transaction parentTransaction,
 			FormatWriter formatWriter,
 			MessageStatus messageStatus);
 
@@ -28,6 +30,7 @@ interface MessageConsoleLogic {
 			MessageRec message);
 
 	String classForMessageStatus (
+
 			MessageStatus messageStatus);
 
 	String classForMessageDirection (

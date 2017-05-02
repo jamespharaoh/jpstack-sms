@@ -4,7 +4,12 @@ import lombok.NonNull;
 
 import org.hibernate.criterion.Restrictions;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
+
 import wbs.sms.keyword.model.KeywordSetFallbackDao;
 import wbs.sms.keyword.model.KeywordSetFallbackRec;
 import wbs.sms.keyword.model.KeywordSetRec;
@@ -15,31 +20,51 @@ class KeywordSetFallbackDaoHibernate
 	extends HibernateDao
 	implements KeywordSetFallbackDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
 	KeywordSetFallbackRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull KeywordSetRec keywordSet,
 			@NonNull NumberRec number) {
 
-		return findOneOrNull (
-			"find (keywordSet, number)",
-			KeywordSetFallbackRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				KeywordSetFallbackRec.class,
-					"_keywordSetFallback")
 
-			.add (
-				Restrictions.eq (
-					"_keywordSetFallback.keywordSet",
-					keywordSet))
+				createCriteria (
+					transaction,
+					KeywordSetFallbackRec.class,
+						"_keywordSetFallback")
 
-			.add (
-				Restrictions.eq (
-					"_keywordSetFallback.number",
-					number))
+				.add (
+					Restrictions.eq (
+						"_keywordSetFallback.keywordSet",
+						keywordSet))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_keywordSetFallback.number",
+						number))
+
+			);
+
+		}
 
 	}
 

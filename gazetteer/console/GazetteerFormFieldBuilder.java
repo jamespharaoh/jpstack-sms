@@ -13,6 +13,8 @@ import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
+import lombok.NonNull;
+
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.forms.ChainedFormFieldNativeMapping;
 import wbs.console.forms.DereferenceFormFieldAccessor;
@@ -33,27 +35,39 @@ import wbs.console.forms.RequiredFormFieldValueValidator;
 import wbs.console.forms.SimpleFormFieldAccessor;
 import wbs.console.forms.TextFormFieldRenderer;
 import wbs.console.forms.UpdatableFormField;
+
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
+
 import wbs.sms.gazetteer.model.GazetteerEntryRec;
+
 import wbs.utils.etc.PropertyUtils;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("gazetteerFormFieldBuilder")
 @ConsoleModuleBuilderHandler
 public
-class GazetteerFormFieldBuilder {
+class GazetteerFormFieldBuilder
+	implements BuilderComponent {
 
 	// singleton dependencies
 
 	@SingletonDependency
 	FormFieldPluginManagerImplementation formFieldPluginManager;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// prototype dependencies
 
@@ -108,201 +122,188 @@ class GazetteerFormFieldBuilder {
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			Builder builder) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Builder builder) {
 
-		String name =
-			spec.name ();
+		try (
 
-		String nativeFieldName =
-			ifNull (
-				spec.fieldName (),
-				name);
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-		String label =
-			ifNull (
-				spec.label (),
-				capitalise (
-					camelToSpaces (
-						name)));
-
-		Boolean readOnly =
-			ifNull (
-				spec.readOnly (),
-				false);
-
-		Boolean nullable =
-			ifNull (
-				spec.nullable (),
-				false);
-
-		Boolean dynamic =
-			ifNull (
-				spec.dynamic (),
-				false);
-
-		// property class
-
-		Class<?> propertyClass;
-
-		if (! dynamic) {
-
-			propertyClass =
-				PropertyUtils.propertyClassForClass (
-					context.containerClass (),
-					nativeFieldName);
-
-		} else {
-
-			propertyClass =
-				GazetteerEntryRec.class;
-
-		}
-
-
-		// accessor
-
-		FormFieldAccessor accessor;
-
-		if (dynamic) {
-
-			accessor =
-				dynamicFormFieldAccessorProvider.get ()
-
-				.name (
-					nativeFieldName)
-
-				.nativeClass (
-					propertyClass);
-
-		} else if (readOnly) {
-
-			accessor =
-				dereferenceFormFieldAccessorProvider.get ()
-
-				.path (
-					nativeFieldName);
-
-		} else {
-
-			accessor =
-				simpleFormFieldAccessorProvider.get ()
-
-				.name (
-					nativeFieldName)
-
-				.nativeClass (
-					propertyClass);
-
-		}
-
-		// native mapping
-
-		FormFieldNativeMapping nativeMapping;
-
-		Optional gazetteerNativeMappingOptional =
-			formFieldPluginManager.getNativeMapping (
-				context,
-				context.containerClass (),
-				name,
-				GazetteerEntryRec.class,
-				propertyClass);
-
-		if (
-			optionalIsPresent (
-				gazetteerNativeMappingOptional)
 		) {
 
-			nativeMapping =
-				(FormFieldNativeMapping)
-				gazetteerNativeMappingOptional.get ();
+			String name =
+				spec.name ();
 
-		} else {
+			String nativeFieldName =
+				ifNull (
+					spec.fieldName (),
+					name);
 
-			Optional stringNativeMappingOptional =
+			String label =
+				ifNull (
+					spec.label (),
+					capitalise (
+						camelToSpaces (
+							name)));
+
+			Boolean readOnly =
+				ifNull (
+					spec.readOnly (),
+					false);
+
+			Boolean nullable =
+				ifNull (
+					spec.nullable (),
+					false);
+
+			Boolean dynamic =
+				ifNull (
+					spec.dynamic (),
+					false);
+
+			// property class
+
+			Class<?> propertyClass;
+
+			if (! dynamic) {
+
+				propertyClass =
+					PropertyUtils.propertyClassForClass (
+						context.containerClass (),
+						nativeFieldName);
+
+			} else {
+
+				propertyClass =
+					GazetteerEntryRec.class;
+
+			}
+
+
+			// accessor
+
+			FormFieldAccessor accessor;
+
+			if (dynamic) {
+
+				accessor =
+					dynamicFormFieldAccessorProvider.get ()
+
+					.name (
+						nativeFieldName)
+
+					.nativeClass (
+						propertyClass);
+
+			} else if (readOnly) {
+
+				accessor =
+					dereferenceFormFieldAccessorProvider.get ()
+
+					.path (
+						nativeFieldName);
+
+			} else {
+
+				accessor =
+					simpleFormFieldAccessorProvider.get ()
+
+					.name (
+						nativeFieldName)
+
+					.nativeClass (
+						propertyClass);
+
+			}
+
+			// native mapping
+
+			FormFieldNativeMapping nativeMapping;
+
+			Optional gazetteerNativeMappingOptional =
 				formFieldPluginManager.getNativeMapping (
 					context,
 					context.containerClass (),
 					name,
-					String.class,
+					GazetteerEntryRec.class,
 					propertyClass);
 
 			if (
-				optionalIsNotPresent (
-					stringNativeMappingOptional)
+				optionalIsPresent (
+					gazetteerNativeMappingOptional)
 			) {
 
-				throw new RuntimeException ();
+				nativeMapping =
+					(FormFieldNativeMapping)
+					gazetteerNativeMappingOptional.get ();
+
+			} else {
+
+				Optional stringNativeMappingOptional =
+					formFieldPluginManager.getNativeMapping (
+						context,
+						context.containerClass (),
+						name,
+						String.class,
+						propertyClass);
+
+				if (
+					optionalIsNotPresent (
+						stringNativeMappingOptional)
+				) {
+
+					throw new RuntimeException ();
+
+				}
+
+				nativeMapping =
+					chainedFormFieldNativeMappingProvider.get ()
+
+					.previousMapping (
+						gazetteerCodeFormFieldNativeMappingProvider.get ())
+
+					.nextMapping (
+						(FormFieldNativeMapping)
+						stringNativeMappingOptional.get ());
 
 			}
 
-			nativeMapping =
-				chainedFormFieldNativeMappingProvider.get ()
+			// value validators
 
-				.previousMapping (
-					gazetteerCodeFormFieldNativeMappingProvider.get ())
+			List <FormFieldValueValidator> valueValidators =
+				new ArrayList<> ();
 
-				.nextMapping (
-					(FormFieldNativeMapping)
-					stringNativeMappingOptional.get ());
+			if (! nullable) {
 
-		}
+				valueValidators.add (
+					requiredFormFieldValueValidatorProvider.get ());
 
-		// value validators
+			}
 
-		List <FormFieldValueValidator> valueValidators =
-			new ArrayList<> ();
+			// constraint validator
 
-		if (! nullable) {
+			FormFieldConstraintValidator constraintValidator =
+				nullFormFieldValueConstraintValidatorProvider.get ();
 
-			valueValidators.add (
-				requiredFormFieldValueValidatorProvider.get ());
+			// interface mapping
 
-		}
+			FormFieldInterfaceMapping interfaceMapping =
+				gazetteerFormFieldInterfaceMappingProvider.get ()
 
-		// constraint validator
+				.gazetteerFieldName (
+					spec.gazetteerFieldName ());
 
-		FormFieldConstraintValidator constraintValidator =
-			nullFormFieldValueConstraintValidatorProvider.get ();
+			// renderer
 
-		// interface mapping
-
-		FormFieldInterfaceMapping interfaceMapping =
-			gazetteerFormFieldInterfaceMappingProvider.get ()
-
-			.gazetteerFieldName (
-				spec.gazetteerFieldName ());
-
-		// renderer
-
-		FormFieldRenderer renderer =
-			textFormFieldRendererProvider.get ()
-
-			.name (
-				name)
-
-			.label (
-				label)
-
-			.nullable (
-				nullable);
-
-		// update hook
-
-		FormFieldUpdateHook updateHook =
-			formFieldPluginManager.getUpdateHook (
-				context,
-				context.containerClass (),
-				name);
-
-		// form field
-
-		if (readOnly) {
-
-			target.addFormItem (
-				readOnlyFormFieldProvider.get ()
+			FormFieldRenderer renderer =
+				textFormFieldRendererProvider.get ()
 
 				.name (
 					name)
@@ -310,59 +311,85 @@ class GazetteerFormFieldBuilder {
 				.label (
 					label)
 
-				.accessor (
-					accessor)
+				.nullable (
+					nullable);
 
-				.nativeMapping (
-					nativeMapping)
+			// update hook
 
-				.interfaceMapping (
-					interfaceMapping)
+			FormFieldUpdateHook updateHook =
+				formFieldPluginManager.getUpdateHook (
+					context,
+					context.containerClass (),
+					name);
 
-				.csvMapping (
-					interfaceMapping)
+			// form field
 
-				.renderer (
-					renderer)
+			if (readOnly) {
 
-			);
+				target.addFormItem (
+					readOnlyFormFieldProvider.get ()
 
-		} else {
+					.name (
+						name)
 
-			target.addFormItem (
-				updatableFormFieldProvider.get ()
+					.label (
+						label)
 
-				.name (
-					name)
+					.accessor (
+						accessor)
 
-				.label (
-					label)
+					.nativeMapping (
+						nativeMapping)
 
-				.accessor (
-					accessor)
+					.interfaceMapping (
+						interfaceMapping)
 
-				.nativeMapping (
-					nativeMapping)
+					.csvMapping (
+						interfaceMapping)
 
-				.valueValidators (
-					valueValidators)
+					.renderer (
+						renderer)
 
-				.constraintValidator (
-					constraintValidator)
+				);
 
-				.interfaceMapping (
-					interfaceMapping)
+			} else {
 
-				.csvMapping (
-					interfaceMapping)
+				target.addFormItem (
+					updatableFormFieldProvider.get ()
 
-				.renderer (
-					renderer)
+					.name (
+						name)
 
-				.updateHook (
-					updateHook)
+					.label (
+						label)
 
-			);
+					.accessor (
+						accessor)
+
+					.nativeMapping (
+						nativeMapping)
+
+					.valueValidators (
+						valueValidators)
+
+					.constraintValidator (
+						constraintValidator)
+
+					.interfaceMapping (
+						interfaceMapping)
+
+					.csvMapping (
+						interfaceMapping)
+
+					.renderer (
+						renderer)
+
+					.updateHook (
+						updateHook)
+
+				);
+
+			}
 
 		}
 

@@ -31,8 +31,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.platform.media.console.MediaConsoleLogic;
@@ -91,27 +92,40 @@ class MessageSummaryPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		message =
-			messageHelper.findFromContextRequired ();
+		try (
 
-		failedMessageOptional =
-			failedMessageHelper.find (
-				message.getId ());
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			message =
+				messageHelper.findFromContextRequired (
+					transaction);
+
+			failedMessageOptional =
+				failedMessageHelper.find (
+					transaction,
+					message.getId ());
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -141,7 +155,7 @@ class MessageSummaryPart
 			htmlTableDetailsRowWriteHtml (
 				"Message",
 				() -> messageConsoleLogic.writeMessageContentHtml (
-					taskLogger,
+					transaction,
 					formatWriter,
 					message));
 
@@ -155,7 +169,7 @@ class MessageSummaryPart
 					"Number from",
 					() ->
 						objectManager.writeTdForObjectMiniLink (
-							taskLogger,
+							transaction,
 							message.getNumber ()));
 
 				htmlTableDetailsRowWrite (
@@ -172,7 +186,7 @@ class MessageSummaryPart
 					"Number to",
 					() ->
 						objectManager.writeTdForObjectMiniLink (
-							taskLogger,
+							transaction,
 							message.getNumber ()));
 
 			}
@@ -189,7 +203,7 @@ class MessageSummaryPart
 				"Route",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getRoute ()));
 
 			htmlTableDetailsRowWrite (
@@ -200,14 +214,14 @@ class MessageSummaryPart
 				"Service",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getService ()));
 
 			htmlTableDetailsRowWriteRaw (
 				"Affiliate",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getAffiliate ()));
 
 			if (
@@ -220,13 +234,14 @@ class MessageSummaryPart
 					"Time sent",
 					ifNotNullThenElseEmDash (
 						message.getNetworkTime (),
-						() ->
-							userConsoleLogic.timestampWithTimezoneString (
-								message.getNetworkTime ())));
+						() -> userConsoleLogic.timestampWithTimezoneString (
+							transaction,
+							message.getNetworkTime ())));
 
 				htmlTableDetailsRowWrite (
 					"Time received",
 					userConsoleLogic.timestampWithTimezoneString (
+						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableDetailsRowWrite (
@@ -235,6 +250,7 @@ class MessageSummaryPart
 						message.getProcessedTime (),
 						() ->
 							userConsoleLogic.timestampWithTimezoneString (
+								transaction,
 								message.getProcessedTime ())));
 
 				htmlTableDetailsRowWriteRaw (
@@ -242,7 +258,7 @@ class MessageSummaryPart
 					() -> ifNotNullThenElse (
 						message.getCommand (),
 						() -> objectManager.writeTdForObjectMiniLink (
-							taskLogger,
+							transaction,
 							message.getCommand ()),
 						() -> htmlTableCellWrite (
 							"—")));
@@ -252,6 +268,7 @@ class MessageSummaryPart
 				htmlTableDetailsRowWrite (
 					"Time created",
 					userConsoleLogic.timestampWithTimezoneString (
+						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableDetailsRowWrite (
@@ -260,6 +277,7 @@ class MessageSummaryPart
 						message.getProcessedTime (),
 						() ->
 							userConsoleLogic.timestampWithTimezoneString (
+								transaction,
 								message.getProcessedTime ())));
 
 				htmlTableDetailsRowWrite (
@@ -268,6 +286,7 @@ class MessageSummaryPart
 						message.getNetworkTime (),
 						() ->
 							userConsoleLogic.timestampWithTimezoneString (
+								transaction,
 								message.getNetworkTime ())));
 
 			}
@@ -326,7 +345,7 @@ class MessageSummaryPart
 									integerToDecimalString (
 										mediaIndex)),
 								() -> mediaConsoleLogic.writeMediaThumb100 (
-									taskLogger,
+									transaction,
 									media));
 
 							formatWriter.writeLineFormatDecreaseIndent (
@@ -361,7 +380,7 @@ class MessageSummaryPart
 				() -> ifNotNullThenElse (
 					message.getUser (),
 					() -> objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getUser ()),
 					() -> htmlTableCellWrite ("—")));
 
@@ -370,7 +389,7 @@ class MessageSummaryPart
 				() -> ifNotNullThenElse (
 					message.getDeliveryType (),
 					() -> objectManager.writeTdForObjectMiniLink (
-						taskLogger,
+						transaction,
 						message.getDeliveryType ()),
 					() -> htmlTableCellWrite ("—")));
 

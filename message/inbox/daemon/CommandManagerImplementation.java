@@ -18,7 +18,10 @@ import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.manager.ComponentManager;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.exception.logic.ExceptionLogLogic;
@@ -129,7 +132,7 @@ class CommandManagerImplementation
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"getHandler");
@@ -164,7 +167,7 @@ class CommandManagerImplementation
 	@Override
 	public
 	InboxAttemptRec handle (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull InboxRec inbox,
 			@NonNull CommandRec command,
 			@NonNull Optional<Long> ref,
@@ -172,15 +175,15 @@ class CommandManagerImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"handle");
 
 		) {
 
 			return getHandler (
-				taskLogger,
+				transaction,
 				command.getCommandType ())
 
 				.inbox (
@@ -196,7 +199,7 @@ class CommandManagerImplementation
 					rest)
 
 				.handle (
-					taskLogger);
+					transaction);
 
 		}
 

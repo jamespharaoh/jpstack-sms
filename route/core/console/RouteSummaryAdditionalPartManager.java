@@ -1,20 +1,21 @@
 package wbs.sms.route.core.console;
 
-import static wbs.utils.string.StringUtils.stringFormat;
-
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import lombok.extern.log4j.Log4j;
+import lombok.NonNull;
 
 import wbs.console.part.PagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
-@Log4j
 @SingletonComponent ("routeSummaryAdditionalPartManager")
 public
 class RouteSummaryAdditionalPartManager {
@@ -24,6 +25,9 @@ class RouteSummaryAdditionalPartManager {
 	@SingletonDependency
 	Map <String, RouteSummaryAdditionalPartFactory> factories;
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	// state
 
 	Map <String, RouteSummaryAdditionalPartFactory> factoriesBySenderCode;
@@ -32,56 +36,58 @@ class RouteSummaryAdditionalPartManager {
 
 	@NormalLifecycleSetup
 	public
-	void afterPropertiesSet () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		log.debug (
-			stringFormat (
-				"searching for factories"));
+		try (
 
-		ImmutableMap.Builder <String, RouteSummaryAdditionalPartFactory>
-		factoriesBySenderCodeBuilder =
-			ImmutableMap.builder ();
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
 
-		for (
-			Map.Entry <String, RouteSummaryAdditionalPartFactory> entry
-				: factories.entrySet ()
 		) {
 
-			String factoryName =
-				entry.getKey ();
-
-			RouteSummaryAdditionalPartFactory factory =
-				entry.getValue ();
-
-			log.debug (
-				stringFormat (
-					"got factory \"%s\"",
-					factoryName));
+			ImmutableMap.Builder <String, RouteSummaryAdditionalPartFactory>
+				factoriesBySenderCodeBuilder =
+					ImmutableMap.builder ();
 
 			for (
-				String senderCode
-					: factory.getSenderCodes ()
+				Map.Entry <String, RouteSummaryAdditionalPartFactory> entry
+					: factories.entrySet ()
 			) {
 
-				log.debug (
-					stringFormat (
-						"sender code \"%s\"",
-						senderCode));
+				String factoryName =
+					entry.getKey ();
 
-				factoriesBySenderCodeBuilder.put (
-					senderCode,
-					factory);
+				RouteSummaryAdditionalPartFactory factory =
+					entry.getValue ();
+
+				taskLogger.debugFormat (
+					"got factory \"%s\"",
+					factoryName);
+
+				for (
+					String senderCode
+						: factory.getSenderCodes ()
+				) {
+
+					taskLogger.debugFormat (
+						"sender code \"%s\"",
+						senderCode);
+
+					factoriesBySenderCodeBuilder.put (
+						senderCode,
+						factory);
+
+				}
 
 			}
 
+			factoriesBySenderCode =
+				factoriesBySenderCodeBuilder.build ();
+
 		}
-
-		factoriesBySenderCode =
-			factoriesBySenderCodeBuilder.build ();
-
-		log.debug (
-			stringFormat (
-				"done"));
 
 	}
 

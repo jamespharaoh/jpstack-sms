@@ -20,9 +20,9 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.model.MediaRec;
 
@@ -82,7 +82,7 @@ class MessageMediaContext
 	@Override
 	public
 	String localPathForStuff (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull ConsoleContextStuff contextStuff) {
 
 		return stringFormat (
@@ -116,15 +116,15 @@ class MessageMediaContext
 	@Override
 	public
 	void initContext (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull PathSupply pathParts,
 			@NonNull ConsoleContextStuff stuff) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"initContext");
 
 		) {
@@ -137,38 +137,27 @@ class MessageMediaContext
 				Integer.parseInt (
 					pathParts.next ());
 
-			try (
+			MessageRec message =
+				messageHelper.findRequired (
+					transaction,
+					messageId);
 
-				OwnedTransaction transaction =
-					database.beginReadOnly (
-						taskLogger,
-						"MessageMediaContext.initContext (pathParts, stuff)",
-						this);
-
-			) {
-
-				MessageRec message =
-					messageHelper.findRequired (
-						messageId);
-
-				MediaRec media =
-					message.getMedias ().get (
-						mediaIndex);
-
-				stuff.set (
-					"messageMediaIndex",
+			MediaRec media =
+				message.getMedias ().get (
 					mediaIndex);
 
-				stuff.set (
-					"mediaId",
-					media.getId ());
+			stuff.set (
+				"messageMediaIndex",
+				mediaIndex);
 
-				consoleManager.runPostProcessors (
-					taskLogger,
-					"message",
-					stuff);
+			stuff.set (
+				"mediaId",
+				media.getId ());
 
-			}
+			consoleManager.runPostProcessors (
+				transaction,
+				"message",
+				stuff);
 
 		}
 

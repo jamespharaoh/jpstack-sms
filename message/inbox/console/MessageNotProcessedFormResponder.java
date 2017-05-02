@@ -25,8 +25,9 @@ import wbs.console.responder.ConsoleHtmlResponder;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageRec;
@@ -54,10 +55,22 @@ class MessageNotProcessedFormResponder
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		message =
-			messageHelper.findFromContextRequired ();
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			message =
+				messageHelper.findFromContextRequired (
+					transaction);
+
+		}
 
 	}
 
@@ -80,19 +93,19 @@ class MessageNotProcessedFormResponder
 	@Override
 	protected
 	void renderHtmlHeadContents (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlHeadContents");
 
 		) {
 
 			super.renderHtmlHeadContents (
-				taskLogger);
+				transaction);
 
 			htmlScriptBlockOpen ();
 
@@ -117,78 +130,89 @@ class MessageNotProcessedFormResponder
 	@Override
 	public
 	void renderHtmlBodyContents (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		// heading
+		try (
 
-		htmlHeadingOneWrite (
-			"Message—not processed");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContents");
 
-		// table open
-
-		htmlTableOpenDetails ();
-
-		// id
-
-		htmlTableDetailsRowWrite (
-			"ID",
-			integerToDecimalString (
-				message.getId ()));
-
-		if (
-			enumNotEqualSafe (
-				message.getStatus (),
-				MessageStatus.notProcessed)
 		) {
 
-			// error
+			// heading
+
+			htmlHeadingOneWrite (
+				"Message—not processed");
+
+			// table open
+
+			htmlTableOpenDetails ();
+
+			// id
 
 			htmlTableDetailsRowWrite (
-				"Error",
-				"Message is not in correct state");
+				"ID",
+				integerToDecimalString (
+					message.getId ()));
 
-		} else {
+			if (
+				enumNotEqualSafe (
+					message.getStatus (),
+					MessageStatus.notProcessed)
+			) {
 
-			// actions
+				// error
 
-			htmlTableDetailsRowWriteHtml (
-				"Actions",
-				() -> {
+				htmlTableDetailsRowWrite (
+					"Error",
+					"Message is not in correct state");
 
-				htmlFormOpenPostAction (
-					requestContext.resolveLocalUrl (
-						"/message.notProcessed.form"));
+			} else {
 
-				formatWriter.writeLineFormat (
-					"<input",
-					" type=\"submit\"",
-					" name=\"process_again\"",
-					" value=\"process again\"",
-					">");
+				// actions
 
-				formatWriter.writeLineFormat (
-					"<input",
-					" type=\"submit\"",
-					" name=\"ignore\"",
-					" value=\"ignore\"",
-					">");
+				htmlTableDetailsRowWriteHtml (
+					"Actions",
+					() -> {
 
-				formatWriter.writeLineFormat (
-					"<input",
-					" type=\"submit\"",
-					" name=\"processed_manually\"",
-					" value=\"processed manually\"",
-					">");
+					htmlFormOpenPostAction (
+						requestContext.resolveLocalUrl (
+							"/message.notProcessed.form"));
 
-				htmlFormClose ();
+					formatWriter.writeLineFormat (
+						"<input",
+						" type=\"submit\"",
+						" name=\"process_again\"",
+						" value=\"process again\"",
+						">");
 
-			});
+					formatWriter.writeLineFormat (
+						"<input",
+						" type=\"submit\"",
+						" name=\"ignore\"",
+						" value=\"ignore\"",
+						">");
+
+					formatWriter.writeLineFormat (
+						"<input",
+						" type=\"submit\"",
+						" name=\"processed_manually\"",
+						" value=\"processed manually\"",
+						">");
+
+					htmlFormClose ();
+
+				});
+
+			}
+
+			// table close
+
+			htmlTableClose ();
 
 		}
-
-		// table close
-
-		htmlTableClose ();
 
 	}
 

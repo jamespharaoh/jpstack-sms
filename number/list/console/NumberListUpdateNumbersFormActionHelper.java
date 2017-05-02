@@ -10,11 +10,13 @@ import lombok.NonNull;
 
 import wbs.console.formaction.ConsoleFormActionHelper;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.OwnedTransaction;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.text.web.TextResponder;
 
@@ -29,6 +31,9 @@ class NumberListUpdateNumbersFormActionHelper
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	NumberListUpdateConsoleHelper numberListUpdateHelper;
 
@@ -42,37 +47,48 @@ class NumberListUpdateNumbersFormActionHelper
 	@Override
 	public
 	Optional <Responder> processFormSubmission (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull OwnedTransaction transaction,
+			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 
-		NumberListUpdateRec update =
-			numberListUpdateHelper.findFromContextRequired ();
+		try (
 
-		StringBuilder stringBuilder =
-			new StringBuilder ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"processFormSubmission");
 
-		update.getNumbers ().stream ().sorted ().forEach (
-			number -> {
+		) {
 
-			stringBuilder.append (
-				number.getNumber ());
+			NumberListUpdateRec update =
+				numberListUpdateHelper.findFromContextRequired (
+					transaction);
 
-			stringBuilder.append (
-				"\n");
+			StringBuilder stringBuilder =
+				new StringBuilder ();
 
-		});
+			update.getNumbers ().stream ().sorted ().forEach (
+				number -> {
 
-		return optionalOf (
-			textResponderProvider.get ()
+				stringBuilder.append (
+					number.getNumber ());
 
-			.filename (
-				"numbers.txt")
+				stringBuilder.append (
+					"\n");
 
-			.text (
-				stringBuilder.toString ())
+			});
 
-		);
+			return optionalOf (
+				textResponderProvider.get ()
+
+				.filename (
+					"numbers.txt")
+
+				.text (
+					stringBuilder.toString ())
+
+			);
+
+		}
 
 	}
 

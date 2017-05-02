@@ -2,17 +2,17 @@ package wbs.sms.number.core.model;
 
 import java.util.List;
 
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.Transaction;
 
 public
 interface NumberObjectHelperMethods {
 
 	NumberRec findOrCreate (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			String number);
 
 	List <NumberRec> findOrCreateMany (
-			TaskLogger parentTaskLogger,
+			Transaction parentTransaction,
 			List <String> numbers);
 
 }

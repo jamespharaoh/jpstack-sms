@@ -29,10 +29,10 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
@@ -95,34 +95,43 @@ class MessageOutboxOverviewPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		fields =
-			messageOutboxConsoleModule.formFieldSetRequired (
-				"routeOutboxSummary",
-				RouteOutboxSummaryRec.class);
+		try (
 
-		routeOutboxSummaries =
-			routeOutboxSummaryHelper.findAll ();
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
+
+		) {
+
+			fields =
+				messageOutboxConsoleModule.formFieldSetRequired (
+					"routeOutboxSummary",
+					RouteOutboxSummaryRec.class);
+
+			routeOutboxSummaries =
+				routeOutboxSummaryHelper.findAll (
+					transaction);
+
+		}
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			htmlTableOpenList ();
 

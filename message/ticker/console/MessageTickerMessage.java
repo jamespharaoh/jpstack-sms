@@ -3,11 +3,13 @@ package wbs.sms.message.ticker.console;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.Instant;
-
 import lombok.Getter;
 import lombok.experimental.Accessors;
+
+import org.joda.time.Instant;
+
 import wbs.framework.entity.record.GlobalId;
+
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageStatus;
 

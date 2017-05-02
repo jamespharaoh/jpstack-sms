@@ -15,7 +15,10 @@ import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.core.model.NumberRec;
@@ -47,12 +50,24 @@ class SmsTrackerManagerImplementation
 
 	@NormalLifecycleSetup
 	public
-	void afterPropertiesSet () {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		trackerHandlersByTypeCode =
-			mapWithDerivedKey (
-				trackerHandlersByName.values (),
-				SmsTrackerHandler::getTypeCode);
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
+		) {
+
+			trackerHandlersByTypeCode =
+				mapWithDerivedKey (
+					trackerHandlersByName.values (),
+					SmsTrackerHandler::getTypeCode);
+
+		}
 
 	}
 
@@ -61,16 +76,16 @@ class SmsTrackerManagerImplementation
 	@Override
 	public
 	boolean canSend (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsTrackerRec tracker,
 			@NonNull NumberRec number,
 			@NonNull Optional <Instant> timestamp) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"canSend");
 
 		) {
@@ -80,7 +95,7 @@ class SmsTrackerManagerImplementation
 					tracker.getSmsTrackerType ().getCode ());
 
 			return handler.canSend (
-				taskLogger,
+				transaction,
 				tracker,
 				number,
 				timestamp);

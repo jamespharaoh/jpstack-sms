@@ -19,21 +19,24 @@ import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleMetaModuleImplementation;
 import wbs.console.module.ConsoleModuleImplementation;
-import wbs.console.part.PagePart;
 import wbs.console.part.PagePartFactory;
 import wbs.console.responder.ConsoleFile;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.TabContextResponder;
 
 import wbs.framework.builder.Builder;
+import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
 import wbs.framework.builder.annotations.BuilderTarget;
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
 import wbs.framework.entity.record.Record;
+import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.core.console.CoreAuthAction;
@@ -46,12 +49,15 @@ import wbs.web.responder.Responder;
 public
 class ObjectSmsMessageSetPageBuilder <
 	ObjectType extends Record <ObjectType>
-> {
+> implements BuilderComponent {
 
 	// singleton dependencies
 
 	@SingletonDependency
 	ConsoleMetaManager consoleMetaManager;
+
+	@ClassSingletonDependency
+	LogContext logContext;
 
 	// prototype dependencies
 
@@ -114,10 +120,12 @@ class ObjectSmsMessageSetPageBuilder <
 
 	// build
 
+	@Override
 	@BuildMethod
 	public
 	void build (
-			@NonNull Builder builder) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Builder <TaskLogger> builder) {
 
 		setDefaults ();
 
@@ -175,12 +183,16 @@ class ObjectSmsMessageSetPageBuilder <
 			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
 		PagePartFactory partFactory =
-			new PagePartFactory () {
+			parentTransaction -> {
 
-			@Override
-			public
-			PagePart buildPagePart (
-					@NonNull TaskLogger parentTaskLogger) {
+			try (
+
+				NestedTransaction transaction =
+					parentTransaction.nestTransaction (
+						logContext,
+						"buildPagePart");
+
+			) {
 
 				return messageSetPartProvider.get ()
 

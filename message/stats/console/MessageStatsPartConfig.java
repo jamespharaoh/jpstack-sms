@@ -3,6 +3,7 @@ package wbs.sms.message.stats.console;
 import javax.inject.Provider;
 
 import wbs.console.part.PagePart;
+
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;

@@ -3,6 +3,7 @@ package wbs.sms.message.core.hibernate;
 import java.sql.Types;
 
 import wbs.framework.hibernate.EnumUserType;
+
 import wbs.sms.message.core.model.MessageStatus;
 
 public

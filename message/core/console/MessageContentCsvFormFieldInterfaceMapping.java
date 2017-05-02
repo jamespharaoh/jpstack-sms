@@ -14,8 +14,9 @@ import wbs.console.forms.FormFieldInterfaceMapping;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.message.core.model.MessageRec;
 
@@ -39,16 +40,16 @@ class MessageContentCsvFormFieldInterfaceMapping
 	@Override
 	public
 	Either <Optional <String>, String> genericToInterface (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec container,
 			@NonNull Map <String, Object> hints,
 			@NonNull Optional <MessageRec> genericValue) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"genericToInterface");
 
 		) {
@@ -57,6 +58,7 @@ class MessageContentCsvFormFieldInterfaceMapping
 				formatWriterConsumerToString (
 					formatWriter ->
 						messageConsoleLogic.writeMessageContentText (
+							transaction,
 							formatWriter,
 							container)));
 

@@ -18,8 +18,9 @@ import wbs.console.part.AbstractPagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -62,23 +63,24 @@ class NumberSubscriptionsPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"prepare");
 
 		) {
 
 			NumberRec number =
-				numberHelper.findFromContextRequired ();
+				numberHelper.findFromContextRequired (
+					transaction);
 
 			links =
 				numberLinkManager.findLinks (
-					taskLogger,
+					transaction,
 					number,
 					activeOnly);
 
@@ -89,13 +91,13 @@ class NumberSubscriptionsPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"renderHtmlBodyContent");
 
 		) {
@@ -171,7 +173,7 @@ class NumberSubscriptionsPart
 
 				if (
 					! link.canView (
-						taskLogger)
+						transaction)
 				) {
 					continue;
 				}
@@ -186,7 +188,7 @@ class NumberSubscriptionsPart
 				// write parent object cell
 
 				objectManager.writeTdForObjectLink (
-					taskLogger,
+					transaction,
 					formatWriter,
 					link.getParentObject ());
 
@@ -198,7 +200,7 @@ class NumberSubscriptionsPart
 				) {
 
 					objectManager.writeTdForObjectLink (
-						taskLogger,
+						transaction,
 						formatWriter,
 						link.getSubscriptionObject (),
 						link.getParentObject ());
@@ -215,6 +217,7 @@ class NumberSubscriptionsPart
 					ifNotNullThenElse (
 						link.getStartTime (),
 						() -> userConsoleLogic.timestampWithTimezoneString (
+							transaction,
 							link.getStartTime ()),
 						() -> "—"));
 
@@ -225,6 +228,7 @@ class NumberSubscriptionsPart
 						ifNotNullThenElse (
 							link.getEndTime (),
 							() -> userConsoleLogic.timestampWithTimezoneString (
+								transaction,
 								link.getEndTime ()),
 							() -> "—"));
 

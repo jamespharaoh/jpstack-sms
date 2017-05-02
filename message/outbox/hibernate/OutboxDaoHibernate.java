@@ -14,9 +14,13 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.scaffold.model.SliceRec;
 
@@ -31,312 +35,423 @@ class OutboxDaoHibernate
 	extends HibernateDao
 	implements OutboxDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
-	Long count () {
+	Long count (
+			@NonNull Transaction parentTransaction) {
 
-		return findOneOrNull (
-			"count ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				OutboxRec.class,
-				"_outbox")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"count");
 
-			.setProjection (
-				Projections.rowCount ())
+		) {
 
-		);
+			return findOneOrNull (
+				transaction,
+				Long.class,
+
+				createCriteria (
+					transaction,
+					OutboxRec.class,
+					"_outbox")
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	Long countOlderThan (
+			@NonNull Transaction parentTransaction,
 			@NonNull SliceRec slice,
 			@NonNull Instant instant) {
 
-		return findOneOrNull (
-			"count ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				OutboxRec.class,
-				"_outbox")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"countOlderThan");
 
-			.createAlias (
-				"_outbox.route",
-				"_route")
+		) {
 
-			.add (
-				Restrictions.eq (
-					"_route.slice",
-					slice))
+			return findOneOrNull (
+				transaction,
+				Long.class,
 
-			.add (
-				Restrictions.lt (
-					"_outbox.createdTime",
-					instant))
+				createCriteria (
+					transaction,
+					OutboxRec.class,
+					"_outbox")
 
-			.setProjection (
-				Projections.rowCount ())
+				.createAlias (
+					"_outbox.route",
+					"_route")
 
-		);
+				.add (
+					Restrictions.eq (
+						"_route.slice",
+						slice))
+
+				.add (
+					Restrictions.lt (
+						"_outbox.createdTime",
+						instant))
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	OutboxRec find (
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
-		return get (
-			OutboxRec.class,
-			message.getId ());
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"find");
+
+		) {
+
+			return get (
+				transaction,
+				OutboxRec.class,
+				message.getId ());
+
+		}
 
 	}
 
 	@Override
 	public
 	List <OutboxRec> findLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteRec route,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findLimit (route, maxResults)",
-			OutboxRec.class,
+		try (
 
-			createCriteria (
-				OutboxRec.class)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findLimit");
 
-			.add (
-				Restrictions.eq (
-					"route",
-					route))
+		) {
 
-			.addOrder (
-				Order.asc (
-					"id"))
+			return findMany (
+				transaction,
+				OutboxRec.class,
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+				createCriteria (
+					transaction,
+					OutboxRec.class)
 
-		);
+				.add (
+					Restrictions.eq (
+						"route",
+						route))
+
+				.addOrder (
+					Order.asc (
+						"id"))
+
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	OutboxRec findNext (
+			@NonNull Transaction parentTransaction,
 			@NonNull Instant now,
 			@NonNull RouteRec route) {
 
-		return findOneOrNull (
-			"findNext (now, route)",
-			OutboxRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findNext");
+
+		) {
+
+			return findOneOrNull (
+				transaction,
 				OutboxRec.class,
-				"_outbox")
 
-			.createAlias (
-				"_outbox.message",
-				"_message")
+				createCriteria (
+					transaction,
+					OutboxRec.class,
+					"_outbox")
 
-			.createAlias (
-				"_message.number",
-				"_number")
+				.createAlias (
+					"_outbox.message",
+					"_message")
 
-			.add (
-				Restrictions.le (
-					"_outbox.retryTime",
-					now))
+				.createAlias (
+					"_message.number",
+					"_number")
 
-			.add (
-				Restrictions.eq (
-					"_outbox.route",
-					route))
+				.add (
+					Restrictions.le (
+						"_outbox.retryTime",
+						now))
 
-			.add (
-				Restrictions.isNull (
-					"_outbox.sending"))
+				.add (
+					Restrictions.eq (
+						"_outbox.route",
+						route))
 
-			.add (
-				Restrictions.isNull (
-					"_number.archiveDate"))
+				.add (
+					Restrictions.isNull (
+						"_outbox.sending"))
 
-			.add (
-				Restrictions.or (
+				.add (
+					Restrictions.isNull (
+						"_number.archiveDate"))
 
-				Restrictions.isNull (
-					"_outbox.remainingTries"),
+				.add (
+					Restrictions.or (
 
-				Restrictions.gt (
-					"_outbox.remainingTries",
-					0l)
+					Restrictions.isNull (
+						"_outbox.remainingTries"),
 
-			))
+					Restrictions.gt (
+						"_outbox.remainingTries",
+						0l)
 
-			.addOrder (
-				Order.asc (
-					"_outbox.pri"))
+				))
 
-			.addOrder (
-				Order.asc (
-					"_outbox.retryTime"))
+				.addOrder (
+					Order.asc (
+						"_outbox.pri"))
 
-			.setMaxResults (
-				1)
+				.addOrder (
+					Order.asc (
+						"_outbox.retryTime"))
 
-		);
+				.setMaxResults (
+					1)
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
-	List<OutboxRec> findNextLimit (
+	List <OutboxRec> findNextLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull Instant now,
 			@NonNull RouteRec route,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findNextLimit (now, route, maxResults)",
-			OutboxRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findNextLimit");
+
+		) {
+
+			return findMany (
+				transaction,
 				OutboxRec.class,
-				"_outbox")
 
-			.createAlias (
-				"_outbox.message",
-				"_message")
+				createCriteria (
+					transaction,
+					OutboxRec.class,
+					"_outbox")
 
-			.createAlias (
-				"_message.number",
-				"_number")
+				.createAlias (
+					"_outbox.message",
+					"_message")
 
-			.add (
-				Restrictions.lt (
-					"_outbox.retryTime",
-					now))
+				.createAlias (
+					"_message.number",
+					"_number")
 
-			.add (
-				Restrictions.eq (
-					"_outbox.route",
-					route))
+				.add (
+					Restrictions.lt (
+						"_outbox.retryTime",
+						now))
 
-			.add (
-				Restrictions.isNull (
-					"_outbox.sending"))
+				.add (
+					Restrictions.eq (
+						"_outbox.route",
+						route))
 
-			.add (
-				Restrictions.isNull (
-					"_number.archiveDate"))
+				.add (
+					Restrictions.isNull (
+						"_outbox.sending"))
 
-			.add (
-				Restrictions.or (
+				.add (
+					Restrictions.isNull (
+						"_number.archiveDate"))
 
-				Restrictions.isNull (
-					"_outbox.remainingTries"),
+				.add (
+					Restrictions.or (
 
-				Restrictions.gt (
-					"_outbox.remainingTries",
-					0l)
+					Restrictions.isNull (
+						"_outbox.remainingTries"),
 
-			))
+					Restrictions.gt (
+						"_outbox.remainingTries",
+						0l)
 
-			.addOrder (
-				Order.asc (
-					"_outbox.pri"))
+				))
 
-			.addOrder (
-				Order.asc (
-					"_outbox.retryTime"))
+				.addOrder (
+					Order.asc (
+						"_outbox.pri"))
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+				.addOrder (
+					Order.asc (
+						"_outbox.retryTime"))
 
-		);
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	Map <Long, Long> generateRouteSummary (
+			@NonNull Transaction parentTransaction,
 			@NonNull Instant now) {
 
-		List <Object> list =
-			createQuery (
-				stringFormat (
-					"SELECT ",
-						"outbox.route.id, ",
-						"count (*) ",
-					"FROM OutboxRec outbox ",
-					"WHERE outbox.retryTime < :date ",
-					"AND (",
-						"outbox.remainingTries IS NULL ",
-						"OR outbox.remainingTries > 0",
-					") ",
-					"AND outbox.sending IS NULL ",
-					"GROUP BY outbox.route.id"))
+		try (
 
-			.setParameter (
-				"date",
-				now,
-				TimestampWithTimezoneUserType.INSTANCE)
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"generateRouteSummary");
 
-			.list ();
+		) {
 
-		return list.stream ()
+			List <Object> list =
+				createQuery (
+					transaction,
+					stringFormat (
+						"SELECT ",
+							"outbox.route.id, ",
+							"count (*) ",
+						"FROM OutboxRec outbox ",
+						"WHERE outbox.retryTime < :date ",
+						"AND (",
+							"outbox.remainingTries IS NULL ",
+							"OR outbox.remainingTries > 0",
+						") ",
+						"AND outbox.sending IS NULL ",
+						"GROUP BY outbox.route.id"))
 
-			.map (
-				row ->
-					(Object[])
-					row)
+				.setParameter (
+					"date",
+					now,
+					TimestampWithTimezoneUserType.INSTANCE)
 
-			.collect (
-				Collectors.toMap (
+				.list ();
+
+			return list.stream ()
+
+				.map (
 					row ->
-						(Long) row [0],
-					row ->
-						(Long) row [1]));
+						(Object[])
+						row)
+
+				.collect (
+					Collectors.toMap (
+						row ->
+							(Long) row [0],
+						row ->
+							(Long) row [1]));
+
+		}
 
 	}
 
 	@Override
 	public
 	List <OutboxRec> findSendingBeforeLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull Instant sendingBefore,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findSendingBeforeLimit (sendingBefore, maxResults)",
-			OutboxRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findSendingBeforeLimit");
+
+		) {
+
+			return findMany (
+				transaction,
 				OutboxRec.class,
-				"_outbox")
 
-			.add (
-				Restrictions.isNotNull (
-					"_outbox.sending"))
+				createCriteria (
+					transaction,
+					OutboxRec.class,
+					"_outbox")
 
-			.add (
-				Restrictions.lt (
-					"_outbox.sending",
-					sendingBefore))
+				.add (
+					Restrictions.isNotNull (
+						"_outbox.sending"))
 
-			.addOrder (
-				Order.asc (
-					"_outbox.sending"))
+				.add (
+					Restrictions.lt (
+						"_outbox.sending",
+						sendingBefore))
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+				.addOrder (
+					Order.asc (
+						"_outbox.sending"))
 
-		);
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 

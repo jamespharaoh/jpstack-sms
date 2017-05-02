@@ -32,10 +32,10 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.BorrowedTransaction;
 import wbs.framework.database.Database;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.model.TextObjectHelper;
 import wbs.platform.text.model.TextRec;
@@ -102,7 +102,7 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	MessageRec resendMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec originalMessage,
 			@NonNull RouteRec newRoute,
 			@NonNull Optional <TextRec> newTextOptional,
@@ -110,15 +110,12 @@ class SmsOutboxLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"resendMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			TextRec textRec =
 				optionalOr (
@@ -132,7 +129,7 @@ class SmsOutboxLogicImplementation
 
 			MessageRec message =
 				messageHelper.insert (
-					taskLogger,
+					transaction,
 					messageHelper.createInstance ()
 
 				.setThreadId (
@@ -203,7 +200,7 @@ class SmsOutboxLogicImplementation
 			);
 
 			outboxHelper.insert (
-				taskLogger,
+				transaction,
 				outboxHelper.createInstance ()
 
 				.setMessage (
@@ -230,20 +227,17 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void unholdMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"unholdMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			if (message.getStatus () != MessageStatus.held) {
 
@@ -256,12 +250,12 @@ class SmsOutboxLogicImplementation
 			}
 
 			messageLogic.messageStatus (
-				taskLogger,
+				transaction,
 				message,
 				MessageStatus.pending);
 
 			outboxHelper.insert (
-				taskLogger,
+				transaction,
 				outboxHelper.createInstance ()
 
 				.setMessage (
@@ -288,14 +282,14 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void cancelMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"cancelMessage");
 
 		) {
@@ -312,6 +306,7 @@ class SmsOutboxLogicImplementation
 
 				OutboxRec outbox =
 					outboxHelper.findRequired (
+						transaction,
 						message.getId ());
 
 				// check message is not being sent
@@ -326,13 +321,14 @@ class SmsOutboxLogicImplementation
 				// cancel message
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.cancelled);
 
 				// remove outbox
 
 				outboxHelper.remove (
+					transaction,
 					outbox);
 
 			} else if (
@@ -344,7 +340,7 @@ class SmsOutboxLogicImplementation
 				// cancel message
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.cancelled);
 
@@ -362,23 +358,21 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	OutboxRec claimNextMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteRec route) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"claimNextMessage");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			OutboxRec outbox =
 				outboxHelper.findNext (
+					transaction,
 					transaction.now (),
 					route);
 
@@ -404,24 +398,22 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	List <OutboxRec> claimNextMessages (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteRec route,
 			@NonNull Long limit) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"claimNextMessages");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			List <OutboxRec> outboxes =
 				outboxDao.findNextLimit (
+					transaction,
 					transaction.now (),
 					route,
 					limit);
@@ -456,16 +448,16 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void messageSuccess (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message,
 			@NonNull Optional <List <String>> otherIds,
 			@NonNull Optional <Long> simulateMultipart) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"messageSuccess");
 
 		) {
@@ -474,11 +466,9 @@ class SmsOutboxLogicImplementation
 				otherIds,
 				simulateMultipart);
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
 			OutboxRec outbox =
 				outboxHelper.findRequired (
+					transaction,
 					message.getId ());
 
 			// check message state
@@ -514,10 +504,11 @@ class SmsOutboxLogicImplementation
 			// remove the outbox and log success
 
 			outboxHelper.remove (
+				transaction,
 				outbox);
 
 			messageLogic.messageStatus (
-				taskLogger,
+				transaction,
 				message,
 				MessageStatus.sent);
 
@@ -549,7 +540,7 @@ class SmsOutboxLogicImplementation
 			) {
 
 				messageExpiryHelper.insert (
-					taskLogger,
+					transaction,
 					messageExpiryHelper.createInstance ()
 
 					.setMessage (
@@ -564,7 +555,7 @@ class SmsOutboxLogicImplementation
 
 			}
 
-			database.flush ();
+			transaction.flush ();
 
 			// create multipart companions from other ids
 
@@ -583,7 +574,7 @@ class SmsOutboxLogicImplementation
 
 					MessageRec companionMessage =
 						messageHelper.insert (
-							taskLogger,
+							transaction,
 							messageHelper.createInstance ()
 
 						.setThreadId (
@@ -594,7 +585,7 @@ class SmsOutboxLogicImplementation
 
 						.setText (
 							textHelper.findOrCreateFormat (
-								taskLogger,
+								transaction,
 								"[multipart companion for %s]",
 								integerToDecimalString (
 									message.getId ())))
@@ -650,7 +641,7 @@ class SmsOutboxLogicImplementation
 					);
 
 					smsOutboxMultipartLinkHelper.insert (
-						taskLogger,
+						transaction,
 						smsOutboxMultipartLinkHelper.createInstance ()
 
 						.setMessage (
@@ -685,7 +676,7 @@ class SmsOutboxLogicImplementation
 
 					MessageRec companionMessage =
 						messageHelper.insert (
-							taskLogger,
+							transaction,
 							messageHelper.createInstance ()
 
 						.setThreadId (
@@ -693,7 +684,7 @@ class SmsOutboxLogicImplementation
 
 						.setText (
 							textHelper.findOrCreateFormat (
-								taskLogger,
+								transaction,
 								"[multipart companion for %s]",
 								integerToDecimalString (
 									message.getId ())))
@@ -749,7 +740,7 @@ class SmsOutboxLogicImplementation
 					);
 
 					smsOutboxMultipartLinkHelper.insert (
-						taskLogger,
+						transaction,
 						smsOutboxMultipartLinkHelper.createInstance ()
 
 						.setMessage (
@@ -774,30 +765,28 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void messageFailure (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message,
 			@NonNull String error,
 			@NonNull FailureType failureType) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"messageFailure");
 
 		) {
 
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
-
-			taskLogger.debugFormat (
+			transaction.debugFormat (
 				"outbox failure id = %s",
 				integerToDecimalString (
 					message.getId ()));
 
 			OutboxRec outbox =
 				outboxHelper.findRequired (
+					transaction,
 					message.getId ());
 
 			if (
@@ -822,10 +811,11 @@ class SmsOutboxLogicImplementation
 			if (failureType == FailureType.permanent) {
 
 				outboxHelper.remove (
+					transaction,
 					outbox);
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.failed);
 
@@ -835,7 +825,7 @@ class SmsOutboxLogicImplementation
 						transaction.now ());
 
 				failedMessageHelper.insert (
-					taskLogger,
+					transaction,
 					failedMessageHelper.createInstance ()
 
 					.setMessage (
@@ -876,20 +866,17 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void retryMessage (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull MessageRec message) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"retryMessage");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			if (
 				enumNotEqualSafe (
@@ -908,7 +895,7 @@ class SmsOutboxLogicImplementation
 			) {
 
 				outboxHelper.insert (
-					taskLogger,
+					transaction,
 					outboxHelper.createInstance ()
 
 					.setMessage (
@@ -929,7 +916,7 @@ class SmsOutboxLogicImplementation
 				);
 
 				messageLogic.messageStatus (
-					taskLogger,
+					transaction,
 					message,
 					MessageStatus.pending);
 
@@ -941,6 +928,7 @@ class SmsOutboxLogicImplementation
 
 				OutboxRec existingOutbox =
 					outboxHelper.find (
+						transaction,
 						message);
 
 				existingOutbox
@@ -970,28 +958,25 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	SmsOutboxAttemptRec beginSendAttempt (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull OutboxRec smsOutbox,
 			@NonNull Optional<byte[]> requestTrace) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"beginSendAttempt");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			MessageRec smsMessage =
 				smsOutbox.getMessage ();
 
 			SmsOutboxAttemptRec smsOutboxAttempt =
 				smsOutboxAttemptHelper.insert (
-					taskLogger,
+					transaction,
 					smsOutboxAttemptHelper.createInstance ()
 
 				.setMessage (
@@ -1032,7 +1017,7 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void completeSendAttemptSuccess (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
 			@NonNull Optional <List <String>> otherIds,
 			@NonNull Optional <Long> simulateMultipart,
@@ -1041,9 +1026,9 @@ class SmsOutboxLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"completeSendAttemptSuccess");
 
 		) {
@@ -1053,9 +1038,6 @@ class SmsOutboxLogicImplementation
 				simulateMultipart);
 
 			// create sms outbox attempt
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			MessageRec smsMessage =
 				smsOutboxAttempt.getMessage ();
@@ -1081,7 +1063,7 @@ class SmsOutboxLogicImplementation
 						responseTrace));
 
 			messageSuccess (
-				taskLogger,
+				transaction,
 				smsMessage,
 				otherIds,
 				simulateMultipart);
@@ -1093,7 +1075,7 @@ class SmsOutboxLogicImplementation
 	@Override
 	public
 	void completeSendAttemptFailure (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsOutboxAttemptRec smsOutboxAttempt,
 			@NonNull FailureType failureType,
 			@NonNull String errorMessage,
@@ -1103,15 +1085,12 @@ class SmsOutboxLogicImplementation
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"completeSendAttemptFailure");
 
 		) {
-
-			BorrowedTransaction transaction =
-				database.currentTransaction ();
 
 			MessageRec smsMessage =
 				smsOutboxAttempt.getMessage ();
@@ -1139,7 +1118,7 @@ class SmsOutboxLogicImplementation
 					errorTrace.orNull ());
 
 			messageFailure (
-				taskLogger,
+				transaction,
 				smsMessage,
 				errorMessage,
 				failureType);

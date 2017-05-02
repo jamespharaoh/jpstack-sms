@@ -21,9 +21,10 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.scaffold.console.SliceConsoleHelper;
 import wbs.platform.scaffold.model.SliceRec;
@@ -77,7 +78,7 @@ class MessageStatusLine
 	@Override
 	public
 	PagePart createPagePart (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
 		return messageStatusLinePartProvider.get ();
 
@@ -86,14 +87,14 @@ class MessageStatusLine
 	@Override
 	public
 	Future <JsonObject> getUpdateData (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull UserPrivChecker privChecker) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"getUpdateData");
 
 		) {
@@ -104,13 +105,13 @@ class MessageStatusLine
 			jsonObject.addProperty (
 				"inbox",
 				countInboxes (
-					taskLogger,
+					transaction,
 					privChecker));
 
 			jsonObject.addProperty (
 				"outbox",
 				countOutboxes (
-					taskLogger,
+					transaction,
 					privChecker));
 
 			return futureValue (
@@ -124,14 +125,14 @@ class MessageStatusLine
 
 	private synchronized
 	long countInboxes (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull UserPrivChecker privChecker) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"countInboxes");
 
 		) {
@@ -142,18 +143,19 @@ class MessageStatusLine
 
 			for (
 				SliceRec slice
-					: sliceHelper.findAll ()
+					: sliceHelper.findAll (
+						transaction)
 			) {
 
 				if (
 
 					privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						GlobalId.root,
 						"inbox_view")
 
 					|| privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						slice,
 						"sms_inbox_view")
 
@@ -172,7 +174,7 @@ class MessageStatusLine
 
 					numInbox +=
 						numInboxCache.get (
-							taskLogger);
+							transaction);
 
 				}
 
@@ -186,14 +188,14 @@ class MessageStatusLine
 
 	private synchronized
 	long countOutboxes (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull UserPrivChecker privChecker) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"countOutboxes");
 
 		) {
@@ -204,18 +206,19 @@ class MessageStatusLine
 
 			for (
 				SliceRec slice
-					: sliceHelper.findAll ()
+					: sliceHelper.findAll (
+						transaction)
 			) {
 
 				if (
 
 					privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						GlobalId.root,
 						"inbox_view")
 
 					|| privChecker.canRecursive (
-						taskLogger,
+						transaction,
 						slice,
 						"sms_outbox_view")
 
@@ -234,7 +237,7 @@ class MessageStatusLine
 
 					numOutbox +=
 						numOutboxCache.get (
-							taskLogger);
+							transaction);
 
 				}
 

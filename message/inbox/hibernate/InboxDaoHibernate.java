@@ -11,8 +11,12 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.Instant;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.logging.LogContext;
 
 import wbs.platform.scaffold.model.SliceRec;
 
@@ -27,176 +31,248 @@ class InboxDaoHibernate
 	extends HibernateDao
 	implements InboxDao {
 
+	// singleton dependencies
+
+	@ClassSingletonDependency
+	LogContext logContext;
+
+	// implementation
+
 	@Override
 	public
-	Long countPending () {
+	Long countPending (
+			@NonNull Transaction parentTransaction) {
 
-		return findOneOrNull (
-			"countPending ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				InboxRec.class,
-				"_inbox")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"countPending");
 
-			.add (
-				Restrictions.eq (
-					"_inbox.state",
-					InboxState.pending))
+		) {
 
-			.setProjection (
-				Projections.rowCount ())
+			return findOneOrNull (
+				transaction,
+				Long.class,
 
-		);
+				createCriteria (
+					transaction,
+					InboxRec.class,
+					"_inbox")
+
+				.add (
+					Restrictions.eq (
+						"_inbox.state",
+						InboxState.pending))
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	Long countPendingOlderThan (
+			@NonNull Transaction parentTransaction,
 			@NonNull SliceRec slice,
 			@NonNull Instant instant) {
 
-		return findOneOrNull (
-			"countPending ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				InboxRec.class,
-				"_inbox")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"countPendingOlderThan");
 
-			.createAlias (
-				"_inbox.route",
-				"_route")
+		) {
 
-			.add (
-				Restrictions.eq (
-					"_route.slice",
-					slice))
+			return findOneOrNull (
+				transaction,
+				Long.class,
 
-			.add (
-				Restrictions.eq (
-					"_inbox.state",
-					InboxState.pending))
+				createCriteria (
+					transaction,
+					InboxRec.class,
+					"_inbox")
 
-			.add (
-				Restrictions.lt (
-					"_inbox.createdTime",
-					instant))
+				.createAlias (
+					"_inbox.route",
+					"_route")
 
-			.setProjection (
-				Projections.rowCount ())
+				.add (
+					Restrictions.eq (
+						"_route.slice",
+						slice))
 
-		);
+				.add (
+					Restrictions.eq (
+						"_inbox.state",
+						InboxState.pending))
+
+				.add (
+					Restrictions.lt (
+						"_inbox.createdTime",
+						instant))
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	Long countPendingOlderThan (
+			@NonNull Transaction parentTransaction,
 			@NonNull RouteRec route,
 			@NonNull Instant instant) {
 
-		return findOneOrNull (
-			"countPending ()",
-			Long.class,
+		try (
 
-			createCriteria (
-				InboxRec.class,
-				"_inbox")
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"countPendingOlderThan");
 
-			.add (
-				Restrictions.eq (
-					"_inbox.route",
-					route))
+		) {
 
-			.add (
-				Restrictions.sqlRestriction (
-					"{alias}.\"state\" = 'pending'::inbox_state"))
+			return findOneOrNull (
+				transaction,
+				Long.class,
 
-			.add (
-				Restrictions.lt (
-					"_inbox.createdTime",
-					instant))
+				createCriteria (
+					transaction,
+					InboxRec.class,
+					"_inbox")
 
-			.setProjection (
-				Projections.rowCount ())
+				.add (
+					Restrictions.eq (
+						"_inbox.route",
+						route))
 
-		);
+				.add (
+					Restrictions.sqlRestriction (
+						"{alias}.\"state\" = 'pending'::inbox_state"))
+
+				.add (
+					Restrictions.lt (
+						"_inbox.createdTime",
+						instant))
+
+				.setProjection (
+					Projections.rowCount ())
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <InboxRec> findPendingLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull Instant now,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findPendingLimit (now, maxResults)",
-			InboxRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findPendingLimit");
+
+		) {
+
+			return findMany (
+				transaction,
 				InboxRec.class,
-				"_inbox")
 
-			.add (
-				Restrictions.eq (
-					"_inbox.state",
-					InboxState.pending))
+				createCriteria (
+					transaction,
+					InboxRec.class,
+					"_inbox")
 
-			.add (
-				Restrictions.le (
-					"_inbox.nextAttempt",
-					now))
+				.add (
+					Restrictions.eq (
+						"_inbox.state",
+						InboxState.pending))
 
-			.addOrder (
-				Order.asc (
-					"_inbox.nextAttempt"))
+				.add (
+					Restrictions.le (
+						"_inbox.nextAttempt",
+						now))
 
-			.addOrder (
-				Order.asc (
-					"_inbox.id"))
+				.addOrder (
+					Order.asc (
+						"_inbox.nextAttempt"))
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+				.addOrder (
+					Order.asc (
+						"_inbox.id"))
 
-		);
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 
 	@Override
 	public
 	List <InboxRec> findPendingLimit (
+			@NonNull Transaction parentTransaction,
 			@NonNull Long maxResults) {
 
-		return findMany (
-			"findPendingLimit (maxResults)",
-			InboxRec.class,
+		try (
 
-			createCriteria (
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"findPendingLimit");
+
+		) {
+
+			return findMany (
+				transaction,
 				InboxRec.class,
-				"_inbox")
 
-			.add (
-				Restrictions.eq (
-					"_inbox.state",
-					InboxState.pending))
+				createCriteria (
+					transaction,
+					InboxRec.class,
+					"_inbox")
 
-			.addOrder (
-				Order.desc (
-					"_inbox.createdTime"))
+				.add (
+					Restrictions.eq (
+						"_inbox.state",
+						InboxState.pending))
 
-			.addOrder (
-				Order.desc (
-					"_inbox.id"))
+				.addOrder (
+					Order.desc (
+						"_inbox.createdTime"))
 
-			.setMaxResults (
-				toJavaIntegerRequired (
-					maxResults))
+				.addOrder (
+					Order.desc (
+						"_inbox.id"))
 
-		);
+				.setMaxResults (
+					toJavaIntegerRequired (
+						maxResults))
+
+			);
+
+		}
 
 	}
 

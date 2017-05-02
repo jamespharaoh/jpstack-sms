@@ -18,6 +18,7 @@ import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.affiliate.model.AffiliateObjectHelper;
@@ -94,23 +95,18 @@ class LocatorManager {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"setup");
-
 			OwnedTransaction transaction =
 				database.beginReadOnly (
-					taskLogger,
-					"LocatorManager.afterPropertiesSet ()",
-					this);
+					logContext,
+					parentTaskLogger,
+					"setup");
 
 		) {
 
 			// index locators by type
 
 			for (
-				Map.Entry<String,Locator> locatorEntry
+				Map.Entry <String, Locator> locatorEntry
 					: locatorFactoriesByBeanName.entrySet ()
 			) {
 
@@ -136,11 +132,13 @@ class LocatorManager {
 
 					ObjectTypeRec parentType =
 						objectTypeHelper.findByCodeRequired (
+							transaction,
 							GlobalId.root,
 							parentTypeCode);
 
 					LocatorTypeRec locatorType =
 						locatorTypeHelper.findByCodeRequired (
+							transaction,
 							parentType,
 							locatorTypeCode);
 
@@ -174,21 +172,17 @@ class LocatorManager {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"logSuccess");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"LocatorManager.logSuccess (locatorLogId, longLat)",
-					this);
+					logContext,
+					parentTaskLogger,
+					"logSuccess");
 
 		) {
 
 			LocatorLogRec locatorLog =
 				locatorLogHelper.findRequired (
+					transaction,
 					locatorLogId);
 
 			locatorLog
@@ -217,21 +211,17 @@ class LocatorManager {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"logFailure");
-
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"LocatorManager.logFailure (locatorLogId, error, errorCode)",
-					this);
+					logContext,
+					parentTaskLogger,
+					"logFailure");
 
 		) {
 
 			LocatorLogRec locatorLog =
 				locatorLogHelper.findRequired (
+					transaction,
 					locatorLogId);
 
 			locatorLog
@@ -241,7 +231,7 @@ class LocatorManager {
 
 				.setErrorText (
 					textHelper.findOrCreate (
-						taskLogger,
+						transaction,
 						error))
 
 				.setErrorCode (
@@ -261,51 +251,45 @@ class LocatorManager {
 			@NonNull Long serviceId,
 			@NonNull Long affiliateId) {
 
-		TaskLogger taskLogger =
-			logContext.nestTaskLogger (
-				parentTaskLogger,
-				"locate");
-
-		Long locatorTypeId;
-		Long locatorLogId;
-
-		String numberString;
-
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadWrite (
-					taskLogger,
-					"LocatorManager.locate (...)",
-					this);
+					logContext,
+					parentTaskLogger,
+					"locate");
 
 		) {
 
 			LocatorRec locatorRec =
 				locatorHelper.findRequired (
+					transaction,
 					locatorId);
 
 			NumberRec number =
 				numberHelper.findRequired (
+					transaction,
 					numberId);
 
 			ServiceRec service =
 				serviceHelper.findRequired (
+					transaction,
 					serviceId);
 
 			AffiliateRec affiliate =
 				affiliateHelper.findRequired (
+					transaction,
 					affiliateId);
 
-			locatorTypeId =
+			Long locatorTypeId =
 				locatorRec.getLocatorType ().getId ();
 
-			numberString =
+			String numberString =
 				number.getNumber ();
 
 			LocatorLogRec locatorLog =
 				locatorLogHelper.insert (
-					taskLogger,
+					transaction,
 					locatorLogHelper.createInstance ()
 
 				.setLocator (
@@ -325,7 +309,7 @@ class LocatorManager {
 
 			);
 
-			locatorLogId =
+			Long locatorLogId =
 				locatorLog.getId ();
 
 			transaction.commit ();
@@ -348,12 +332,12 @@ class LocatorManager {
 
 				LongLat longLat =
 					locator.lookup (
-						taskLogger,
+						transaction,
 						locatorId,
 						numberString);
 
 				logSuccess (
-					taskLogger,
+					transaction,
 					locatorLogId,
 					longLat);
 
@@ -362,7 +346,7 @@ class LocatorManager {
 			} catch (LocatorException exception) {
 
 				logFailure (
-					taskLogger,
+					transaction,
 					locatorLogId,
 					exception.getMessage (),
 					exception.getErrorCode ());
@@ -373,7 +357,7 @@ class LocatorManager {
 			} catch (RuntimeException exception) {
 
 				logFailure (
-					taskLogger,
+					transaction,
 					locatorLogId,
 					exception.getMessage (),
 					null);
@@ -384,7 +368,7 @@ class LocatorManager {
 			} catch (Error exception) {
 
 				logFailure (
-					taskLogger,
+					transaction,
 					locatorLogId,
 					exception.getMessage (),
 					null);
@@ -443,7 +427,7 @@ class LocatorManager {
 
 		try (
 
-			TaskLogger taskLogger =
+			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
 					"locate");

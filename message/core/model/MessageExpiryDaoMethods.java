@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import wbs.framework.database.Transaction;
+
 public
 interface MessageExpiryDaoMethods {
 
-	List<MessageExpiryRec> findPendingLimit (
+	List <MessageExpiryRec> findPendingLimit (
+			Transaction parentTransaction,
 			Instant now,
-			int maxResults);
+			Long maxResults);
 
 }

@@ -42,9 +42,12 @@ import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
 
+import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.logging.TaskLogger;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
+import wbs.framework.logging.LogContext;
 
 import wbs.sms.messageset.model.MessageSetMessageRec;
 import wbs.sms.messageset.model.MessageSetRec;
@@ -59,6 +62,9 @@ class MessageSetPart
 
 	// singleton dependencies
 
+	@ClassSingletonDependency
+	LogContext logContext;
+
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
 
@@ -72,7 +78,7 @@ class MessageSetPart
 	Map <String,String> formData;
 	int numMessages;
 
-	Collection<RouteRec> routes;
+	Collection <RouteRec> routes;
 
 	// implementation
 
@@ -172,23 +178,36 @@ class MessageSetPart
 	@Override
 	public
 	void prepare (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		MessageSetRec messageSet =
-			messageSetFinder.findMessageSet (
-				requestContext);
+		try (
 
-		prepareFormData (
-			messageSet);
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"prepare");
 
-		List<RouteRec> routeList =
-			routeHelper.findAll ();
+		) {
 
-		Collections.sort (
-			routeList);
+			MessageSetRec messageSet =
+				messageSetFinder.findMessageSet (
+					transaction,
+					requestContext);
 
-		routes =
-			routeList;
+			prepareFormData (
+				messageSet);
+
+			List<RouteRec> routeList =
+				routeHelper.findAll (
+					transaction);
+
+			Collections.sort (
+				routeList);
+
+			routes =
+				routeList;
+
+		}
 
 	}
 
@@ -347,65 +366,76 @@ class MessageSetPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull Transaction parentTransaction) {
 
-		htmlFormOpenPost ();
+		try (
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"hidden\"",
-			" name=\"num_messages\"",
-			" value=\"%h\"",
-			formData.get (
-				"num_messages"),
-			">");
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlBodyContent");
 
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"save changes\"",
-			">");
-
-		htmlTableOpenList ();
-
-		htmlTableHeaderRowWrite (
-			"",
-			"i",
-			"Route",
-			"Number",
-			"Chars");
-
-		for (
-			int index = 0;
-			index < numMessages;
-			index ++
 		) {
 
-			htmlTableRowSeparatorWrite ();
+			htmlFormOpenPost ();
 
-			goRow (
-				index);
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"hidden\"",
+				" name=\"num_messages\"",
+				" value=\"%h\"",
+				formData.get (
+					"num_messages"),
+				">");
+
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"save changes\"",
+				">");
+
+			htmlTableOpenList ();
+
+			htmlTableHeaderRowWrite (
+				"",
+				"i",
+				"Route",
+				"Number",
+				"Chars");
+
+			for (
+				int index = 0;
+				index < numMessages;
+				index ++
+			) {
+
+				htmlTableRowSeparatorWrite ();
+
+				goRow (
+					index);
+
+			}
+
+			htmlTableClose ();
+
+			htmlParagraphOpen ();
+
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"submit\"",
+				" value=\"save changes\"",
+				">");
+
+			htmlParagraphClose ();
+
+			htmlFormClose ();
+
+			htmlFormClose ();
+
+			htmlScriptBlockWrite (
+				"form_magic ()");
 
 		}
-
-		htmlTableClose ();
-
-		htmlParagraphOpen ();
-
-		formatWriter.writeLineFormat (
-			"<input",
-			" type=\"submit\"",
-			" value=\"save changes\"",
-			">");
-
-		htmlParagraphClose ();
-
-		htmlFormClose ();
-
-		htmlFormClose ();
-
-		htmlScriptBlockWrite (
-			"form_magic ()");
 
 	}
 

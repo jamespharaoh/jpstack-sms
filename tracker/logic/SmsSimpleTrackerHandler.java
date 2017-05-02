@@ -9,8 +9,9 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
-import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.core.model.NumberRec;
 import wbs.sms.tracker.model.SmsSimpleTrackerObjectHelper;
@@ -46,26 +47,27 @@ class SmsSimpleTrackerHandler
 	@Override
 	public
 	boolean canSend (
-			@NonNull TaskLogger parentTaskLogger,
+			@NonNull Transaction parentTransaction,
 			@NonNull SmsTrackerRec tracker,
 			@NonNull NumberRec number,
 			@NonNull Optional<Instant> timestamp) {
 
 		try (
 
-			TaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
 					"canSend");
 
 		) {
 
 			SmsSimpleTrackerRec simpleTracker =
 				smsSimpleTrackerHelper.findRequired (
+					transaction,
 					tracker.getParentId ());
 
 			return smsTrackerLogic.simpleTrackerConsult (
-				taskLogger,
+				transaction,
 				simpleTracker,
 				number,
 				timestamp);
