@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -41,11 +43,15 @@ import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
@@ -78,6 +84,11 @@ class ObjectSmsMessagesPart
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
+	// prototype dependencies
+
+	@PrototypeDependency
+	Provider <TabList> tabListProvider;
+
 	// properties
 
 	@Getter @Setter
@@ -91,9 +102,71 @@ class ObjectSmsMessagesPart
 	TabList.Prepared viewTabsPrepared;
 
 	ViewMode viewMode;
+
 	ObsoleteDateField dateField;
 
 	List <MessageRec> messages;
+
+	ViewMode defaultViewMode;
+
+	Map <String, ViewMode> viewModesByName =
+		new HashMap<> ();
+
+	TabList viewTabs;
+
+	// life cycle
+
+	@NormalLifecycleSetup
+	public
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
+
+		) {
+
+			viewTabs =
+				tabListProvider.get ();
+
+			defaultViewMode =
+				addViewMode (
+					"all",
+					"All",
+					MessageSource.ViewMode.all);
+
+			addViewMode (
+				"in",
+				"In",
+				MessageSource.ViewMode.in);
+
+			addViewMode (
+				"out",
+				"Out",
+				MessageSource.ViewMode.out);
+
+			addViewMode (
+				"unknown",
+				"Unknown",
+				MessageSource.ViewMode.sent);
+
+			addViewMode (
+				"success",
+				"Success",
+				MessageSource.ViewMode.delivered);
+
+			addViewMode (
+				"failed",
+				"Failed",
+				MessageSource.ViewMode.undelivered);
+
+		}
+
+	}
 
 	// implementation
 
@@ -122,8 +195,12 @@ class ObjectSmsMessagesPart
 					requestContext.parameterOrNull (
 						"view"));
 
-			if (viewMode == null)
-				viewMode = defaultViewMode;
+			if (viewMode == null) {
+
+				viewMode =
+					defaultViewMode;
+
+			}
 
 			viewTabsPrepared =
 				viewTabs.prepare (
@@ -138,8 +215,12 @@ class ObjectSmsMessagesPart
 						"date"));
 
 			if (dateField.date == null) {
-				requestContext.addError ("Invalid date");
+
+				requestContext.addError (
+					"Invalid date");
+
 				return;
+
 			}
 
 			requestContext.request (
@@ -157,8 +238,6 @@ class ObjectSmsMessagesPart
 		}
 
 	}
-
-	// =============================================================== body
 
 	@Override
 	public
@@ -372,6 +451,39 @@ class ObjectSmsMessagesPart
 
 	}
 
+	// private implementation
+
+	private
+	ViewMode addViewMode (
+			@NonNull String name,
+			@NonNull String label,
+			@NonNull MessageSource.ViewMode viewMode) {
+
+		ViewTab viewTab =
+			new ViewTab (
+				label,
+				name);
+
+		viewTabs.add (
+			viewTab);
+
+		ViewMode newViewMode =
+			new ViewMode (
+				name,
+				label,
+				viewMode,
+				viewTab);
+
+		viewModesByName.put (
+			name,
+			newViewMode);
+
+		return newViewMode;
+
+	}
+
+	// view tab
+
 	private
 	class ViewTab
 		extends Tab {
@@ -411,6 +523,8 @@ class ObjectSmsMessagesPart
 
 	}
 
+	// view mode
+
 	private static
 	class ViewMode {
 
@@ -437,72 +551,6 @@ class ObjectSmsMessagesPart
 			viewTab = newViewTab;
 
 		}
-
-	}
-
-	private final
-	ViewMode defaultViewMode;
-
-	private final
-	Map<String,ViewMode> viewModesByName =
-		new HashMap<String,ViewMode> ();
-
-	private final
-	TabList viewTabs =
-		new TabList ();;
-
-	private
-	ViewMode addViewMode (
-			String name,
-			String label,
-			MessageSource.ViewMode viewMode) {
-
-		ViewTab viewTab =
-			new ViewTab (label, name);
-
-		viewTabs.add (viewTab);
-
-		ViewMode newViewMode =
-			new ViewMode (name, label, viewMode, viewTab);
-
-		viewModesByName.put (name, newViewMode);
-
-		return newViewMode;
-
-	}
-
-	{
-
-		defaultViewMode =
-			addViewMode (
-				"all",
-				"All",
-				MessageSource.ViewMode.all);
-
-		addViewMode (
-			"in",
-			"In",
-			MessageSource.ViewMode.in);
-
-		addViewMode (
-			"out",
-			"Out",
-			MessageSource.ViewMode.out);
-
-		addViewMode (
-			"unknown",
-			"Unknown",
-			MessageSource.ViewMode.sent);
-
-		addViewMode (
-			"success",
-			"Success",
-			MessageSource.ViewMode.delivered);
-
-		addViewMode (
-			"failed",
-			"Failed",
-			MessageSource.ViewMode.undelivered);
 
 	}
 
