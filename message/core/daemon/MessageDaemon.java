@@ -82,6 +82,39 @@ class MessageDaemon
 	@Getter @Setter
 	Long batchSize = 100l;
 
+	// life cycle
+
+	@NormalLifecycleSetup
+	public
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"afterPropertiesSet");
+
+		) {
+
+			for (
+				Map.Entry <String, MessageRetrierFactory> entry
+					: messageRetrierFactories.entrySet ()
+			) {
+
+				messageRetriers.putAll (
+					entry.getValue ()
+						.getMessageRetriersByMessageTypeCode ());
+
+			}
+
+		}
+
+	}
+
+	// implementation
+
 	@Override
 	protected
 	void runService () {
@@ -245,22 +278,5 @@ class MessageDaemon
 	private
 	Map <String, MessageRetrier> messageRetriers =
 		new HashMap<> ();
-
-	@NormalLifecycleSetup
-	public
-	void afterPropertiesSet () {
-
-		for (
-			Map.Entry <String, MessageRetrierFactory> entry
-				: messageRetrierFactories.entrySet ()
-		) {
-
-			messageRetriers.putAll (
-				entry.getValue ()
-					.getMessageRetriersByMessageTypeCode ());
-
-		}
-
-	}
 
 }

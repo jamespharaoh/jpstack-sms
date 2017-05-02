@@ -65,44 +65,55 @@ class CommandManagerImplementation
 
 	@NormalLifecycleSetup
 	public
-	void init ()
-		throws Exception {
+	void setup (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		commandTypeHandlerBeanNamesByCommandType =
-			new HashMap <String, String> ();
+		try (
 
-		for (
-			Map.Entry <String, Provider <CommandHandler>> entry
-				: commandTypeHandlersByBeanName.entrySet ()
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"setup");
+
 		) {
 
-			String beanName =
-				entry.getKey ();
-
-			CommandHandler commandTypeHandler =
-				entry.getValue ().get ();
-
-			String[] commandTypes =
-				commandTypeHandler.getCommandTypes ();
-
-			if (commandTypes == null) {
-
-				throw new NullPointerException (
-					stringFormat (
-						"Command type handler factory %s returned null from ",
-						beanName,
-						"getCommandTypes ()"));
-
-			}
+			commandTypeHandlerBeanNamesByCommandType =
+				new HashMap <String, String> ();
 
 			for (
-				String commandType
-					: commandTypeHandler.getCommandTypes ()
+				Map.Entry <String, Provider <CommandHandler>> entry
+					: commandTypeHandlersByBeanName.entrySet ()
 			) {
 
-				commandTypeHandlerBeanNamesByCommandType.put (
-					commandType,
-					beanName);
+				String beanName =
+					entry.getKey ();
+
+				CommandHandler commandTypeHandler =
+					entry.getValue ().get ();
+
+				String[] commandTypes =
+					commandTypeHandler.getCommandTypes ();
+
+				if (commandTypes == null) {
+
+					throw new NullPointerException (
+						stringFormat (
+							"Command type handler factory %s ",
+							beanName,
+							"returned null from getCommandTypes ()"));
+
+				}
+
+				for (
+					String commandType
+						: commandTypeHandler.getCommandTypes ()
+				) {
+
+					commandTypeHandlerBeanNamesByCommandType.put (
+						commandType,
+						beanName);
+
+				}
 
 			}
 

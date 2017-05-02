@@ -40,8 +40,8 @@
 
 			<object-search-page
 				search-fields="search"
-				results-fields="results"
-				results-rows-fields="resultsRows"/>
+				results-fields="search-results-columns"
+				results-rows-fields="search-results-rows"/>
 
 			<!-- extensions -->
 
@@ -170,7 +170,7 @@
 	</field-set>
 
 	<field-set
-		name="results"
+		name="search-results-columns"
 		object-name="message">
 
 		<id-field/>
@@ -205,7 +205,7 @@
 	</field-set>
 
 	<field-set
-		name="resultsRows"
+		name="search-results-rows"
 		object-name="message">
 
 		<message-content-field/>
