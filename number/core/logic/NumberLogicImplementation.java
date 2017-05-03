@@ -1,7 +1,7 @@
 package wbs.sms.number.core.logic;
 
 import static wbs.utils.etc.Misc.isNull;
-import static wbs.utils.etc.OptionalUtils.optionalOrElse;
+import static wbs.utils.etc.OptionalUtils.optionalOrElseRequired;
 
 import lombok.NonNull;
 
@@ -69,7 +69,7 @@ class NumberLogicImplementation
 			// TODO should not be here
 
 			ChatUserNumberReportRec numberReport =
-				optionalOrElse (
+				optionalOrElseRequired (
 
 				chatUserNumberReportHelper.find (
 					transaction,
