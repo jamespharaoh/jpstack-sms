@@ -2,10 +2,13 @@ package wbs.sms.gazetteer.fixture;
 
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 
+import javax.inject.Provider;
+
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
@@ -51,6 +54,11 @@ class GazetteerFixtureProvider
 
 	@SingletonDependency
 	SliceObjectHelper sliceHelper;
+
+	// prototype dependencies
+
+	@PrototypeDependency
+	Provider <DataFromXmlBuilder> dataFromXmlBuilderProvider;
 
 	// implementation
 
@@ -103,7 +111,7 @@ class GazetteerFixtureProvider
 			);
 
 			DataFromXml gazetteerReader =
-				new DataFromXmlBuilder ()
+				dataFromXmlBuilderProvider.get ()
 
 				.registerBuilderClasses (
 					GazetteerData.class,

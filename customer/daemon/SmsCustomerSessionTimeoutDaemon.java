@@ -118,9 +118,9 @@ class SmsCustomerSessionTimeoutDaemon
 		) {
 
 			return iterableMapToList (
-				SmsCustomerManagerRec::getId,
 				smsCustomerManagerHelper.findAll (
-					transaction));
+					transaction),
+				SmsCustomerManagerRec::getId);
 
 		}
 
@@ -210,8 +210,8 @@ class SmsCustomerSessionTimeoutDaemon
 					sessionsToTimeout.size ()));
 
 			return iterableMapToList (
-				SmsCustomerSessionRec::getId,
-				sessionsToTimeout);
+				sessionsToTimeout,
+				SmsCustomerSessionRec::getId);
 
 		}
 

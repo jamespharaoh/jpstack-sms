@@ -354,8 +354,8 @@ class GenericSmsSenderService
 
 					List <Long> messageIds =
 						iterableMapToList (
-							OutboxRec::getId,
-							smsOutboxes);
+							smsOutboxes,
+							OutboxRec::getId);
 
 					// commit and add them to the queue
 

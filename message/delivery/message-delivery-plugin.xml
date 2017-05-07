@@ -1,5 +1,5 @@
 <plugin
-	name="delivery"
+	name="message-delivery"
 	package="wbs.sms.message.delivery">
 
 	<models>

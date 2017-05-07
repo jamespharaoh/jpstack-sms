@@ -1,9 +1,9 @@
 <plugin
-	name="customer"
+	name="sms-customer"
 	package="wbs.sms.customer">
 
 	<plugin-dependencies>
-		<plugin-dependency name="scaffold"/>
+		<plugin-dependency name="platform-scaffold"/>
 		<plugin-dependency name="sms-core"/>
 	</plugin-dependencies>
 

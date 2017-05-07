@@ -3,7 +3,7 @@
 	package="wbs.sms.message.batch">
 
 	<plugin-dependencies>
-		<plugin-dependency name="scaffold"/>
+		<plugin-dependency name="platform-scaffold"/>
 	</plugin-dependencies>
 
 	<models>

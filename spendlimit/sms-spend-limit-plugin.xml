@@ -3,7 +3,7 @@
 	package="wbs.sms.spendlimit">
 
 	<plugin-dependencies>
-		<plugin-dependency name="scaffold"/>
+		<plugin-dependency name="platform-scaffold"/>
 		<plugin-dependency name="sms-core"/>
 	</plugin-dependencies>
 
