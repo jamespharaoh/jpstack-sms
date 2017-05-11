@@ -7,6 +7,8 @@ import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
+import static wbs.utils.string.StringUtils.keyEqualsClassSimple;
+import static wbs.utils.string.StringUtils.keyEqualsDecimalInteger;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
@@ -156,7 +158,7 @@ class ReceivedManager
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWrite (
+					database.beginReadWriteWithoutParameters (
 						logContext,
 						parentTaskLogger,
 						"ReceivedThread.doMessage");
@@ -220,17 +222,16 @@ class ReceivedManager
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteFormat (
+					database.beginReadWriteWithParameters (
 						logContext,
 						parentTaskLogger,
-						"ReceivedThread.doError (%s, %s)",
-						stringFormat (
-							"messageId = %s",
-							integerToDecimalString (
-								messageId)),
-						stringFormat (
-							"exception = %s",
-							exception.getClass ().getSimpleName ()));
+						"ReceivedThread.doError",
+						keyEqualsDecimalInteger (
+							"messageId",
+							messageId),
+						keyEqualsClassSimple (
+							"exception",
+							exception.getClass ()));
 
 			) {
 
@@ -301,7 +302,7 @@ class ReceivedManager
 
 					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
-							"run");
+							"ReceivedThread.run");
 
 				) {
 
@@ -338,7 +339,7 @@ class ReceivedManager
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnly (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					"doQuery");
 

@@ -99,7 +99,7 @@ final class RouteTesterDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					"runOnce");
 

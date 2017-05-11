@@ -184,7 +184,7 @@ class SmsOutboxMonitorImplementation
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadOnly (
+					database.beginReadOnlyWithoutParameters (
 						logContext,
 						parentTaskLogger,
 						"getRouteSummaries");
@@ -207,7 +207,7 @@ class SmsOutboxMonitorImplementation
 			try (
 
 				OwnedTaskLogger taskLogger =
-					logContext.nestTaskLoggerFormat (
+					logContext.nestTaskLogger (
 						parentTaskLogger,
 						"doRouteSummary",
 						keyEqualsDecimalInteger (

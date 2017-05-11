@@ -20,9 +20,10 @@
 	</layer>
 
 	<layer name="console">
-		<component class="console.NumberConsoleComponents"/>
+		<component class="console.NumberCryptor"/>
 		<component class="console.NumberLinkManager"/>
 		<component class="console.NumberServicesPart"/>
+		<component class="console.NumberSubscriptionsActivePart"/>
 		<component class="console.NumberSubscriptionsPart"/>
 	</layer>
 

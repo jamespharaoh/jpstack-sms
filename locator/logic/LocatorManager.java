@@ -96,7 +96,7 @@ class LocatorManager {
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnly (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"setup");
@@ -173,7 +173,7 @@ class LocatorManager {
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"logSuccess");
@@ -212,7 +212,7 @@ class LocatorManager {
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"logFailure");
@@ -254,7 +254,7 @@ class LocatorManager {
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"locate");

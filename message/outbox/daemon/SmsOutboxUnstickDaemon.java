@@ -78,7 +78,7 @@ class SmsOutboxUnstickDaemon
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWrite (
+					database.beginReadWriteWithoutParameters (
 						logContext,
 						parentTaskLogger,
 						"runOnce");

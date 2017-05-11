@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import wbs.console.forms.FormFieldNativeMapping;
+import wbs.console.forms.types.FormFieldNativeMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;

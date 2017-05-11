@@ -93,7 +93,7 @@ class BlacklistSearchAction
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnly (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"goReal");

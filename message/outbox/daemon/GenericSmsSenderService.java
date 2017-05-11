@@ -117,7 +117,7 @@ class GenericSmsSenderService
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnly (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"createThreads");
@@ -177,7 +177,7 @@ class GenericSmsSenderService
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadOnly (
+					database.beginReadOnlyWithoutParameters (
 						logContext,
 						parentTaskLogger,
 						"start");
@@ -246,7 +246,7 @@ class GenericSmsSenderService
 
 					OwnedTaskLogger taskLogger =
 						logContext.createTaskLogger (
-							"claimAllMessages ()");
+							"claimAllMessages");
 
 				) {
 
@@ -306,7 +306,7 @@ class GenericSmsSenderService
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWrite (
+					database.beginReadWriteWithoutParameters (
 						logContext,
 						parentTaskLogger,
 						"claimSomeMessages");

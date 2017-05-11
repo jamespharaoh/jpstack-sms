@@ -1,7 +1,6 @@
 package wbs.sms.locator.misc;
 
-import javax.inject.Named;
-
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 
 import wbs.sms.locator.logic.LocatorLogic;
@@ -21,7 +20,7 @@ class LocatorLogicTest
 	LocatorLogic locatorLogic;
 
 	@SingletonDependency
-	@Named
+	@NamedDependency
 	MercatorProjection ukNationalGrid;
 
 	// tests

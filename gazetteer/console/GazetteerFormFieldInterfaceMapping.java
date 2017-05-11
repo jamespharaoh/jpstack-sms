@@ -22,7 +22,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import wbs.console.forms.FormFieldInterfaceMapping;
+import wbs.console.forms.types.FormFieldInterfaceMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;

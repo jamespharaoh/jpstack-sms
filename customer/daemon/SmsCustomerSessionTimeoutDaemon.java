@@ -110,7 +110,7 @@ class SmsCustomerSessionTimeoutDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnly (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"getManagerIds");
@@ -168,7 +168,7 @@ class SmsCustomerSessionTimeoutDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnlyFormat (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"getSessionIds");
@@ -225,7 +225,7 @@ class SmsCustomerSessionTimeoutDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnlyFormat (
+				database.beginReadOnlyWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"doSession");

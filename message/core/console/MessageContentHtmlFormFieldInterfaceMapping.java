@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
-import wbs.console.forms.FormFieldInterfaceMapping;
+import wbs.console.forms.types.FormFieldInterfaceMapping;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;

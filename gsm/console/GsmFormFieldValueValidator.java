@@ -18,7 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import wbs.console.forms.FormFieldValueValidator;
+import wbs.console.forms.types.FormFieldValueValidator;
 
 import wbs.framework.component.annotations.PrototypeComponent;
 

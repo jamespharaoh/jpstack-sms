@@ -25,7 +25,7 @@
 		<component class="console.BatchStatsSourceBuilder"/>
 		<component class="console.GenericMessageStatsPart"/>
 		<component class="console.GroupedStatsSourceImplementation"/>
-		<component class="console.MessageStatsPartConfig"/>
+		<component class="console.MessageStatsPart"/>
 		<component class="console.RouteStatsSource"/>
 		<component class="console.ServiceStatsSourceBuilder"/>
 		<component class="console.SmsStatsConsoleLogicImplementation"/>

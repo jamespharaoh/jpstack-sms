@@ -94,7 +94,7 @@ class MessageDaemon
 			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
-					"afterPropertiesSet");
+					"setup");
 
 		) {
 
@@ -145,7 +145,7 @@ class MessageDaemon
 
 			OwnedTaskLogger taskLogger =
 				logContext.createTaskLogger (
-					"runOnce ()");
+					"runOnce");
 
 		) {
 
@@ -177,7 +177,7 @@ class MessageDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"expireMessages");

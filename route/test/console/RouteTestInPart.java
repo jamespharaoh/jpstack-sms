@@ -82,9 +82,9 @@ class RouteTestInPart
 		) {
 
 			htmlParagraphWriteFormat (
-				"This facility can be used to insert an inbound message into the ",
-				"system, which will then be treated exactly as if we had received ",
-				"it from the aggregator.");
+				"This facility can be used to insert an inbound message into ",
+				"the system, which will then be treated exactly as if we had ",
+				"received it from the aggregator.");
 
 			htmlParagraphWrite (
 				stringFormat (

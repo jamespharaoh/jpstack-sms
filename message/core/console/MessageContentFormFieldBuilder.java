@@ -5,18 +5,18 @@ import javax.inject.Provider;
 import lombok.NonNull;
 
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
-import wbs.console.forms.FormFieldAccessor;
-import wbs.console.forms.FormFieldBuilderContext;
-import wbs.console.forms.FormFieldInterfaceMapping;
-import wbs.console.forms.FormFieldNativeMapping;
-import wbs.console.forms.FormFieldPluginManagerImplementation;
-import wbs.console.forms.FormFieldRenderer;
-import wbs.console.forms.FormFieldSet;
-import wbs.console.forms.HtmlFormFieldRenderer;
-import wbs.console.forms.IdentityFormFieldAccessor;
-import wbs.console.forms.IdentityFormFieldNativeMapping;
-import wbs.console.forms.ReadOnlyFormField;
-import wbs.console.forms.RequiredFormFieldValueValidator;
+import wbs.console.forms.basic.IdentityFormFieldAccessor;
+import wbs.console.forms.basic.IdentityFormFieldNativeMapping;
+import wbs.console.forms.basic.RequiredFormFieldValueValidator;
+import wbs.console.forms.core.FormFieldBuilderContext;
+import wbs.console.forms.core.FormFieldSetImplementation;
+import wbs.console.forms.core.ReadOnlyFormField;
+import wbs.console.forms.logic.FormFieldPluginManagerImplementation;
+import wbs.console.forms.text.HtmlFormFieldRenderer;
+import wbs.console.forms.types.FormFieldAccessor;
+import wbs.console.forms.types.FormFieldInterfaceMapping;
+import wbs.console.forms.types.FormFieldNativeMapping;
+import wbs.console.forms.types.FormFieldRenderer;
 
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.BuilderComponent;
@@ -86,7 +86,7 @@ class MessageContentFormFieldBuilder
 	MessageContentFormFieldSpec spec;
 
 	@BuilderTarget
-	FormFieldSet formFieldSet;
+	FormFieldSetImplementation formFieldSet;
 
 	// build
 

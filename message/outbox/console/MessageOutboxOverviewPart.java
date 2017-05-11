@@ -13,13 +13,11 @@ import static wbs.web.utils.HtmlTableUtils.htmlTableRowOpen;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Named;
-
 import com.google.common.collect.ImmutableSet;
 
 import lombok.NonNull;
 
-import wbs.console.forms.FormFieldSet;
+import wbs.console.forms.core.FormFieldSet;
 import wbs.console.html.MagicTableScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
@@ -27,6 +25,7 @@ import wbs.console.module.ConsoleModule;
 import wbs.console.part.AbstractPagePart;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
@@ -54,7 +53,7 @@ class MessageOutboxOverviewPart
 	LogContext logContext;
 
 	@SingletonDependency
-	@Named
+	@NamedDependency
 	ConsoleModule messageOutboxConsoleModule;
 
 	@SingletonDependency

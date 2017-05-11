@@ -12,24 +12,24 @@ import javax.inject.Provider;
 import lombok.NonNull;
 
 import wbs.console.annotations.ConsoleModuleBuilderHandler;
-import wbs.console.forms.DynamicFormFieldAccessor;
-import wbs.console.forms.FormFieldAccessor;
-import wbs.console.forms.FormFieldBuilderContext;
-import wbs.console.forms.FormFieldConstraintValidator;
-import wbs.console.forms.FormFieldInterfaceMapping;
-import wbs.console.forms.FormFieldNativeMapping;
-import wbs.console.forms.FormFieldPluginManagerImplementation;
-import wbs.console.forms.FormFieldRenderer;
-import wbs.console.forms.FormFieldSet;
-import wbs.console.forms.FormFieldUpdateHook;
-import wbs.console.forms.FormFieldValueValidator;
-import wbs.console.forms.IdentityFormFieldInterfaceMapping;
-import wbs.console.forms.NullFormFieldConstraintValidator;
-import wbs.console.forms.ReadOnlyFormField;
-import wbs.console.forms.RequiredFormFieldValueValidator;
-import wbs.console.forms.SimpleFormFieldAccessor;
-import wbs.console.forms.TextFormFieldRenderer;
-import wbs.console.forms.UpdatableFormField;
+import wbs.console.forms.basic.IdentityFormFieldInterfaceMapping;
+import wbs.console.forms.basic.NullFormFieldConstraintValidator;
+import wbs.console.forms.basic.RequiredFormFieldValueValidator;
+import wbs.console.forms.basic.SimpleFormFieldAccessor;
+import wbs.console.forms.core.FormFieldBuilderContext;
+import wbs.console.forms.core.FormFieldSetImplementation;
+import wbs.console.forms.core.ReadOnlyFormField;
+import wbs.console.forms.core.UpdatableFormField;
+import wbs.console.forms.logic.FormFieldPluginManagerImplementation;
+import wbs.console.forms.object.DynamicFormFieldAccessor;
+import wbs.console.forms.text.TextFormFieldRenderer;
+import wbs.console.forms.types.FormFieldAccessor;
+import wbs.console.forms.types.FormFieldConstraintValidator;
+import wbs.console.forms.types.FormFieldInterfaceMapping;
+import wbs.console.forms.types.FormFieldNativeMapping;
+import wbs.console.forms.types.FormFieldRenderer;
+import wbs.console.forms.types.FormFieldUpdateHook;
+import wbs.console.forms.types.FormFieldValueValidator;
 
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.BuilderComponent;
@@ -103,7 +103,7 @@ class GsmFormFieldBuilder
 	GsmFormFieldSpec spec;
 
 	@BuilderTarget
-	FormFieldSet target;
+	FormFieldSetImplementation target;
 
 	// build
 

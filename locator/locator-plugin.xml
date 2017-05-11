@@ -24,9 +24,10 @@
 	</layer>
 
 	<layer name="logic">
+		<component class="logic.IrishNationalGrid"/>
 		<component class="logic.LocatorLogicImplementation"/>
 		<component class="logic.LocatorManager"/>
-		<component class="logic.MercatorProjectionComponents"/>
+		<component class="logic.UkNationalGrid"/>
 	</layer>
 
 	<console-modules>

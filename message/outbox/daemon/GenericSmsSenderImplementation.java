@@ -12,6 +12,7 @@ import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
+import static wbs.utils.string.StringUtils.keyEqualsDecimalInteger;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.Map;
@@ -216,7 +217,7 @@ class GenericSmsSenderImplementation <StateType>
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"setupSend");
@@ -393,7 +394,7 @@ class GenericSmsSenderImplementation <StateType>
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWrite (
+				database.beginReadWriteWithoutParameters (
 					logContext,
 					parentTaskLogger,
 					"handleSetupErrorInSeparateTransaction");
@@ -606,22 +607,19 @@ class GenericSmsSenderImplementation <StateType>
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWriteFormat (
+				database.beginReadWriteWithParameters (
 					logContext,
 					parentTaskLogger,
-					"attemptToHandlePerformSendErrorReal (%s, %s, %s)",
-					stringFormat (
-						"smsMessageId = %s",
-						integerToDecimalString (
-							smsMessageId)),
-					stringFormat (
-						"smsOutboxAttemptId = %s",
-						integerToDecimalString (
-							smsOutboxAttemptId)),
-					stringFormat (
-						"attemptNUmber = %s",
-						integerToDecimalString (
-							attemptNumber)));
+					"attemptToHandlePerformSendErrorReal",
+					keyEqualsDecimalInteger (
+						"smsMessageId",
+						smsMessageId),
+					keyEqualsDecimalInteger (
+						"smsOutboxAttemptId",
+						smsOutboxAttemptId),
+					keyEqualsDecimalInteger (
+						"attemptNUmber",
+						attemptNumber));
 
 		) {
 
@@ -731,22 +729,19 @@ class GenericSmsSenderImplementation <StateType>
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWriteFormat (
+				database.beginReadWriteWithParameters (
 					logContext,
 					parentTaskLogger,
-					"attemptToProcessResponseReal (%s, %s, %s)",
-					stringFormat (
-						"smsMessageId = %s",
-						integerToDecimalString (
-							smsMessageId)),
-					stringFormat (
-						"smsOutboxAttemptId = %s",
-						integerToDecimalString (
-							smsOutboxAttemptId)),
-					stringFormat (
-						"attemptNUmber = %s",
-						integerToDecimalString (
-							attemptNumber)));
+					"attemptToProcessResponseReal",
+					keyEqualsDecimalInteger (
+						"smsMessageId",
+						smsMessageId),
+					keyEqualsDecimalInteger (
+						"smsOutboxAttemptId",
+						smsOutboxAttemptId),
+					keyEqualsDecimalInteger (
+						"attemptNumber",
+						attemptNumber));
 
 		) {
 
