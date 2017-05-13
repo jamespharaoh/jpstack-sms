@@ -15,9 +15,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("object-sms-message-set-page")
 @PrototypeComponent ("objectSmsMessageSetPageSpec")
-@ConsoleModuleData
 public
-class ObjectSmsMessageSetPageSpec {
+class ObjectSmsMessageSetPageSpec
+	implements ConsoleModuleData {
 
 	// attributes
 

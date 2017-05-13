@@ -3,9 +3,12 @@
 	package="wbs.sms.object.stats">
 
 	<layer name="console">
+
+		<bootstrap-component class="ObjectSmsStatsPageSpec"/>
+
 		<component class="ObjectSmsStatsPageBuilder"/>
-		<component class="ObjectSmsStatsPageSpec"/>
 		<component class="ObjectStatsPartFactory"/>
+
 	</layer>
 
 </plugin>

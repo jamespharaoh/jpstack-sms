@@ -13,9 +13,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("gazetteer-field")
 @PrototypeComponent ("gazetteerFormFieldSpec")
-@ConsoleModuleData
 public
-class GazetteerFormFieldSpec {
+class GazetteerFormFieldSpec
+	implements ConsoleModuleData {
 
 	@DataAttribute (
 		required = true)

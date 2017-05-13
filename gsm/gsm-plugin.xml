@@ -3,9 +3,12 @@
 	package="wbs.sms.gsm">
 
 	<layer name="console">
+
+		<bootstrap-component class="console.GsmFormFieldSpec"/>
+
 		<component class="console.GsmFormFieldBuilder"/>
-		<component class="console.GsmFormFieldSpec"/>
 		<component class="console.GsmFormFieldValueValidator"/>
+
 	</layer>
 
 </plugin>

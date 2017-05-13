@@ -15,9 +15,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("gsm-field")
 @PrototypeComponent ("gsmFormFieldSpec")
-@ConsoleModuleData
 public
-class GsmFormFieldSpec {
+class GsmFormFieldSpec
+	implements ConsoleModuleData {
 
 	@DataAttribute (
 		required = true)

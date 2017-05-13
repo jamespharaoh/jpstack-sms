@@ -121,7 +121,7 @@ class GazetteerFixtureProvider
 
 			GazetteerData gazetteerData =
 				(GazetteerData)
-				gazetteerReader.readClasspath (
+				gazetteerReader.readClasspathRequired (
 					transaction,
 					"/wbs/sms/gazetteer/fixture/gazetteer-test-data.xml");
 

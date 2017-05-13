@@ -40,8 +40,8 @@
 
 			<object-search-page
 				search-fields="search"
-				results-fields="search-results-columns"
-				results-rows-fields="search-results-rows"/>
+				results-column-fields="search-results-columns"
+				results-row-fields="search-results-rows"/>
 
 			<!-- extensions -->
 

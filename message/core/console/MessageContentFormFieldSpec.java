@@ -12,8 +12,8 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("message-content-field")
 @PrototypeComponent ("messageContentFormFieldSpec")
-@ConsoleModuleData
 public
-class MessageContentFormFieldSpec {
+class MessageContentFormFieldSpec
+	implements ConsoleModuleData {
 
 }

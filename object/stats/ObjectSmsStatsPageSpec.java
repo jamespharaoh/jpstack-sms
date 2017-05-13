@@ -15,9 +15,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("object-sms-stats-page")
 @PrototypeComponent ("objectSmsStatsPageSpec")
-@ConsoleModuleData
 public
-class ObjectSmsStatsPageSpec {
+class ObjectSmsStatsPageSpec
+	implements ConsoleModuleData {
 
 	@DataAncestor
 	ConsoleModuleSpec consoleSpec;

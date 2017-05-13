@@ -20,10 +20,13 @@
 	</layer>
 
 	<layer name="console">
+
+		<bootstrap-component class="console.GazetteerFormFieldSpec"/>
+
 		<component class="console.GazetteerCodeFormFieldNativeMapping"/>
 		<component class="console.GazetteerFormFieldBuilder"/>
 		<component class="console.GazetteerFormFieldInterfaceMapping"/>
-		<component class="console.GazetteerFormFieldSpec"/>
+
 	</layer>
 
 	<console-modules>
