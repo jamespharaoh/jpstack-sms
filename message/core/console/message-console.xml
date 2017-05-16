@@ -212,4 +212,28 @@
 
 	</field-set>
 
+	<forms>
+
+		<form
+			name="manually-deliver-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+		<form
+			name="manually-retry-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+		<form
+			name="manually-undeliver-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+		<form
+			name="manually-unhold-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+	</forms>
+
 </console-module>

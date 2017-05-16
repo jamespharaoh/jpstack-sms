@@ -36,6 +36,7 @@
 	<console-modules>
 		<console-module name="magic-number"/>
 		<console-module name="magic-number-set"/>
+		<console-module name="magic-number-use"/>
 	</console-modules>
 
 </plugin>

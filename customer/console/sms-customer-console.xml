@@ -170,4 +170,13 @@
 
 	</field-set>
 
+	<forms>
+
+		<form
+			name="end-session-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+	</forms>
+
 </console-module>

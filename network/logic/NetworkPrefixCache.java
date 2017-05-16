@@ -1,6 +1,6 @@
 package wbs.sms.network.logic;
 
-import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.time.TimeUtils.laterThan;
 import static wbs.utils.time.TimeUtils.millisToInstant;

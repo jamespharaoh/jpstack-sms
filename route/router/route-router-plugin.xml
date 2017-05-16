@@ -35,6 +35,7 @@
 
 	<console-modules>
 		<console-module name="router"/>
+		<console-module name="router-type"/>
 		<console-module name="simple-router"/>
 	</console-modules>
 

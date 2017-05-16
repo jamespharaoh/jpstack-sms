@@ -29,6 +29,7 @@
 	<console-modules>
 		<console-module name="batch"/>
 		<console-module name="batch-subject"/>
+		<console-module name="batch-type"/>
 	</console-modules>
 
 	<fixtures>

@@ -21,4 +21,9 @@
 		<component class="daemon.DeliveryDaemon"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="delivery"/>
+		<console-module name="delivery-type"/>
+	</console-modules>
+
 </plugin>

@@ -2,8 +2,8 @@ package wbs.sms.customer.daemon;
 
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.collection.IterableUtils.iterableMapToList;
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.etc.NullUtils.isNull;
 
 import java.util.List;
 

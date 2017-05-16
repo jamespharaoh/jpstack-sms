@@ -1,9 +1,9 @@
 package wbs.sms.message.core.hibernate;
 
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
-import static wbs.utils.etc.Misc.isNotNull;
 import static wbs.utils.etc.Misc.lessThan;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.maximumInteger;
 import static wbs.utils.etc.NumberUtils.minimumInteger;
 import static wbs.utils.etc.NumberUtils.moreThan;

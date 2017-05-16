@@ -16,4 +16,9 @@
 		<component class="daemon.RouteTesterDaemon"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="route-tester"/>
+		<console-module name="route-tester-test"/>
+	</console-modules>
+
 </plugin>

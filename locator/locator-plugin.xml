@@ -31,7 +31,11 @@
 	</layer>
 
 	<console-modules>
+		<console-module name="biaxial-ellipsoid"/>
 		<console-module name="locator"/>
+		<console-module name="locator-log"/>
+		<console-module name="locator-type"/>
+		<console-module name="mercator-projection"/>
 	</console-modules>
 
 </plugin>

@@ -33,4 +33,10 @@
 
 	</layer>
 
+	<console-modules>
+		<console-module name="message-set"/>
+		<console-module name="message-set-message"/>
+		<console-module name="message-set-type"/>
+	</console-modules>
+
 </plugin>

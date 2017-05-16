@@ -34,8 +34,11 @@
 	</layer>
 
 	<console-modules>
+		<console-module name="failed-message"/>
 		<console-module name="message-outbox"/>
+		<console-module name="route-outbox-summary"/>
 		<console-module name="sms-outbox-attempt"/>
+		<console-module name="sms-outbox-multipart-link"/>
 	</console-modules>
 
 </plugin>

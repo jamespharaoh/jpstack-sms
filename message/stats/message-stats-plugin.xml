@@ -37,6 +37,7 @@
 	</layer>
 
 	<console-modules>
+		<console-module name="message-stats"/>
 		<console-module name="sms-stats"/>
 	</console-modules>
 

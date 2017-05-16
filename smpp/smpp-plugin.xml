@@ -6,4 +6,8 @@
 		<model name="smppRoute"/>
 	</models>
 
+	<console-modules>
+		<console-module name="smpp-route"/>
+	</console-modules>
+
 </plugin>

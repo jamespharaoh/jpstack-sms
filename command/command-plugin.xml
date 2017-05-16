@@ -23,6 +23,7 @@
 
 	<console-modules>
 		<console-module name="command"/>
+		<console-module name="command-type"/>
 	</console-modules>
 
 </plugin>

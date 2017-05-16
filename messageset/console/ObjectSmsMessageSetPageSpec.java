@@ -3,8 +3,8 @@ package wbs.sms.messageset.console;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import wbs.console.module.ConsoleModuleData;
 import wbs.console.module.ConsoleModuleSpec;
+import wbs.console.module.ConsoleSpec;
 
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataAncestor;
@@ -17,7 +17,7 @@ import wbs.framework.data.annotations.DataClass;
 @PrototypeComponent ("objectSmsMessageSetPageSpec")
 public
 class ObjectSmsMessageSetPageSpec
-	implements ConsoleModuleData {
+	implements ConsoleSpec {
 
 	// attributes
 

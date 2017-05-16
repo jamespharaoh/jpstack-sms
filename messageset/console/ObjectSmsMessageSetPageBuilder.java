@@ -10,7 +10,6 @@ import javax.inject.Provider;
 
 import lombok.NonNull;
 
-import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.context.ConsoleContextBuilderContainer;
 import wbs.console.context.ConsoleContextPrivLookup;
 import wbs.console.context.ResolvedConsoleContextExtensionPoint;
@@ -18,6 +17,7 @@ import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.lookup.BooleanLookup;
 import wbs.console.module.ConsoleMetaManager;
 import wbs.console.module.ConsoleMetaModuleImplementation;
+import wbs.console.module.ConsoleModuleBuilderComponent;
 import wbs.console.module.ConsoleModuleImplementation;
 import wbs.console.part.PagePartFactory;
 import wbs.console.responder.ConsoleFile;
@@ -25,7 +25,6 @@ import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.TabContextResponder;
 
 import wbs.framework.builder.Builder;
-import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -37,6 +36,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.core.console.CoreAuthAction;
@@ -45,11 +45,10 @@ import wbs.web.action.Action;
 import wbs.web.responder.Responder;
 
 @PrototypeComponent ("objectSmsMessageSetPageBuilder")
-@ConsoleModuleBuilderHandler
 public
 class ObjectSmsMessageSetPageBuilder <
 	ObjectType extends Record <ObjectType>
-> implements BuilderComponent {
+> implements ConsoleModuleBuilderComponent {
 
 	// singleton dependencies
 
@@ -127,21 +126,33 @@ class ObjectSmsMessageSetPageBuilder <
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull Builder <TaskLogger> builder) {
 
-		setDefaults ();
+		try (
 
-		prepare ();
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"build");
 
-		for (
-			ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
-				: consoleMetaManager.resolveExtensionPoint (
-					container.extensionPointName ())
 		) {
 
-			buildTab (
-				resolvedExtensionPoint);
+			setDefaults ();
 
-			buildFile (
-				resolvedExtensionPoint);
+			prepare ();
+
+			for (
+				ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
+					: consoleMetaManager.resolveExtensionPoint (
+						container.extensionPointName ())
+			) {
+
+				buildTab (
+					taskLogger,
+					resolvedExtensionPoint);
+
+				buildFile (
+					resolvedExtensionPoint);
+
+			}
 
 		}
 
@@ -165,17 +176,29 @@ class ObjectSmsMessageSetPageBuilder <
 	}
 
 	void buildTab (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
-		consoleModule.addContextTab (
-			container.taskLogger (),
-			"end",
-			contextTab.get ()
-				.name (tabName)
-				.defaultLabel (tabLabel)
-				.localFile (fileName)
-				.privKeys (Collections.singletonList (privKey)),
-			extensionPoint.contextTypeNames ());
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"buildTab");
+
+		) {
+
+			consoleModule.addContextTab (
+				taskLogger,
+				"end",
+				contextTab.get ()
+					.name (tabName)
+					.defaultLabel (tabLabel)
+					.localFile (fileName)
+					.privKeys (Collections.singletonList (privKey)),
+				extensionPoint.contextTypeNames ());
+
+		}
 
 	}
 

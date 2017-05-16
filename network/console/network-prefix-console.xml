@@ -1,0 +1,7 @@
+<console-module
+	name="network-prefix">
+
+	<console-helper-provider
+		object-name="networkPrefix"/>
+
+</console-module>

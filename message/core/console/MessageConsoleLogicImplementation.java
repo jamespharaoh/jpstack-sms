@@ -1,7 +1,7 @@
 package wbs.sms.message.core.console;
 
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
-import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.spacify;
 import static wbs.utils.string.StringUtils.stringFormat;

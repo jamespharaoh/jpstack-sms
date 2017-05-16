@@ -21,4 +21,12 @@
 		<component class="logic.SmsTrackerManagerImplementation"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="sms-simple-tracker"/>
+		<console-module name="sms-simple-tracker-number"/>
+		<console-module name="sms-simple-tracker-route"/>
+		<console-module name="sms-tracker"/>
+		<console-module name="sms-tracker-type"/>
+	</console-modules>
+
 </plugin>

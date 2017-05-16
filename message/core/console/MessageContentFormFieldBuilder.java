@@ -4,22 +4,21 @@ import javax.inject.Provider;
 
 import lombok.NonNull;
 
-import wbs.console.annotations.ConsoleModuleBuilderHandler;
 import wbs.console.forms.basic.IdentityFormFieldAccessor;
 import wbs.console.forms.basic.IdentityFormFieldNativeMapping;
 import wbs.console.forms.basic.RequiredFormFieldValueValidator;
-import wbs.console.forms.core.FormFieldBuilderContext;
+import wbs.console.forms.core.ConsoleFormBuilderComponent;
+import wbs.console.forms.core.ConsoleFormBuilderContext;
+import wbs.console.forms.core.ConsoleFormPluginManagerImplementation;
 import wbs.console.forms.core.FormFieldSetImplementation;
 import wbs.console.forms.core.ReadOnlyFormField;
-import wbs.console.forms.logic.FormFieldPluginManagerImplementation;
 import wbs.console.forms.text.HtmlFormFieldRenderer;
+import wbs.console.forms.types.ConsoleFormNativeMapping;
 import wbs.console.forms.types.FormFieldAccessor;
 import wbs.console.forms.types.FormFieldInterfaceMapping;
-import wbs.console.forms.types.FormFieldNativeMapping;
 import wbs.console.forms.types.FormFieldRenderer;
 
 import wbs.framework.builder.Builder;
-import wbs.framework.builder.BuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -34,15 +33,14 @@ import wbs.framework.logging.TaskLogger;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("messageContentFormFieldBuilder")
-@ConsoleModuleBuilderHandler
 public
 class MessageContentFormFieldBuilder
-	implements BuilderComponent {
+	implements ConsoleFormBuilderComponent {
 
 	// singleton dependencies
 
 	@SingletonDependency
-	FormFieldPluginManagerImplementation formFieldPluginManager;
+	ConsoleFormPluginManagerImplementation formFieldPluginManager;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -80,7 +78,7 @@ class MessageContentFormFieldBuilder
 	// builder
 
 	@BuilderParent
-	FormFieldBuilderContext context;
+	ConsoleFormBuilderContext context;
 
 	@BuilderSource
 	MessageContentFormFieldSpec spec;
@@ -122,7 +120,7 @@ class MessageContentFormFieldBuilder
 
 			// native mapping
 
-			FormFieldNativeMapping nativeMapping =
+			ConsoleFormNativeMapping nativeMapping =
 				identityFormFieldNativeMappingProvider.get ();
 
 			// interface mapping

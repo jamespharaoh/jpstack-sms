@@ -2,10 +2,10 @@ package wbs.sms.message.stats.console;
 
 import static wbs.utils.collection.CollectionUtils.collectionDoesNotHaveOneElement;
 import static wbs.utils.collection.CollectionUtils.iterableFirstElementRequired;
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalValueEqualSafe;
+import static wbs.utils.etc.NullUtils.isNull;
 
 import java.util.Collection;
 import java.util.Collections;

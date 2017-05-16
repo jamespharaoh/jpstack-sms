@@ -3,10 +3,10 @@ package wbs.sms.message.core.console;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
-import static wbs.utils.etc.Misc.isNotNull;
-import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphWriteFormat;
 
 import com.google.common.base.Optional;

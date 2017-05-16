@@ -1,14 +1,14 @@
 package wbs.sms.spendlimit.logic;
 
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
-import static wbs.utils.etc.Misc.isNotNull;
-import static wbs.utils.etc.Misc.isNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.equalToZero;
 import static wbs.utils.etc.NumberUtils.moreThan;
 import static wbs.utils.etc.NumberUtils.notLessThan;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.time.TimeUtils.notEarlierThan;
 
 import java.util.List;

@@ -1,0 +1,7 @@
+<console-module
+	name="number-list-number">
+
+	<console-helper-provider
+		object-name="numberListNumber"/>
+
+</console-module>

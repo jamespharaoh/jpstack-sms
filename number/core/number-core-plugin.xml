@@ -32,6 +32,7 @@
 	</fixtures>
 
 	<console-modules>
+		<console-module name="chat-user-number-report"/>
 		<console-module name="number"/>
 	</console-modules>
 

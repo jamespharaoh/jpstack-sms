@@ -1,7 +1,7 @@
 package wbs.sms.message.outbox.console;
 
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
-import static wbs.utils.etc.Misc.isNotNull;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlRowSpanAttribute;

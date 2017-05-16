@@ -35,6 +35,9 @@
 	</layer>
 
 	<console-modules>
+		<console-module name="inbox-attempt"/>
+		<console-module name="inbox-multipart-buffer"/>
+		<console-module name="inbox-multipart-log"/>
 		<console-module name="message-inbox"/>
 		<console-module name="message-not-processed"/>
 	</console-modules>

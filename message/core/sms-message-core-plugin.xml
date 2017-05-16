@@ -59,6 +59,8 @@
 
 	<console-modules>
 		<console-module name="message"/>
+		<console-module name="message-expiry"/>
+		<console-module name="message-type"/>
 	</console-modules>
 
 </plugin>

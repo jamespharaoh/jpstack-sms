@@ -100,4 +100,13 @@
 
 	</field-set>
 
+	<forms>
+
+		<form
+			name="numbers-action"
+			class="java.lang.Object"
+			type="perform"/>
+
+	</forms>
+
 </console-module>

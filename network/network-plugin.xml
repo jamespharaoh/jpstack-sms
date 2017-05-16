@@ -25,6 +25,7 @@
 
 	<console-modules>
 		<console-module name="network"/>
+		<console-module name="network-prefix"/>
 	</console-modules>
 
 </plugin>

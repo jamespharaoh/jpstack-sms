@@ -14,4 +14,8 @@
 		<component class="console.WapPushConsolePlugin"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="wap-push-message"/>
+	</console-modules>
+
 </plugin>

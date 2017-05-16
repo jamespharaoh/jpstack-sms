@@ -1,9 +1,9 @@
 package wbs.sms.object.messages;
 
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalOr;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.instantToDateNullSafe;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;

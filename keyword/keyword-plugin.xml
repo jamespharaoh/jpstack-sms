@@ -32,6 +32,7 @@
 	<console-modules>
 		<console-module name="keyword"/>
 		<console-module name="keyword-set"/>
+		<console-module name="keyword-set-fallback"/>
 	</console-modules>
 
 </plugin>

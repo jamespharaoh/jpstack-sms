@@ -24,6 +24,7 @@
 
 	<console-modules>
 		<console-module name="number-lookup"/>
+		<console-module name="number-lookup-type"/>
 	</console-modules>
 
 </plugin>

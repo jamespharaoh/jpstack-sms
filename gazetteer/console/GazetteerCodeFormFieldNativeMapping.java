@@ -1,7 +1,7 @@
 package wbs.sms.gazetteer.console;
 
-import static wbs.utils.etc.Misc.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.NullUtils.isNull;
 
 import com.google.common.base.Optional;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import wbs.console.forms.types.FormFieldNativeMapping;
+import wbs.console.forms.types.ConsoleFormNativeMapping;
 import wbs.console.helper.manager.ConsoleObjectManager;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -25,7 +25,7 @@ import wbs.sms.gazetteer.model.GazetteerRec;
 @PrototypeComponent ("gazetteerCodeFormFieldNativeMapping")
 public
 class GazetteerCodeFormFieldNativeMapping <Container>
-	implements FormFieldNativeMapping <Container, GazetteerEntryRec, String> {
+	implements ConsoleFormNativeMapping <Container, GazetteerEntryRec, String> {
 
 	// singleton dependencies
 

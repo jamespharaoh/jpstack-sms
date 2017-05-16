@@ -10,4 +10,8 @@
 		<component class="logic.SmsDeliveryReportLogicImplementation"/>
 	</layer>
 
+	<console-modules>
+		<console-module name="message-report"/>
+	</console-modules>
+
 </plugin>
