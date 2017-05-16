@@ -92,7 +92,7 @@ class ServiceStatsSourceBuilder
 				if (
 					! objectHelper.major ()
 					|| objectHelper.isRoot ()
-					|| ! objectHelper.parentClass ().isInstance (parent)
+					|| ! objectHelper.parentClassRequired ().isInstance (parent)
 				) {
 					continue;
 				}
