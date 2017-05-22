@@ -17,6 +17,7 @@
 	</models>
 
 	<layer name="console">
+		<component class="console.NumberListNumberConsoleHooks"/>
 		<component class="console.NumberListNumberUpdateAction"/>
 		<component class="console.NumberListNumberUpdatePart"/>
 		<component class="console.NumberListUpdateNumbersFormActionHelper"/>

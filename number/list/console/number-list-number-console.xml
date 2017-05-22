@@ -2,6 +2,88 @@
 	name="number-list-number">
 
 	<console-helper-provider
-		object-name="numberListNumber"/>
+		object-name="numberListNumber"
+		view-priv="numberList:manage">
+
+		<priv-key
+			name="numberListNumber.manage"
+			priv="numberList:manage"/>
+
+		<context-stuff
+			name="numberListId"
+			field="numberList.id"/>
+
+		<context-stuff
+			name="numberListNumberName"
+			field="number.number"/>
+
+		<run-post-processor
+			name="numberList"/>
+
+	</console-helper-provider>
+
+	<object-context
+		name="numberListNumber"
+		object-name="numberListNumber">
+
+		<list>
+
+			<context-tab-action-page
+				name="update"
+				priv-key="numberList.manage"/>
+
+			<object-search-page
+				name="search"
+				object-type="numberListNumber"
+				search-fields="search"
+				results-column-fields="results"
+				priv-key="numberList.manage"/>
+
+			<context-link
+				name="history"
+				link="numberListUpdate"
+				label="History"
+				priv-key="numberList.manage"/>
+
+		</list>
+
+		<object>
+
+			<object-summary-page
+				fields="summary"/>
+
+		</object>
+
+	</object-context>
+
+	<field-set
+		name="summary"
+		object-name="numberListNumber">
+
+		<id-field/>
+		<parent-field/>
+
+		<object-field
+			name="number"
+			object-type="number"/>
+
+		<yes-no-field
+			name="present"/>
+
+	</field-set>
+
+	<field-set
+		name="search"
+		class="wbs.sms.number.list.model.NumberListNumberSearch"/>
+
+	<field-set
+		name="results"
+		object-name="numberListNumber">
+
+		<object-field
+			name="number"
+			object-type="number"/>
+
+	</field-set>
 
 </console-module>

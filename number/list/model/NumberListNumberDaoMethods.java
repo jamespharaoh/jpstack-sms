@@ -19,4 +19,8 @@ interface NumberListNumberDaoMethods {
 			NumberListRec numberList,
 			List <NumberRec> numbers);
 
+	List <Long> searchIds (
+			Transaction parentTransaction,
+			NumberListNumberSearch search);
+
 }

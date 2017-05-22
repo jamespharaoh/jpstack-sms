@@ -36,28 +36,11 @@
 			<object-settings-page
 				fields="settings"/>
 
-			<section
+			<context-link
 				name="number"
-				label="Numbers">
-
-				<context-tab-action-page
-					name="update"/>
-
-				<!--
-				<object-search-page
-					name="search"
-					object-type="numberListNumber"
-					search-fields="number-search"
-					results-fields="number-results"/>
-				-->
-
-				<context-link
-					name="history"
-					link="numberListUpdate"
-					label="History"
-					priv-key="numberList.manage"/>
-
-			</section>
+				link="numberListNumber"
+				label="Numbers"
+				priv-key="numberList.manage"/>
 
 			<object-events-page/>
 
