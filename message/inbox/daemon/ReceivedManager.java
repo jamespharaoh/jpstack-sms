@@ -158,7 +158,7 @@ class ReceivedManager
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteWithoutParameters (
+					database.beginReadWrite (
 						logContext,
 						parentTaskLogger,
 						"ReceivedThread.doMessage");
@@ -222,7 +222,7 @@ class ReceivedManager
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteWithParameters (
+					database.beginReadWrite (
 						logContext,
 						parentTaskLogger,
 						"ReceivedThread.doError",
@@ -339,7 +339,7 @@ class ReceivedManager
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnlyWithoutParameters (
+				database.beginReadOnly (
 					logContext,
 					"doQuery");
 

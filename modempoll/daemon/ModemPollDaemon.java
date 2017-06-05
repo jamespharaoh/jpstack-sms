@@ -563,7 +563,7 @@ class ModemPollDaemon
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteWithoutParameters (
+					database.beginReadWrite (
 						logContext,
 						parentTaskLogger,
 						"storePdu");
@@ -664,7 +664,7 @@ class ModemPollDaemon
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteWithoutParameters (
+					database.beginReadWrite (
 						logContext,
 						parentTaskLogger,
 						"processOne");
@@ -773,7 +773,7 @@ class ModemPollDaemon
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadWriteWithoutParameters (
+					database.beginReadWrite (
 						logContext,
 						parentTaskLogger,
 						"ProcessThread.handlePdu");

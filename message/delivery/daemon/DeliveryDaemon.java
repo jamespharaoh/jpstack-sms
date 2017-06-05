@@ -82,7 +82,7 @@ class DeliveryDaemon
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnlyWithoutParameters (
+				database.beginReadOnly (
 					logContext,
 					parentTaskLogger,
 					"setupService");
@@ -206,7 +206,7 @@ class DeliveryDaemon
 			try (
 
 				OwnedTransaction transaction =
-					database.beginReadOnlyWithoutParameters (
+					database.beginReadOnly (
 						logContext,
 						"QueryThread.pollDatabase");
 

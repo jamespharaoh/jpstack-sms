@@ -1,11 +1,11 @@
 package wbs.sms.messageset.console;
 
 import static wbs.utils.etc.LogicUtils.referenceNotEqualWithClass;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.string.StringUtils.stringIsEmpty;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 
@@ -113,7 +113,7 @@ class MessageSetAction
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadWriteWithoutParameters (
+				database.beginReadWrite (
 					logContext,
 					parentTaskLogger,
 					"goReal");

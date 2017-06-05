@@ -126,7 +126,7 @@ class AbstractSmsSender1 <MessageContainer>
 		try (
 
 			OwnedTransaction transaction =
-				database.beginReadOnlyWithoutParameters (
+				database.beginReadOnly (
 					logContext,
 					parentTaskLogger,
 					"createThreads");
@@ -270,7 +270,7 @@ class AbstractSmsSender1 <MessageContainer>
 						try (
 
 							OwnedTransaction transaction =
-								database.beginReadWriteWithoutParameters (
+								database.beginReadWrite (
 									logContext,
 									taskLogger,
 									"processMessages.loop");
@@ -445,7 +445,7 @@ class AbstractSmsSender1 <MessageContainer>
 					try (
 
 						OwnedTransaction transaction =
-							database.beginReadWriteWithoutParameters (
+							database.beginReadWrite (
 								logContext,
 								taskLogger,
 								"reliableOutboxSuccess.loop");
@@ -537,7 +537,7 @@ class AbstractSmsSender1 <MessageContainer>
 					try (
 
 						OwnedTransaction transaction =
-							database.beginReadWriteWithoutParameters (
+							database.beginReadWrite (
 								logContext,
 								taskLogger,
 								"reliableOutboxFailure.loop");
