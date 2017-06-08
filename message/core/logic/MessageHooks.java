@@ -14,7 +14,7 @@ import wbs.sms.message.core.model.MessageRec;
 
 public
 class MessageHooks
-	implements ObjectHooks<MessageRec> {
+	implements ObjectHooks <MessageRec> {
 
 	// singleton dependencies
 
