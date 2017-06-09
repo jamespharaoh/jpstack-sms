@@ -409,6 +409,7 @@ class MessageTickerUpdateAsyncHelper
 				mediaArray.add (
 					new JsonPrimitive (
 						formatWriterConsumerToString (
+							"  ",
 							formatWriter ->
 								mediaConsoleLogic.writeMediaThumb32OrText (
 									transaction,

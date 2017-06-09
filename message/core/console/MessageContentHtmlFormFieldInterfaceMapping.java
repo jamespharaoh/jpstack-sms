@@ -56,6 +56,7 @@ class MessageContentHtmlFormFieldInterfaceMapping
 
 			return successResultPresent (
 				formatWriterConsumerToString (
+					"  ",
 					formatWriter ->
 						messageConsoleLogic.writeMessageContentHtml (
 							transaction,

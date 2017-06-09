@@ -192,6 +192,7 @@ class MessageTickerManagerImplementation
 					messageTickerMessage.text =
 						spacify (
 							formatWriterConsumerToString (
+								"  ",
 								formatWriter ->
 
 						messageConsoleLogic.writeMessageContentText (

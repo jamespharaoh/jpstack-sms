@@ -56,6 +56,7 @@ class MessageContentCsvFormFieldInterfaceMapping
 
 			return successResultPresent (
 				formatWriterConsumerToString (
+					"  ",
 					formatWriter ->
 						messageConsoleLogic.writeMessageContentText (
 							transaction,
