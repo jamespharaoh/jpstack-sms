@@ -20,6 +20,7 @@ import lombok.NonNull;
 
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.console.responder.ConsoleHtmlResponder;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -33,6 +34,8 @@ import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("messageNotProcessedFormResponder")
 public
 class MessageNotProcessedFormResponder
@@ -45,6 +48,9 @@ class MessageNotProcessedFormResponder
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// state
 
@@ -93,7 +99,8 @@ class MessageNotProcessedFormResponder
 	@Override
 	protected
 	void renderHtmlHeadContents (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -105,9 +112,11 @@ class MessageNotProcessedFormResponder
 		) {
 
 			super.renderHtmlHeadContents (
-				transaction);
+				transaction,
+				formatWriter);
 
-			htmlScriptBlockOpen ();
+			htmlScriptBlockOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"top.show_inbox (true);");
@@ -121,7 +130,8 @@ class MessageNotProcessedFormResponder
 						message.getId ()),
 					"/message.notProcessed.summary"));
 
-			htmlScriptBlockClose ();
+			htmlScriptBlockClose (
+				formatWriter);
 
 		}
 
@@ -130,7 +140,8 @@ class MessageNotProcessedFormResponder
 	@Override
 	public
 	void renderHtmlBodyContents (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -144,15 +155,18 @@ class MessageNotProcessedFormResponder
 			// heading
 
 			htmlHeadingOneWrite (
+				formatWriter,
 				"Message—not processed");
 
 			// table open
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			// id
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"ID",
 				integerToDecimalString (
 					message.getId ()));
@@ -166,6 +180,7 @@ class MessageNotProcessedFormResponder
 				// error
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Error",
 					"Message is not in correct state");
 
@@ -174,10 +189,12 @@ class MessageNotProcessedFormResponder
 				// actions
 
 				htmlTableDetailsRowWriteHtml (
+					formatWriter,
 					"Actions",
 					() -> {
 
 					htmlFormOpenPostAction (
+						formatWriter,
 						requestContext.resolveLocalUrl (
 							"/message.notProcessed.form"));
 
@@ -202,7 +219,8 @@ class MessageNotProcessedFormResponder
 						" value=\"processed manually\"",
 						">");
 
-					htmlFormClose ();
+					htmlFormClose (
+						formatWriter);
 
 				});
 
@@ -210,7 +228,8 @@ class MessageNotProcessedFormResponder
 
 			// table close
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

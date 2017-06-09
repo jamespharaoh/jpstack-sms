@@ -27,6 +27,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -45,6 +46,8 @@ import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.outbox.console.FailedMessageConsoleHelper;
 import wbs.sms.message.outbox.model.FailedMessageRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageSummaryPart")
 public
@@ -76,6 +79,9 @@ class MessageSummaryPart
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -119,7 +125,8 @@ class MessageSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -132,27 +139,32 @@ class MessageSummaryPart
 
 			// open table
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			// write id
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"ID",
 				integerToDecimalString (
 					message.getId ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Thread ID",
 				integerToDecimalString (
 					message.getThreadId ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Other ID",
 				ifNull (
 					message.getOtherId (),
 					"—"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Message",
 				() -> messageConsoleLogic.writeMessageContentHtml (
 					transaction,
@@ -166,62 +178,77 @@ class MessageSummaryPart
 			) {
 
 				htmlTableDetailsRowWriteRaw (
+					formatWriter,
 					"Number from",
 					() ->
 						objectManager.writeTdForObjectMiniLink (
 							transaction,
+							formatWriter,
 							message.getNumber ()));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Number to",
 					message.getNumTo ());
 
 			} else {
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Number from",
 					message.getNumFrom ());
 
 				htmlTableDetailsRowWriteRaw (
+					formatWriter,
 					"Number to",
 					() ->
 						objectManager.writeTdForObjectMiniLink (
 							transaction,
+							formatWriter,
 							message.getNumber ()));
 
 			}
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Status",
 				message.getStatus ().getDescription ());
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Direction",
 				message.getDirection ().name ());
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Route",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getRoute ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Network",
 				message.getNetwork ().getDescription ());
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Service",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getService ()));
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Affiliate",
 				() ->
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getAffiliate ()));
 
 			if (
@@ -231,6 +258,7 @@ class MessageSummaryPart
 			) {
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time sent",
 					ifNotNullThenElseEmDash (
 						message.getNetworkTime (),
@@ -239,12 +267,14 @@ class MessageSummaryPart
 							message.getNetworkTime ())));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time received",
 					userConsoleLogic.timestampWithTimezoneString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time processed",
 					ifNotNullThenElseEmDash (
 						message.getProcessedTime (),
@@ -254,24 +284,29 @@ class MessageSummaryPart
 								message.getProcessedTime ())));
 
 				htmlTableDetailsRowWriteRaw (
+					formatWriter,
 					"Command",
 					() -> ifNotNullThenElse (
 						message.getCommand (),
 						() -> objectManager.writeTdForObjectMiniLink (
 							transaction,
+							formatWriter,
 							message.getCommand ()),
 						() -> htmlTableCellWrite (
+							formatWriter,
 							"—")));
 
 			} else {
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time created",
 					userConsoleLogic.timestampWithTimezoneString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time sent",
 					ifNotNullThenElseEmDash (
 						message.getProcessedTime (),
@@ -281,6 +316,7 @@ class MessageSummaryPart
 								message.getProcessedTime ())));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Time received",
 					ifNotNullThenElseEmDash (
 						message.getNetworkTime (),
@@ -292,6 +328,7 @@ class MessageSummaryPart
 			}
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Charge",
 				ifThenElseEmDash (
 					moreThanZero (
@@ -326,6 +363,7 @@ class MessageSummaryPart
 					) {
 
 						htmlTableDetailsRowWrite (
+							formatWriter,
 							"Media",
 							utf8ToString (
 								media.getContent ().getData ()));
@@ -333,6 +371,7 @@ class MessageSummaryPart
 					} else {
 
 						htmlTableDetailsRowWriteRaw (
+							formatWriter,
 							"Media",
 							() -> {
 
@@ -340,12 +379,14 @@ class MessageSummaryPart
 								"<td>");
 
 							htmlLinkWriteHtml (
+								formatWriter,
 								requestContext.resolveLocalUrlFormat (
 									"/message.mediaSummary?index=%u",
 									integerToDecimalString (
 										mediaIndex)),
 								() -> mediaConsoleLogic.writeMediaThumb100 (
 									transaction,
+									formatWriter,
 									media));
 
 							formatWriter.writeLineFormatDecreaseIndent (
@@ -360,6 +401,7 @@ class MessageSummaryPart
 			}
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Tags",
 				joinWithCommaAndSpace (
 					message.getTags ()));
@@ -370,30 +412,40 @@ class MessageSummaryPart
 			) {
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Failure reason",
 					failedMessageOptional.get ().getError ());
 
 			}
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"User",
 				() -> ifNotNullThenElse (
 					message.getUser (),
 					() -> objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getUser ()),
-					() -> htmlTableCellWrite ("—")));
+					() -> htmlTableCellWrite (
+						formatWriter,
+						"—")));
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Delivery type",
 				() -> ifNotNullThenElse (
 					message.getDeliveryType (),
 					() -> objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getDeliveryType ()),
-					() -> htmlTableCellWrite ("—")));
+					() -> htmlTableCellWrite (
+						formatWriter,
+						"—")));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

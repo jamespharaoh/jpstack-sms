@@ -19,6 +19,7 @@ import lombok.experimental.Accessors;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -30,6 +31,8 @@ import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.sms.number.list.model.NumberListRec;
+
+import wbs.utils.string.FormatWriter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("numberListNumberCopyPart")
@@ -50,6 +53,9 @@ class NumberListNumberCopyPart
 
 	@SingletonDependency
 	UserPrivChecker privChecker;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// state
 
@@ -120,7 +126,8 @@ class NumberListNumberCopyPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -132,17 +139,20 @@ class NumberListNumberCopyPart
 		) {
 
 			goDetails (
-				transaction);
+				transaction,
+				formatWriter);
 
 			goForm (
-				transaction);
+				transaction,
+				formatWriter);
 
 		}
 
 	}
 
 	void goDetails (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -153,21 +163,25 @@ class NumberListNumberCopyPart
 
 		) {
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Numbers",
 				integerToDecimalString (
 					thisNumberList.getNumberCount ()));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 
 	}
 
 	void goForm (
-			@NonNull TaskLogger parentTaskLogger) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -180,11 +194,13 @@ class NumberListNumberCopyPart
 
 			// form open
 
-			htmlFormOpenPost ();
+			htmlFormOpenPost (
+				formatWriter);
 
 			// number list
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"Number list<br>");
@@ -198,11 +214,13 @@ class NumberListNumberCopyPart
 				requestContext.parameterOrEmptyString (
 					"numbers"));
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// controls
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			if (
 				privChecker.canRecursive (
@@ -236,11 +254,13 @@ class NumberListNumberCopyPart
 
 			}
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// form close
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 

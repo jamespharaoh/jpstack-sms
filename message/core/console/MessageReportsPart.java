@@ -28,6 +28,8 @@ import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.report.model.MessageReportRec;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("messageReportsPart")
 public
 class MessageReportsPart
@@ -83,7 +85,8 @@ class MessageReportsPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -94,9 +97,11 @@ class MessageReportsPart
 
 		) {
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Time",
 				null,
 				"Status",
@@ -105,13 +110,16 @@ class MessageReportsPart
 
 			if (messageReports.isEmpty ()) {
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					"No reports",
 					htmlColumnSpanAttribute (5l));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 			} else {
 
@@ -120,14 +128,17 @@ class MessageReportsPart
 						: messageReports
 				) {
 
-					htmlTableRowOpen ();
+					htmlTableRowOpen (
+						formatWriter);
 
 					htmlTableCellWrite (
+						formatWriter,
 						userConsoleLogic.timestampWithTimezoneString (
 							transaction,
 							messageReport.getReceivedTime ()));
 
 					htmlTableCellWrite (
+						formatWriter,
 						userConsoleLogic.prettyDuration (
 							transaction,
 							message.getProcessedTime (),
@@ -139,22 +150,26 @@ class MessageReportsPart
 						messageReport.getNewMessageStatus ());
 
 					htmlTableCellWrite (
+						formatWriter,
 						ifNotNullThenElseEmDash (
 							messageReport.getTheirCode (),
 							() -> messageReport.getTheirCode ().getText ()));
 
 					htmlTableCellWrite (
+						formatWriter,
 						ifNotNullThenElseEmDash (
 							messageReport.getTheirDescription (),
 							() -> messageReport.getTheirDescription ().getText ()));
 
-					htmlTableRowClose ();
+					htmlTableRowClose (
+						formatWriter);
 
 				}
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

@@ -41,6 +41,7 @@ import lombok.experimental.Accessors;
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -54,6 +55,8 @@ import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.string.FormatWriter;
+
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSetPart")
 public
@@ -64,6 +67,9 @@ class MessageSetPart
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -213,13 +219,16 @@ class MessageSetPart
 
 	public
 	void goRow (
-			long row) {
+			@NonNull FormatWriter formatWriter,
+			@NonNull Long row) {
 
-		htmlTableRowOpen ();
+		htmlTableRowOpen (
+			formatWriter);
 
 		// output checkbox
 
 		htmlTableCellOpen (
+			formatWriter,
 			htmlRowSpanAttribute (2l));
 
 		formatWriter.writeLineFormat (
@@ -237,11 +246,13 @@ class MessageSetPart
 			" onclick=\"form_magic ()\"",
 			">");
 
-		htmlTableCellClose ();
+		htmlTableCellClose (
+			formatWriter);
 
 		// output i
 
 		htmlTableCellWrite (
+			formatWriter,
 			integerToDecimalString (
 				row + 1));
 
@@ -251,9 +262,11 @@ class MessageSetPart
 			formData.get (
 				"route_" + row);
 
-		htmlTableCellOpen ();
+		htmlTableCellOpen (
+			formatWriter);
 
 		htmlSelectOpen (
+			formatWriter,
 			stringFormat (
 				"route_%s",
 				integerToDecimalString (
@@ -263,7 +276,8 @@ class MessageSetPart
 				integerToDecimalString (
 					row)));
 
-		htmlOptionWrite ();
+		htmlOptionWrite (
+			formatWriter);
 
 		for (
 			RouteRec route
@@ -271,6 +285,7 @@ class MessageSetPart
 		) {
 
 			htmlOptionWrite (
+				formatWriter,
 
 				integerToDecimalString (
 					route.getId ()),
@@ -289,11 +304,13 @@ class MessageSetPart
 
 		}
 
-		htmlSelectClose ();
+		htmlSelectClose (
+			formatWriter);
 
 		// output number
 
-		htmlTableCellOpen ();
+		htmlTableCellOpen (
+			formatWriter);
 
 		formatWriter.writeLineFormat (
 			"<input",
@@ -309,11 +326,13 @@ class MessageSetPart
 			formData.get ("number_" + row),
 			">");
 
-		htmlTableCellClose ();
+		htmlTableCellClose (
+			formatWriter);
 
 		// output chars
 
-		htmlTableCellOpen ();
+		htmlTableCellOpen (
+			formatWriter);
 
 		formatWriter.writeLineFormat (
 			"<span",
@@ -322,15 +341,19 @@ class MessageSetPart
 				row),
 			">&nbsp;</span>");
 
-		htmlTableCellClose ();
+		htmlTableCellClose (
+			formatWriter);
 
-		htmlTableRowClose ();
+		htmlTableRowClose (
+			formatWriter);
 
 		// output second row
 
-		htmlTableRowOpen ();
+		htmlTableRowOpen (
+			formatWriter);
 
 		htmlTableCellOpen (
+			formatWriter,
 			htmlColumnSpanAttribute (4l));
 
 		formatWriter.writeLineFormat (
@@ -357,16 +380,19 @@ class MessageSetPart
 			formData.get (
 				"message_" + row));
 
-		htmlTableCellClose ();
+		htmlTableCellClose (
+			formatWriter);
 
-		htmlTableRowClose ();
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -377,7 +403,8 @@ class MessageSetPart
 
 		) {
 
-			htmlFormOpenPost ();
+			htmlFormOpenPost (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"<input",
@@ -394,9 +421,11 @@ class MessageSetPart
 				" value=\"save changes\"",
 				">");
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"",
 				"i",
 				"Route",
@@ -404,21 +433,25 @@ class MessageSetPart
 				"Chars");
 
 			for (
-				int index = 0;
+				long index = 0l;
 				index < numMessages;
 				index ++
 			) {
 
-				htmlTableRowSeparatorWrite ();
+				htmlTableRowSeparatorWrite (
+					formatWriter);
 
 				goRow (
+					formatWriter,
 					index);
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"<input",
@@ -426,13 +459,17 @@ class MessageSetPart
 				" value=\"save changes\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 			htmlScriptBlockWrite (
+				formatWriter,
 				"form_magic ()");
 
 		}

@@ -1,10 +1,10 @@
 package wbs.sms.message.stats.console;
 
 import static wbs.utils.etc.Misc.toEnum;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
-import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphClose;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphOpen;
@@ -34,6 +34,7 @@ import lombok.experimental.Accessors;
 import wbs.console.html.HtmlLink;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 
@@ -45,6 +46,7 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
+import wbs.utils.string.FormatWriter;
 import wbs.utils.time.TimeFormatter;
 
 import wbs.web.misc.UrlParams;
@@ -59,6 +61,9 @@ class GenericMessageStatsPart
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	SmsStatsDailyTimeScheme smsStatsDailyTimeScheme;
@@ -370,7 +375,8 @@ class GenericMessageStatsPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -389,7 +395,8 @@ class GenericMessageStatsPart
 
 			if (criteriaInfo.size () > 0) {
 
-				htmlTableOpenDetails ();
+				htmlTableOpenDetails (
+					formatWriter);
 
 				for (
 					Map.Entry <String, String> entry
@@ -403,16 +410,19 @@ class GenericMessageStatsPart
 						entry.getValue ();
 
 					htmlTableDetailsRowWrite (
+						formatWriter,
 						name,
 						value);
 
 				}
 
-				htmlTableClose ();
+				htmlTableClose (
+					formatWriter);
 
 			}
 
 			htmlFormOpenGetAction (
+				formatWriter,
 				url);
 
 			UrlParams myUrlParams =
@@ -425,7 +435,8 @@ class GenericMessageStatsPart
 			urlParams.printHidden (
 				formatWriter);
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"Date<br>");
@@ -444,14 +455,17 @@ class GenericMessageStatsPart
 				" value=\"ok\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 			if (! ready)
 				return;
 
 			htmlParagraphOpen (
+				formatWriter,
 				htmlClassAttribute (
 					"links"));
 
@@ -469,6 +483,7 @@ class GenericMessageStatsPart
 						dateField.date.minusWeeks (1)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Prev week");
 
@@ -478,6 +493,7 @@ class GenericMessageStatsPart
 						dateField.date.plusWeeks (1)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Next week");
 
@@ -495,6 +511,7 @@ class GenericMessageStatsPart
 						dateField.date.minusDays (49)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Prev weeks");
 
@@ -504,6 +521,7 @@ class GenericMessageStatsPart
 						dateField.date.plusDays (49)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Next weeks");
 
@@ -521,6 +539,7 @@ class GenericMessageStatsPart
 						dateField.date.minusMonths (6)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Prev months");
 
@@ -530,13 +549,15 @@ class GenericMessageStatsPart
 						dateField.date.plusMonths (6)));
 
 				htmlLinkWrite (
+					formatWriter,
 					myUrlParams.toUrl (url),
 					"Next months");
 
 				break;
 			}
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			UrlParams groupedUrlParams =
 				new UrlParams (urlParams);

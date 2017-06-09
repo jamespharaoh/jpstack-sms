@@ -26,6 +26,8 @@ import wbs.platform.user.console.UserConsoleLogic;
 
 import wbs.sms.number.core.model.NumberRec;
 
+import wbs.utils.string.FormatWriter;
+
 @Accessors (fluent = true)
 @PrototypeComponent ("numberSubscriptionsPart")
 public
@@ -91,7 +93,8 @@ class NumberSubscriptionsPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 

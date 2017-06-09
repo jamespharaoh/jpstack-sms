@@ -1,7 +1,5 @@
 package wbs.sms.route.core.console;
 
-import static wbs.utils.collection.MapUtils.emptyMap;
-
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
@@ -15,6 +13,8 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.route.core.model.RouteRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("routeSummaryAdditionalPart")
 public
@@ -66,10 +66,6 @@ class RouteSummaryAdditionalPart
 
 			if (summaryAdditionalPart != null) {
 
-				summaryAdditionalPart.setup (
-					transaction,
-					emptyMap ());
-
 				summaryAdditionalPart.prepare (
 					transaction);
 
@@ -82,7 +78,8 @@ class RouteSummaryAdditionalPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -96,7 +93,8 @@ class RouteSummaryAdditionalPart
 			if (summaryAdditionalPart != null) {
 
 				summaryAdditionalPart.renderHtmlBodyContent (
-					transaction);
+					transaction,
+					formatWriter);
 
 			}
 

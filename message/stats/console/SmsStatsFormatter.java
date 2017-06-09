@@ -47,7 +47,7 @@ import wbs.sms.route.core.model.RouteRec;
 
 import wbs.utils.etc.PropertyUtils;
 import wbs.utils.string.FormatWriter;
-import wbs.utils.string.StringFormatWriter;
+import wbs.utils.string.LazyFormatWriter;
 
 /**
  * Responsible for outputing standardised tables of message statistics. Requires
@@ -320,7 +320,8 @@ class SmsStatsFormatter {
 			htmlColumnSpanAttribute (
 				colSpan));
 
-		htmlTableRowClose ();
+		htmlTableRowClose (
+			formatWriter);
 
 	}
 
@@ -391,8 +392,8 @@ class SmsStatsFormatter {
 
 			try (
 
-				StringFormatWriter buffer =
-					formatWriter.stringBuffer ();
+				LazyFormatWriter buffer =
+					new LazyFormatWriter ();
 
 			) {
 

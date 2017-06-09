@@ -8,12 +8,16 @@ import static wbs.web.utils.HtmlFormUtils.htmlFormOpenPost;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("magicNumberUpdatePart")
 public
@@ -25,12 +29,16 @@ class MagicNumberUpdatePart
 	@ClassSingletonDependency
 	LogContext logContext;
 
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
+
 	// implementation
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -43,11 +51,13 @@ class MagicNumberUpdatePart
 
 			// form open
 
-			htmlFormOpenPost ();
+			htmlFormOpenPost (
+				formatWriter);
 
 			// numbers
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeFormat (
 				"Numbers<br>");
@@ -61,11 +71,13 @@ class MagicNumberUpdatePart
 				requestContext.parameterOrEmptyString (
 					"numbers"));
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// form controls
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeFormat (
 				"<input",
@@ -81,11 +93,13 @@ class MagicNumberUpdatePart
 				" value=\"delete magic numbers\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// form close
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 

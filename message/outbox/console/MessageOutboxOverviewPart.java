@@ -23,6 +23,7 @@ import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.module.ConsoleModule;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NamedDependency;
@@ -37,6 +38,7 @@ import wbs.sms.message.outbox.model.RouteOutboxSummaryObjectHelper;
 import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.string.FormatWriter;
 import wbs.utils.time.TimeFormatter;
 
 @PrototypeComponent ("messageOutboxOverviewPart")
@@ -55,6 +57,9 @@ class MessageOutboxOverviewPart
 	@SingletonDependency
 	@NamedDependency
 	ConsoleModule messageOutboxConsoleModule;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteOutboxSummaryObjectHelper routeOutboxSummaryHelper;
@@ -121,7 +126,8 @@ class MessageOutboxOverviewPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -132,9 +138,11 @@ class MessageOutboxOverviewPart
 
 		) {
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Route",
 				"Messages",
 				"Oldest");
@@ -148,6 +156,7 @@ class MessageOutboxOverviewPart
 					routeOutboxSummary.getRoute ();
 
 				htmlTableRowOpen (
+					formatWriter,
 					htmlClassAttribute (
 						"magic-table-row"),
 					htmlDataAttribute (
@@ -159,22 +168,27 @@ class MessageOutboxOverviewPart
 								route.getId ()))));
 
 				htmlTableCellWrite (
+					formatWriter,
 					route.getCode ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						routeOutboxSummary.getNumMessages ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					timeFormatter.prettyDuration (
 						routeOutboxSummary.getOldestTime (),
 						transaction.now ()));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

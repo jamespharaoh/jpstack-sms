@@ -17,12 +17,16 @@ import lombok.NonNull;
 import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageStatusLinePart")
 public
@@ -33,6 +37,9 @@ class MessageStatusLinePart
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// details
 
@@ -54,7 +61,8 @@ class MessageStatusLinePart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -66,10 +74,12 @@ class MessageStatusLinePart
 		) {
 
 			renderInboxRow (
-				transaction);
+				transaction,
+				formatWriter);
 
 			renderOutboxRow (
-				transaction);
+				transaction,
+				formatWriter);
 
 		}
 
@@ -77,7 +87,8 @@ class MessageStatusLinePart
 
 	private
 	void renderInboxRow (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -89,6 +100,7 @@ class MessageStatusLinePart
 		) {
 
 			htmlTableRowOpen (
+				formatWriter,
 
 				htmlIdAttribute (
 					"inboxRow"),
@@ -114,11 +126,13 @@ class MessageStatusLinePart
 			);
 
 			htmlTableCellWrite (
+				formatWriter,
 				"—",
 				htmlIdAttribute (
 					"inboxCell"));
 
-			htmlTableRowClose ();
+			htmlTableRowClose (
+				formatWriter);
 
 		}
 
@@ -126,7 +140,8 @@ class MessageStatusLinePart
 
 	private
 	void renderOutboxRow (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -138,6 +153,7 @@ class MessageStatusLinePart
 		) {
 
 			htmlTableRowOpen (
+				formatWriter,
 
 				htmlIdAttribute (
 					"outboxRow"),
@@ -163,11 +179,13 @@ class MessageStatusLinePart
 			);
 
 			htmlTableCellWrite (
+				formatWriter,
 				"—",
 				htmlIdAttribute (
 					"outboxCell"));
 
-			htmlTableRowClose ();
+			htmlTableRowClose (
+				formatWriter);
 
 		}
 

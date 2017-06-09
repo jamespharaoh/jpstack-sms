@@ -17,6 +17,7 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -30,6 +31,8 @@ import wbs.platform.media.logic.MediaLogic;
 import wbs.platform.media.model.MediaRec;
 
 import wbs.sms.message.core.model.MessageRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageMediaSummaryPart")
 public
@@ -49,6 +52,9 @@ class MessageMediaSummaryPart
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// state
 
@@ -97,7 +103,8 @@ class MessageMediaSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -108,17 +115,21 @@ class MessageMediaSummaryPart
 
 		) {
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Filename",
 				media.getFilename ());
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Type",
 				media.getMediaType ().getMimeType ());
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Size",
 				prettySize (
 					media.getContent ().getData ().length));
@@ -133,12 +144,14 @@ class MessageMediaSummaryPart
 						imageOptional);
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Width",
 					integerToDecimalString (
 						fromJavaInteger (
 							image.getWidth ())));
 
 				htmlTableDetailsRowWrite (
+					formatWriter,
 					"Height",
 					integerToDecimalString (
 						fromJavaInteger (
@@ -147,14 +160,17 @@ class MessageMediaSummaryPart
 			}
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Content",
 				() -> mediaConsoleLogic.writeMediaContentScaled (
 					transaction,
+					formatWriter,
 					media,
 					600,
 					600));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

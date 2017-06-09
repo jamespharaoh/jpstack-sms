@@ -4,9 +4,9 @@ import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumInSafe;
 import static wbs.utils.etc.EnumUtils.enumNotInSafe;
 import static wbs.utils.etc.NullUtils.isNotNull;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
-import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphWriteFormat;
 
 import com.google.common.base.Optional;
@@ -154,6 +154,7 @@ class MessageManuallyRetryFormActionHelper
 			if (submit) {
 
 				htmlParagraphWriteFormat (
+					formatWriter,
 					"This outbound message is in the \"%h\" ",
 					smsMessage.getStatus ().getDescription (),
 					"state, and can be manually retried.");
@@ -161,6 +162,7 @@ class MessageManuallyRetryFormActionHelper
 			} else {
 
 				htmlParagraphWriteFormat (
+					formatWriter,
 					"This outbound message is in the \"%h\" ",
 					smsMessage.getStatus ().getDescription (),
 					"state, but is currently being sent, so no action can be ",

@@ -2,7 +2,7 @@ package wbs.sms.message.inbox.console;
 
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatLazy;
 import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlRowSpanAttribute;
 import static wbs.web.utils.HtmlFormUtils.htmlFormClose;
@@ -35,6 +35,8 @@ import wbs.platform.user.console.UserConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.inbox.model.InboxObjectHelper;
 import wbs.sms.message.inbox.model.InboxRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageInboxSummaryPart")
 public
@@ -87,7 +89,8 @@ class MessageInboxSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -98,11 +101,14 @@ class MessageInboxSummaryPart
 
 		) {
 
-			htmlFormOpenPost ();
+			htmlFormOpenPost (
+				formatWriter);
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Message",
 				"From",
 				"To",
@@ -117,46 +123,56 @@ class MessageInboxSummaryPart
 					: inboxes
 			) {
 
-				htmlTableRowSeparatorWrite ();
+				htmlTableRowSeparatorWrite (
+					formatWriter);
 
 				// message
 
 				MessageRec message =
 					inbox.getMessage ();
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				objectManager.writeTdForObjectMiniLink (
 					transaction,
+					formatWriter,
 					message);
 
 				objectManager.writeTdForObjectMiniLink (
 					transaction,
+					formatWriter,
 					message.getNumber ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getNumTo ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					userConsoleLogic.timestampWithoutTimezoneString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						inbox.getNumAttempts ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					userConsoleLogic.timestampWithoutTimezoneString (
 						transaction,
 						inbox.getNextAttempt ()));
 
 				objectManager.writeTdForObjectMiniLink (
 					transaction,
+					formatWriter,
 					message.getRoute ());
 
 				htmlTableCellWriteHtml (
-					stringFormat (
+					formatWriter,
+					stringFormatLazy (
 						"<input",
 						" type=\"submit\"",
 						" name=\"ignore_%h\"",
@@ -166,17 +182,21 @@ class MessageInboxSummaryPart
 						">"),
 					htmlRowSpanAttribute (3l));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				// message text
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getText ().getText (),
 					htmlColumnSpanAttribute (7l));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				// status message
 
@@ -185,21 +205,26 @@ class MessageInboxSummaryPart
 						inbox.getStatusMessage ())
 				) {
 
-					htmlTableRowOpen ();
+					htmlTableRowOpen (
+						formatWriter);
 
 					htmlTableCellWrite (
+						formatWriter,
 						inbox.getStatusMessage (),
 						htmlColumnSpanAttribute (7l));
 
-					htmlTableRowClose ();
+					htmlTableRowClose (
+						formatWriter);
 
 				}
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 

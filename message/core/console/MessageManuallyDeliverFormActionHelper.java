@@ -121,6 +121,7 @@ class MessageManuallyDeliverFormActionHelper
 					transaction);
 
 			htmlParagraphWriteFormat (
+				formatWriter,
 				"This outbound message is in the \"%h\" ",
 				smsMessage.getStatus ().getDescription (),
 				"state, and can be manually delivered.");

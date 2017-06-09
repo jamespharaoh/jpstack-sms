@@ -222,9 +222,11 @@ class SmsStatsWeeklyTimeScheme
 			htmlColumnSpanAttribute (
 				cols));
 
-		htmlTableRowClose ();
+		htmlTableRowClose (
+			formatWriter);
 
-		htmlTableRowOpen ();
+		htmlTableRowOpen (
+			formatWriter);
 
 		for (
 			long week = 0l;

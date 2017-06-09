@@ -1,5 +1,6 @@
 package wbs.sms.message.ticker.console;
 
+import static wbs.utils.etc.Misc.doNothing;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlColumnSpanAttribute;
 import static wbs.web.utils.HtmlAttributeUtils.htmlIdAttribute;
@@ -32,6 +33,8 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("messageTickerResponder")
 public
 class MessageTickerResponder
@@ -48,6 +51,15 @@ class MessageTickerResponder
 	LogContext logContext;
 
 	// implementation
+
+	@Override
+	protected
+	void prepare (
+			@NonNull Transaction parentTransaction) {
+
+		doNothing ();
+
+	}
 
 	@Override
 	protected
@@ -80,7 +92,8 @@ class MessageTickerResponder
 	@Override
 	public
 	void renderHtmlBodyContents (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -94,17 +107,21 @@ class MessageTickerResponder
 			// heading
 
 			htmlHeadingTwoWrite (
+				formatWriter,
 				"Message ticker");
 
 			// table
 
 			htmlTableOpenList (
+				formatWriter,
 				htmlIdAttribute (
 					"tickerTable"));
 
-			htmlTableHeadOpen ();
+			htmlTableHeadOpen (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"",
 				"Time",
 				"From",
@@ -112,23 +129,30 @@ class MessageTickerResponder
 				"Message",
 				"S");
 
-			htmlTableHeadClose ();
+			htmlTableHeadClose (
+				formatWriter);
 
-			htmlTableBodyOpen ();
+			htmlTableBodyOpen (
+				formatWriter);
 
 			htmlTableRowOpen (
+				formatWriter,
 				htmlClassAttribute (
 					"message-ticker-loading"));
 
 			htmlTableCellWrite (
+				formatWriter,
 				"Loading, please wait...",
 				htmlColumnSpanAttribute (6l));
 
-			htmlTableRowClose ();
+			htmlTableRowClose (
+				formatWriter);
 
-			htmlTableBodyClose ();
+			htmlTableBodyClose (
+				formatWriter);
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

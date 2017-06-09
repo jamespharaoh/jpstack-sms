@@ -26,6 +26,8 @@ import wbs.platform.service.model.ServiceRec;
 import wbs.sms.message.core.console.MessageConsoleHelper;
 import wbs.sms.number.core.model.NumberRec;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("numberServicesPart")
 public
 class NumberServicesPart
@@ -95,7 +97,8 @@ class NumberServicesPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 

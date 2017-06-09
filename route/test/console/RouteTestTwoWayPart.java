@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -42,6 +43,8 @@ import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("routeTestTwoWayPart")
 public
 class RouteTestTwoWayPart
@@ -54,6 +57,9 @@ class RouteTestTwoWayPart
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -119,7 +125,8 @@ class RouteTestTwoWayPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -131,6 +138,7 @@ class RouteTestTwoWayPart
 		) {
 
 			htmlParagraphWriteFormat (
+				formatWriter,
 				"This facility can be used to insert an inbound message into ",
 				"the system, which will then be treated exactly as if we had ",
 				"received it from the aggregator. It will also show messages ",
@@ -138,6 +146,7 @@ class RouteTestTwoWayPart
 				"several messages in and out.");
 
 			htmlParagraphWriteFormatWarning (
+				formatWriter,
 				"Please note, that this is intended primarily for testing, ",
 				"and any other usage should instead be performed using a ",
 				"separate facility designed for that specific purpose.");
@@ -145,6 +154,7 @@ class RouteTestTwoWayPart
 			if (! route.getCanReceive ()) {
 
 				htmlParagraphWriteFormatError (
+					formatWriter,
 					"This route is not configured for inbound messages, and ",
 					"so this facility is not available.");
 
@@ -153,12 +163,15 @@ class RouteTestTwoWayPart
 			}
 
 			htmlFormOpenPostAction (
+				formatWriter,
 				requestContext.resolveLocalUrl (
 					"/route.test.twoWay"));
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Num from",
 				stringFormat (
 					"<input",
@@ -171,6 +184,7 @@ class RouteTestTwoWayPart
 					">"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Num to",
 				stringFormat (
 					"<input",
@@ -183,6 +197,7 @@ class RouteTestTwoWayPart
 					">"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Message",
 				stringFormat (
 					"<textarea",
@@ -191,9 +206,11 @@ class RouteTestTwoWayPart
 					" cols=\"64\"",
 					"></textarea>"));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"<input",
@@ -201,16 +218,20 @@ class RouteTestTwoWayPart
 				" value=\"send message\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			if (messages != null && messages.size () > 0) {
 
 				htmlHeadingThreeWrite (
+					formatWriter,
 					"Messages");
 
-				htmlTableOpenList ();
+				htmlTableOpenList (
+					formatWriter);
 
 				htmlTableHeaderRowWrite (
+					formatWriter,
 					"Number",
 					"Message");
 
@@ -219,25 +240,31 @@ class RouteTestTwoWayPart
 						: messages
 				) {
 
-					htmlTableRowOpen ();
+					htmlTableRowOpen (
+						formatWriter);
 
 					htmlTableCellWrite (
+						formatWriter,
 						message.getDirection () == MessageDirection.in
 							? message.getNumTo ()
 							: message.getNumFrom ());
 
 					htmlTableCellWrite (
+						formatWriter,
 						message.getText ().getText ());
 
-					htmlTableCellClose ();
+					htmlTableCellClose (
+						formatWriter);
 
 				}
 
-				htmlTableClose ();
+				htmlTableClose (
+					formatWriter);
 
 			}
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 

@@ -24,6 +24,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -40,6 +41,8 @@ import wbs.sms.message.outbox.model.OutboxRec;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("messageOutboxRoutePart")
 public
 class MessageOutboxRoutePart
@@ -55,6 +58,9 @@ class MessageOutboxRoutePart
 
 	@SingletonDependency
 	OutboxConsoleHelper outboxHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -102,7 +108,8 @@ class MessageOutboxRoutePart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -120,9 +127,11 @@ class MessageOutboxRoutePart
 
 			}
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Id",
 				"Created",
 				"Tries",
@@ -132,13 +141,16 @@ class MessageOutboxRoutePart
 
 			if (outboxes.size () == 0) {
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					"Nothing to display",
 					htmlColumnSpanAttribute (6l));
 
-				htmlTableCellClose ();
+				htmlTableCellClose (
+					formatWriter);
 
 			}
 
@@ -150,20 +162,25 @@ class MessageOutboxRoutePart
 				MessageRec message =
 					outbox.getMessage ();
 
-				htmlTableRowSeparatorWrite ();
+				htmlTableRowSeparatorWrite (
+					formatWriter);
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						outbox.getId ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					userConsoleLogic.timestampWithTimezoneString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						outbox.getTries ()));
 
@@ -175,11 +192,13 @@ class MessageOutboxRoutePart
 
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getNumber ());
 
 				} else {
 
 					htmlTableCellWrite (
+						formatWriter,
 						message.getNumFrom ());
 
 				}
@@ -192,11 +211,13 @@ class MessageOutboxRoutePart
 
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
+						formatWriter,
 						message.getNumber ());
 
 				} else {
 
 					htmlTableCellWrite (
+						formatWriter,
 						message.getNumTo ());
 
 				}
@@ -207,10 +228,12 @@ class MessageOutboxRoutePart
 						: 2;
 
 				htmlTableCellOpen (
+					formatWriter,
 					htmlRowSpanAttribute (
 						rowSpan));
 
 				htmlFormOpenPostAction (
+					formatWriter,
 					requestContext.resolveLocalUrlFormat (
 						"/outbox.route",
 						"?routeId=%u",
@@ -240,21 +263,27 @@ class MessageOutboxRoutePart
 					" value=\"retry\"",
 					">");
 
-				htmlFormClose ();
+				htmlFormClose (
+					formatWriter);
 
-				htmlTableCellClose ();
+				htmlTableCellClose (
+					formatWriter);
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				// row 3 - message text
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getText ().getText (),
 					htmlColumnSpanAttribute (5l));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				// row 4 - error
 
@@ -263,19 +292,23 @@ class MessageOutboxRoutePart
 						outbox.getError ())
 				) {
 
-					htmlTableRowOpen ();
+					htmlTableRowOpen (
+						formatWriter);
 
 					htmlTableCellWrite (
+						formatWriter,
 						outbox.getError (),
 						htmlColumnSpanAttribute (5l));
 
-					htmlTableRowClose ();
+					htmlTableRowClose (
+						formatWriter);
 
 				}
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

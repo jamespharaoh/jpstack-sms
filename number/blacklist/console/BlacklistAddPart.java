@@ -12,12 +12,16 @@ import static wbs.web.utils.HtmlTableUtils.htmlTableOpenDetails;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("blacklistAddPart")
 public
@@ -29,12 +33,16 @@ class BlacklistAddPart
 	@ClassSingletonDependency
 	LogContext logContext;
 
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
+
 	// implementation
 
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -45,14 +53,17 @@ class BlacklistAddPart
 
 		) {
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlFormOpenMethodAction (
+				formatWriter,
 				"post",
 				requestContext.resolveLocalUrl (
 					"/blacklist.add"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Number",
 				stringFormat (
 					"<input",
@@ -61,6 +72,7 @@ class BlacklistAddPart
 					">"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Reason",
 				stringFormat (
 					"<textarea",
@@ -69,9 +81,11 @@ class BlacklistAddPart
 					" cols=\"48\"",
 					"></textarea>"));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"<input",
@@ -80,11 +94,14 @@ class BlacklistAddPart
 				" value=\"Blacklist\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

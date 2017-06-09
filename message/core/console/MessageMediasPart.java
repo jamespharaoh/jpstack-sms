@@ -26,6 +26,7 @@ import wbs.console.html.MagicTableScriptRef;
 import wbs.console.html.ScriptRef;
 import wbs.console.misc.JqueryScriptRef;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -38,6 +39,8 @@ import wbs.platform.media.console.MediaConsoleLogic;
 import wbs.platform.media.model.MediaRec;
 
 import wbs.sms.message.core.model.MessageRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageMediasPart")
 public
@@ -54,6 +57,9 @@ class MessageMediasPart
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// state
 
@@ -111,7 +117,8 @@ class MessageMediasPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -122,9 +129,11 @@ class MessageMediasPart
 
 		) {
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Thumbnail",
 				"Type",
 				"Filename",
@@ -132,13 +141,16 @@ class MessageMediasPart
 
 			if (medias.size () == 0) {
 
-				htmlTableRowOpen ();
+				htmlTableRowOpen (
+					formatWriter);
 
 				htmlTableCellWrite (
+					formatWriter,
 					"(no media)",
 					htmlColumnSpanAttribute (4l));
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 			} else {
 
@@ -152,6 +164,7 @@ class MessageMediasPart
 						medias.get (index);
 
 					htmlTableRowOpen (
+						formatWriter,
 						htmlClassAttribute (
 							"magic-table-row"),
 						htmlDataAttribute (
@@ -162,32 +175,40 @@ class MessageMediasPart
 								integerToDecimalString (
 									index))));
 
-					htmlTableCellOpen ();
+					htmlTableCellOpen (
+						formatWriter);
 
 					mediaConsoleLogic.writeMediaThumb100 (
 						transaction,
+						formatWriter,
 						media);
 
-					htmlTableCellClose ();
+					htmlTableCellClose (
+						formatWriter);
 
 					htmlTableCellWrite (
+						formatWriter,
 						media.getMediaType ().getMimeType ());
 
 					htmlTableCellWrite (
+						formatWriter,
 						ifNullThenEmDash (
 							media.getFilename ()));
 
 					htmlTableCellWrite (
+						formatWriter,
 						prettySize (
 							media.getContent().getData ().length));
 
-					htmlTableRowClose ();
+					htmlTableRowClose (
+						formatWriter);
 
 				}
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

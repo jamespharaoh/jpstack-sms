@@ -29,6 +29,8 @@ import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("messageNotProcessedSummaryPart")
 public
 class MessageNotProcessedSummaryPart
@@ -82,7 +84,8 @@ class MessageNotProcessedSummaryPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -106,32 +109,40 @@ class MessageNotProcessedSummaryPart
 
 			}
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"ID",
 				integerToDecimalString (
 					message.getId ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"From",
 				message.getNumFrom ());
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"To",
 				message.getNumTo ());
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Message",
 				message.getText ().getText ());
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Route",
 				() -> objectManager.writeTdForObjectMiniLink (
 					transaction,
+					formatWriter,
 					message.getRoute ()));
 
 			htmlTableDetailsRowWriteRaw (
+				formatWriter,
 				"Status",
 				() -> messageConsoleLogic.writeTdForMessageStatus (
 					transaction,
@@ -139,6 +150,7 @@ class MessageNotProcessedSummaryPart
 					message.getStatus ()));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Time sent",
 				ifNotNullThenElseEmDash (
 					message.getNetworkTime (),
@@ -147,22 +159,26 @@ class MessageNotProcessedSummaryPart
 						message.getNetworkTime ())));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Time received",
 				userConsoleLogic.timestampWithTimezoneString (
 					transaction,
 					message.getCreatedTime ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Charge",
 				integerToDecimalString (
 					message.getCharge ()));
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"AV status",
 				ifNullThenEmDash (
 					message.getAdultVerified ()));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

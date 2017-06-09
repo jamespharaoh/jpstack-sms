@@ -1,9 +1,9 @@
 package wbs.sms.object.messages;
 
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalOr;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
-import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.time.TimeUtils.instantToDateNullSafe;
 import static wbs.web.utils.HtmlAttributeUtils.htmlAttribute;
@@ -39,6 +39,7 @@ import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.html.ObsoleteDateField;
 import wbs.console.html.ObsoleteDateLinks;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 import wbs.console.tab.Tab;
 import wbs.console.tab.TabList;
 
@@ -61,6 +62,8 @@ import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.model.MessageRec;
 
+import wbs.utils.string.FormatWriter;
+
 @Accessors (fluent = true)
 @PrototypeComponent ("objectSmsMessagesPart")
 public
@@ -80,6 +83,9 @@ class ObjectSmsMessagesPart
 
 	@SingletonDependency
 	MessageConsoleLogic messageConsoleLogic;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -242,7 +248,8 @@ class ObjectSmsMessagesPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -263,6 +270,7 @@ class ObjectSmsMessagesPart
 					localName);
 
 			htmlFormOpenGetAction (
+				formatWriter,
 				localUrl);
 
 			formatWriter.writeLineFormat (
@@ -300,7 +308,8 @@ class ObjectSmsMessagesPart
 			formatWriter.writeLineFormat (
 				"</p>");
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 			if (
 				isNull (
@@ -309,9 +318,11 @@ class ObjectSmsMessagesPart
 				return;
 			}
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"Time",
 				"From",
 				"To",
@@ -340,20 +351,24 @@ class ObjectSmsMessagesPart
 
 				if (newDayNumber != dayNumber) {
 
-					htmlTableRowSeparatorWrite ();
+					htmlTableRowSeparatorWrite (
+						formatWriter);
 
 					htmlTableRowOpen (
+						formatWriter,
 						htmlAttribute (
 							"style",
 							"font-weight: bold"));
 
 					htmlTableCellWrite (
+						formatWriter,
 						userConsoleLogic.dateStringLong (
 							transaction,
 							message.getCreatedTime ()),
 						htmlColumnSpanAttribute (7l));
 
-					htmlTableRowClose ();
+					htmlTableRowClose (
+						formatWriter);
 
 					dayNumber =
 						newDayNumber;
@@ -364,27 +379,34 @@ class ObjectSmsMessagesPart
 					messageConsoleLogic.classForMessage (
 						message);
 
-				htmlTableRowSeparatorWrite ();
+				htmlTableRowSeparatorWrite (
+					formatWriter);
 
 				htmlTableRowOpen (
+					formatWriter,
 					htmlClassAttribute (
 						rowClass));
 
 				htmlTableCellWrite (
+					formatWriter,
 					userConsoleLogic.timeString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getNumFrom ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getNumTo ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getRoute ().getCode ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						message.getId ()));
 
@@ -397,6 +419,7 @@ class ObjectSmsMessagesPart
 					message.getMedias ();
 
 				htmlTableCellOpen (
+					formatWriter,
 					htmlRowSpanAttribute (2l));
 
 				for (
@@ -414,11 +437,14 @@ class ObjectSmsMessagesPart
 
 				}
 
-				htmlTableCellClose ();
+				htmlTableCellClose (
+					formatWriter);
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				htmlTableRowOpen (
+					formatWriter,
 					htmlClassAttribute (
 						rowClass));
 
@@ -439,13 +465,16 @@ class ObjectSmsMessagesPart
 					"%h",
 					message.getText ().getText ());
 
-				htmlTableCellClose ();
+				htmlTableCellClose (
+					formatWriter);
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

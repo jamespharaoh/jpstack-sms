@@ -23,6 +23,7 @@ import lombok.NonNull;
 
 import wbs.console.html.HtmlTableCellWriter;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -36,6 +37,8 @@ import wbs.platform.media.model.MediaRec;
 import wbs.platform.user.console.UserConsoleLogic;
 
 import wbs.sms.message.core.model.MessageRec;
+
+import wbs.utils.string.FormatWriter;
 
 @PrototypeComponent ("messageThreadPart")
 public
@@ -55,6 +58,9 @@ class MessageThreadPart
 
 	@SingletonDependency
 	MessageConsoleHelper messageHelper;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -96,7 +102,8 @@ class MessageThreadPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -107,9 +114,11 @@ class MessageThreadPart
 
 		) {
 
-			htmlTableOpenList ();
+			htmlTableOpenList (
+				formatWriter);
 
 			htmlTableHeaderRowWrite (
+				formatWriter,
 				"ID",
 				"From",
 				"To",
@@ -125,7 +134,8 @@ class MessageThreadPart
 
 				// separator
 
-				htmlTableRowSeparatorWrite ();
+				htmlTableRowSeparatorWrite (
+					formatWriter);
 
 				// various fields
 
@@ -134,25 +144,31 @@ class MessageThreadPart
 						message);
 
 				htmlTableRowOpen (
+					formatWriter,
 					htmlClassAttribute (
 						rowClass));
 
 				htmlTableCellWrite (
+					formatWriter,
 					integerToDecimalString (
 						message.getId ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getNumFrom ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getNumTo ());
 
 				htmlTableCellWrite (
+					formatWriter,
 					userConsoleLogic.timestampWithTimezoneString (
 						transaction,
 						message.getCreatedTime ()));
 
 				htmlTableCellWrite (
+					formatWriter,
 					message.getRoute ().getCode ());
 
 				messageConsoleLogic.writeTdForMessageStatus (
@@ -164,6 +180,7 @@ class MessageThreadPart
 					message.getMedias ();
 
 				htmlTableCellOpen (
+					formatWriter,
 					htmlRowSpanAttribute (2l));
 
 				for (
@@ -191,19 +208,23 @@ class MessageThreadPart
 
 						mediaConsoleLogic.writeMediaThumb32OrText (
 							transaction,
+							formatWriter,
 							media);
 
 					}
 
 				}
 
-				htmlTableCellClose ();
+				htmlTableCellClose (
+					formatWriter);
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 				// message
 
 				htmlTableRowOpen (
+					formatWriter,
 					htmlClassAttribute (
 						rowClass));
 
@@ -228,11 +249,13 @@ class MessageThreadPart
 					formatWriter,
 					message);
 
-				htmlTableRowClose ();
+				htmlTableRowClose (
+					formatWriter);
 
 			}
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 

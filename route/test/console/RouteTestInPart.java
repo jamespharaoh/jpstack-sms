@@ -1,6 +1,6 @@
 package wbs.sms.route.test.console;
 
-import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringFormatLazy;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphClose;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphOpen;
@@ -15,6 +15,7 @@ import static wbs.web.utils.HtmlTableUtils.htmlTableOpenDetails;
 import lombok.NonNull;
 
 import wbs.console.part.AbstractPagePart;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -26,6 +27,8 @@ import wbs.framework.logging.LogContext;
 import wbs.sms.route.core.console.RouteConsoleHelper;
 import wbs.sms.route.core.model.RouteRec;
 
+import wbs.utils.string.FormatWriter;
+
 @PrototypeComponent ("routeTestInPart")
 public
 class RouteTestInPart
@@ -35,6 +38,9 @@ class RouteTestInPart
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
 	RouteConsoleHelper routeHelper;
@@ -70,7 +76,8 @@ class RouteTestInPart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -82,24 +89,28 @@ class RouteTestInPart
 		) {
 
 			htmlParagraphWriteFormat (
+				formatWriter,
 				"This facility can be used to insert an inbound message into ",
 				"the system, which will then be treated exactly as if we had ",
 				"received it from the aggregator.");
 
 			htmlParagraphWrite (
-				stringFormat (
-					"Please note, that this is intended primarily for testing, ",
-					"and any other usage should instead be performed using a ",
-					"separate facility designed for that specific purpose"),
+				formatWriter,
+				stringFormatLazy (
+					"Please note, that this is intended primarily for ",
+					"testing, and any other usage should instead be performed ",
+					"using a separate facility designed for that specific ",
+					"purpose"),
 				htmlClassAttribute (
 					"warning"));
 
 			if (! route.getCanReceive ()) {
 
 				htmlParagraphWrite (
-					stringFormat (
-						"This route is not configured for inbound messages, and so",
-						"this facility is not available."),
+					formatWriter,
+					stringFormatLazy (
+						"This route is not configured for inbound messages, ",
+						"and so this facility is not available."),
 					htmlClassAttribute (
 						"error"));
 
@@ -108,12 +119,15 @@ class RouteTestInPart
 			}
 
 			htmlFormOpenPostAction (
+				formatWriter,
 				requestContext.resolveLocalUrl (
 					"/route.test.in"));
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Num from",
 				() -> formatWriter.writeLineFormat (
 					"<input",
@@ -123,6 +137,7 @@ class RouteTestInPart
 					">"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Num to",
 				() -> formatWriter.writeLineFormat (
 					"<input",
@@ -132,6 +147,7 @@ class RouteTestInPart
 					">"));
 
 			htmlTableDetailsRowWriteHtml (
+				formatWriter,
 				"Message",
 				() -> formatWriter.writeLineFormat (
 					"<textarea",
@@ -140,9 +156,11 @@ class RouteTestInPart
 					" name=\"message\"",
 					"></textarea>"));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"<input",
@@ -150,9 +168,11 @@ class RouteTestInPart
 				" value=\"insert message\"",
 				">");
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 

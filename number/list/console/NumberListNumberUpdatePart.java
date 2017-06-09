@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 
 import wbs.console.part.AbstractPagePart;
 import wbs.console.priv.UserPrivChecker;
+import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -23,6 +24,8 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.number.list.model.NumberListRec;
+
+import wbs.utils.string.FormatWriter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("numberListNumberUpdatePart")
@@ -40,6 +43,9 @@ class NumberListNumberUpdatePart
 
 	@SingletonDependency
 	UserPrivChecker privChecker;
+
+	@SingletonDependency
+	ConsoleRequestContext requestContext;
 
 	// state
 
@@ -72,7 +78,8 @@ class NumberListNumberUpdatePart
 	@Override
 	public
 	void renderHtmlBodyContent (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -84,17 +91,20 @@ class NumberListNumberUpdatePart
 		) {
 
 			goDetails (
-				transaction);
+				transaction,
+				formatWriter);
 
 			goForm (
-				transaction);
+				transaction,
+				formatWriter);
 
 		}
 
 	}
 
 	void goDetails (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -105,21 +115,25 @@ class NumberListNumberUpdatePart
 
 		) {
 
-			htmlTableOpenDetails ();
+			htmlTableOpenDetails (
+				formatWriter);
 
 			htmlTableDetailsRowWrite (
+				formatWriter,
 				"Numbers",
 				integerToDecimalString (
 					numberList.getNumberCount ()));
 
-			htmlTableClose ();
+			htmlTableClose (
+				formatWriter);
 
 		}
 
 	}
 
 	void goForm (
-			@NonNull Transaction parentTransaction) {
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter) {
 
 		try (
 
@@ -132,11 +146,13 @@ class NumberListNumberUpdatePart
 
 			// form open
 
-			htmlFormOpenPost ();
+			htmlFormOpenPost (
+				formatWriter);
 
 			// numbers
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			formatWriter.writeLineFormat (
 				"Numbers<br>");
@@ -150,11 +166,13 @@ class NumberListNumberUpdatePart
 				requestContext.parameterOrEmptyString (
 					"numbers"));
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// form controls
 
-			htmlParagraphOpen ();
+			htmlParagraphOpen (
+				formatWriter);
 
 			if (
 				privChecker.canRecursive (
@@ -188,11 +206,13 @@ class NumberListNumberUpdatePart
 
 			}
 
-			htmlParagraphClose ();
+			htmlParagraphClose (
+				formatWriter);
 
 			// form close
 
-			htmlFormClose ();
+			htmlFormClose (
+				formatWriter);
 
 		}
 
