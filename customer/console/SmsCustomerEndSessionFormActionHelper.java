@@ -27,7 +27,7 @@ import wbs.sms.customer.model.SmsCustomerSessionRec;
 
 import wbs.utils.string.FormatWriter;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @SingletonComponent ("smsCustomerEndSessionFormActionHelper")
 public
@@ -121,7 +121,7 @@ class SmsCustomerEndSessionFormActionHelper
 
 	@Override
 	public
-	Optional <Responder> processFormSubmission (
+	Optional <WebResponder> processFormSubmission (
 			@NonNull Transaction parentTransaction,
 			@NonNull SmsCustomerEndSessionForm formState) {
 

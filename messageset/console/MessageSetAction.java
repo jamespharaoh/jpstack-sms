@@ -41,7 +41,7 @@ import wbs.sms.messageset.model.MessageSetRec;
 import wbs.sms.route.core.model.RouteObjectHelper;
 import wbs.sms.route.core.model.RouteRec;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSetAction")
@@ -81,33 +81,22 @@ class MessageSetAction
 	BooleanLookup privLookup;
 
 	@Getter @Setter
-	Provider<Responder> responder;
+	Provider <WebResponder> responder;
 
 	// details
 
 	@Override
 	public
-	Responder backupResponder (
+	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		return responder.get ();
 
 	}
 
-	public
-	MessageSetAction responderName (
-			String responderName) {
-
-		return responder (
-			consoleManager.responder (
-				responderName,
-				true));
-
-	}
-
 	@Override
 	public
-	Responder goReal (
+	WebResponder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (

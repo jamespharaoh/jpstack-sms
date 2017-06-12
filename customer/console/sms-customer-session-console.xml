@@ -29,55 +29,69 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 		</object>
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="smsCustomerSession">
+	<forms>
 
-		<index-field/>
+		<form
+			name="list"
+			object-type="sms-customer-session"
+			type="read-only">
 
-		<timestamp-field
-			name="startTime"/>
+			<columns>
 
-		<timestamp-field
-			name="endTime"/>
+				<index-field/>
 
-	</field-set>
+				<timestamp-field
+					name="startTime"/>
 
-	<field-set
-		name="summary"
-		object-name="smsCustomerSession">
+				<timestamp-field
+					name="endTime"/>
 
-		<id-field/>
-		<parent-field/>
-		<index-field/>
+			</columns>
 
-		<timestamp-field
-			name="startTime"/>
+		</form>
 
-		<timestamp-field
-			name="endTime"/>
+		<form
+			name="summary"
+			object-type="sms-customer-session"
+			type="read-only">
 
-		<object-field
-			name="welcomeMessage"
-			object-type="message"/>
+			<columns>
 
-		<object-field
-			name="warningMessage"
-			object-type="message"/>
+				<id-field/>
+				<parent-field/>
+				<index-field/>
 
-	</field-set>
+				<timestamp-field
+					name="startTime"/>
+
+				<timestamp-field
+					name="endTime"/>
+
+				<object-field
+					name="welcomeMessage"
+					object-type="message"/>
+
+				<object-field
+					name="warningMessage"
+					object-type="message"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

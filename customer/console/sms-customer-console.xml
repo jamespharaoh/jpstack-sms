@@ -29,8 +29,9 @@
 		<list>
 
 			<object-search-page
-				search-fields="search"
-				results-column-fields="results"
+				search-class="wbs.sms.customer.model.SmsCustomerSearch"
+				search-form="search"
+				results-form="results"
 				parent-id-key="smsCustomerManagerId"
 				parent-id-name="smsCustomerManagerId"/>
 
@@ -39,10 +40,10 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<context-tab-form-actions-page>
 
@@ -63,119 +64,139 @@
 
 	</object-context>
 
-	<field-set
-		name="search"
-		class="wbs.sms.customer.model.SmsCustomerSearch">
-
-		<text-field
-			name="numberLike"
-			label="Number"
-			nullable="yes"/>
-
-	</field-set>
-
-	<field-set
-		name="results"
-		object-name="smsCustomer">
-
-		<code-field/>
-
-		<object-field
-			name="number"
-			object-type="number"/>
-
-		<timestamp-field
-			name="createdTime"/>
-
-		<integer-field
-			name="numSessions"
-			label="Sessions"/>
-
-		<object-field
-			name="smsCustomerAffiliate"
-			label="Affiliate"
-			object-type="smsCustomerAffiliate"/>
-
-	</field-set>
-
-	<field-set
-		name="summary"
-		object-name="smsCustomer">
-
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-
-		<object-field
-			name="number"
-			object-type="number"/>
-
-		<timestamp-field
-			name="createdTime"/>
-
-		<timestamp-field
-			name="lastActionTime"/>
-
-		<object-field
-			name="activeSession"
-			object-type="smsCustomerSession"
-			root-field="this"/>
-
-		<integer-field
-			name="numSessions"/>
-
-		<date-field
-			name="dateOfBirth"/>
-
-		<text-area-field
-			name="notesText"
-			label="Notes"/>
-
-		<object-field
-			name="smsCustomerAffiliate"
-			label="Affiliate"
-			object-type="smsCustomerAffiliate"/>
-
-	</field-set>
-
-	<field-set
-		name="settings"
-		object-name="smsCustomer">
-
-		<date-field
-			name="dateOfBirth"
-			nullable="yes"/>
-
-		<text-area-field
-			name="notesText"
-			label="Notes"
-			nullable="yes"/>
-
-		<object-field
-			name="smsCustomerAffiliate"
-			label="Affiliate"
-			object-type="smsCustomerAffiliate"
-			nullable="yes"/>
-
-	</field-set>
-
-	<field-set
-		name="end-session-form"
-		class="wbs.sms.customer.console.SmsCustomerEndSessionForm">
-
-		<text-field
-			name="reason"
-			nullable="no"
-			minimum-length="1"/>
-
-	</field-set>
-
 	<forms>
 
 		<form
+			name="search"
+			class="wbs.sms.customer.model.SmsCustomerSearch"
+			type="search">
+
+			<columns>
+
+				<text-field
+					name="numberLike"
+					label="Number"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="results"
+			object-type="sms-customer"
+			type="read-only">
+
+			<columns>
+
+				<code-field/>
+
+				<object-field
+					name="number"
+					object-type="number"/>
+
+				<timestamp-field
+					name="createdTime"/>
+
+				<integer-field
+					name="numSessions"
+					label="Sessions"/>
+
+				<object-field
+					name="smsCustomerAffiliate"
+					label="Affiliate"
+					object-type="smsCustomerAffiliate"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="summary"
+			object-type="sms-customer"
+			type="read-only">
+
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+
+				<object-field
+					name="number"
+					object-type="number"/>
+
+				<timestamp-field
+					name="createdTime"/>
+
+				<timestamp-field
+					name="lastActionTime"/>
+
+				<object-field
+					name="activeSession"
+					object-type="smsCustomerSession"
+					root-field="this"/>
+
+				<integer-field
+					name="numSessions"/>
+
+				<date-field
+					name="dateOfBirth"/>
+
+				<text-area-field
+					name="notesText"
+					label="Notes"/>
+
+				<object-field
+					name="smsCustomerAffiliate"
+					label="Affiliate"
+					object-type="smsCustomerAffiliate"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="sms-customer"
+			type="update">
+
+			<columns>
+
+				<date-field
+					name="dateOfBirth"
+					nullable="yes"/>
+
+				<text-area-field
+					name="notesText"
+					label="Notes"
+					nullable="yes"/>
+
+				<object-field
+					name="smsCustomerAffiliate"
+					label="Affiliate"
+					object-type="smsCustomerAffiliate"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+		<form
 			name="end-session-action"
-			class="java.lang.Object"
-			type="perform"/>
+			class="wbs.sms.customer.console.SmsCustomerEndSessionForm"
+			type="perform">
+
+			<columns>
+
+				<text-field
+					name="reason"
+					nullable="no"
+					minimum-length="1"/>
+
+			</columns>
+
+		</form>
 
 	</forms>
 

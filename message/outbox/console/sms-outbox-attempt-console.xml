@@ -29,62 +29,76 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 		</object>
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="smsOutboxAttempt">
+	<forms>
 
-		<index-field/>
+		<form
+			name="list"
+			object-type="sms-outbox-attempt"
+			type="read-only">
 
-		<enum-field
-			name="state"/>
+			<columns>
 
-		<timestamp-field
-			name="startTime"/>
+				<index-field/>
 
-		<timestamp-field
-			name="endTime"/>
+				<enum-field
+					name="state"/>
 
-	</field-set>
+				<timestamp-field
+					name="startTime"/>
 
-	<field-set
-		name="summary"
-		object-name="smsOutboxAttempt">
+				<timestamp-field
+					name="endTime"/>
 
-		<id-field/>
-		<parent-field/>
-		<index-field/>
+			</columns>
 
-		<enum-field
-			name="state"/>
+		</form>
 
-		<timestamp-field
-			name="startTime"/>
+		<form
+			name="summary"
+			object-type="sms-outbox-attempt"
+			type="read-only">
 
-		<timestamp-field
-			name="endTime"/>
+			<columns>
 
-		<json-field
-			name="requestTrace"/>
+				<id-field/>
+				<parent-field/>
+				<index-field/>
 
-		<json-field
-			name="responseTrace"/>
+				<enum-field
+					name="state"/>
 
-		<json-field
-			name="errorTrace"/>
+				<timestamp-field
+					name="startTime"/>
 
-	</field-set>
+				<timestamp-field
+					name="endTime"/>
+
+				<json-field
+					name="requestTrace"/>
+
+				<json-field
+					name="responseTrace"/>
+
+				<json-field
+					name="errorTrace"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

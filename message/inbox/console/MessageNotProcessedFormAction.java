@@ -3,13 +3,17 @@ package wbs.sms.message.inbox.console;
 import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
+import javax.inject.Provider;
+
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
@@ -17,6 +21,7 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
+import wbs.platform.queue.console.QueueHomeResponder;
 import wbs.platform.queue.logic.QueueLogic;
 import wbs.platform.user.console.UserConsoleLogic;
 
@@ -25,7 +30,7 @@ import wbs.sms.message.core.logic.SmsMessageLogic;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageStatus;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("messageNotProcessedFormAction")
 public
@@ -61,15 +66,23 @@ class MessageNotProcessedFormAction
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
+	// prototype dependencies
+
+	@PrototypeDependency
+	@NamedDependency ("messageNotProcessedFormResponder")
+	Provider <WebResponder> formResponderProvider;
+
+	@PrototypeDependency
+	Provider <QueueHomeResponder> queueHomeResponderProvider;
+
 	// details
 
 	@Override
 	protected
-	Responder backupResponder (
+	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return responder (
-			"messageNotProcessedFormResponder");
+		return formResponderProvider.get ();
 
 	}
 
@@ -77,7 +90,7 @@ class MessageNotProcessedFormAction
 
 	@Override
 	protected
-	Responder goReal (
+	WebResponder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
@@ -101,8 +114,7 @@ class MessageNotProcessedFormAction
 				requestContext.addError (
 					"Message is not in correct state");
 
-				return responder (
-					"queueHomeResponder");
+				return queueHomeResponderProvider.get ();
 
 			}
 
@@ -149,8 +161,7 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message queued for processing");
 
-				return responder (
-					"queueHomeResponder");
+				return queueHomeResponderProvider.get ();
 
 			}
 
@@ -188,8 +199,7 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message ignored");
 
-				return responder (
-					"queueHomeResponder");
+				return queueHomeResponderProvider.get ();
 
 			}
 
@@ -227,8 +237,7 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message marked as processed manually");
 
-				return responder (
-					"queueHomeResponder");
+				return queueHomeResponderProvider.get ();
 
 			}
 

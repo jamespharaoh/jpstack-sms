@@ -21,17 +21,21 @@
 
 		<list>
 
-			<object-list-page/>
+			<object-list-page
+				form="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				form="create"/>
 
 		</list>
 
 		<object>
 
-			<object-summary-page/>
+			<object-summary-page
+				form="summary"/>
 
-			<object-settings-page/>
+			<object-settings-page
+				form="settings"/>
 
 			<context-link
 				name="pattern"
@@ -44,5 +48,67 @@
 		</object>
 
 	</object-context>
+
+	<forms>
+
+		<form
+			name="list"
+			object-type="number-format"
+			type="read-only">
+
+			<columns>
+
+				<name-field/>
+				<description-field/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="create"
+			object-type="number-format"
+			type="create">
+
+			<columns>
+
+				<name-field/>
+				<description-field/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="summary"
+			object-type="number-format"
+			type="read-only">
+
+			<columns>
+
+				<id-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="number-format"
+			type="update">
+
+			<columns>
+
+				<name-field/>
+				<description-field/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

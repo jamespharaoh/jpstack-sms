@@ -29,8 +29,9 @@
 		<list>
 
 			<object-search-page
-				search-fields="search"
-				results-column-fields="results"
+				search-class="wbs.sms.spendlimit.model.SmsSpendLimiterNumberSearch"
+				search-form="search"
+				results-form="results"
 				parent-id-key="smsSpendLimiterId"
 				parent-id-name="smsSpendLimiterId"/>
 
@@ -39,7 +40,7 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<context-link
 				name="day"
@@ -53,84 +54,103 @@
 
 	</object-context>
 
-	<field-set
-		name="search"
-		class="wbs.sms.spendlimit.model.SmsSpendLimiterNumberSearch">
+	<forms>
 
-		<text-field
-			name="numberLike"
-			label="Number"
-			nullable="yes"/>
+		<form
+			name="search"
+			class="wbs.sms.spendlimit.model.SmsSpendLimiterNumberSearch"
+			type="search">
 
-		<!--
-		<currency-range-field
-			name="totalSpend"
-			currency="smsSpendLimiter.currency"
-			nullable="yes"/>
+			<columns>
 
-		<date-range-field
-			name="lastSpendDate"
-			nullable="yes"/>
+				<text-field
+					name="numberLike"
+					label="Number"
+					nullable="yes"/>
 
-		<currency-range-field
-			name="lastDailySpend"
-			currency="smsSpendLimiter.currency"
-			nullable="yes"/>
-		-->
+				<!--
+				<currency-range-field
+					name="totalSpend"
+					currency="smsSpendLimiter.currency"
+					nullable="yes"/>
 
-	</field-set>
+				<date-range-field
+					name="lastSpendDate"
+					nullable="yes"/>
 
-	<field-set
-		name="results"
-		object-name="smsSpendLimiterNumber">
+				<currency-range-field
+					name="lastDailySpend"
+					currency="smsSpendLimiter.currency"
+					nullable="yes"/>
+				-->
 
-		<object-field
-			name="number"
-			object-type="number"/>
+			</columns>
 
-		<currency-field
-			name="totalSpent"
-			currency="smsSpendLimiter.currency"/>
+		</form>
 
-		<currency-field
-			name="adviceSpent"
-			currency="smsSpendLimiter.currency"/>
+		<form
+			name="results"
+			object-type="sms-spend-limiter-number"
+			type="read-only">
 
-		<date-field
-			name="lastSpendDate"/>
+			<columns>
 
-		<currency-field
-			name="lastDailySpend"
-			currency="smsSpendLimiter.currency"/>
+				<object-field
+					name="number"
+					object-type="number"/>
 
-	</field-set>
+				<currency-field
+					name="totalSpent"
+					currency="smsSpendLimiter.currency"/>
 
-	<field-set
-		name="summary"
-		object-name="smsSpendLimiterNumber">
+				<currency-field
+					name="adviceSpent"
+					currency="smsSpendLimiter.currency"/>
 
-		<id-field/>
-		<parent-field/>
+				<date-field
+					name="lastSpendDate"/>
 
-		<object-field
-			name="number"
-			object-type="number"/>
+				<currency-field
+					name="lastDailySpend"
+					currency="smsSpendLimiter.currency"/>
 
-		<currency-field
-			name="totalSpent"
-			currency="smsSpendLimiter.currency"/>
+			</columns>
 
-		<currency-field
-			name="adviceSpent"
-			currency="smsSpendLimiter.currency"/>
+		</form>
 
-		<date-field
-			name="lastSpendDate"/>
+		<form
+			name="summary"
+			object-type="sms-spend-limiter-number"
+			type="read-only">
 
-		<currency-field
-			name="lastDailySpend"
-			currency="smsSpendLimiter.currency"/>
+			<columns>
 
-	</field-set>
+				<id-field/>
+				<parent-field/>
+
+				<object-field
+					name="number"
+					object-type="number"/>
+
+				<currency-field
+					name="totalSpent"
+					currency="smsSpendLimiter.currency"/>
+
+				<currency-field
+					name="adviceSpent"
+					currency="smsSpendLimiter.currency"/>
+
+				<date-field
+					name="lastSpendDate"/>
+
+				<currency-field
+					name="lastDailySpend"
+					currency="smsSpendLimiter.currency"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

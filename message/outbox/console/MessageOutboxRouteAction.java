@@ -6,6 +6,8 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import java.util.Collection;
 
+import javax.inject.Provider;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -17,7 +19,9 @@ import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
@@ -32,7 +36,7 @@ import wbs.sms.message.core.model.MessageStatus;
 import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 import wbs.sms.message.outbox.model.OutboxRec;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("messageOutboxRouteAction")
 public
@@ -68,15 +72,20 @@ class MessageOutboxRouteAction
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
+	// prototype dependencies
+
+	@PrototypeDependency
+	@NamedDependency ("messageOutboxRouteResponder")
+	Provider <WebResponder> routeResponderProvider;
+
 	// details
 
 	@Override
 	public
-	Responder backupResponder (
+	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return responder (
-			"messageOutboxRouteResponder");
+		return routeResponderProvider.get ();
 
 	}
 
@@ -84,7 +93,7 @@ class MessageOutboxRouteAction
 
 	@Override
 	public
-	Responder goReal (
+	WebResponder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (

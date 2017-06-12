@@ -22,7 +22,7 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-sms-messages-page/>
 
@@ -34,14 +34,23 @@
 
 	</object-context>
 
-	<field-set
-		name="summary"
-		object-name="batch">
+	<forms>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
+		<form
+			name="summary"
+			object-type="batch"
+			type="read-only">
 
-	</field-set>
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

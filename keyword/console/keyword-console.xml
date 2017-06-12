@@ -25,20 +25,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"
+				form="settings"
 				priv-key="keywordSet.manage"/>
 
 			<object-events-page/>
@@ -47,91 +47,115 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="keyword">
+	<forms>
 
-		<code-field/>
+		<form
+			name="list"
+			object-type="keyword"
+			type="read-only">
 
-		<description-field/>
+			<columns>
 
-		<object-field
-			name="command"
-			object-type="command"/>
+				<code-field/>
 
-		<yes-no-field
-			name="sticky"/>
+				<description-field/>
 
-		<yes-no-field
-			name="leaveIntact"/>
+				<object-field
+					name="command"
+					object-type="command"/>
 
-	</field-set>
+				<yes-no-field
+					name="sticky"/>
 
-	<field-set
-		name="create"
-		object-name="keyword">
+				<yes-no-field
+					name="leaveIntact"/>
 
-		<code-field
-			pattern="relaxed"/>
+			</columns>
 
-		<description-field/>
+		</form>
 
-		<object-field
-			name="command"
-			object-type="command"/>
+		<form
+			name="create"
+			object-type="keyword"
+			type="create">
 
-		<yes-no-field
-			name="sticky"/>
+			<columns>
 
-		<yes-no-field
-			name="leaveIntact"/>
+				<code-field
+					pattern="relaxed"/>
 
-	</field-set>
+				<description-field/>
 
-	<field-set
-		name="summary"
-		object-name="keyword">
+				<object-field
+					name="command"
+					object-type="command"/>
 
-		<id-field/>
-		<parent-field/>
+				<yes-no-field
+					name="sticky"/>
 
-		<code-field/>
+				<yes-no-field
+					name="leaveIntact"/>
 
-		<description-field/>
+			</columns>
 
-		<object-field
-			name="command"
-			object-type="command"/>
+		</form>
 
-		<yes-no-field
-			name="sticky"/>
+		<form
+			name="summary"
+			object-type="keyword"
+			type="read-only">
 
-		<yes-no-field
-			name="leaveIntact"/>
+			<columns>
 
-	</field-set>
+				<id-field/>
+				<parent-field/>
 
-	<field-set
-		name="settings"
-		object-name="keyword">
+				<code-field/>
 
-		<id-field/>
+				<description-field/>
 
-		<code-field
-			pattern="relaxed"/>
+				<object-field
+					name="command"
+					object-type="command"/>
 
-		<description-field/>
+				<yes-no-field
+					name="sticky"/>
 
-		<object-field
-			name="command"
-			object-type="command"/>
+				<yes-no-field
+					name="leaveIntact"/>
 
-		<yes-no-field
-			name="sticky"/>
+			</columns>
 
-		<yes-no-field
-			name="leaveIntact"/>
+		</form>
 
-	</field-set>
+		<form
+			name="settings"
+			object-type="keyword"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+
+				<code-field
+					pattern="relaxed"/>
+
+				<description-field/>
+
+				<object-field
+					name="command"
+					object-type="command"/>
+
+				<yes-no-field
+					name="sticky"/>
+
+				<yes-no-field
+					name="leaveIntact"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

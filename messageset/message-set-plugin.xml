@@ -24,6 +24,7 @@
 
 	<layer name="console">
 
+		<bootstrap-component class="console.ObjectSmsMessageSetPageComponentBuilder"/>
 		<bootstrap-component class="console.ObjectSmsMessageSetPageSpec"/>
 
 		<component class="console.MessageSetAction"/>

@@ -37,19 +37,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<extension-point
 				name="route.test"/>
@@ -64,163 +65,197 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="route">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="route"
+			type="read-only">
 
-		<yes-no-field
-			name="canReceive"
-			label="Receive"/>
+			<columns>
 
-		<yes-no-field
-			name="canSend"
-			label="Send"/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<yes-no-field
-			name="deliveryReports"
-			label="Reports"/>
+				<yes-no-field
+					name="canReceive"
+					label="Receive"/>
 
-		<object-field
-			name="sender"
-			object-type="sender"/>
+				<yes-no-field
+					name="canSend"
+					label="Send"/>
 
-	</field-set>
+				<yes-no-field
+					name="deliveryReports"
+					label="Reports"/>
 
-	<field-set
-		name="summary"
-		object-name="route">
+				<object-field
+					name="sender"
+					object-type="sender"/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			</columns>
 
-		<object-field
-			name="sender"
-			object-type="sender"/>
+		</form>
 
-		<object-field
-			name="command"
-			object-type="command"/>
+		<form
+			name="create"
+			object-type="route"
+			type="create">
 
-		<integer-field
-			name="inCharge"
-			label="Inbound charge"/>
+			<columns>
 
-		<integer-field
-			name="outCharge"
-			label="Outbound charge"/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<yes-no-field
-			name="canSend"/>
+			</columns>
 
-		<yes-no-field
-			name="canReceive"/>
+		</form>
 
-		<yes-no-field
-			name="deliveryReports"/>
+		<form
+			name="summary"
+			object-type="route"
+			type="read-only">
 
-		<seconds-field
-			name="expirySecs"
-			label="Expiry time"/>
+			<columns>
 
-		<yes-no-field
-			name="avRequired"
-			label="Adult verification required"/>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<yes-no-field
-			name="inboundImpliesAdult"/>
+				<object-field
+					name="sender"
+					object-type="sender"/>
 
-		<integer-field
-			name="maxTries"/>
+				<object-field
+					name="command"
+					object-type="command"/>
 
-		<enum-field
-			name="networkBehaviour"/>
+				<integer-field
+					name="inCharge"
+					label="Inbound charge"/>
 
-		<object-field
-			name="currency"
-			object-type="currency"/>
+				<integer-field
+					name="outCharge"
+					label="Outbound charge"/>
 
-		<object-field
-			name="blockNumberLookup"
-			object-type="numberLookup"/>
+				<yes-no-field
+					name="canSend"/>
 
-	</field-set>
+				<yes-no-field
+					name="canReceive"/>
 
-	<field-set
-		name="settings"
-		object-name="route">
+				<yes-no-field
+					name="deliveryReports"/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<seconds-field
+					name="expirySecs"
+					label="Expiry time"/>
 
-		<object-field
-			name="sender"
-			object-type="sender"
-			nullable="yes"/>
+				<yes-no-field
+					name="avRequired"
+					label="Adult verification required"/>
 
-		<object-field
-			name="command"
-			object-type="command"
-			nullable="yes"/>
+				<yes-no-field
+					name="inboundImpliesAdult"/>
 
-		<integer-field
-			name="inCharge"
-			label="Inbound charge"/>
+				<integer-field
+					name="maxTries"/>
 
-		<integer-field
-			name="outCharge"
-			label="Outbound charge"/>
+				<enum-field
+					name="networkBehaviour"/>
 
-		<yes-no-field
-			name="canSend"/>
+				<object-field
+					name="currency"
+					object-type="currency"/>
 
-		<yes-no-field
-			name="canReceive"/>
+				<object-field
+					name="blockNumberLookup"
+					object-type="numberLookup"/>
 
-		<yes-no-field
-			name="deliveryReports"/>
+			</columns>
 
-		<seconds-field
-			name="expirySecs"
-			label="Expiry time"
-			nullable="yes"/>
+		</form>
 
-		<yes-no-field
-			name="avRequired"
-			label="Adult verification required"/>
+		<form
+			name="settings"
+			object-type="route"
+			type="update">
 
-		<yes-no-field
-			name="inboundImpliesAdult"/>
+			<columns>
 
-		<integer-field
-			name="maxTries"
-			nullable="yes"/>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<enum-field
-			name="networkBehaviour"
-			nullable="yes"/>
+				<object-field
+					name="sender"
+					object-type="sender"
+					nullable="yes"/>
 
-		<object-field
-			name="currency"
-			object-type="currency"
-			nullable="yes"/>
+				<object-field
+					name="command"
+					object-type="command"
+					nullable="yes"/>
 
-		<object-field
-			name="blockNumberLookup"
-			object-type="numberLookup"
-			nullable="yes"/>
+				<integer-field
+					name="inCharge"
+					label="Inbound charge"/>
 
-	</field-set>
+				<integer-field
+					name="outCharge"
+					label="Outbound charge"/>
+
+				<yes-no-field
+					name="canSend"/>
+
+				<yes-no-field
+					name="canReceive"/>
+
+				<yes-no-field
+					name="deliveryReports"/>
+
+				<seconds-field
+					name="expirySecs"
+					label="Expiry time"
+					nullable="yes"/>
+
+				<yes-no-field
+					name="avRequired"
+					label="Adult verification required"/>
+
+				<yes-no-field
+					name="inboundImpliesAdult"/>
+
+				<integer-field
+					name="maxTries"
+					nullable="yes"/>
+
+				<enum-field
+					name="networkBehaviour"
+					nullable="yes"/>
+
+				<object-field
+					name="currency"
+					object-type="currency"
+					nullable="yes"/>
+
+				<object-field
+					name="blockNumberLookup"
+					object-type="numberLookup"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

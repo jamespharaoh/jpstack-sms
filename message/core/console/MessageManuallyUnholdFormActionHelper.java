@@ -29,7 +29,7 @@ import wbs.sms.message.outbox.logic.SmsOutboxLogic;
 
 import wbs.utils.string.FormatWriter;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("messageManuallyUnholdFormActionHelper")
 public
@@ -128,7 +128,7 @@ class MessageManuallyUnholdFormActionHelper
 
 	@Override
 	public
-	Optional <Responder> processFormSubmission (
+	Optional <WebResponder> processFormSubmission (
 			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 

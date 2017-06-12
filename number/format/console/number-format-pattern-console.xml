@@ -29,10 +29,10 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"
+				form="create"
 				create-priv-delegate="root"
 				create-priv-code="manage"/>
 
@@ -41,95 +41,119 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 		</object>
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="numberFormatPattern">
+	<forms>
 
-		<index-field/>
+		<form
+			name="list"
+			object-type="number-format-pattern"
+			type="read-only">
 
-		<text-field
-			name="inputPrefix"/>
+			<columns>
 
-		<text-field
-			name="outputPrefix"/>
+				<index-field/>
 
-		<integer-field
-			name="minimumLength"/>
+				<text-field
+					name="inputPrefix"/>
 
-		<integer-field
-			name="maximumLength"/>
+				<text-field
+					name="outputPrefix"/>
 
-	</field-set>
+				<integer-field
+					name="minimumLength"/>
 
-	<field-set
-		name="create"
-		object-name="numberFormatPattern">
+				<integer-field
+					name="maximumLength"/>
 
-		<text-field
-			name="inputPrefix"/>
+			</columns>
 
-		<text-field
-			name="outputPrefix"/>
+		</form>
 
-		<integer-field
-			name="minimumLength"/>
+		<form
+			name="create"
+			object-type="number-format-pattern"
+			type="create">
 
-		<integer-field
-			name="maximumLength"/>
+			<columns>
 
-	</field-set>
+				<text-field
+					name="inputPrefix"/>
 
-	<field-set
-		name="summary"
-		object-name="numberFormatPattern">
+				<text-field
+					name="outputPrefix"/>
 
-		<id-field/>
+				<integer-field
+					name="minimumLength"/>
 
-		<parent-field/>
+				<integer-field
+					name="maximumLength"/>
 
-		<index-field/>
+			</columns>
 
-		<text-field
-			name="inputPrefix"/>
+		</form>
 
-		<text-field
-			name="outputPrefix"/>
+		<form
+			name="summary"
+			object-type="number-format-pattern"
+			type="read-only">
 
-		<integer-field
-			name="minimumLength"/>
+			<columns>
 
-		<integer-field
-			name="maximumLength"/>
+				<id-field/>
 
-	</field-set>
+				<parent-field/>
 
-	<field-set
-		name="settings"
-		object-name="numberFormatPattern">
+				<index-field/>
 
-		<deleted-field/>
+				<text-field
+					name="inputPrefix"/>
 
-		<text-field
-			name="inputPrefix"/>
+				<text-field
+					name="outputPrefix"/>
 
-		<text-field
-			name="outputPrefix"/>
+				<integer-field
+					name="minimumLength"/>
 
-		<integer-field
-			name="minimumLength"/>
+				<integer-field
+					name="maximumLength"/>
 
-		<integer-field
-			name="maximumLength"/>
+			</columns>
 
-	</field-set>
+		</form>
+
+		<form
+			name="settings"
+			object-type="number-format-pattern"
+			type="update">
+
+			<columns>
+
+				<deleted-field/>
+
+				<text-field
+					name="inputPrefix"/>
+
+				<text-field
+					name="outputPrefix"/>
+
+				<integer-field
+					name="minimumLength"/>
+
+				<integer-field
+					name="maximumLength"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

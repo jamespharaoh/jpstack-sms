@@ -3,7 +3,7 @@
 
 	<object-context
 		name="message.notProcessed"
-		bean-name="messageNotProcessed"
+		component-name="messageNotProcessed"
 		object-name="message">
 
 		<object>

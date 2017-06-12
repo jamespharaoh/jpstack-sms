@@ -4,6 +4,7 @@
 
 	<layer name="console">
 
+		<bootstrap-component class="ObjectSmsStatsPageComponentBuilder"/>
 		<bootstrap-component class="ObjectSmsStatsPageSpec"/>
 
 		<component class="ObjectSmsStatsPageBuilder"/>

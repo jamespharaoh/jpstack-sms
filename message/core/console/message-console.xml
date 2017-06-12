@@ -39,9 +39,9 @@
 			<!-- search -->
 
 			<object-search-page
-				search-fields="search"
-				results-column-fields="search-results-columns"
-				results-row-fields="search-results-rows"/>
+				search-class="wbs.sms.message.core.model.MessageSearch"
+				search-form="search"
+				results-form="search-results"/>
 
 			<!-- extensions -->
 
@@ -97,122 +97,130 @@
 
 	</object-context>
 
-	<field-set
-		name="search"
-		class="wbs.sms.message.core.model.MessageSearch">
-
-		<integer-field
-			name="messageId"
-			nullable="yes"/>
-
-		<text-field
-			name="number"
-			nullable="yes"/>
-
-		<object-field
-			name="routeSliceId"
-			object-type="slice"
-			nullable="yes"/>
-
-		<object-field
-			name="routeId"
-			object-type="route"
-			nullable="yes"/>
-
-		<enum-field
-			name="status"
-			nullable="yes"/>
-
-		<enum-field
-			name="direction"
-			nullable="yes"/>
-
-		<object-field
-			name="userId"
-			object-type="user"
-			nullable="yes"/>
-
-		<object-field
-			name="serviceSliceId"
-			object-type="slice"
-			nullable="yes"/>
-
-		<object-field
-			name="serviceParentTypeId"
-			object-type="objectType"
-			nullable="yes"/>
-
-		<object-field
-			name="serviceId"
-			object-type="service"
-			nullable="yes"/>
-
-		<object-field
-			name="affiliateId"
-			object-type="affiliate"
-			nullable="yes"/>
-
-		<interval-field
-			name="createdTime"
-			label="Date/time"
-			nullable="yes"/>
-
-		<text-field
-			name="textContains"
-			label="Message text"
-			nullable="yes"/>
-
-		<object-field
-			name="networkId"
-			object-type="network"
-			nullable="yes"/>
-
-	</field-set>
-
-	<field-set
-		name="search-results-columns"
-		object-name="message">
-
-		<id-field/>
-
-		<text-field
-			name="numFrom"
-			label="From"/>
-
-		<text-field
-			name="numTo"
-			label="To"/>
-
-		<timestamp-field
-			name="createdTime"
-			label="Time"/>
-
-		<object-field
-			name="route"
-			object-type="route"/>
-
-		<enum-field
-			name="status"/>
-
-		<object-field
-			name="service"
-			object-type="service"/>
-
-		<object-field
-			name="user"
-			object-type="user"/>
-
-	</field-set>
-
-	<field-set
-		name="search-results-rows"
-		object-name="message">
-
-		<message-content-field/>
-
-	</field-set>
-
 	<forms>
+
+		<form
+			name="search"
+			class="wbs.sms.message.core.model.MessageSearch"
+			type="search">
+
+			<columns>
+
+				<integer-field
+					name="messageId"
+					nullable="yes"/>
+
+				<text-field
+					name="number"
+					nullable="yes"/>
+
+				<object-field
+					name="routeSliceId"
+					object-type="slice"
+					nullable="yes"/>
+
+				<object-field
+					name="routeId"
+					object-type="route"
+					nullable="yes"/>
+
+				<enum-field
+					name="status"
+					nullable="yes"/>
+
+				<enum-field
+					name="direction"
+					nullable="yes"/>
+
+				<object-field
+					name="userId"
+					object-type="user"
+					nullable="yes"/>
+
+				<object-field
+					name="serviceSliceId"
+					object-type="slice"
+					nullable="yes"/>
+
+				<object-field
+					name="serviceParentTypeId"
+					object-type="objectType"
+					nullable="yes"/>
+
+				<object-field
+					name="serviceId"
+					object-type="service"
+					nullable="yes"/>
+
+				<object-field
+					name="affiliateId"
+					object-type="affiliate"
+					nullable="yes"/>
+
+				<interval-field
+					name="createdTime"
+					label="Date/time"
+					nullable="yes"/>
+
+				<text-field
+					name="textContains"
+					label="Message text"
+					nullable="yes"/>
+
+				<object-field
+					name="networkId"
+					object-type="network"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="search-results"
+			object-type="message"
+			type="read-only">
+
+			<columns>
+
+				<id-field/>
+
+				<text-field
+					name="numFrom"
+					label="From"/>
+
+				<text-field
+					name="numTo"
+					label="To"/>
+
+				<timestamp-field
+					name="createdTime"
+					label="Time"/>
+
+				<object-field
+					name="route"
+					object-type="route"/>
+
+				<enum-field
+					name="status"/>
+
+				<object-field
+					name="service"
+					object-type="service"/>
+
+				<object-field
+					name="user"
+					object-type="user"/>
+
+			</columns>
+
+			<rows>
+
+				<message-content-field/>
+
+			</rows>
+
+		</form>
 
 		<form
 			name="manually-deliver-action"

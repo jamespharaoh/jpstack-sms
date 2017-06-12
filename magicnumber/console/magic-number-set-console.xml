@@ -21,19 +21,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<context-link
 				name="number"
@@ -47,44 +48,78 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="magicNumberSet">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="magic-number-set"
+			type="read-only">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="summary"
-		object-name="magicNumberSet">
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			</columns>
 
-	</field-set>
+		</form>
 
-	<field-set
-		name="settings"
-		object-name="magicNumberSet">
+		<form
+			name="create"
+			object-type="magic-number-set"
+			type="create">
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			<columns>
 
-		<object-field
-			name="numberFormat"
-			object-type="numberFormat"/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-	</field-set>
+			</columns>
+
+		</form>
+
+		<form
+			name="summary"
+			object-type="magic-number-set"
+			type="read-only">
+
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="magic-number-set"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<object-field
+					name="numberFormat"
+					object-type="numberFormat"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

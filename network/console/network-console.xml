@@ -22,19 +22,17 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
-
-			<object-create-page/>
+				form="list"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<object-events-page/>
 
@@ -42,56 +40,75 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="network">
+	<forms>
 
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="network"
+			type="read-only">
 
-		<object-field
-			name="virtualNetworkOfNetwork"
-			label="Virtual of"
-			object-type="network"/>
+			<columns>
 
-	</field-set>
+				<name-field/>
+				<description-field/>
 
-	<field-set
-		name="summary"
-		object-name="network">
+				<object-field
+					name="virtualNetworkOfNetwork"
+					label="Virtual of"
+					object-type="network"/>
 
-		<id-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
+			</columns>
 
-		<object-field
-			name="virtualNetworkOfNetwork"
-			label="Virtual of"
-			object-type="network"/>
+		</form>
 
-		<yes-no-field
-			name="shortMultipartMessages"/>
+		<form
+			name="summary"
+			object-type="network"
+			type="read-only">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="settings"
-		object-name="network">
+				<id-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
 
-		<id-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
+				<object-field
+					name="virtualNetworkOfNetwork"
+					label="Virtual of"
+					object-type="network"/>
 
-		<object-field
-			name="virtualNetworkOfNetwork"
-			label="Virtual of"
-			object-type="network"/>
+				<yes-no-field
+					name="shortMultipartMessages"/>
 
-		<yes-no-field
-			name="shortMultipartMessages"/>
+			</columns>
 
-	</field-set>
+		</form>
+
+		<form
+			name="settings"
+			object-type="network"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+
+				<object-field
+					name="virtualNetworkOfNetwork"
+					label="Virtual of"
+					object-type="network"/>
+
+				<yes-no-field
+					name="shortMultipartMessages"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

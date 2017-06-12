@@ -29,20 +29,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<section
 				name="admin"
@@ -71,159 +71,183 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="smsSpendLimiter">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="sms-spend-limiter"
+			type="read-only">
 
-		<timezone-field
-			name="timezone"/>
+			<columns>
 
-		<object-field
-			name="currency"
-			object-type="currency"/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<currency-field
-			name="dailySpendAdviceAmount"
-			label="Daily advice"
-			currency="currency"/>
+				<timezone-field
+					name="timezone"/>
 
-		<currency-field
-			name="dailySpendLimitAmount"
-			label="Daily limit"
-			currency="currency"/>
+				<object-field
+					name="currency"
+					object-type="currency"/>
 
-		<currency-field
-			name="ongoingSpendAdviceAmount"
-			label="Ongoing advice"
-			currency="currency"/>
+				<currency-field
+					name="dailySpendAdviceAmount"
+					label="Daily advice"
+					currency="currency"/>
 
-	</field-set>
+				<currency-field
+					name="dailySpendLimitAmount"
+					label="Daily limit"
+					currency="currency"/>
 
-	<field-set
-		name="create"
-		object-name="smsSpendLimiter">
+				<currency-field
+					name="ongoingSpendAdviceAmount"
+					label="Ongoing advice"
+					currency="currency"/>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+			</columns>
 
-	</field-set>
+		</form>
 
-	<field-set
-		name="summary"
-		object-name="smsSpendLimiter">
+		<form
+			name="create"
+			object-type="sms-spend-limiter"
+			type="create">
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			<columns>
 
-		<!-- settings -->
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<timezone-field
-			name="timezone"/>
+			</columns>
 
-		<object-field
-			name="currency"
-			object-type="currency"/>
+		</form>
 
-		<object-field
-			name="router"
-			object-type="router"/>
+		<form
+			name="summary"
+			object-type="sms-spend-limiter"
+			type="read-only">
 
-		<!-- daily advice -->
+			<columns>
 
-		<currency-field
-			name="dailySpendAdviceAmount"
-			currency="currency"/>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<text-area-field
-			name="dailySpendAdviceMessage"/>
+				<!-- settings -->
 
-		<!-- daily limit -->
+				<timezone-field
+					name="timezone"/>
 
-		<currency-field
-			name="dailySpendLimitAmount"
-			currency="currency"/>
+				<object-field
+					name="currency"
+					object-type="currency"/>
 
-		<text-area-field
-			name="dailySpendLimitMessage"/>
+				<object-field
+					name="router"
+					object-type="router"/>
 
-		<!-- ongoing advice -->
+				<!-- daily advice -->
 
-		<currency-field
-			name="ongoingSpendAdviceAmount"
-			currency="currency"/>
+				<currency-field
+					name="dailySpendAdviceAmount"
+					currency="currency"/>
 
-		<text-area-field
-			name="ongoingSpendAdviceMessage"/>
+				<text-area-field
+					name="dailySpendAdviceMessage"/>
 
-	</field-set>
+				<!-- daily limit -->
 
-	<field-set
-		name="settings"
-		object-name="smsSpendLimiter">
+				<currency-field
+					name="dailySpendLimitAmount"
+					currency="currency"/>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<text-area-field
+					name="dailySpendLimitMessage"/>
 
-		<!-- settings -->
+				<!-- ongoing advice -->
 
-		<timezone-field
-			name="timezone"
-			nullable="yes"/>
+				<currency-field
+					name="ongoingSpendAdviceAmount"
+					currency="currency"/>
 
-		<object-field
-			name="currency"
-			object-type="currency"
-			nullable="yes"/>
+				<text-area-field
+					name="ongoingSpendAdviceMessage"/>
 
-		<object-field
-			name="router"
-			object-type="router"
-			nullable="yes"/>
+			</columns>
 
-		<!-- daily advice -->
+		</form>
 
-		<currency-field
-			name="dailySpendAdviceAmount"
-			currency="currency"
-			nullable="yes"/>
+		<form
+			name="settings"
+			object-type="sms-spend-limiter"
+			type="update">
 
-		<text-area-field
-			name="dailySpendAdviceMessage"
-			nullable="yes"/>
+			<columns>
 
-		<!-- daily limit -->
+				<parent-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<currency-field
-			name="dailySpendLimitAmount"
-			currency="currency"
-			nullable="yes"/>
+				<!-- settings -->
 
-		<text-area-field
-			name="dailySpendLimitMessage"
-			nullable="yes"/>
+				<timezone-field
+					name="timezone"
+					nullable="yes"/>
 
-		<!-- ongoing advice -->
+				<object-field
+					name="currency"
+					object-type="currency"
+					nullable="yes"/>
 
-		<currency-field
-			name="ongoingSpendAdviceAmount"
-			currency="currency"
-			nullable="yes"/>
+				<object-field
+					name="router"
+					object-type="router"
+					nullable="yes"/>
 
-		<text-area-field
-			name="ongoingSpendAdviceMessage"
-			nullable="yes"/>
+				<!-- daily advice -->
 
-	</field-set>
+				<currency-field
+					name="dailySpendAdviceAmount"
+					currency="currency"
+					nullable="yes"/>
+
+				<text-area-field
+					name="dailySpendAdviceMessage"
+					nullable="yes"/>
+
+				<!-- daily limit -->
+
+				<currency-field
+					name="dailySpendLimitAmount"
+					currency="currency"
+					nullable="yes"/>
+
+				<text-area-field
+					name="dailySpendLimitMessage"
+					nullable="yes"/>
+
+				<!-- ongoing advice -->
+
+				<currency-field
+					name="ongoingSpendAdviceAmount"
+					currency="currency"
+					nullable="yes"/>
+
+				<text-area-field
+					name="ongoingSpendAdviceMessage"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

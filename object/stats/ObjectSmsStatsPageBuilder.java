@@ -1,10 +1,9 @@
 package wbs.sms.object.stats;
 
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
-
-import java.util.Collections;
 
 import javax.inject.Provider;
 
@@ -34,6 +33,8 @@ import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
+
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("objectSmsStatsPageBuilder")
 public
@@ -79,6 +80,8 @@ class ObjectSmsStatsPageBuilder <
 	ConsoleHelper <ObjectType> consoleHelper;
 	String privKey;
 
+	Provider <WebResponder> responderProvider;
+
 	// build
 
 	@Override
@@ -112,6 +115,7 @@ class ObjectSmsStatsPageBuilder <
 					resolvedExtensionPoint);
 
 				buildContextFile (
+					taskLogger,
 					resolvedExtensionPoint);
 
 			}
@@ -157,23 +161,33 @@ class ObjectSmsStatsPageBuilder <
 	}
 
 	void buildContextFile (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
-		consoleModule.addContextFile (
+		try (
 
-			consoleHelper.objectName () + ".stats",
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"buildContextFile");
 
-			consoleFileProvider.get ()
+		) {
 
-				.getResponderName (
-					stringFormat (
-						"%sStatsResponder",
-						consoleHelper.objectName ()))
+			consoleModule.addContextFile (
+				consoleHelper.objectName () + ".stats",
+				consoleFileProvider.get ()
 
-				.privKeys (
-					Collections.singletonList (privKey)),
+					.getResponderProvider (
+						responderProvider)
 
-			extensionPoint.contextTypeNames ());
+					.privKeys (
+						singletonList (
+							privKey)),
+
+				extensionPoint.contextTypeNames ()
+			);
+
+		}
 
 	}
 
@@ -188,20 +202,20 @@ class ObjectSmsStatsPageBuilder <
 			.objectLookup (
 				consoleHelper);
 
-		consoleModule.addResponder (
-			consoleHelper.objectName () + "StatsResponder",
+		responderProvider =
+			() -> tabContextResponderProvider.get ()
 
-			tabContextResponderProvider.get ()
+			.tab (
+				consoleHelper.objectName () + ".stats")
 
-				.tab (
-					consoleHelper.objectName () + ".stats")
+			.title (
+				capitalise (
+					consoleHelper.friendlyName () + " stats"))
 
-				.title (
-					capitalise (
-						consoleHelper.friendlyName () + " stats"))
+			.pagePartFactory (
+				partFactory)
 
-				.pagePartFactory (
-					partFactory));
+		;
 
 	}
 

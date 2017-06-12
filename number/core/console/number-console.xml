@@ -23,8 +23,9 @@
 		<list>
 
 			<object-search-page
-				search-fields="search"
-				results-column-fields="results"/>
+				search-class="wbs.sms.number.core.model.NumberSearch"
+				search-form="search"
+				results-form="results"/>
 
 		</list>
 
@@ -33,7 +34,7 @@
 			<object-summary-page>
 
 				<fields
-					fields="summary"/>
+					form="summary"/>
 
 				<heading
 					label="Active subscriptions"/>
@@ -44,7 +45,7 @@
 			</object-summary-page>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<context-tab-responder-page
 				name="subscriptions"/>
@@ -58,67 +59,91 @@
 
 	</object-context>
 
-	<field-set
-		name="search"
-		class="wbs.sms.number.core.model.NumberSearch">
+	<forms>
 
-		<text-field
-			name="number"
-			nullable="yes"/>
+		<form
+			name="search"
+			class="wbs.sms.number.core.model.NumberSearch"
+			type="search">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="results"
-		object-name="number">
+				<text-field
+					name="number"
+					nullable="yes"/>
 
-		<code-field/>
+			</columns>
 
-		<object-field
-			name="network"
-			object-type="network"/>
+		</form>
 
-		<timestamp-field
-			name="archiveDate"/>
+		<form
+			name="results"
+			object-type="number"
+			type="read-only">
 
-		<yes-no-field
-			name="free"/>
+			<columns>
 
-	</field-set>
+				<code-field/>
 
-	<field-set
-		name="summary"
-		object-name="number">
+				<object-field
+					name="network"
+					object-type="network"/>
 
-		<id-field/>
-		<code-field/>
+				<timestamp-field
+					name="archiveDate"/>
 
-		<object-field
-			name="network"
-			object-type="network"/>
+				<yes-no-field
+					name="free"/>
 
-		<timestamp-field
-			name="archiveDate"/>
+			</columns>
 
-		<yes-no-field
-			name="free"/>
+		</form>
 
-	</field-set>
+		<form
+			name="summary"
+			object-type="number"
+			type="read-only">
 
-	<field-set
-		name="settings"
-		object-name="number">
+			<columns>
 
-		<id-field/>
-		<code-field read-only="yes"/>
+				<id-field/>
+				<code-field/>
 
-		<object-field
-			name="network"
-			object-type="network"/>
+				<object-field
+					name="network"
+					object-type="network"/>
 
-		<yes-no-field
-			name="free"/>
+				<timestamp-field
+					name="archiveDate"/>
 
-	</field-set>
+				<yes-no-field
+					name="free"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="number"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<code-field read-only="yes"/>
+
+				<object-field
+					name="network"
+					object-type="network"/>
+
+				<yes-no-field
+					name="free"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

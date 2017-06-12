@@ -31,7 +31,7 @@ import wbs.sms.message.core.model.MessageStatus;
 
 import wbs.utils.string.FormatWriter;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("messageManuallyDeliverFormActionHelper")
 public
@@ -132,7 +132,7 @@ class MessageManuallyDeliverFormActionHelper
 
 	@Override
 	public
-	Optional <Responder> processFormSubmission (
+	Optional <WebResponder> processFormSubmission (
 			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 

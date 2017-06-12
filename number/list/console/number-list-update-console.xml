@@ -29,14 +29,14 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<context-tab-form-action-page
 				name="numbers"
@@ -47,60 +47,70 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="numberListUpdate">
-
-		<id-field/>
-
-		<timestamp-field
-			name="timestamp"/>
-
-		<object-field
-			name="user"/>
-
-		<object-field
-			name="service"/>
-
-		<object-field
-			name="message"/>
-
-		<yes-no-field
-			name="present"/>
-
-		<integer-field
-			name="numberCount"/>
-
-	</field-set>
-
-	<field-set
-		name="summary"
-		object-name="numberListUpdate">
-
-		<parent-field/>
-		<id-field/>
-
-		<timestamp-field
-			name="timestamp"/>
-
-		<object-field
-			name="user"/>
-
-		<object-field
-			name="service"/>
-
-		<object-field
-			name="message"/>
-
-		<yes-no-field
-			name="present"/>
-
-		<integer-field
-			name="numberCount"/>
-
-	</field-set>
-
 	<forms>
+
+		<form
+			name="list"
+			object-type="number-list-update"
+			type="read-only">
+
+			<columns>
+
+				<id-field/>
+
+				<timestamp-field
+					name="timestamp"/>
+
+				<object-field
+					name="user"/>
+
+				<object-field
+					name="service"/>
+
+				<object-field
+					name="message"/>
+
+				<yes-no-field
+					name="present"/>
+
+				<integer-field
+					name="numberCount"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="summary"
+			object-type="number-list-update"
+			type="read-only">
+
+			<columns>
+
+				<parent-field/>
+				<id-field/>
+
+				<timestamp-field
+					name="timestamp"/>
+
+				<object-field
+					name="user"/>
+
+				<object-field
+					name="service"/>
+
+				<object-field
+					name="message"/>
+
+				<yes-no-field
+					name="present"/>
+
+				<integer-field
+					name="numberCount"/>
+
+			</columns>
+
+		</form>
 
 		<form
 			name="numbers-action"

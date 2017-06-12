@@ -41,8 +41,8 @@ import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.core.console.CoreAuthAction;
 
-import wbs.web.action.Action;
-import wbs.web.responder.Responder;
+import wbs.web.mvc.WebAction;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("objectSmsMessageSetPageBuilder")
 public
@@ -150,6 +150,7 @@ class ObjectSmsMessageSetPageBuilder <
 					resolvedExtensionPoint);
 
 				buildFile (
+					taskLogger,
 					resolvedExtensionPoint);
 
 			}
@@ -203,79 +204,91 @@ class ObjectSmsMessageSetPageBuilder <
 	}
 
 	void buildFile (
+			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
-		PagePartFactory partFactory =
-			parentTransaction -> {
+		try (
 
-			try (
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"buildFile");
 
-				NestedTransaction transaction =
-					parentTransaction.nestTransaction (
-						logContext,
-						"buildPagePart");
+		) {
 
-			) {
+			PagePartFactory partFactory =
+				parentTransaction -> {
 
-				return messageSetPartProvider.get ()
+				try (
 
-					.messageSetFinder (
-						messageSetFinder);
+					NestedTransaction transaction =
+						parentTransaction.nestTransaction (
+							logContext,
+							"buildPagePart");
 
-			}
+				) {
 
-		};
+					return messageSetPartProvider.get ()
 
-		Provider <Responder> responder =
-			tabContextResponderProvider.get ()
+						.messageSetFinder (
+							messageSetFinder);
 
-			.tab (
-				tabName)
+				}
 
-			.title (
-				tabLabel)
+			};
 
-			.pagePartFactory (
-				partFactory);
+			Provider <WebResponder> responderProvider =
+				tabContextResponderProvider.get ()
 
-		Provider <Action> getActionProvider =
-			() -> authActionProvider.get ()
+				.tab (
+					tabName)
 
-			.lookup (
-				canViewLookup)
+				.title (
+					tabLabel)
 
-			.normalResponder (
-				responder);
+				.pagePartFactory (
+					partFactory);
 
-		Provider <Action> postActionProvider =
-			() -> messageSetActionProvider.get ()
+			Provider <WebAction> getActionProvider =
+				() -> authActionProvider.get ()
 
-			.responder (
-				responder)
+				.lookup (
+					canViewLookup)
 
-			.messageSetFinder (
-				messageSetFinder)
+				.normalResponderProvider (
+					responderProvider);
 
-			.privLookup (
-				canUpdateLookup);
+			Provider <WebAction> postActionProvider =
+				() -> messageSetActionProvider.get ()
 
-		consoleModule.addContextFile (
-			fileName,
-			consoleFile.get ()
+				.responder (
+					responderProvider)
 
-				.getResponderName (
-					responderName)
+				.messageSetFinder (
+					messageSetFinder)
 
-				.getActionProvider (
-					getActionProvider)
+				.privLookup (
+					canUpdateLookup);
 
-				.postActionProvider (
-					postActionProvider)
+			consoleModule.addContextFile (
+				fileName,
+				consoleFile.get ()
 
-				.privName (
-					privKey),
+					.getResponderProvider (
+						responderProvider)
 
-			extensionPoint.contextTypeNames ());
+					.getActionProvider (
+						getActionProvider)
+
+					.postActionProvider (
+						postActionProvider)
+
+					.privName (
+						privKey),
+
+				extensionPoint.contextTypeNames ());
+
+		}
 
 	}
 

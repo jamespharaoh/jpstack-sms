@@ -35,7 +35,7 @@ import wbs.sms.message.outbox.model.OutboxRec;
 
 import wbs.utils.string.FormatWriter;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("messageManuallyRetryFormActionHelper")
 public
@@ -176,7 +176,7 @@ class MessageManuallyRetryFormActionHelper
 
 	@Override
 	public
-	Optional <Responder> processFormSubmission (
+	Optional <WebResponder> processFormSubmission (
 			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 

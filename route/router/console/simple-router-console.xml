@@ -21,20 +21,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<object-events-page/>
 
@@ -42,64 +42,88 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="simpleRouter">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="simple-router"
+			type="read-only">
 
-		<object-field
-			name="route"
-			object-type="route"/>
+			<columns>
 
-	</field-set>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-	<field-set
-		name="create"
-		object-name="simpleRouter">
+				<object-field
+					name="route"
+					object-type="route"/>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+			</columns>
 
-		<object-field
-			name="route"
-			object-type="route"/>
+		</form>
 
-	</field-set>
+		<form
+			name="create"
+			object-type="simple-router"
+			type="create">
 
-	<field-set
-		name="summary"
-		object-name="simpleRouter">
+			<columns>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<object-field
-			name="route"
-			object-type="route"/>
+				<object-field
+					name="route"
+					object-type="route"/>
 
-	</field-set>
+			</columns>
 
-	<field-set
-		name="settings"
-		object-name="simpleRouter">
+		</form>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+		<form
+			name="summary"
+			object-type="simple-router"
+			type="read-only">
 
-		<object-field
-			name="route"
-			object-type="route"/>
+			<columns>
 
-	</field-set>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<object-field
+					name="route"
+					object-type="route"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="simple-router"
+			type="update">
+
+			<columns>
+
+				<parent-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<object-field
+					name="route"
+					object-type="route"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

@@ -29,61 +29,75 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 		</object>
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="smsSpendLimiterNumberDay">
+	<forms>
 
-		<date-field
-			name="date"/>
+		<form
+			name="list"
+			object-type="sms-spend-limiter-number-day"
+			type="read-only">
 
-		<currency-field
-			name="totalSpent"
-			currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+			<columns>
 
-		<currency-field
-			name="adviceSpent"
-			currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+				<date-field
+					name="date"/>
 
-		<yes-no-field
-			name="limitSent"/>
+				<currency-field
+					name="totalSpent"
+					currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
 
-	</field-set>
+				<currency-field
+					name="adviceSpent"
+					currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
 
-	<field-set
-		name="summary"
-		object-name="smsSpendLimiterNumberDay">
+				<yes-no-field
+					name="limitSent"/>
 
-		<id-field/>
-		<parent-field/>
+			</columns>
 
-		<currency-field
-			name="totalSpent"
-			currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+		</form>
 
-		<currency-field
-			name="adviceSpent"
-			currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+		<form
+			name="summary"
+			object-type="sms-spend-limiter-number-day"
+			type="read-only">
 
-		<yes-no-field
-			name="limitSent"/>
+			<columns>
 
-		<object-field
-			name="limitMessage"
-			object-type="message"/>
+				<id-field/>
+				<parent-field/>
 
-	</field-set>
+				<currency-field
+					name="totalSpent"
+					currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+
+				<currency-field
+					name="adviceSpent"
+					currency="smsSpendLimiterNumber.smsSpendLimiter.currency"/>
+
+				<yes-no-field
+					name="limitSent"/>
+
+				<object-field
+					name="limitMessage"
+					object-type="message"/>
+
+			 </columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

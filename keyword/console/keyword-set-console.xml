@@ -21,20 +21,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<context-link
 				name="keyword"
@@ -48,76 +48,100 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="keywordSet">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="keyword-set"
+			type="read-only">
 
-		<enum-field
-			name="type"/>
+			<columns>
 
-	</field-set>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-	<field-set
-		name="create"
-		object-name="keywordSet">
+				<enum-field
+					name="type"/>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+			</columns>
 
-		<enum-field
-			name="type"/>
+		</form>
 
-	</field-set>
+		<form
+			name="create"
+			object-type="keyword-set"
+			type="create">
 
-	<field-set
-		name="summary"
-		object-name="keywordSet">
+			<columns>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<enum-field
-			name="type"/>
+				<enum-field
+					name="type"/>
 
-		<object-field
-			name="fallbackCommand"
-			object-type="command"/>
+			</columns>
 
-		<seconds-field
-			name="fallbackTimeout"/>
+		</form>
 
-	</field-set>
+		<form
+			name="summary"
+			object-type="keyword-set"
+			type="read-only">
 
-	<field-set
-		name="settings"
-		object-name="keywordSet">
+			<columns>
 
-		<id-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<enum-field
-			name="type"/>
+				<enum-field
+					name="type"/>
 
-		<object-field
-			name="fallbackCommand"
-			object-type="command"/>
+				<object-field
+					name="fallbackCommand"
+					object-type="command"/>
 
-		<seconds-field
-			name="fallbackTimeout"
-			nullable="yes"/>
+				<seconds-field
+					name="fallbackTimeout"/>
 
-	</field-set>
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="keyword-set"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<enum-field
+					name="type"/>
+
+				<object-field
+					name="fallbackCommand"
+					object-type="command"/>
+
+				<seconds-field
+					name="fallbackTimeout"
+					nullable="yes"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

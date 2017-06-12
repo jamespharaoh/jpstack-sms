@@ -29,20 +29,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<object-events-page/>
 
@@ -50,99 +50,123 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="gazetteerEntry">
+	<forms>
 
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="gazetteer-entry"
+			type="read-only">
 
-		<floating-point-field
-			name="longitude"
-			field="longLat.longitude"
-			label="Longitude"/>
+			<columns>
 
-		<floating-point-field
-			name="latitude"
-			field="longLat.latitude"
-			label="Latitude"/>
+				<name-field/>
+				<description-field/>
 
-		<yes-no-field
-			name="canonical"/>
+				<floating-point-field
+					name="longitude"
+					field="longLat.longitude"
+					label="Longitude"/>
 
-	</field-set>
+				<floating-point-field
+					name="latitude"
+					field="longLat.latitude"
+					label="Latitude"/>
 
-	<field-set
-		name="create"
-		object-name="gazetteerEntry">
+				<yes-no-field
+					name="canonical"/>
 
-		<name-field/>
-		<description-field/>
+			</columns>
 
-		<floating-point-field
-			name="longitude"
-			field="longLat.longitude"
-			label="Longitude"/>
+		</form>
 
-		<floating-point-field
-			name="latitude"
-			field="longLat.latitude"
-			label="Latitude"/>
+		<form
+			name="create"
+			object-type="gazetteer-entry"
+			type="create">
 
-		<yes-no-field
-			name="canonical"/>
+			<columns>
 
-	</field-set>
+				<name-field/>
+				<description-field/>
 
-	<field-set
-		name="summary"
-		object-name="gazetteerEntry">
+				<floating-point-field
+					name="longitude"
+					field="longLat.longitude"
+					label="Longitude"/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<floating-point-field
+					name="latitude"
+					field="longLat.latitude"
+					label="Latitude"/>
 
-		<floating-point-field
-			name="longitude"
-			field="longLat.longitude"
-			label="Longitude"/>
+				<yes-no-field
+					name="canonical"/>
 
-		<floating-point-field
-			name="latitude"
-			field="longLat.latitude"
-			label="Latitude"/>
+			</columns>
 
-		<yes-no-field
-			name="canonical"/>
+		</form>
 
-	</field-set>
+		<form
+			name="summary"
+			object-type="gazetteer-entry"
+			type="read-only">
 
-	<field-set
-		name="settings"
-		object-name="gazetteerEntry">
+			<columns>
 
-		<id-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
 
-		<floating-point-field
-			name="longitude"
-			field="longLat.longitude"
-			label="Longitude"/>
+				<floating-point-field
+					name="longitude"
+					field="longLat.longitude"
+					label="Longitude"/>
 
-		<floating-point-field
-			name="latitude"
-			field="longLat.latitude"
-			label="Latitude"/>
+				<floating-point-field
+					name="latitude"
+					field="longLat.latitude"
+					label="Latitude"/>
 
-		<yes-no-field
-			name="canonical"/>
+				<yes-no-field
+					name="canonical"/>
 
-	</field-set>
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="gazetteer-entry"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<floating-point-field
+					name="longitude"
+					field="longLat.longitude"
+					label="Longitude"/>
+
+				<floating-point-field
+					name="latitude"
+					field="longLat.latitude"
+					label="Latitude"/>
+
+				<yes-no-field
+					name="canonical"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

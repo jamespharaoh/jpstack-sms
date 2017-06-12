@@ -29,7 +29,7 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<context-tab-action-page
 				name="update"/>
@@ -39,10 +39,10 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<object-events-page/>
 
@@ -50,33 +50,52 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="magicNumber">
+	<forms>
 
-		<code-field/>
+		<form
+			name="list"
+			object-type="magic-number"
+			type="read-only">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="summary"
-		object-name="magicNumber">
+				<code-field/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<deleted-field/>
+			</columns>
 
-	</field-set>
+		</form>
 
-	<field-set
-		name="settings"
-		object-name="magicNumber">
+		<form
+			name="summary"
+			object-type="magic-number"
+			type="read-only">
 
-		<id-field/>
-		<code-field/>
-		<deleted-field/>
+			<columns>
 
-	</field-set>
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<deleted-field/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="magic-number"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<code-field/>
+				<deleted-field/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

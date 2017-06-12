@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.inject.Provider;
+
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
@@ -16,7 +18,9 @@ import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
@@ -37,7 +41,7 @@ import wbs.sms.number.format.logic.WbsNumberFormatException;
 import wbs.sms.number.format.model.NumberFormatObjectHelper;
 import wbs.sms.number.format.model.NumberFormatRec;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 import wbs.web.utils.HtmlUtils;
 
 @PrototypeComponent ("blacklistSearchAction")
@@ -71,15 +75,20 @@ class BlacklistSearchAction
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
 
+	// prototype dependencies
+
+	@PrototypeDependency
+	@NamedDependency ("blacklistSearchResponder")
+	Provider <WebResponder> searchResponderProvider;
+
 	// details
 
 	@Override
 	public
-	Responder backupResponder (
+	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return responder (
-			"blacklistNewResponder");
+		return searchResponderProvider.get ();
 
 	}
 
@@ -87,7 +96,7 @@ class BlacklistSearchAction
 
 	@Override
 	public
-	Responder goReal (
+	WebResponder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (

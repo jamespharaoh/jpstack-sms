@@ -29,16 +29,18 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
-			<object-create-page/>
+			<object-create-page
+				form="create"
+				target-responder="smsCustomerManagerSettingsGeneralResponder"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<section
 				name="settings"
@@ -46,7 +48,7 @@
 
 				<object-settings-page
 					short-name="general"
-					fields="settings"/>
+					form="settings"/>
 
 				<context-link
 					name="template"
@@ -89,56 +91,90 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="smsCustomerManager">
+	<forms>
 
-		<parent-field/>
-		<name-field/>
-		<description-field/>
+		<form
+			name="list"
+			object-type="sms-customer-manager"
+			type="read-only">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="summary"
-		object-name="smsCustomerManager">
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			</columns>
 
-		<seconds-field
-			name="sessionTimeout"
-			nullable="yes"/>
+		</form>
 
-		<object-field
-			name="stopNumberList"
-			object-type="numberList"/>
+		<form
+			name="create"
+			object-type="sms-customer-manager"
+			type="create">
 
-	</field-set>
+			<columns>
 
-	<field-set
-		name="settings"
-		object-name="smsCustomerManager">
+				<parent-field/>
+				<name-field/>
+				<description-field/>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
+			</columns>
 
-		<seconds-field
-			name="sessionTimeout"
-			nullable="yes"/>
+		</form>
 
-		<object-field
-			name="stopNumberList"
-			object-type="numberList"/>
+		<form
+			name="summary"
+			object-type="sms-customer-manager"
+			type="read-only">
 
-	</field-set>
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<seconds-field
+					name="sessionTimeout"
+					nullable="yes"/>
+
+				<object-field
+					name="stopNumberList"
+					object-type="numberList"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="sms-customer-manager"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<seconds-field
+					name="sessionTimeout"
+					nullable="yes"/>
+
+				<object-field
+					name="stopNumberList"
+					object-type="numberList"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

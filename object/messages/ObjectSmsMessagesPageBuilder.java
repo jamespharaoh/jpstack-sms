@@ -1,6 +1,7 @@
 package wbs.sms.object.messages;
 
 import static wbs.utils.collection.CollectionUtils.emptyList;
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -50,6 +51,8 @@ import wbs.sms.message.core.console.MessageSource;
 import wbs.sms.message.core.console.MessageSourceImplementation;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.route.core.model.RouteRec;
+
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("objectSmsMessagesPageBuilder")
 public
@@ -108,7 +111,8 @@ class ObjectSmsMessagesPageBuilder <
 	String privKey;
 	String tabName;
 	String fileName;
-	String responderName;
+
+	Provider <WebResponder> responderProvider;
 
 	PagePartFactory partFactory;
 
@@ -146,6 +150,7 @@ class ObjectSmsMessagesPageBuilder <
 					resolvedExtensionPoint);
 
 				buildContextFile (
+					taskLogger,
 					resolvedExtensionPoint);
 
 			}
@@ -368,24 +373,39 @@ class ObjectSmsMessagesPageBuilder <
 	}
 
 	void buildContextFile (
-			@NonNull ResolvedConsoleContextExtensionPoint
-				resolvedExtensionPoint) {
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull ResolvedConsoleContextExtensionPoint extensionPoint) {
 
-		consoleModule.addContextFile (
-			fileName,
-			consoleFileProvider.get ()
-				.getResponderName (responderName)
-				.privKeys (
-					Collections.singletonList (privKey)),
-			resolvedExtensionPoint.contextTypeNames ());
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"buildContextFile");
+
+		) {
+
+			consoleModule.addContextFile (
+				fileName,
+				consoleFileProvider.get ()
+
+					.getResponderProvider (
+						responderProvider)
+
+					.privKeys (
+						singletonList (
+							privKey)),
+
+				extensionPoint.contextTypeNames ());
+
+		}
 
 	}
 
 	void buildResponder () {
 
-		consoleModule.addResponder (
-			responderName,
-			tabContextResponder.get ()
+		responderProvider =
+			() -> tabContextResponder.get ()
 
 			.tab (
 				tabName)
@@ -397,7 +417,7 @@ class ObjectSmsMessagesPageBuilder <
 			.pagePartFactory (
 				partFactory)
 
-		);
+		;
 
 	}
 
@@ -429,12 +449,14 @@ class ObjectSmsMessagesPageBuilder <
 					"%s.messages",
 					container.pathPrefix ()));
 
+		/*
 		responderName =
 			ifNull (
 				objectSmsMessagesPageSpec.responderName (),
 				stringFormat (
 					"%sMessagesResponder",
 					container.newBeanNamePrefix ()));
+		*/
 
 	}
 

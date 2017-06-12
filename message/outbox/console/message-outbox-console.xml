@@ -40,12 +40,13 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 		</object>
 
 	</object-context>
 
+<!--
 	<field-set
 		name="routeOutboxSummary"
 		object-name="routeOutboxSummary">
@@ -63,43 +64,53 @@
 			label="Oldest"/>
 
 	</field-set>
+-->
 
-	<field-set
-		name="summary"
-		object-name="outbox">
+	<forms>
 
-		<id-field/>
-		<parent-field/>
+		<form
+			name="summary"
+			object-type="outbox"
+			type="read-only">
 
-		<object-field
-			name="route"
-			object-type="route"/>
+			<columns>
 
-		<timestamp-field
-			name="createdTime"/>
+				<id-field/>
+				<parent-field/>
 
-		<integer-field
-			name="pri"
-			label="Priority"/>
+				<object-field
+					name="route"
+					object-type="route"/>
 
-		<timestamp-field
-			name="retryTime"/>
+				<timestamp-field
+					name="createdTime"/>
 
-		<integer-field
-			name="tries"/>
+				<integer-field
+					name="pri"
+					label="Priority"/>
 
-		<integer-field
-			name="remainingTries"/>
+				<timestamp-field
+					name="retryTime"/>
 
-		<text-field
-			name="error"/>
+				<integer-field
+					name="tries"/>
 
-		<yes-no-field
-			name="dailyFailure"/>
+				<integer-field
+					name="remainingTries"/>
 
-		<timestamp-field
-			name="sending"/>
+				<text-field
+					name="error"/>
 
-	</field-set>
+				<yes-no-field
+					name="dailyFailure"/>
+
+				<timestamp-field
+					name="sending"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

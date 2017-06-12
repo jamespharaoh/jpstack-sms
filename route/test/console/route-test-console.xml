@@ -5,7 +5,9 @@
 		name="route.test"
 		base-name="route"
 		extension-point="route.test"
-		object-name="route">
+		object-name="route"
+		component-name="route"
+		friendly-name="route">
 
 		<section
 			name="test"

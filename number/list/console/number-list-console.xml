@@ -21,20 +21,20 @@
 		<list>
 
 			<object-list-page
-				fields="list"/>
+				form="list"/>
 
 			<object-create-page
-				fields="create"/>
+				form="create"/>
 
 		</list>
 
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-settings-page
-				fields="settings"/>
+				form="settings"/>
 
 			<context-link
 				name="number"
@@ -48,72 +48,7 @@
 
 	</object-context>
 
-	<field-set
-		name="list"
-		object-name="numberList">
-
-		<parent-field/>
-		<name-field/>
-		<description-field/>
-
-		<object-field
-			name="numberFormat"
-			object-type="numberFormat"/>
-
-		<integer-field
-			name="numberCount"/>
-
-	</field-set>
-
-	<field-set
-		name="create"
-		object-name="numberList">
-
-		<parent-field/>
-		<name-field/>
-		<description-field/>
-
-		<object-field
-			name="numberFormat"
-			object-type="numberFormat"/>
-
-	</field-set>
-
-	<field-set
-		name="summary"
-		object-name="numberList">
-
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-
-		<object-field
-			name="numberFormat"
-			object-type="numberFormat"/>
-
-		<integer-field
-			name="numberCount"/>
-
-	</field-set>
-
-	<field-set
-		name="settings"
-		object-name="numberList">
-
-		<id-field/>
-		<parent-field/>
-		<code-field/>
-		<name-field/>
-		<description-field/>
-		<deleted-field/>
-
-		<object-field
-			name="numberFormat"
-			object-type="numberFormat"/>
-
-	</field-set>
-
+<!--
 	<field-set
 		name="numberCopy"
 		class="wbs.sms.number.list.console.NumberListCopyForm">
@@ -123,5 +58,96 @@
 			object-type="numberList"/>
 
 	</field-set>
+-->
+
+	<forms>
+
+		<form
+			name="list"
+			object-type="number-list"
+			type="read-only">
+
+			<columns>
+
+				<parent-field/>
+				<name-field/>
+				<description-field/>
+
+				<object-field
+					name="numberFormat"
+					object-type="numberFormat"/>
+
+				<integer-field
+					name="numberCount"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="create"
+			object-type="number-list"
+			type="create">
+
+			<columns>
+
+				<parent-field/>
+				<name-field/>
+				<description-field/>
+
+				<object-field
+					name="numberFormat"
+					object-type="numberFormat"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="summary"
+			object-type="number-list"
+			type="read-only">
+
+			<columns>
+
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+
+				<object-field
+					name="numberFormat"
+					object-type="numberFormat"/>
+
+				<integer-field
+					name="numberCount"/>
+
+			</columns>
+
+		</form>
+
+		<form
+			name="settings"
+			object-type="number-list"
+			type="update">
+
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+				<name-field/>
+				<description-field/>
+				<deleted-field/>
+
+				<object-field
+					name="numberFormat"
+					object-type="numberFormat"/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>

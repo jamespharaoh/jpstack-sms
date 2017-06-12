@@ -22,7 +22,7 @@ import wbs.platform.text.web.TextResponder;
 
 import wbs.sms.number.list.model.NumberListUpdateRec;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("numberListUpdateNumbersFormActionHelper")
 public
@@ -46,7 +46,7 @@ class NumberListUpdateNumbersFormActionHelper
 
 	@Override
 	public
-	Optional <Responder> processFormSubmission (
+	Optional <WebResponder> processFormSubmission (
 			@NonNull Transaction parentTransaction,
 			@NonNull Object formState) {
 

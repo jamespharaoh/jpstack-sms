@@ -8,13 +8,17 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 
+import javax.inject.Provider;
+
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
@@ -29,7 +33,7 @@ import wbs.sms.magicnumber.model.MagicNumberSetRec;
 import wbs.sms.number.format.logic.NumberFormatLogic;
 import wbs.sms.number.format.logic.WbsNumberFormatException;
 
-import wbs.web.responder.Responder;
+import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("magicNumberUpdateAction")
 public
@@ -62,15 +66,20 @@ class MagicNumberUpdateAction
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
 
+	// prototype dependencies
+
+	@PrototypeDependency
+	@NamedDependency ("magicNumberUpdateResponder")
+	Provider <WebResponder> updateResponderProvider;
+
 	// details
 
 	@Override
 	protected
-	Responder backupResponder (
+	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return responder (
-			"magicNumberUpdateResponder");
+		return updateResponderProvider.get ();
 
 	}
 
@@ -78,7 +87,7 @@ class MagicNumberUpdateAction
 
 	@Override
 	protected
-	Responder goReal (
+	WebResponder goReal (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		// start transaction

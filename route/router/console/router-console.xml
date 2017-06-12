@@ -22,7 +22,7 @@
 		<object>
 
 			<object-summary-page
-				fields="summary"/>
+				form="summary"/>
 
 			<object-events-page/>
 
@@ -30,14 +30,23 @@
 
 	</object-context>
 
-	<field-set
-		name="summary"
-		object-name="router">
+	<forms>
 
-		<id-field/>
-		<parent-field/>
-		<code-field/>
+		<form
+			name="summary"
+			object-type="router"
+			type="read-only">
 
-	</field-set>
+			<columns>
+
+				<id-field/>
+				<parent-field/>
+				<code-field/>
+
+			</columns>
+
+		</form>
+
+	</forms>
 
 </console-module>
