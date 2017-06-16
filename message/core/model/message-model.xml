@@ -1,6 +1,6 @@
 <model-meta
 	name="message"
-	type="event">
+	type="common">
 
 	<fields>
 
