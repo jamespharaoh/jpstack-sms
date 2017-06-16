@@ -62,6 +62,12 @@ class SmsOutboxUnstickDaemon
 
 	@Override
 	protected
+	String friendlyName () {
+		return "SMS outbox unstick";
+	}
+
+	@Override
+	protected
 	String backgroundProcessName () {
 		return "outbox.unstick";
 	}

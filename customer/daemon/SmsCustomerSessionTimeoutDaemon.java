@@ -2,8 +2,8 @@ package wbs.sms.customer.daemon;
 
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.collection.IterableUtils.iterableMapToList;
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NullUtils.isNull;
+import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.List;
 
@@ -67,6 +67,12 @@ class SmsCustomerSessionTimeoutDaemon
 	TimeFormatter timeFormatter;
 
 	// details
+
+	@Override
+	protected
+	String friendlyName () {
+		return "SMS customer session timeout";
+	}
 
 	@Override
 	protected

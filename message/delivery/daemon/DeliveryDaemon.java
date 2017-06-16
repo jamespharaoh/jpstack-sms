@@ -72,6 +72,14 @@ class DeliveryDaemon
 	QueueBuffer<Long,DeliveryRec> buffer;
 	Map<Long,DeliveryHandler> handlersById;
 
+	// details
+
+	@Override
+	protected
+	String friendlyName () {
+		return "SMS message delivery";
+	}
+
 	// implementation
 
 	@Override

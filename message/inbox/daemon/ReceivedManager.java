@@ -107,6 +107,14 @@ class ReceivedManager
 		new QueueBuffer<> (
 			bufferSize);
 
+	// details
+
+	@Override
+	protected
+	String friendlyName () {
+		return "Received manager";
+	}
+
 	/**
 	 * Runnable class for a worker thread. Loops until the exit flag is set in
 	 * the buffer, Processing messages and updating the database with the

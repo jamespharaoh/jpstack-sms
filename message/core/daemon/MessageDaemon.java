@@ -82,6 +82,14 @@ class MessageDaemon
 	@Getter @Setter
 	Long batchSize = 100l;
 
+	// details
+
+	@Override
+	protected
+	String friendlyName () {
+		return "SMS message";
+	}
+
 	// life cycle
 
 	@NormalLifecycleSetup

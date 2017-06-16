@@ -56,6 +56,12 @@ class SmsOutboxMonitorImplementation
 
 	@Override
 	protected
+	String friendlyName () {
+		return "SMS outbound monitor";
+	}
+
+	@Override
+	protected
 	String getThreadName () {
 		throw new UnsupportedOperationException ();
 	}

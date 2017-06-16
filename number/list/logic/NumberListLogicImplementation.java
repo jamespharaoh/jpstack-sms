@@ -191,9 +191,9 @@ class NumberListLogicImplementation
 
 			Set <Long> numberIdsPresent =
 				iterableMapToSet (
+					numberListNumbers,
 					numberListNumber ->
-						numberListNumber.getNumber ().getId (),
-					numberListNumbers);
+						numberListNumber.getNumber ().getId ());
 
 			List <NumberRec> numbersPresent =
 				new ArrayList<> ();

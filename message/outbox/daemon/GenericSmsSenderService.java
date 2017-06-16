@@ -7,8 +7,10 @@ import static wbs.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.TypeUtils.classNameSimple;
+import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.underscoreToHyphen;
+import static wbs.utils.string.StringUtils.underscoreToSpaces;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -106,6 +108,20 @@ class GenericSmsSenderService
 
 	List <RouteSenderService> routeSenderServices =
 		new ArrayList<> ();
+
+	// details
+
+	@Override
+	protected
+	String friendlyName () {
+
+		return stringFormat (
+			"%s sender",
+			capitalise (
+				underscoreToSpaces (
+					smsSenderHelper.senderCode ())));
+
+	}
 
 	// implementation
 

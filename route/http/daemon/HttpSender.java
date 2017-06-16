@@ -78,6 +78,12 @@ class HttpSender
 
 	@Override
 	protected
+	String friendlyName () {
+		return "Http sender";
+	}
+
+	@Override
+	protected
 	String getThreadName () {
 		return "HttpSndr";
 	}

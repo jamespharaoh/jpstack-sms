@@ -71,6 +71,12 @@ final class RouteTesterDaemon
 
 	@Override
 	protected
+	String friendlyName () {
+		return "Route test";
+	}
+
+	@Override
+	protected
 	String getThreadName () {
 		return "RouteTester";
 	}

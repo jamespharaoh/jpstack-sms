@@ -106,6 +106,12 @@ class ModemPollDaemon
 
 	@Override
 	protected
+	String friendlyName () {
+		return "Model poll";
+	}
+
+	@Override
+	protected
 	String getThreadName () {
 		throw new UnsupportedOperationException ();
 	}
