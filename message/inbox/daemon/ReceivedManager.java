@@ -342,14 +342,35 @@ class ReceivedManager
 
 	}
 
+	private
 	boolean doQuery () {
+
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"doQuery");
+
+		) {
+
+			return doQueryReal (
+				taskLogger);
+
+		}
+
+	}
+
+	private
+	boolean doQueryReal (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
 			OwnedTransaction transaction =
 				database.beginReadOnly (
 					logContext,
-					"doQuery");
+					parentTaskLogger,
+					"doQueryReal");
 
 		) {
 

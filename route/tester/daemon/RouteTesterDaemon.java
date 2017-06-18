@@ -21,6 +21,8 @@ import wbs.framework.database.OwnedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.ObjectManager;
 
 import wbs.platform.daemon.AbstractDaemonService;
@@ -104,10 +106,30 @@ final class RouteTesterDaemon
 
 		try (
 
+			OwnedTaskLogger taskLogger =
+				logContext.createTaskLogger (
+					"runOnce");
+
+		) {
+
+			runOnceReal (
+				taskLogger);
+
+		}
+
+	}
+
+	private
+	void runOnceReal (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		try (
+
 			OwnedTransaction transaction =
 				database.beginReadWrite (
 					logContext,
-					"runOnce");
+					parentTaskLogger,
+					"runOnceReal");
 
 		) {
 
