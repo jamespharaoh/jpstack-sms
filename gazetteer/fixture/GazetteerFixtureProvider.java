@@ -114,10 +114,14 @@ class GazetteerFixtureProvider
 				dataFromXmlBuilderProvider.get ()
 
 				.registerBuilderClasses (
+					transaction,
 					GazetteerData.class,
 					GazetteerEntryData.class)
 
-				.build ();
+				.build (
+					transaction)
+
+			;
 
 			GazetteerData gazetteerData =
 				(GazetteerData)

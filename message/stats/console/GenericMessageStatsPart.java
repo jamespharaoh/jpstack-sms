@@ -235,7 +235,7 @@ class GenericMessageStatsPart
 
 			dateField =
 				ObsoleteDateField.parse (
-					requestContext.parameterOrNull (
+					requestContext.parameterOrEmptyString (
 						"date"));
 
 			urlParams.set (
