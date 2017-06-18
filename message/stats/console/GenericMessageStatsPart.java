@@ -1,6 +1,6 @@
 package wbs.sms.message.stats.console;
 
-import static wbs.utils.etc.Misc.toEnum;
+import static wbs.utils.etc.Misc.toEnumOrNull;
 import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
@@ -158,7 +158,7 @@ class GenericMessageStatsPart
 			// check split param
 
 			splitCriteria =
-				toEnum (
+				toEnumOrNull (
 					SmsStatsCriteria.class,
 					requestContext.parameterOrEmptyString (
 						"split"));
@@ -218,13 +218,14 @@ class GenericMessageStatsPart
 			// check view param
 
 			viewMode =
-				toEnum (
+				toEnumOrNull (
 					SmsStatsViewMode.class,
 					requestContext.parameterOrEmptyString (
 						"view"));
 
-			if (viewMode == null)
+			if (viewMode == null) {
 				viewMode = SmsStatsViewMode.daily;
+			}
 
 			urlParams.set (
 				"view",
