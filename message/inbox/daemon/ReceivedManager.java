@@ -6,6 +6,7 @@ import static wbs.utils.etc.LogicUtils.parseBooleanYesNoRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
 import static wbs.utils.string.StringUtils.keyEqualsClassSimple;
 import static wbs.utils.string.StringUtils.keyEqualsDecimalInteger;
@@ -13,8 +14,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
@@ -197,7 +196,7 @@ class ReceivedManager
 							transaction,
 							inbox,
 							route.getCommand (),
-							Optional.fromNullable (
+							optionalFromNullable (
 								message.getRef ()),
 							message.getText ().getText ());
 
