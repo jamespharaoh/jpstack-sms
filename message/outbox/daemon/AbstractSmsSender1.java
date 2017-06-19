@@ -1,10 +1,10 @@
 package wbs.sms.message.outbox.daemon;
 
+import static wbs.utils.etc.LogicUtils.attemptWithRetriesVoid;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.string.StringUtils.joinWithoutSeparator;
-import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.List;
 
@@ -13,7 +13,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+
+import org.joda.time.Duration;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
@@ -52,16 +53,16 @@ import wbs.sms.route.sender.model.SenderRec;
  * combined into a custom class.
  */
 @Deprecated
-@Log4j
 public abstract
 class AbstractSmsSender1 <MessageContainer>
 	extends AbstractDaemonService {
 
 	private final static
-	int maxTries = 10;
+	Long maxTries = 10l;
 
 	private final static
-	int retryTimeMs = 10;
+	Duration retryTime =
+		Duration.millis (10l);
 
 	private final static
 	int waitTimeMs = 1000;
@@ -420,10 +421,7 @@ class AbstractSmsSender1 <MessageContainer>
 
 		}
 
-		/**
-		 * Calls smsUtils.outboxSuccess in a transaction. Will automatically
-		 * retry up to 100 times in case of a DataAcccessException being thrown.
-		 */
+		private
 		void reliableOutboxSuccess (
 				@NonNull TaskLogger parentTaskLogger,
 				@NonNull Long messageId,
@@ -438,84 +436,66 @@ class AbstractSmsSender1 <MessageContainer>
 
 			) {
 
-				boolean interrupted = false;
+				attemptWithRetriesVoid (
+					maxTries,
+					retryTime,
 
-				for (int tries = 0;;) {
+					() -> {
 
-					try (
+						try (
 
-						OwnedTransaction transaction =
-							database.beginReadWrite (
-								logContext,
-								taskLogger,
-								"reliableOutboxSuccess.loop");
+							OwnedTransaction transaction =
+								database.beginReadWrite (
+									logContext,
+									taskLogger,
+									"reliableOutboxSuccess.loop");
 
-					) {
+						) {
 
-						MessageRec message =
-							smsMessageHelper.findRequired (
+							MessageRec message =
+								smsMessageHelper.findRequired (
+									transaction,
+									messageId);
+
+							smsOutboxLogic.messageSuccess (
 								transaction,
-								messageId);
+								message,
+								otherIds,
+								optionalAbsent ());
 
-						smsOutboxLogic.messageSuccess (
-							transaction,
-							message,
-							otherIds,
-							optionalAbsent ());
-
-						if (interrupted)
-							Thread.currentThread ().interrupt ();
-
-						transaction.commit ();
-
-						return;
-
-					} catch (Exception updateException) {
-
-						if (++ tries == maxTries) {
-
-							log.fatal (
-								stringFormat (
-									"Outbox success for message %s failed %s ",
-									integerToDecimalString (
-										messageId),
-									integerToDecimalString (
-										maxTries),
-									"times, giving up"),
-								updateException);
+							transaction.commit ();
 
 						}
 
-						log.warn (
-							stringFormat (
-								"Outbox success for message %s failed, retrying",
-								integerToDecimalString (
-									messageId)),
-							updateException);
+					},
 
-						try {
+					(attempt, exception) ->
+						taskLogger.warningFormatException (
+							exception,
+							"Outbox success for message %s failed, retrying",
+							integerToDecimalString (
+								messageId)),
 
-							Thread.sleep (
-								retryTimeMs);
+					(attempt, exception) ->
+						taskLogger.fatalFormatException (
+							exception,
+							"Outbox success for message %s failed %s ",
+							integerToDecimalString (
+								messageId),
+							integerToDecimalString (
+								maxTries),
+							"times, giving up")
 
-						} catch (InterruptedException interruptException) {
+				);
 
-							interrupted = true;
+			} catch (InterruptedException interruptedException) {
 
-						}
-
-					}
-
-				}
+				Thread.currentThread ().interrupt ();
 
 			}
 
 		}
 
-		/**
-		 * Calls smsUtils.outboxFailure in a transaction. Will automatically
-		 * retry up to 100 times in case of a DataAcccessException being thrown.
-		 */
 		void reliableOutboxFailure (
 				@NonNull TaskLogger parentTaskLogger,
 				long messageId,
@@ -530,70 +510,59 @@ class AbstractSmsSender1 <MessageContainer>
 
 			) {
 
-				boolean interrupted = false;
+				attemptWithRetriesVoid (
+					maxTries,
+					retryTime,
 
-				for (int tries = 0;;) {
+					() -> {
 
-					try (
+						try (
 
-						OwnedTransaction transaction =
-							database.beginReadWrite (
-								logContext,
-								taskLogger,
-								"reliableOutboxFailure.loop");
+							OwnedTransaction transaction =
+								database.beginReadWrite (
+									logContext,
+									taskLogger,
+									"reliableOutboxFailure.loop");
 
-					) {
+						) {
 
-						MessageRec message =
-							smsMessageHelper.findRequired (
+							MessageRec message =
+								smsMessageHelper.findRequired (
+									transaction,
+									messageId);
+
+							smsOutboxLogic.messageFailure (
 								transaction,
-								messageId);
+								message,
+								sendException.errorMessage,
+								sendException.failureType);
 
-						smsOutboxLogic.messageFailure (
-							transaction,
-							message,
-							sendException.errorMessage,
-							sendException.failureType);
-
-						if (interrupted)
-							Thread.currentThread ().interrupt ();
-
-						transaction.commit ();
-
-						return;
-
-					} catch (Exception updateException) {
-
-						if (++tries == maxTries) {
-
-							log.fatal (
-								"Outbox failure for message " + messageId + " " +
-								"failed many times, giving up!");
-
-							throw new RuntimeException (
-								"Max tries exceeded",
-								updateException);
+							transaction.commit ();
 
 						}
 
-						log.warn (
-							"Outbox failure for message " + messageId + " " +
-							"failed, retrying...",
-							updateException);
+					},
 
-						try {
+					(attempt, exception) ->
+						taskLogger.warningFormatException (
+							exception,
+							"Outbox failure for message %s ",
+							integerToDecimalString (
+								messageId),
+							"failed, retrying..."),
 
-							Thread.sleep (retryTimeMs);
+					(attempt, exception) ->
+						taskLogger.fatalFormat (
+							"Outbox failure for message %s ",
+							integerToDecimalString (
+								messageId),
+							"failed many times, giving up!")
 
-						} catch (InterruptedException interruptException) {
+				);
 
-							interrupted = true;
+			} catch (InterruptedException interruptedException) {
 
-						}
-
-					}
-
-				}
+				Thread.currentThread ().interrupt ();
 
 			}
 

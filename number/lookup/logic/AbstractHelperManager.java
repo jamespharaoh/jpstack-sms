@@ -1,6 +1,6 @@
 package wbs.sms.number.lookup.logic;
 
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.collection.MapUtils.mapContainsKey;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -10,7 +10,6 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
@@ -19,7 +18,6 @@ import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 import wbs.framework.object.InterfaceHelper;
 
-@Log4j
 public abstract
 class AbstractHelperManager <HelperType extends InterfaceHelper> {
 
@@ -56,8 +54,6 @@ class AbstractHelperManager <HelperType extends InterfaceHelper> {
 
 		) {
 
-			int errorCount = 0;
-
 			Map <String, String> beanNamesByParentTypeCode =
 				new HashMap<> ();
 
@@ -81,20 +77,20 @@ class AbstractHelperManager <HelperType extends InterfaceHelper> {
 
 				// make sure they're unique
 
-				if (beanNamesByParentTypeCode.containsKey (
-						parentObjectTypeCode)) {
+				if (
+					mapContainsKey (
+						beanNamesByParentTypeCode,
+						parentObjectTypeCode)
+				) {
 
-					log.error (
-						stringFormat (
-							"%s helper for %s from both %s and %s",
-							capitalise (
-								friendlyName ()),
-							parentObjectTypeCode,
+					taskLogger.errorFormat (
+						"%s helper for %s from both %s and %s",
+						capitalise (
+							friendlyName ()),
+						parentObjectTypeCode,
 							beanNamesByParentTypeCode.get (
 								parentObjectTypeCode),
-							beanName));
-
-					errorCount ++;
+						beanName);
 
 					continue;
 
@@ -110,15 +106,7 @@ class AbstractHelperManager <HelperType extends InterfaceHelper> {
 
 			// abort if there were errors
 
-			if (errorCount > 0) {
-
-				throw new RuntimeException (
-					stringFormat (
-						"Aborting due to %s errors",
-						integerToDecimalString (
-							errorCount)));
-
-			}
+			taskLogger.makeException ();
 
 			byParentObjectTypeCode =
 				byParentObjectTypeCodeBuilder.build ();
