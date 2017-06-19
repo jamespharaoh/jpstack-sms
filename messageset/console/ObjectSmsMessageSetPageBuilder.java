@@ -1,12 +1,9 @@
 package wbs.sms.messageset.console;
 
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.string.StringUtils.camelToSpaces;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
-
-import java.util.Collections;
-
-import javax.inject.Provider;
 
 import lombok.NonNull;
 
@@ -33,6 +30,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
@@ -61,28 +59,28 @@ class ObjectSmsMessageSetPageBuilder <
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <CoreAuthAction> authActionProvider;
+	ComponentProvider <CoreAuthAction> authActionProvider;
 
 	@PrototypeDependency
-	Provider <ConsoleFile> consoleFile;
+	ComponentProvider <ConsoleFile> consoleFileProvider;
 
 	@PrototypeDependency
-	Provider <ConsoleContextPrivLookup> contextPrivLookupProvider;
+	ComponentProvider <ConsoleContextPrivLookup> contextPrivLookupProvider;
 
 	@PrototypeDependency
-	Provider <ConsoleContextTab> contextTab;
+	ComponentProvider <ConsoleContextTab> contextTab;
 
 	@PrototypeDependency
-	Provider <MessageSetAction> messageSetActionProvider;
+	ComponentProvider <MessageSetAction> messageSetActionProvider;
 
 	@PrototypeDependency
-	Provider <MessageSetPart> messageSetPartProvider;
+	ComponentProvider <MessageSetPart> messageSetPartProvider;
 
 	@PrototypeDependency
-	Provider <SimpleMessageSetFinder> simpleMessageSetFinderProvider;
+	ComponentProvider <SimpleMessageSetFinder> simpleMessageSetFinderProvider;
 
 	@PrototypeDependency
-	Provider <TabContextResponder> tabContextResponderProvider;
+	ComponentProvider <TabContextResponder> tabContextResponderProvider;
 
 	// builder
 
@@ -97,7 +95,7 @@ class ObjectSmsMessageSetPageBuilder <
 
 	// state
 
-	ConsoleHelper<ObjectType> consoleHelper;
+	ConsoleHelper <ObjectType> consoleHelper;
 
 	String privKey;
 	String tabName;
@@ -137,7 +135,8 @@ class ObjectSmsMessageSetPageBuilder <
 
 			setDefaults ();
 
-			prepare ();
+			prepare (
+				taskLogger);
 
 			for (
 				ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
@@ -159,20 +158,49 @@ class ObjectSmsMessageSetPageBuilder <
 
 	}
 
-	void prepare () {
+	void prepare (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		canViewLookup =
-			contextPrivLookupProvider.get ()
-				.addPrivKey (privKey);
+		try (
 
-		canUpdateLookup =
-			contextPrivLookupProvider.get ()
-				.addPrivKey (privKey);
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"prepare");
 
-		messageSetFinder =
-			simpleMessageSetFinderProvider.get ()
-				.objectLookup (consoleHelper)
-				.code (spec.messageSetCode ());
+		) {
+
+			canViewLookup =
+				contextPrivLookupProvider.provide (
+					taskLogger)
+
+				.addPrivKey (
+					privKey)
+
+			;
+
+			canUpdateLookup =
+				contextPrivLookupProvider.provide (
+					taskLogger)
+
+				.addPrivKey (
+					privKey)
+
+			;
+
+			messageSetFinder =
+				simpleMessageSetFinderProvider.provide (
+					taskLogger)
+
+				.objectLookup (
+					consoleHelper)
+
+				.code (
+					spec.messageSetCode ())
+
+			;
+
+		}
 
 	}
 
@@ -192,12 +220,24 @@ class ObjectSmsMessageSetPageBuilder <
 			consoleModule.addContextTab (
 				taskLogger,
 				"end",
-				contextTab.get ()
-					.name (tabName)
-					.defaultLabel (tabLabel)
-					.localFile (fileName)
-					.privKeys (Collections.singletonList (privKey)),
-				extensionPoint.contextTypeNames ());
+				contextTab.provide (
+					taskLogger)
+
+					.name (
+						tabName)
+
+					.defaultLabel (
+						tabLabel)
+
+					.localFile (
+						fileName)
+
+					.privKeys (
+						singletonList (
+							privKey)),
+
+				extensionPoint.contextTypeNames ()
+			);
 
 		}
 
@@ -228,17 +268,22 @@ class ObjectSmsMessageSetPageBuilder <
 
 				) {
 
-					return messageSetPartProvider.get ()
+					return messageSetPartProvider.provide (
+						transaction)
 
 						.messageSetFinder (
-							messageSetFinder);
+							messageSetFinder)
+
+					;
 
 				}
 
 			};
 
-			Provider <WebResponder> responderProvider =
-				tabContextResponderProvider.get ()
+			ComponentProvider <WebResponder> responderProvider =
+				taskLoggerNested ->
+					tabContextResponderProvider.provide (
+						taskLoggerNested)
 
 				.tab (
 					tabName)
@@ -247,19 +292,27 @@ class ObjectSmsMessageSetPageBuilder <
 					tabLabel)
 
 				.pagePartFactory (
-					partFactory);
+					partFactory)
 
-			Provider <WebAction> getActionProvider =
-				() -> authActionProvider.get ()
+			;
+
+			ComponentProvider <WebAction> getActionProvider =
+				taskLoggerNested ->
+					authActionProvider.provide (
+						taskLoggerNested)
 
 				.lookup (
 					canViewLookup)
 
 				.normalResponderProvider (
-					responderProvider);
+					responderProvider)
 
-			Provider <WebAction> postActionProvider =
-				() -> messageSetActionProvider.get ()
+			;
+
+			ComponentProvider <WebAction> postActionProvider =
+				taskLoggerNested ->
+					messageSetActionProvider.provide (
+						taskLoggerNested)
 
 				.responder (
 					responderProvider)
@@ -268,11 +321,14 @@ class ObjectSmsMessageSetPageBuilder <
 					messageSetFinder)
 
 				.privLookup (
-					canUpdateLookup);
+					canUpdateLookup)
+
+			;
 
 			consoleModule.addContextFile (
 				fileName,
-				consoleFile.get ()
+				consoleFileProvider.provide (
+					taskLogger)
 
 					.getResponderProvider (
 						responderProvider)
@@ -284,9 +340,11 @@ class ObjectSmsMessageSetPageBuilder <
 						postActionProvider)
 
 					.privName (
+						taskLogger,
 						privKey),
 
-				extensionPoint.contextTypeNames ());
+				extensionPoint.contextTypeNames ()
+			);
 
 		}
 

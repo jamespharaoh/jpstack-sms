@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.context.ConsoleContextBuilderContainer;
@@ -36,6 +34,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.entity.record.Record;
@@ -80,19 +79,19 @@ class ObjectSmsMessagesPageBuilder <
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <ConsoleFile> consoleFileProvider;
+	ComponentProvider <ConsoleFile> consoleFileProvider;
 
 	@PrototypeDependency
-	Provider <ConsoleContextTab> contextTabProvider;
+	ComponentProvider <ConsoleContextTab> contextTabProvider;
 
 	@PrototypeDependency
-	Provider <ObjectSmsMessagesPart> messageBrowserPartProvider;
+	ComponentProvider <ObjectSmsMessagesPart> messageBrowserPartProvider;
 
 	@PrototypeDependency
-	Provider <MessageSourceImplementation> messageSourceProvider;
+	ComponentProvider <MessageSourceImplementation> messageSourceProvider;
 
 	@PrototypeDependency
-	Provider <TabContextResponder> tabContextResponder;
+	ComponentProvider <TabContextResponder> tabContextResponder;
 
 	// builder
 
@@ -112,7 +111,7 @@ class ObjectSmsMessagesPageBuilder <
 	String tabName;
 	String fileName;
 
-	Provider <WebResponder> responderProvider;
+	ComponentProvider <WebResponder> responderProvider;
 
 	PagePartFactory partFactory;
 
@@ -175,11 +174,21 @@ class ObjectSmsMessagesPageBuilder <
 			consoleModule.addContextTab (
 				taskLogger,
 				"end",
-				contextTabProvider.get ()
-					.name (tabName)
-					.defaultLabel ("Messages")
-					.localFile (fileName)
-					.privKeys (privKey),
+				contextTabProvider.provide (
+					taskLogger)
+
+					.name (
+						tabName)
+
+					.defaultLabel (
+						"Messages")
+
+					.localFile (
+						fileName)
+
+					.privKeys (
+						privKey),
+
 				extensionPoint.contextTypeNames ());
 
 		}
@@ -359,12 +368,24 @@ class ObjectSmsMessagesPageBuilder <
 				}
 
 				MessageSource source =
-					messageSourceProvider.get ()
-						.searchTemplate (search);
+					messageSourceProvider.provide (
+						transaction)
 
-				return messageBrowserPartProvider.get ()
-					.localName ("/" + fileName)
-					.messageSource (source);
+					.searchTemplate (
+						search)
+
+				;
+
+				return messageBrowserPartProvider.provide (
+					transaction)
+
+					.localName (
+						"/" + fileName)
+
+					.messageSource (
+						source)
+
+				;
 
 			}
 
@@ -387,16 +408,19 @@ class ObjectSmsMessagesPageBuilder <
 
 			consoleModule.addContextFile (
 				fileName,
-				consoleFileProvider.get ()
+				consoleFileProvider.provide (
+					taskLogger)
 
 					.getResponderProvider (
 						responderProvider)
 
 					.privKeys (
+						taskLogger,
 						singletonList (
 							privKey)),
 
-				extensionPoint.contextTypeNames ());
+				extensionPoint.contextTypeNames ()
+			);
 
 		}
 
@@ -405,7 +429,9 @@ class ObjectSmsMessagesPageBuilder <
 	void buildResponder () {
 
 		responderProvider =
-			() -> tabContextResponder.get ()
+			taskLoggerNested ->
+				tabContextResponder.provide (
+					taskLoggerNested)
 
 			.tab (
 				tabName)

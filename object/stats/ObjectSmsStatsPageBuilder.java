@@ -5,8 +5,6 @@ import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.context.ConsoleContextBuilderContainer;
@@ -29,6 +27,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -53,16 +52,16 @@ class ObjectSmsStatsPageBuilder <
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <ConsoleFile> consoleFileProvider;
+	ComponentProvider <ConsoleFile> consoleFileProvider;
 
 	@PrototypeDependency
-	Provider <ConsoleContextTab> contextTabProvider;
+	ComponentProvider <ConsoleContextTab> contextTabProvider;
 
 	@PrototypeDependency
-	Provider <TabContextResponder> tabContextResponderProvider;
+	ComponentProvider <TabContextResponder> tabContextResponderProvider;
 
 	@PrototypeDependency
-	Provider <ObjectStatsPartFactory> objectStatsPartFactoryProvider;
+	ComponentProvider <ObjectStatsPartFactory> objectStatsPartFactoryProvider;
 
 	// builder
 
@@ -80,7 +79,7 @@ class ObjectSmsStatsPageBuilder <
 	ConsoleHelper <ObjectType> consoleHelper;
 	String privKey;
 
-	Provider <WebResponder> responderProvider;
+	ComponentProvider <WebResponder> responderProvider;
 
 	// build
 
@@ -102,7 +101,8 @@ class ObjectSmsStatsPageBuilder <
 
 			setDefaults ();
 
-			buildResponder ();
+			buildResponder (
+				taskLogger);
 
 			for (
 				ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
@@ -140,7 +140,8 @@ class ObjectSmsStatsPageBuilder <
 			consoleModule.addContextTab (
 				taskLogger,
 				"end",
-				contextTabProvider.get ()
+				contextTabProvider.provide (
+					taskLogger)
 
 					.name (
 						consoleHelper.objectName () + ".stats")
@@ -154,7 +155,8 @@ class ObjectSmsStatsPageBuilder <
 					.privKeys (
 						privKey),
 
-				extensionPoint.contextTypeNames ());
+				extensionPoint.contextTypeNames ()
+			);
 
 		}
 
@@ -175,12 +177,14 @@ class ObjectSmsStatsPageBuilder <
 
 			consoleModule.addContextFile (
 				consoleHelper.objectName () + ".stats",
-				consoleFileProvider.get ()
+				consoleFileProvider.provide (
+					taskLogger)
 
 					.getResponderProvider (
 						responderProvider)
 
 					.privKeys (
+						taskLogger,
 						singletonList (
 							privKey)),
 
@@ -191,31 +195,46 @@ class ObjectSmsStatsPageBuilder <
 
 	}
 
-	void buildResponder () {
+	void buildResponder (
+			@NonNull TaskLogger parentTaskLogger) {
 
-		PagePartFactory partFactory =
-			objectStatsPartFactoryProvider.get ()
+		try (
 
-			.localName (
-				"/" + consoleHelper.objectName () + ".stats")
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"buildResponder");
 
-			.objectLookup (
-				consoleHelper);
+		) {
 
-		responderProvider =
-			() -> tabContextResponderProvider.get ()
+			PagePartFactory partFactory =
+				objectStatsPartFactoryProvider.provide (
+					taskLogger)
 
-			.tab (
-				consoleHelper.objectName () + ".stats")
+				.localName (
+					"/" + consoleHelper.objectName () + ".stats")
 
-			.title (
-				capitalise (
-					consoleHelper.friendlyName () + " stats"))
+				.objectLookup (
+					consoleHelper);
 
-			.pagePartFactory (
-				partFactory)
+			responderProvider =
+				taskLoggerNested ->
+					tabContextResponderProvider.provide (
+						taskLoggerNested)
 
-		;
+				.tab (
+					consoleHelper.objectName () + ".stats")
+
+				.title (
+					capitalise (
+						consoleHelper.friendlyName () + " stats"))
+
+				.pagePartFactory (
+					partFactory)
+
+			;
+
+		}
 
 	}
 
