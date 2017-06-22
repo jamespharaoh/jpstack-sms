@@ -393,7 +393,12 @@ class SmsStatsFormatter {
 			try (
 
 				LazyFormatWriter buffer =
-					new LazyFormatWriter ();
+					new LazyFormatWriter ()
+
+					.indentString (
+						formatWriter.indentString ())
+
+				;
 
 			) {
 
