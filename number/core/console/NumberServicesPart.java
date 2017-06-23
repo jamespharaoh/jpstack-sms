@@ -80,11 +80,11 @@ class NumberServicesPart
 			services =
 				mapWithDerivedKey (
 					iterableFilter (
+						allServices,
 						service ->
 							objectManager.canView (
 								transaction,
-								service),
-						allServices),
+								service)),
 					service ->
 						objectManager.objectPathMini (
 							transaction,

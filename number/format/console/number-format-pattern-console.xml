@@ -3,7 +3,8 @@
 
 	<console-helper-provider
 		object-name="numberFormatPattern"
-		view-priv="root">
+		view-priv="root"
+		create-priv="root:manage">
 
 		<priv-key
 			name="numberFormatPattern.manage"
@@ -32,9 +33,7 @@
 				form="list"/>
 
 			<object-create-page
-				form="create"
-				create-priv-delegate="root"
-				create-priv-code="manage"/>
+				form="create"/>
 
 		</list>
 

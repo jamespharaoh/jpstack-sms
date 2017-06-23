@@ -5,6 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -59,6 +60,9 @@ class SmsSpendLimitFixtureProvider
 	@SingletonDependency
 	TextObjectHelper textHelper;
 
+	@SingletonDependency
+	WbsConfig wbsConfig;
+
 	// public implementation
 
 	@Override
@@ -111,7 +115,7 @@ class SmsSpendLimitFixtureProvider
 					menuGroupHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test",
+						wbsConfig.defaultSlice (),
 						"sms"))
 
 				.setCode (
@@ -191,7 +195,7 @@ class SmsSpendLimitFixtureProvider
 					sliceHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test"))
+						wbsConfig.defaultSlice ()))
 
 				.setCode (
 					"test_sms_spend_limiter")
@@ -206,7 +210,7 @@ class SmsSpendLimitFixtureProvider
 					currencyHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test",
+						wbsConfig.defaultSlice (),
 						"gbp"))
 
 				.setRouter (
@@ -215,7 +219,7 @@ class SmsSpendLimitFixtureProvider
 						routeHelper.findByCodeRequired (
 							transaction,
 							GlobalId.root,
-							"test",
+							wbsConfig.defaultSlice (),
 							"free"),
 						"static"))
 

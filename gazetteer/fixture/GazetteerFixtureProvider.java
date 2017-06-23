@@ -10,6 +10,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.config.WbsConfig;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.database.NestedTransaction;
@@ -55,6 +56,9 @@ class GazetteerFixtureProvider
 	@SingletonDependency
 	SliceObjectHelper sliceHelper;
 
+	@SingletonDependency
+	WbsConfig wbsConfig;
+
 	// prototype dependencies
 
 	@PrototypeDependency
@@ -80,7 +84,7 @@ class GazetteerFixtureProvider
 				menuGroupHelper.findByCodeRequired (
 					transaction,
 					GlobalId.root,
-					"test",
+					wbsConfig.defaultSlice (),
 					"sms");
 
 			menuItemHelper.insert (
@@ -138,7 +142,7 @@ class GazetteerFixtureProvider
 					sliceHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test"))
+						wbsConfig.defaultSlice ()))
 
 				.setCode (
 					"test")

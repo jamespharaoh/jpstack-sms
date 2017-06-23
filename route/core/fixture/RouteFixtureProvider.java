@@ -5,6 +5,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -51,6 +52,9 @@ class RouteFixtureProvider
 	@SingletonDependency
 	SliceObjectHelper sliceHelper;
 
+	@SingletonDependency
+	WbsConfig wbsConfig;
+
 	// implementation
 
 	@Override
@@ -75,7 +79,7 @@ class RouteFixtureProvider
 					sliceHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test"))
+						wbsConfig.defaultSlice ()))
 
 				.setCode (
 					"inbound")
@@ -98,7 +102,7 @@ class RouteFixtureProvider
 						keywordSetHelper.findByCodeRequired (
 							transaction,
 							GlobalId.root,
-							"test",
+							wbsConfig.defaultSlice (),
 							"inbound"),
 						"default"))
 
@@ -112,7 +116,7 @@ class RouteFixtureProvider
 					sliceHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test"))
+						wbsConfig.defaultSlice ()))
 
 				.setCode (
 					"free")
@@ -139,7 +143,7 @@ class RouteFixtureProvider
 					sliceHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test"))
+						wbsConfig.defaultSlice ()))
 
 				.setCode (
 					"bill")
@@ -163,7 +167,7 @@ class RouteFixtureProvider
 					currencyHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test",
+						wbsConfig.defaultSlice (),
 						"gbp"))
 
 			);
@@ -176,7 +180,7 @@ class RouteFixtureProvider
 					menuGroupHelper.findByCodeRequired (
 						transaction,
 						GlobalId.root,
-						"test",
+						wbsConfig.defaultSlice (),
 						"sms"))
 
 				.setCode (
