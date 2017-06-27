@@ -123,7 +123,7 @@
 
 		<associative-list
 			type="media"
-			list-column="i"
+			index-column="i"
 			table="message_media"
 			owned="yes"/>
 
