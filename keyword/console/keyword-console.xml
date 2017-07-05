@@ -3,7 +3,7 @@
 
 	<console-helper-provider
 		object-name="keyword"
-		view-priv="keywordSet">
+		view-priv="keywordSet:">
 
 		<context-stuff
 			name="keywordName"
