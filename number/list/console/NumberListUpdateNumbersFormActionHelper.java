@@ -18,10 +18,9 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
-import wbs.platform.text.web.TextResponder;
-
 import wbs.sms.number.list.model.NumberListUpdateRec;
 
+import wbs.web.responder.TextResponder;
 import wbs.web.responder.WebResponder;
 
 @PrototypeComponent ("numberListUpdateNumbersFormActionHelper")
