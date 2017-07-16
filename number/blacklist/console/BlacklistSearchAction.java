@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.inject.Provider;
-
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
@@ -22,11 +20,13 @@ import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.model.EventLinkObjectHelper;
@@ -79,7 +79,7 @@ class BlacklistSearchAction
 
 	@PrototypeDependency
 	@NamedDependency ("blacklistSearchResponder")
-	Provider <WebResponder> searchResponderProvider;
+	ComponentProvider <WebResponder> searchResponderProvider;
 
 	// details
 
@@ -88,7 +88,19 @@ class BlacklistSearchAction
 	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return searchResponderProvider.get ();
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"backupResponder");
+
+		) {
+
+			return searchResponderProvider.provide (
+				taskLogger);
+
+		}
 
 	}
 

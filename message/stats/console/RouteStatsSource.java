@@ -2,8 +2,6 @@ package wbs.sms.message.stats.console;
 
 import java.util.Collections;
 
-import javax.inject.Provider;
-
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
@@ -14,6 +12,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -38,7 +37,7 @@ class RouteStatsSource
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
+	ComponentProvider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// implementation
 
@@ -60,13 +59,18 @@ class RouteStatsSource
 			if (! ((Object) parent instanceof RouteRec))
 				return null;
 
-			return smsStatsSourceProvider.get ()
+			return smsStatsSourceProvider.provide (
+				transaction,
+				smsStatsSource ->
+					smsStatsSource
 
 				.fixedCriteriaMap (
 					ImmutableMap.of (
 						SmsStatsCriteria.route,
 						Collections.singleton (
-							parent.getId ())));
+							parent.getId ())))
+
+			);
 
 		}
 

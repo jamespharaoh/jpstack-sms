@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.inject.Provider;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
@@ -42,6 +40,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
@@ -83,13 +82,13 @@ class GenericMessageStatsPart
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <GroupedStatsSource> groupedStatsSourceProvider;
+	ComponentProvider <GroupedStatsSource> groupedStatsSourceProvider;
 
 	@PrototypeDependency
-	Provider <SmsStatsFormatter> statsFormatterProvider;
+	ComponentProvider <SmsStatsFormatter> statsFormatterProvider;
 
 	@PrototypeDependency
-	Provider <TabList> tabListProvider;
+	ComponentProvider <TabList> tabListProvider;
 
 	// properties
 
@@ -262,7 +261,8 @@ class GenericMessageStatsPart
 			// prepare split tabs
 
 			TabList splitTabs =
-				tabListProvider.get ();
+				tabListProvider.provide (
+					transaction);
 
 			Tab splitTab;
 
@@ -298,7 +298,8 @@ class GenericMessageStatsPart
 			// prepare view tabs
 
 			TabList viewTabs =
-				tabListProvider.get ();
+				tabListProvider.provide (
+					transaction);
 
 			Tab viewTab = null;
 
@@ -566,7 +567,8 @@ class GenericMessageStatsPart
 			groupedUrlParams.remove ("split");
 
 			GroupedStatsSource groupedStatsSource =
-				groupedStatsSourceProvider.get ()
+				groupedStatsSourceProvider.provide (
+					transaction)
 
 				.groupCriteria (
 					splitCriteria)
@@ -591,7 +593,8 @@ class GenericMessageStatsPart
 
 			case daily:
 
-				statsFormatterProvider.get ()
+				statsFormatterProvider.provide (
+					transaction)
 
 					.groupedStatsSource (
 						groupedStatsSource)
@@ -610,7 +613,8 @@ class GenericMessageStatsPart
 
 			case weekly:
 
-				statsFormatterProvider.get ()
+				statsFormatterProvider.provide (
+					transaction)
 
 					.groupedStatsSource (
 						groupedStatsSource)
@@ -629,7 +633,8 @@ class GenericMessageStatsPart
 
 			case monthly:
 
-				statsFormatterProvider.get ()
+				statsFormatterProvider.provide (
+					transaction)
 
 					.groupedStatsSource (
 						groupedStatsSource)

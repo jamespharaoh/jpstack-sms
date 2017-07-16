@@ -1,7 +1,5 @@
 package wbs.sms.message.core.console;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.forms.basic.IdentityFormFieldAccessor;
@@ -27,6 +25,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -48,32 +47,30 @@ class MessageContentFormFieldBuilder
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <HtmlFormFieldRenderer>
-	htmlFormFieldRendererProvider;
+	ComponentProvider <HtmlFormFieldRenderer> htmlFormFieldRendererProvider;
 
 	@PrototypeDependency
-	Provider <IdentityFormFieldAccessor>
-	identityFormFieldAccessorProvider;
+	ComponentProvider <IdentityFormFieldAccessor>
+		identityFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <IdentityFormFieldNativeMapping>
-	identityFormFieldNativeMappingProvider;
+	ComponentProvider <IdentityFormFieldNativeMapping>
+		identityFormFieldNativeMappingProvider;
 
 	@PrototypeDependency
-	Provider <MessageContentCsvFormFieldInterfaceMapping>
-	messageContentCsvFormFieldInterfaceMappingProvider;
+	ComponentProvider <MessageContentCsvFormFieldInterfaceMapping>
+		messageContentCsvFormFieldInterfaceMappingProvider;
 
 	@PrototypeDependency
-	Provider <MessageContentHtmlFormFieldInterfaceMapping>
-	messageContentHtmlFormFieldInterfaceMappingProvider;
+	ComponentProvider <MessageContentHtmlFormFieldInterfaceMapping>
+		messageContentHtmlFormFieldInterfaceMappingProvider;
 
 	@PrototypeDependency
-	Provider <ReadOnlyFormField>
-	readOnlyFormFieldProvider;
+	ComponentProvider <ReadOnlyFormField> readOnlyFormFieldProvider;
 
 	@PrototypeDependency
-	Provider <RequiredFormFieldValueValidator>
-	requiredFormFieldValueValidatorProvider;
+	ComponentProvider <RequiredFormFieldValueValidator>
+		requiredFormFieldValueValidatorProvider;
 
 	// builder
 
@@ -113,41 +110,57 @@ class MessageContentFormFieldBuilder
 			// accessor
 
 			FormFieldAccessor accessor =
-				identityFormFieldAccessorProvider.get ()
+				identityFormFieldAccessorProvider.provide (
+					taskLogger,
+					identityFormFieldAccessor ->
+						identityFormFieldAccessor
 
 				.containerClass (
-					context.containerClass ());
+					context.containerClass ())
+
+			);
 
 			// native mapping
 
 			ConsoleFormNativeMapping nativeMapping =
-				identityFormFieldNativeMappingProvider.get ();
+				identityFormFieldNativeMappingProvider.provide (
+					taskLogger);
 
 			// interface mapping
 
 			FormFieldInterfaceMapping interfaceMapping =
-				messageContentHtmlFormFieldInterfaceMappingProvider.get ();
+				messageContentHtmlFormFieldInterfaceMappingProvider.provide (
+					taskLogger);
 
 			// csv mapping
 
 			FormFieldInterfaceMapping csvMapping =
-				messageContentCsvFormFieldInterfaceMappingProvider.get ();
+				messageContentCsvFormFieldInterfaceMappingProvider.provide (
+					taskLogger);
 
 			// renderer
 
 			FormFieldRenderer renderer =
-				htmlFormFieldRendererProvider.get ()
+				htmlFormFieldRendererProvider.provide (
+					taskLogger,
+					htmlFormFieldRenderer ->
+						htmlFormFieldRenderer
 
 				.name (
 					name)
 
 				.label (
-					label);
+					label)
+
+			);
 
 			// form field
 
 			formFieldSet.addFormItem (
-				readOnlyFormFieldProvider.get ()
+				readOnlyFormFieldProvider.provide (
+					taskLogger,
+					readOnlyFormField ->
+						readOnlyFormField
 
 				.name (
 					name)
@@ -170,7 +183,7 @@ class MessageContentFormFieldBuilder
 				.renderer (
 					renderer)
 
-			);
+			));
 
 		}
 

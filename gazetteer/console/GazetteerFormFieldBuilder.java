@@ -9,8 +9,6 @@ import static wbs.utils.string.StringUtils.capitalise;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Provider;
-
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
@@ -45,6 +43,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -70,42 +69,44 @@ class GazetteerFormFieldBuilder
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <ChainedFormFieldNativeMapping>
-	chainedFormFieldNativeMappingProvider;
+	ComponentProvider <ChainedFormFieldNativeMapping>
+		chainedFormFieldNativeMappingProvider;
 
 	@PrototypeDependency
-	Provider <DereferenceFormFieldAccessor> dereferenceFormFieldAccessorProvider;
+	ComponentProvider <DereferenceFormFieldAccessor>
+		dereferenceFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <DynamicFormFieldAccessor> dynamicFormFieldAccessorProvider;
+	ComponentProvider <DynamicFormFieldAccessor>
+		dynamicFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <GazetteerCodeFormFieldNativeMapping>
-	gazetteerCodeFormFieldNativeMappingProvider;
+	ComponentProvider <GazetteerCodeFormFieldNativeMapping>
+		gazetteerCodeFormFieldNativeMappingProvider;
 
 	@PrototypeDependency
-	Provider <GazetteerFormFieldInterfaceMapping>
-	gazetteerFormFieldInterfaceMappingProvider;
+	ComponentProvider <GazetteerFormFieldInterfaceMapping>
+		gazetteerFormFieldInterfaceMappingProvider;
 
 	@PrototypeDependency
-	Provider <NullFormFieldConstraintValidator>
-	nullFormFieldValueConstraintValidatorProvider;
+	ComponentProvider <NullFormFieldConstraintValidator>
+		nullFormFieldValueConstraintValidatorProvider;
 
 	@PrototypeDependency
-	Provider <ReadOnlyFormField> readOnlyFormFieldProvider;
+	ComponentProvider <ReadOnlyFormField> readOnlyFormFieldProvider;
 
 	@PrototypeDependency
-	Provider <RequiredFormFieldValueValidator>
-	requiredFormFieldValueValidatorProvider;
+	ComponentProvider <RequiredFormFieldValueValidator>
+		requiredFormFieldValueValidatorProvider;
 
 	@PrototypeDependency
-	Provider <SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
+	ComponentProvider <SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <TextFormFieldRenderer> textFormFieldRendererProvider;
+	ComponentProvider <TextFormFieldRenderer> textFormFieldRendererProvider;
 
 	@PrototypeDependency
-	Provider <UpdatableFormField> updatableFormFieldProvider;
+	ComponentProvider <UpdatableFormField> updatableFormFieldProvider;
 
 	// builder
 
@@ -192,32 +193,47 @@ class GazetteerFormFieldBuilder
 			if (dynamic) {
 
 				accessor =
-					dynamicFormFieldAccessorProvider.get ()
+					dynamicFormFieldAccessorProvider.provide (
+						taskLogger,
+						dynamicFormFieldAccessor ->
+							dynamicFormFieldAccessor
 
 					.name (
 						nativeFieldName)
 
 					.nativeClass (
-						propertyClass);
+						propertyClass)
+
+				);
 
 			} else if (readOnly) {
 
 				accessor =
-					dereferenceFormFieldAccessorProvider.get ()
+					dereferenceFormFieldAccessorProvider.provide (
+						taskLogger,
+						dereferenceFormFieldAccessor ->
+							dereferenceFormFieldAccessor
 
 					.path (
-						nativeFieldName);
+						nativeFieldName)
+
+				);
 
 			} else {
 
 				accessor =
-					simpleFormFieldAccessorProvider.get ()
+					simpleFormFieldAccessorProvider.provide (
+						taskLogger,
+						simpleFormFieldAccessor ->
+							simpleFormFieldAccessor
 
 					.name (
 						nativeFieldName)
 
 					.nativeClass (
-						propertyClass);
+						propertyClass)
+
+				);
 
 			}
 
@@ -227,6 +243,7 @@ class GazetteerFormFieldBuilder
 
 			Optional gazetteerNativeMappingOptional =
 				formFieldPluginManager.getNativeMapping (
+					taskLogger,
 					context,
 					context.containerClass (),
 					name,
@@ -246,6 +263,7 @@ class GazetteerFormFieldBuilder
 
 				Optional stringNativeMappingOptional =
 					formFieldPluginManager.getNativeMapping (
+						taskLogger,
 						context,
 						context.containerClass (),
 						name,
@@ -262,14 +280,20 @@ class GazetteerFormFieldBuilder
 				}
 
 				nativeMapping =
-					chainedFormFieldNativeMappingProvider.get ()
+					chainedFormFieldNativeMappingProvider.provide (
+						taskLogger,
+						chainedFormFieldNativeMapping ->
+							chainedFormFieldNativeMapping
 
 					.previousMapping (
-						gazetteerCodeFormFieldNativeMappingProvider.get ())
+						gazetteerCodeFormFieldNativeMappingProvider.provide (
+							taskLogger))
 
 					.nextMapping (
 						(ConsoleFormNativeMapping)
-						stringNativeMappingOptional.get ());
+						stringNativeMappingOptional.get ())
+
+				);
 
 			}
 
@@ -281,27 +305,37 @@ class GazetteerFormFieldBuilder
 			if (! nullable) {
 
 				valueValidators.add (
-					requiredFormFieldValueValidatorProvider.get ());
+					requiredFormFieldValueValidatorProvider.provide (
+						taskLogger));
 
 			}
 
 			// constraint validator
 
 			FormFieldConstraintValidator constraintValidator =
-				nullFormFieldValueConstraintValidatorProvider.get ();
+				nullFormFieldValueConstraintValidatorProvider.provide (
+					taskLogger);
 
 			// interface mapping
 
 			FormFieldInterfaceMapping interfaceMapping =
-				gazetteerFormFieldInterfaceMappingProvider.get ()
+				gazetteerFormFieldInterfaceMappingProvider.provide (
+					taskLogger,
+					gazetteerFormFieldInterfaceMapping ->
+						gazetteerFormFieldInterfaceMapping
 
 				.gazetteerFieldName (
-					spec.gazetteerFieldName ());
+					spec.gazetteerFieldName ())
+
+			);
 
 			// renderer
 
 			FormFieldRenderer renderer =
-				textFormFieldRendererProvider.get ()
+				textFormFieldRendererProvider.provide (
+					taskLogger,
+					textFormFieldRenderer ->
+						textFormFieldRenderer
 
 				.name (
 					name)
@@ -310,12 +344,15 @@ class GazetteerFormFieldBuilder
 					label)
 
 				.nullable (
-					nullable);
+					nullable)
+
+			);
 
 			// update hook
 
 			FormFieldUpdateHook updateHook =
 				formFieldPluginManager.getUpdateHook (
+					taskLogger,
 					context,
 					context.containerClass (),
 					name);
@@ -325,7 +362,10 @@ class GazetteerFormFieldBuilder
 			if (readOnly) {
 
 				target.addFormItem (
-					readOnlyFormFieldProvider.get ()
+					readOnlyFormFieldProvider.provide (
+						taskLogger,
+						readOnlyFormField ->
+							readOnlyFormField
 
 					.name (
 						name)
@@ -348,12 +388,15 @@ class GazetteerFormFieldBuilder
 					.renderer (
 						renderer)
 
-				);
+				));
 
 			} else {
 
 				target.addFormItem (
-					updatableFormFieldProvider.get ()
+					updatableFormFieldProvider.provide (
+						taskLogger,
+						updatableFormField ->
+							updatableFormField
 
 					.name (
 						name)
@@ -385,7 +428,7 @@ class GazetteerFormFieldBuilder
 					.updateHook (
 						updateHook)
 
-				);
+				));
 
 			}
 

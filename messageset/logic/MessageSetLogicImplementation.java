@@ -1,6 +1,11 @@
 package wbs.sms.messageset.logic;
 
-import javax.inject.Provider;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
+import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOf;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
+
+import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
@@ -8,6 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
@@ -38,7 +44,7 @@ class MessageSetLogicImplementation
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> messageSender;
+	ComponentProvider <SmsMessageSender> messageSender;
 
 	// implementation
 
@@ -47,10 +53,10 @@ class MessageSetLogicImplementation
 	Long sendMessageSet (
 			@NonNull Transaction parentTransaction,
 			@NonNull MessageSetRec messageSet,
-			Long threadId,
+			@NonNull Optional <Long> providedThreadId,
 			@NonNull NumberRec number,
-			ServiceRec service,
-			AffiliateRec affiliate) {
+			@NonNull ServiceRec service,
+			@NonNull Optional <AffiliateRec> affiliate) {
 
 		try (
 
@@ -61,16 +67,21 @@ class MessageSetLogicImplementation
 
 		) {
 
+			Optional <Long> actualThreadId =
+				providedThreadId;
+
 			for (
 				MessageSetMessageRec messageSetMessage
 					: messageSet.getMessages ()
 			) {
 
 				MessageRec message =
-					messageSender.get ()
+					messageSender.provide (
+						transaction)
 
 					.threadId (
-						threadId)
+						optionalOrNull (
+							actualThreadId))
 
 					.number (
 						number)
@@ -89,21 +100,27 @@ class MessageSetLogicImplementation
 						service)
 
 					.affiliate (
-						affiliate)
+						optionalOrNull (
+							affiliate))
 
 					.send (
 						transaction);
 
-				if (threadId == null) {
+				if (
+					optionalIsNotPresent (
+						actualThreadId)
+				) {
 
-					threadId =
-						message.getId ();
+					actualThreadId =
+						optionalOf (
+							message.getId ());
 
 				}
 
 			}
 
-			return threadId;
+			return optionalGetRequired (
+				actualThreadId);
 
 		}
 

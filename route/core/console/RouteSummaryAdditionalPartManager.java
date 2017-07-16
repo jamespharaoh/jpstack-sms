@@ -12,6 +12,8 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -93,16 +95,30 @@ class RouteSummaryAdditionalPartManager {
 
 	public
 	PagePart getPagePartBySenderCode (
-			String senderCode) {
+			@NonNull Transaction parentTransaction,
+			@NonNull String senderCode) {
 
-		RouteSummaryAdditionalPartFactory factory =
-			factoriesBySenderCode.get (senderCode);
+		try (
 
-		if (factory == null)
-			return null;
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"getPagePartBySenderCode");
 
-		return factory.getPagePart (
-			senderCode);
+		) {
+
+			RouteSummaryAdditionalPartFactory factory =
+				factoriesBySenderCode.get (
+					senderCode);
+
+			if (factory == null)
+				return null;
+
+			return factory.getPagePart (
+				transaction,
+				senderCode);
+
+		}
 
 	}
 

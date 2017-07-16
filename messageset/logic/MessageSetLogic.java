@@ -1,5 +1,9 @@
 package wbs.sms.messageset.logic;
 
+import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+
+import com.google.common.base.Optional;
+
 import lombok.NonNull;
 
 import wbs.framework.database.Transaction;
@@ -16,18 +20,18 @@ interface MessageSetLogic {
 	Long sendMessageSet (
 			Transaction parentTransaction,
 			MessageSetRec messageSet,
-			Long threadId,
+			Optional <Long> threadId,
 			NumberRec number,
 			ServiceRec service,
-			AffiliateRec affiliate);
+			Optional <AffiliateRec> affiliate);
 
 	default
 	Long sendMessageSet (
 			@NonNull Transaction parentTransaction,
 			@NonNull MessageSetRec messageSet,
-			Long threadId,
+			@NonNull Optional <Long> threadId,
 			@NonNull NumberRec number,
-			ServiceRec service) {
+			@NonNull ServiceRec service) {
 
 		return sendMessageSet (
 			parentTransaction,
@@ -35,7 +39,7 @@ interface MessageSetLogic {
 			threadId,
 			number,
 			service,
-			null);
+			optionalAbsent ());
 
 	}
 

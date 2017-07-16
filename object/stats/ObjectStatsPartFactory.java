@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Provider;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -22,6 +20,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
@@ -59,10 +58,10 @@ class ObjectStatsPartFactory
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <GenericMessageStatsPart> smsStatsPartProvider;
+	ComponentProvider <GenericMessageStatsPart> smsStatsPartProvider;
 
 	@PrototypeDependency
-	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
+	ComponentProvider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// properties
 
@@ -70,7 +69,7 @@ class ObjectStatsPartFactory
 	String localName;
 
 	@Getter @Setter
-	ObjectLookup<? extends Record<?>> objectLookup;
+	ObjectLookup <? extends Record <?>> objectLookup;
 
 	// implementation
 
@@ -144,7 +143,10 @@ class ObjectStatsPartFactory
 
 			// now create the stats part
 
-			return smsStatsPartProvider.get ()
+			return smsStatsPartProvider.provide (
+				transaction,
+				smsStatsPart ->
+					smsStatsPart
 
 				.url (
 					requestContext.resolveLocalUrl (
@@ -154,7 +156,9 @@ class ObjectStatsPartFactory
 					statsSource)
 
 				.excludeCriteria (
-					excludes);
+					excludes)
+
+			);
 
 		}
 

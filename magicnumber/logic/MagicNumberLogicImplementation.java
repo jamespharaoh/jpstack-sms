@@ -6,8 +6,6 @@ import static wbs.utils.etc.OptionalUtils.optionalOf;
 
 import java.util.Collection;
 
-import javax.inject.Provider;
-
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
@@ -16,6 +14,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
@@ -64,7 +63,7 @@ class MagicNumberLogicImplementation
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> messageSender;
+	ComponentProvider <SmsMessageSender> messageSenderProvider;
 
 	// implementation
 
@@ -235,7 +234,8 @@ class MagicNumberLogicImplementation
 			) {
 
 				MessageRec message =
-					messageSender.get ()
+					messageSenderProvider.provide (
+						transaction)
 
 					.threadId (
 						threadId.orNull ())
@@ -324,7 +324,8 @@ class MagicNumberLogicImplementation
 
 			// and send message
 
-			return messageSender.get ()
+			return messageSenderProvider.provide (
+				transaction)
 
 				.threadId (
 					threadId.orNull ())

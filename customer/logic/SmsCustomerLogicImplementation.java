@@ -2,14 +2,12 @@ package wbs.sms.customer.logic;
 
 import static wbs.utils.etc.LogicUtils.ifThenElse;
 import static wbs.utils.etc.NullUtils.isNotNull;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
-import static wbs.utils.etc.NullUtils.isNull;
-
-import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
@@ -22,6 +20,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
@@ -70,7 +69,7 @@ class SmsCustomerLogicImplementation
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> messageSenderProvider;
+	ComponentProvider <SmsMessageSender> messageSenderProvider;
 
 	// implementation
 
@@ -197,7 +196,8 @@ class SmsCustomerLogicImplementation
 			// send message
 
 			MessageRec message =
-				messageSenderProvider.get ()
+				messageSenderProvider.provide (
+					transaction)
 
 				.threadId (
 					threadId.orNull ())
@@ -277,7 +277,8 @@ class SmsCustomerLogicImplementation
 				templateOptional.get ();
 
 			MessageRec message =
-				messageSenderProvider.get ()
+				messageSenderProvider.provide (
+					transaction)
 
 				.threadId (
 					threadId.orNull ())

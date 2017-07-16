@@ -6,8 +6,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import com.google.common.base.Optional;
 
 import lombok.NonNull;
@@ -17,6 +15,7 @@ import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.manager.ComponentManager;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
@@ -46,7 +45,8 @@ class CommandManagerImplementation
 	CommandObjectHelper commandHelper;
 
 	@SingletonDependency
-	Map <String, Provider <CommandHandler>> commandTypeHandlersByBeanName;
+	Map <String, ComponentProvider <CommandHandler>>
+		commandTypeHandlersByBeanName;
 
 	@SingletonDependency
 	Database database;
@@ -81,7 +81,7 @@ class CommandManagerImplementation
 				new HashMap <String, String> ();
 
 			for (
-				Map.Entry <String, Provider <CommandHandler>> entry
+				Map.Entry <String, ComponentProvider <CommandHandler>> entry
 					: commandTypeHandlersByBeanName.entrySet ()
 			) {
 
@@ -89,7 +89,8 @@ class CommandManagerImplementation
 					entry.getKey ();
 
 				CommandHandler commandTypeHandler =
-					entry.getValue ().get ();
+					entry.getValue ().provide (
+						taskLogger);
 
 				String[] commandTypes =
 					commandTypeHandler.getCommandTypes ();

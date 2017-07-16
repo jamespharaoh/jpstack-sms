@@ -6,8 +6,6 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
 import java.util.Collection;
 
-import javax.inject.Provider;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -23,9 +21,11 @@ import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -76,7 +76,7 @@ class MessageOutboxRouteAction
 
 	@PrototypeDependency
 	@NamedDependency ("messageOutboxRouteResponder")
-	Provider <WebResponder> routeResponderProvider;
+	ComponentProvider <WebResponder> routeResponderProvider;
 
 	// details
 
@@ -85,7 +85,19 @@ class MessageOutboxRouteAction
 	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return routeResponderProvider.get ();
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"backupResponder");
+
+		) {
+
+			return routeResponderProvider.provide (
+				taskLogger);
+
+		}
 
 	}
 

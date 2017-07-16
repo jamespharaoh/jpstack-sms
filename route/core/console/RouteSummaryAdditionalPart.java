@@ -60,6 +60,7 @@ class RouteSummaryAdditionalPart
 
 				summaryAdditionalPart =
 					routeSummaryAdditionalPartManager.getPagePartBySenderCode (
+						transaction,
 						route.getSender ().getCode ());
 
 			}

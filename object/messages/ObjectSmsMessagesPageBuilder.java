@@ -141,6 +141,7 @@ class ObjectSmsMessagesPageBuilder <
 			for (
 				ResolvedConsoleContextExtensionPoint resolvedExtensionPoint
 					: consoleMetaManager.resolveExtensionPoint (
+						taskLogger,
 						container.extensionPointName ())
 			) {
 

@@ -1,7 +1,5 @@
 package wbs.sms.message.stats.console;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.part.PagePart;
@@ -9,7 +7,8 @@ import wbs.console.part.PagePart;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
-import wbs.framework.component.annotations.UninitializedDependency;
+import wbs.framework.component.annotations.StrongPrototypeDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.component.tools.ComponentFactory;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -27,13 +26,11 @@ class MessageStatsPart
 
 	// prototype dependencies
 
+	@StrongPrototypeDependency
+	ComponentProvider <GenericMessageStatsPart> genericMessageStatsPartProvider;
+
 	@PrototypeDependency
-	Provider <SmsStatsSourceImplementation> smsStatsSourceProvider;
-
-	// uninitialized dependencies
-
-	@UninitializedDependency
-	Provider <GenericMessageStatsPart> genericMessageStatsPartProvider;
+	ComponentProvider <SmsStatsSourceImplementation> smsStatsSourceProvider;
 
 	// implementation
 
@@ -51,15 +48,19 @@ class MessageStatsPart
 
 		) {
 
-			return genericMessageStatsPartProvider.get ()
+			return genericMessageStatsPartProvider.provide (
+				taskLogger,
+				genericMessageStatsPart ->
+					genericMessageStatsPart
 
 				.url (
 					"/messages/message.stats")
 
 				.statsSource (
-					smsStatsSourceProvider.get ())
+					smsStatsSourceProvider.provide (
+						taskLogger))
 
-			;
+			);
 
 		}
 

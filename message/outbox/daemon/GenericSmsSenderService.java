@@ -19,8 +19,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.LongStream;
 
-import javax.inject.Provider;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -30,6 +28,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
@@ -84,7 +83,7 @@ class GenericSmsSenderService
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <GenericSmsSender> genericSmsSenderProvider;
+	ComponentProvider <GenericSmsSender> genericSmsSenderProvider;
 
 	// properties
 
@@ -475,7 +474,8 @@ class GenericSmsSenderService
 
 			) {
 
-				genericSmsSenderProvider.get ()
+				genericSmsSenderProvider.provide (
+					taskLogger)
 
 					.smsSenderHelper (
 						smsSenderHelper)
@@ -484,7 +484,9 @@ class GenericSmsSenderService
 						messageId)
 
 					.send (
-						taskLogger);
+						taskLogger)
+
+				;
 
 			}
 

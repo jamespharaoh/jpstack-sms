@@ -3,8 +3,6 @@ package wbs.sms.route.test.console;
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -15,9 +13,11 @@ import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.text.model.TextObjectHelper;
@@ -62,7 +62,7 @@ class RouteTestInAction
 
 	@PrototypeDependency
 	@NamedDependency ("routeTestInResponder")
-	Provider <WebResponder> testInResponderProvider;
+	ComponentProvider <WebResponder> testInResponderProvider;
 
 	// details
 
@@ -71,7 +71,19 @@ class RouteTestInAction
 	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return testInResponderProvider.get ();
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"backupResponder");
+
+		) {
+
+			return testInResponderProvider.provide (
+				taskLogger);
+
+		}
 
 	}
 

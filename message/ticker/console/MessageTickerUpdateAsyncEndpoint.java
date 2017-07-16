@@ -1,13 +1,12 @@
 package wbs.sms.message.ticker.console;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.component.annotations.UninitializedDependency;
+import wbs.framework.component.annotations.StrongPrototypeDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.component.tools.ComponentFactory;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -30,11 +29,11 @@ class MessageTickerUpdateAsyncEndpoint
 	@SingletonDependency
 	MessageTickerUpdateAsyncHelper messageTickerUpdateAsyncHelper;
 
-	// uninitialized dependencies
+	// prototype dependencies
 
-	@UninitializedDependency
-	Provider <ConsoleAsyncSubscription <SubscriberState>>
-	consoleAsyncSubscriptionProvider;
+	@StrongPrototypeDependency
+	ComponentProvider <ConsoleAsyncSubscription <SubscriberState>>
+		consoleAsyncSubscriptionProvider;
 
 	// components
 
@@ -52,12 +51,15 @@ class MessageTickerUpdateAsyncEndpoint
 
 		) {
 
-			return consoleAsyncSubscriptionProvider.get ()
+			return consoleAsyncSubscriptionProvider.provide (
+				taskLogger,
+				consoleAsyncSubscription ->
+					consoleAsyncSubscription
 
 				.helper (
 					messageTickerUpdateAsyncHelper)
 
-			;
+			);
 
 		}
 

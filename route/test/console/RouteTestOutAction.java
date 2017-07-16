@@ -4,8 +4,6 @@ import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
@@ -22,10 +20,12 @@ import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.service.console.ServiceConsoleHelper;
@@ -71,11 +71,11 @@ class RouteTestOutAction
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> messageSender;
+	ComponentProvider <SmsMessageSender> messageSenderProvider;
 
 	@PrototypeDependency
 	@NamedDependency ("routeTestOutResponder")
-	Provider <WebResponder> testOutResponderProvider;
+	ComponentProvider <WebResponder> testOutResponderProvider;
 
 	// dependencies
 
@@ -84,7 +84,19 @@ class RouteTestOutAction
 	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return testOutResponderProvider.get ();
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"backupResponder");
+
+		) {
+
+			return testOutResponderProvider.provide (
+				taskLogger);
+
+		}
 
 	}
 
@@ -133,7 +145,8 @@ class RouteTestOutAction
 					"test");
 
 			MessageRec message =
-				messageSender.get ()
+				messageSenderProvider.provide (
+					transaction)
 
 				.number (
 					number)
@@ -176,14 +189,16 @@ class RouteTestOutAction
 	static
 	ParamCheckerSet paramsChecker =
 		new ParamCheckerSet (
-			new ImmutableMap.Builder<String,ParamChecker<?>> ()
+			new ImmutableMap.Builder <String, ParamChecker <?>> ()
 
-				.put (
-					"num_to",
-					new RegexpParamChecker (
-						"Please enter a valid destination number",
-						"\\d+"))
+		.put (
+			"num_to",
+			new RegexpParamChecker (
+				"Please enter a valid destination number",
+				"\\d+"))
 
-				.build ());
+		.build ()
+
+	);
 
 }

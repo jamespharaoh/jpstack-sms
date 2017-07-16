@@ -2,18 +2,16 @@ package wbs.sms.spendlimit.logic;
 
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.NullUtils.isNotNull;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.equalToZero;
 import static wbs.utils.etc.NumberUtils.moreThan;
 import static wbs.utils.etc.NumberUtils.notLessThan;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
-import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.time.TimeUtils.notEarlierThan;
 
 import java.util.List;
-
-import javax.inject.Provider;
 
 import com.google.common.base.Optional;
 
@@ -26,6 +24,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
@@ -63,7 +62,7 @@ class SmsSpendLimitLogicImplementation
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> smsMessageSenderProvider;
+	ComponentProvider <SmsMessageSender> smsMessageSenderProvider;
 
 	// public implementation
 
@@ -234,7 +233,8 @@ class SmsSpendLimitLogicImplementation
 			) {
 
 				MessageRec limitMessage =
-					smsMessageSenderProvider.get ()
+					smsMessageSenderProvider.provide (
+						transaction)
 
 					.threadId (
 						threadId)
@@ -292,7 +292,8 @@ class SmsSpendLimitLogicImplementation
 			) {
 
 				MessageRec adviceMessage =
-					smsMessageSenderProvider.get ()
+					smsMessageSenderProvider.provide (
+						transaction)
 
 					.threadId (
 						threadId)
@@ -347,7 +348,8 @@ class SmsSpendLimitLogicImplementation
 			) {
 
 				MessageRec adviceMessage =
-					smsMessageSenderProvider.get ()
+					smsMessageSenderProvider.provide (
+						transaction)
 
 					.threadId (
 						threadId)

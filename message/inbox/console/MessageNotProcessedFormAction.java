@@ -3,8 +3,6 @@ package wbs.sms.message.inbox.console;
 import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.action.ConsoleAction;
@@ -15,9 +13,11 @@ import wbs.framework.component.annotations.NamedDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventLogic;
@@ -70,10 +70,10 @@ class MessageNotProcessedFormAction
 
 	@PrototypeDependency
 	@NamedDependency ("messageNotProcessedFormResponder")
-	Provider <WebResponder> formResponderProvider;
+	ComponentProvider <WebResponder> formResponderProvider;
 
 	@PrototypeDependency
-	Provider <QueueHomeResponder> queueHomeResponderProvider;
+	ComponentProvider <QueueHomeResponder> queueHomeResponderProvider;
 
 	// details
 
@@ -82,7 +82,19 @@ class MessageNotProcessedFormAction
 	WebResponder backupResponder (
 			@NonNull TaskLogger parentTaskLogger) {
 
-		return formResponderProvider.get ();
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"backupResponder");
+
+		) {
+
+			return formResponderProvider.provide (
+				taskLogger);
+
+		}
 
 	}
 
@@ -114,7 +126,8 @@ class MessageNotProcessedFormAction
 				requestContext.addError (
 					"Message is not in correct state");
 
-				return queueHomeResponderProvider.get ();
+				return queueHomeResponderProvider.provide (
+					transaction);
 
 			}
 
@@ -161,7 +174,8 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message queued for processing");
 
-				return queueHomeResponderProvider.get ();
+				return queueHomeResponderProvider.provide (
+					transaction);
 
 			}
 
@@ -199,7 +213,8 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message ignored");
 
-				return queueHomeResponderProvider.get ();
+				return queueHomeResponderProvider.provide (
+					transaction);
 
 			}
 
@@ -237,7 +252,8 @@ class MessageNotProcessedFormAction
 				requestContext.addNotice (
 					"Message marked as processed manually");
 
-				return queueHomeResponderProvider.get ();
+				return queueHomeResponderProvider.provide (
+					transaction);
 
 			}
 

@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -48,6 +46,7 @@ import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
@@ -93,7 +92,7 @@ class ObjectSmsMessagesPart
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <TabList> tabListProvider;
+	ComponentProvider <TabList> tabListProvider;
 
 	// properties
 
@@ -137,7 +136,8 @@ class ObjectSmsMessagesPart
 		) {
 
 			viewTabs =
-				tabListProvider.get ();
+				tabListProvider.provide (
+					taskLogger);
 
 			defaultViewMode =
 				addViewMode (

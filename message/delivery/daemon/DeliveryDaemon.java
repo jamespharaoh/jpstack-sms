@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Provider;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,6 +15,7 @@ import lombok.Setter;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
@@ -54,7 +53,7 @@ class DeliveryDaemon
 	ExceptionLogger exceptionLogger;
 
 	@SingletonDependency
-	Map <String, Provider <DeliveryHandler>> handlersByBeanName;
+	Map <String, ComponentProvider <DeliveryHandler>> handlersByBeanName;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -69,8 +68,8 @@ class DeliveryDaemon
 
 	// state
 
-	QueueBuffer<Long,DeliveryRec> buffer;
-	Map<Long,DeliveryHandler> handlersById;
+	QueueBuffer <Long, DeliveryRec> buffer;
+	Map <Long, DeliveryHandler> handlersById;
 
 	// details
 
@@ -105,12 +104,14 @@ class DeliveryDaemon
 				new HashMap<> ();
 
 			for (
-				Map.Entry <String, Provider <DeliveryHandler>> handlerEntry
-					: handlersByBeanName.entrySet ()
+				Map.Entry <String, ComponentProvider <DeliveryHandler>>
+					handlerEntry
+						: handlersByBeanName.entrySet ()
 			) {
 
 				DeliveryHandler handler =
-					handlerEntry.getValue ().get ();
+					handlerEntry.getValue ().provide (
+						transaction);
 
 				for (
 					String deliveryTypeCode

@@ -7,8 +7,6 @@ import static wbs.utils.string.StringUtils.capitalise;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import wbs.console.forms.basic.IdentityFormFieldInterfaceMapping;
@@ -40,6 +38,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -63,34 +62,35 @@ class GsmFormFieldBuilder
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <DynamicFormFieldAccessor> dynamicFormFieldAccessorProvider;
+	ComponentProvider <DynamicFormFieldAccessor>
+		dynamicFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <GsmFormFieldValueValidator> gsmValueValidatorProvider;
+	ComponentProvider <GsmFormFieldValueValidator> gsmValueValidatorProvider;
 
 	@PrototypeDependency
-	Provider <IdentityFormFieldInterfaceMapping>
-	identityFormFieldInterfaceMappingProvider;
+	ComponentProvider <IdentityFormFieldInterfaceMapping>
+		identityFormFieldInterfaceMappingProvider;
 
 	@PrototypeDependency
-	Provider <NullFormFieldConstraintValidator>
-	nullFormFieldValueConstraintValidatorProvider;
+	ComponentProvider <NullFormFieldConstraintValidator>
+		nullFormFieldValueConstraintValidatorProvider;
 
 	@PrototypeDependency
-	Provider <ReadOnlyFormField> readOnlyFormFieldProvider;
+	ComponentProvider <ReadOnlyFormField> readOnlyFormFieldProvider;
 
 	@PrototypeDependency
-	Provider <RequiredFormFieldValueValidator>
-	requiredFormFieldValueValidatorProvider;
+	ComponentProvider <RequiredFormFieldValueValidator>
+		requiredFormFieldValueValidatorProvider;
 
 	@PrototypeDependency
-	Provider <SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
+	ComponentProvider <SimpleFormFieldAccessor> simpleFormFieldAccessorProvider;
 
 	@PrototypeDependency
-	Provider <TextFormFieldRenderer> textFormFieldRendererProvider;
+	ComponentProvider <TextFormFieldRenderer> textFormFieldRendererProvider;
 
 	@PrototypeDependency
-	Provider <UpdatableFormField> updatableFormFieldProvider;
+	ComponentProvider <UpdatableFormField> updatableFormFieldProvider;
 
 	// builder
 
@@ -176,24 +176,34 @@ class GsmFormFieldBuilder
 			if (dynamic) {
 
 				accessor =
-					dynamicFormFieldAccessorProvider.get ()
+					dynamicFormFieldAccessorProvider.provide (
+						taskLogger,
+						dynamicFormFieldAccessor ->
+							dynamicFormFieldAccessor
 
 					.name (
 						name)
 
 					.nativeClass (
-						propertyClass);
+						propertyClass)
+
+				);
 
 			} else {
 
 				accessor =
-					simpleFormFieldAccessorProvider.get ()
+					simpleFormFieldAccessorProvider.provide (
+						taskLogger,
+						simpleFormFieldAccessor ->
+							simpleFormFieldAccessor
 
 					.name (
 						name)
 
 					.nativeClass (
-						propertyClass);
+						propertyClass)
+
+				);
 
 			}
 
@@ -203,6 +213,7 @@ class GsmFormFieldBuilder
 
 			ConsoleFormNativeMapping nativeMapping =
 				formFieldPluginManager.getNativeMappingRequired (
+					taskLogger,
 					context,
 					context.containerClass (),
 					name,
@@ -211,18 +222,22 @@ class GsmFormFieldBuilder
 
 			// value validator
 
-			List<FormFieldValueValidator> valueValidators =
+			List <FormFieldValueValidator> valueValidators =
 				new ArrayList<> ();
 
 			if (! nullable) {
 
 				valueValidators.add (
-					requiredFormFieldValueValidatorProvider.get ());
+					requiredFormFieldValueValidatorProvider.provide (
+						taskLogger));
 
 			}
 
 			valueValidators.add (
-				gsmValueValidatorProvider.get ()
+				gsmValueValidatorProvider.provide (
+					taskLogger,
+					gsmValueValidator ->
+						gsmValueValidator
 
 				.minimumLength (
 					minimumLength)
@@ -230,22 +245,27 @@ class GsmFormFieldBuilder
 				.maximumLength (
 					maximumLength)
 
-			);
+			));
 
 			// constraint validator
 
 			FormFieldConstraintValidator constraintValidator =
-				nullFormFieldValueConstraintValidatorProvider.get ();
+				nullFormFieldValueConstraintValidatorProvider.provide (
+					taskLogger);
 
 			// interface mapping
 
 			FormFieldInterfaceMapping interfaceMapping =
-				identityFormFieldInterfaceMappingProvider.get ();
+				identityFormFieldInterfaceMappingProvider.provide (
+					taskLogger);
 
 			// renderer
 
 			FormFieldRenderer renderer =
-				textFormFieldRendererProvider.get ()
+				textFormFieldRendererProvider.provide (
+					taskLogger,
+					textFormFieldRenderer ->
+						textFormFieldRenderer
 
 				.name (
 					name)
@@ -254,12 +274,15 @@ class GsmFormFieldBuilder
 					label)
 
 				.nullable (
-					nullable);
+					nullable)
+
+			);
 
 			// update hook
 
 			FormFieldUpdateHook updateHook =
 				formFieldPluginManager.getUpdateHook (
+					taskLogger,
 					context,
 					context.containerClass (),
 					name);
@@ -269,7 +292,10 @@ class GsmFormFieldBuilder
 			if (readOnly) {
 
 				target.addFormItem (
-					readOnlyFormFieldProvider.get ()
+					readOnlyFormFieldProvider.provide (
+						taskLogger,
+						readOnlyFormField ->
+							readOnlyFormField
 
 					.name (
 						name)
@@ -292,12 +318,15 @@ class GsmFormFieldBuilder
 					.renderer (
 						renderer)
 
-				);
+				));
 
 			} else {
 
 				target.addFormItem (
-					updatableFormFieldProvider.get ()
+					updatableFormFieldProvider.provide (
+						taskLogger,
+						updatableFormField ->
+							updatableFormField
 
 					.name (
 						name)
@@ -329,7 +358,7 @@ class GsmFormFieldBuilder
 					.updateHook (
 						updateHook)
 
-				);
+				));
 
 			}
 

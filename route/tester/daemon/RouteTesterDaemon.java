@@ -4,8 +4,6 @@ import static wbs.utils.time.TimeUtils.laterThan;
 
 import java.util.List;
 
-import javax.inject.Provider;
-
 import lombok.NonNull;
 
 import org.joda.time.Duration;
@@ -15,6 +13,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.OwnedTransaction;
@@ -67,7 +66,7 @@ final class RouteTesterDaemon
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <SmsMessageSender> messageSender;
+	ComponentProvider <SmsMessageSender> messageSenderProvider;
 
 	// details
 
@@ -232,7 +231,8 @@ final class RouteTesterDaemon
 			// send the message
 
 			MessageRec message =
-				messageSender.get ()
+				messageSenderProvider.provide (
+					transaction)
 
 				.number (
 					numberHelper.findOrCreate (

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.inject.Provider;
-
 import com.google.gson.JsonObject;
 
 import lombok.NonNull;
@@ -21,6 +19,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
@@ -49,13 +48,13 @@ class MessageStatusLine
 	// prototype dependencies
 
 	@PrototypeDependency
-	Provider <MessageNumInboxCache> messageNumInboxCacheProvider;
+	ComponentProvider <MessageNumInboxCache> messageNumInboxCacheProvider;
 
 	@PrototypeDependency
-	Provider <MessageNumOutboxCache> messageNumOutboxCacheProvider;
+	ComponentProvider <MessageNumOutboxCache> messageNumOutboxCacheProvider;
 
 	@PrototypeDependency
-	Provider <MessageStatusLinePart> messageStatusLinePartProvider;
+	ComponentProvider <MessageStatusLinePart> messageStatusLinePartProvider;
 
 	// state
 
@@ -80,7 +79,19 @@ class MessageStatusLine
 	PagePart createPagePart (
 			@NonNull Transaction parentTransaction) {
 
-		return messageStatusLinePartProvider.get ();
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"createPagePart");
+
+		) {
+
+			return messageStatusLinePartProvider.provide (
+				transaction);
+
+		}
 
 	}
 
@@ -165,10 +176,13 @@ class MessageStatusLine
 						mapItemForKeyOrElseSet (
 							numInboxCacheBySliceId,
 							slice.getId (),
-							() -> messageNumInboxCacheProvider.get ()
+							() -> messageNumInboxCacheProvider.provide (
+								transaction,
+								messageNumInboxCache ->
+									messageNumInboxCache
 
 						.sliceId (
-							slice.getId ()
+							slice.getId ())
 
 					));
 
@@ -228,10 +242,13 @@ class MessageStatusLine
 						mapItemForKeyOrElseSet (
 							numOutboxCacheBySliceId,
 							slice.getId (),
-							() -> messageNumOutboxCacheProvider.get ()
+							() -> messageNumOutboxCacheProvider.provide (
+								transaction,
+								messageNumOutboxCache ->
+									messageNumOutboxCache
 
 						.sliceId (
-							slice.getId ()
+							slice.getId ())
 
 					));
 

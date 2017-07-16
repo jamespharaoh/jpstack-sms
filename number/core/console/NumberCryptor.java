@@ -43,6 +43,7 @@ class NumberCryptor
 		) {
 
 			return cryptorFactory.makeCryptor (
+				taskLogger,
 				"number");
 
 		}
