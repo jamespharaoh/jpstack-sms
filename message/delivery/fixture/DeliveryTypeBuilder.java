@@ -6,7 +6,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
-import wbs.framework.builder.TransactionBuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -17,9 +16,9 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
+import wbs.framework.entity.fixtures.ModelFixtureBuilderComponent;
 import wbs.framework.entity.helper.EntityHelper;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.logging.LogContext;
 
@@ -27,10 +26,9 @@ import wbs.sms.message.delivery.metamodel.DeliveryTypeSpec;
 import wbs.sms.message.delivery.model.DeliveryTypeObjectHelper;
 
 @PrototypeComponent ("deliveryTypeBuilder")
-@ModelMetaBuilderHandler
 public
 class DeliveryTypeBuilder
-	implements TransactionBuilderComponent {
+	implements ModelFixtureBuilderComponent {
 
 	// singleton dependencies
 
@@ -49,7 +47,7 @@ class DeliveryTypeBuilder
 	// builder
 
 	@BuilderParent
-	ModelMetaSpec parent;
+	RecordSpec parent;
 
 	@BuilderSource
 	DeliveryTypeSpec spec;

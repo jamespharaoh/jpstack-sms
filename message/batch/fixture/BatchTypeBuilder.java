@@ -8,7 +8,6 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
-import wbs.framework.builder.TransactionBuilderComponent;
 import wbs.framework.builder.annotations.BuildMethod;
 import wbs.framework.builder.annotations.BuilderParent;
 import wbs.framework.builder.annotations.BuilderSource;
@@ -19,9 +18,9 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.entity.fixtures.ModelMetaBuilderHandler;
+import wbs.framework.entity.fixtures.ModelFixtureBuilderComponent;
 import wbs.framework.entity.helper.EntityHelper;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.logging.LogContext;
@@ -33,10 +32,9 @@ import wbs.sms.message.batch.metamodel.BatchTypeSpec;
 import wbs.sms.message.batch.model.BatchTypeObjectHelper;
 
 @PrototypeComponent ("batchTypeBuilder")
-@ModelMetaBuilderHandler
 public
 class BatchTypeBuilder
-	implements TransactionBuilderComponent {
+	implements ModelFixtureBuilderComponent {
 
 	// singleton dependencies
 
@@ -58,7 +56,7 @@ class BatchTypeBuilder
 	// builder
 
 	@BuilderParent
-	ModelMetaSpec parent;
+	RecordSpec parent;
 
 	@BuilderSource
 	BatchTypeSpec spec;

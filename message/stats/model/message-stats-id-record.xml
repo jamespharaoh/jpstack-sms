@@ -1,0 +1,27 @@
+<record
+	name="messageStatsId"
+	type="component">
+
+	<fields>
+
+		<reference-field
+			type="service"/>
+
+		<reference-field
+			type="route"/>
+
+		<reference-field
+			type="affiliate"/>
+
+		<reference-field
+			type="batch"/>
+
+		<reference-field
+			type="network"/>
+
+		<date-field
+			name="date"/>
+
+	</fields>
+
+</record>
