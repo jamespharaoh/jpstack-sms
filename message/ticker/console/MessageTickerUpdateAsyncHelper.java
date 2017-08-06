@@ -43,7 +43,7 @@ import wbs.sms.message.core.console.MessageConsoleLogic;
 import wbs.sms.message.core.model.MessageDirection;
 import wbs.sms.message.ticker.console.MessageTickerUpdateAsyncHelper.SubscriberState;
 
-import wbs.utils.time.TimeFormatter;
+import wbs.utils.time.core.DefaultTimeFormatter;
 
 @SingletonComponent ("messageTickerUpdateAsyncHelper")
 public
@@ -68,7 +68,7 @@ class MessageTickerUpdateAsyncHelper
 	MessageTickerManager messageTickerManager;
 
 	@SingletonDependency
-	TimeFormatter timeFormatter;
+	DefaultTimeFormatter timeFormatter;
 
 	@SingletonDependency
 	WbsConfig wbsConfig;
@@ -378,7 +378,7 @@ class MessageTickerUpdateAsyncHelper
 			messageObject.addProperty (
 				"timestamp",
 				timeFormatter.timeString (
-					timeFormatter.timezone (
+					timeFormatter.timezoneParseRequired (
 						ifNull (
 							user.getDefaultTimezone (),
 							user.getSlice ().getDefaultTimezone (),

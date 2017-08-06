@@ -4,6 +4,7 @@ import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.collection.IterableUtils.iterableMapToList;
 import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.time.TimeUtils.isoTimestampString;
 
 import java.util.List;
 
@@ -28,8 +29,6 @@ import wbs.sms.customer.model.SmsCustomerManagerObjectHelper;
 import wbs.sms.customer.model.SmsCustomerManagerRec;
 import wbs.sms.customer.model.SmsCustomerSessionObjectHelper;
 import wbs.sms.customer.model.SmsCustomerSessionRec;
-
-import wbs.utils.time.TimeFormatter;
 
 @SingletonComponent ("smsCustomerSessionTimeoutDaemon")
 public
@@ -62,9 +61,6 @@ class SmsCustomerSessionTimeoutDaemon
 
 	@SingletonDependency
 	SmsCustomerSessionObjectHelper smsCustomerSessionHelper;
-
-	@SingletonDependency
-	TimeFormatter timeFormatter;
 
 	// details
 
@@ -200,7 +196,7 @@ class SmsCustomerSessionTimeoutDaemon
 
 			transaction.debugFormat (
 				"Got start time before %s",
-				timeFormatter.timestampSecondStringIso (
+				isoTimestampString (
 					startTimeBefore));
 
 			List <SmsCustomerSessionRec> sessionsToTimeout =

@@ -46,7 +46,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
 import wbs.utils.string.FormatWriter;
-import wbs.utils.time.TimeFormatter;
+import wbs.utils.time.core.DefaultTimeFormatter;
 
 import wbs.web.misc.UrlParams;
 
@@ -77,7 +77,7 @@ class GenericMessageStatsPart
 	SmsStatsConsoleLogic statsConsoleLogic;
 
 	@SingletonDependency
-	TimeFormatter timeFormatter;
+	DefaultTimeFormatter timeFormatter;
 
 	// prototype dependencies
 
@@ -481,7 +481,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.minusWeeks (1)));
 
 				htmlLinkWrite (
@@ -491,7 +491,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.plusWeeks (1)));
 
 				htmlLinkWrite (
@@ -509,7 +509,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.minusDays (49)));
 
 				htmlLinkWrite (
@@ -519,7 +519,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.plusDays (49)));
 
 				htmlLinkWrite (
@@ -537,7 +537,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.minusMonths (6)));
 
 				htmlLinkWrite (
@@ -547,7 +547,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateString (
+					timeFormatter.dateStringShort (
 						dateField.date.plusMonths (6)));
 
 				htmlLinkWrite (

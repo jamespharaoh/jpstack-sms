@@ -1,6 +1,7 @@
 package wbs.sms.message.outbox.daemon;
 
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
+import static wbs.utils.time.TimeUtils.isoTimestampString;
 
 import java.util.List;
 
@@ -21,8 +22,6 @@ import wbs.platform.daemon.SleepingDaemonService;
 
 import wbs.sms.message.outbox.model.OutboxObjectHelper;
 import wbs.sms.message.outbox.model.OutboxRec;
-
-import wbs.utils.time.TimeFormatter;
 
 @SingletonComponent ("messageOutboxUnstickDaemon")
 public
@@ -54,9 +53,6 @@ class SmsOutboxUnstickDaemon
 
 	@SingletonDependency
 	OutboxObjectHelper outboxHelper;
-
-	@SingletonDependency
-	TimeFormatter timeFormatter;
 
 	// details
 
@@ -113,7 +109,7 @@ class SmsOutboxUnstickDaemon
 						"Unsticking outbox %s (sending time is %s)",
 						integerToDecimalString (
 							outbox.getId ()),
-						timeFormatter.timestampSecondStringIso (
+						isoTimestampString (
 							outbox.getSending ()));
 
 					outbox

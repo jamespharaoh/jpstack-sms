@@ -39,7 +39,7 @@ import wbs.sms.message.outbox.model.RouteOutboxSummaryRec;
 import wbs.sms.route.core.model.RouteRec;
 
 import wbs.utils.string.FormatWriter;
-import wbs.utils.time.TimeFormatter;
+import wbs.utils.time.duration.DurationFormatter;
 
 @PrototypeComponent ("messageOutboxOverviewPart")
 public
@@ -50,6 +50,9 @@ class MessageOutboxOverviewPart
 
 	@SingletonDependency
 	Database database;
+
+	@SingletonDependency
+	DurationFormatter durationFormatter;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -63,9 +66,6 @@ class MessageOutboxOverviewPart
 
 	@SingletonDependency
 	RouteOutboxSummaryObjectHelper routeOutboxSummaryHelper;
-
-	@SingletonDependency
-	TimeFormatter timeFormatter;
 
 	// state
 
@@ -178,7 +178,7 @@ class MessageOutboxOverviewPart
 
 				htmlTableCellWrite (
 					formatWriter,
-					timeFormatter.prettyDuration (
+					durationFormatter.durationStringApproximate (
 						routeOutboxSummary.getOldestTime (),
 						transaction.now ()));
 
