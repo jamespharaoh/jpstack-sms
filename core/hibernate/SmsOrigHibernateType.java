@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.hibernate.usertype.CompositeUserType;
@@ -133,23 +133,23 @@ class SmsOrigHibernateType
 	@Override
 	public
 	Object nullSafeGet (
-			ResultSet result,
+			ResultSet resultSet,
 			String[] names,
-			SessionImplementor session,
+			SharedSessionContractImplementor session,
 			Object owner)
 		throws HibernateException,
 			SQLException {
 
 		SmsOrigType type = (SmsOrigType)
 			SmsOrigTypeHibernateType.INSTANCE.nullSafeGet (
-				result,
+				resultSet,
 				new String[] { names[0] },
 				session,
 				null);
 
 		String value = (String)
 			StandardBasicTypes.STRING.nullSafeGet (
-				result,
+				resultSet,
 				names [1],
 				session);
 
@@ -162,17 +162,18 @@ class SmsOrigHibernateType
 	public
 	void nullSafeSet (
 			PreparedStatement preparedStatement,
-			Object object,
+			Object smsOrigObject,
 			int originalIndex,
-			SessionImplementor session)
-		throws HibernateException,
+			SharedSessionContractImplementor session)
+		throws
+			HibernateException,
 			SQLException {
 
 		int index =
 			originalIndex;
 
 		SmsOrig smsOrig =
-			(SmsOrig) object;
+			(SmsOrig) smsOrigObject;
 
 		SmsOrigType type =
 			smsOrig != null
@@ -218,7 +219,7 @@ class SmsOrigHibernateType
 	public
 	Serializable disassemble (
 			Object value,
-			SessionImplementor session)
+			SharedSessionContractImplementor session)
 		throws HibernateException {
 
 		return (Serializable) value;
@@ -229,8 +230,8 @@ class SmsOrigHibernateType
 	public
 	Object assemble (
 			Serializable cached,
-			SessionImplementor session,
-			Object object)
+			SharedSessionContractImplementor session,
+			Object owner)
 		throws HibernateException {
 
 		return cached;
@@ -241,7 +242,7 @@ class SmsOrigHibernateType
 	Object replace (
 			Object original,
 			Object target,
-			SessionImplementor session,
+			SharedSessionContractImplementor session,
 			Object owner)
 		throws HibernateException {
 

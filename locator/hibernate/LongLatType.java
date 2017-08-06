@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import lombok.NonNull;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.hibernate.usertype.CompositeUserType;
@@ -116,9 +116,9 @@ class LongLatType
 	@Override
 	public
 	Object nullSafeGet (
-			@NonNull ResultSet result,
+			@NonNull ResultSet resultSet,
 			@NonNull String[] names,
-			@NonNull SessionImplementor session,
+			@NonNull SharedSessionContractImplementor session,
 			@NonNull Object owner)
 		throws
 			HibernateException,
@@ -127,14 +127,14 @@ class LongLatType
 		Double longitude =
 			(Double)
 			StandardBasicTypes.DOUBLE.nullSafeGet (
-				result,
+				resultSet,
 				names [0],
 				session);
 
 		Double latitude =
 			(Double)
 			StandardBasicTypes.DOUBLE.nullSafeGet (
-				result,
+				resultSet,
 				names [1],
 				session);
 
@@ -168,7 +168,7 @@ class LongLatType
 			@NonNull PreparedStatement statement,
 			Object value,
 			int index,
-			@NonNull SessionImplementor session)
+			@NonNull SharedSessionContractImplementor session)
 		throws
 			HibernateException,
 			SQLException {
@@ -228,7 +228,7 @@ class LongLatType
 	public
 	Serializable disassemble (
 			@NonNull Object value,
-			@NonNull SessionImplementor session)
+			@NonNull SharedSessionContractImplementor session)
 		throws HibernateException {
 
 		return (Serializable) value;
@@ -239,7 +239,7 @@ class LongLatType
 	public
 	Object assemble (
 			@NonNull Serializable cached,
-			@NonNull SessionImplementor session,
+			@NonNull SharedSessionContractImplementor session,
 			@NonNull Object object)
 		throws HibernateException {
 
@@ -252,7 +252,7 @@ class LongLatType
 	Object replace (
 			@NonNull Object original,
 			@NonNull Object target,
-			@NonNull SessionImplementor session,
+			@NonNull SharedSessionContractImplementor session,
 			@NonNull Object owner)
 		throws HibernateException {
 

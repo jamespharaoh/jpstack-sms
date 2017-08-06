@@ -12,12 +12,12 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.Type;
-import org.jadira.usertype.dateandtime.joda.PersistentLocalDate;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.AliasToBeanNestedResultTransformer;
+import wbs.framework.hibernate.DateUserType;
 import wbs.framework.hibernate.HibernateDao;
 import wbs.framework.logging.LogContext;
 
@@ -187,7 +187,7 @@ class MessageStatsDaoHibernate
 							},
 							new Type [] {
 								new CustomType (
-									new PersistentLocalDate ()),
+									new DateUserType ()),
 							}),
 						"messageStatsId.date");
 
