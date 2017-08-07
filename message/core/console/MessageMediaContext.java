@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import wbs.console.context.ConsoleContext;
 import wbs.console.context.ConsoleContextStuff;
 import wbs.console.module.ConsoleManager;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.tab.ConsoleContextTab;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -117,6 +118,7 @@ class MessageMediaContext
 	public
 	void initContext (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull PathSupply pathParts,
 			@NonNull ConsoleContextStuff stuff) {
 
@@ -156,6 +158,7 @@ class MessageMediaContext
 
 			consoleManager.runPostProcessors (
 				transaction,
+				privChecker,
 				"message",
 				stuff);
 

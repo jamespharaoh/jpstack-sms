@@ -5,6 +5,7 @@ import lombok.NonNull;
 import wbs.console.context.ConsoleContext;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.module.ConsoleManager;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NamedDependency;
@@ -36,6 +37,9 @@ class MessageNotProcessedQueueConsolePlugin
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	// prototype dependencies
 
@@ -73,6 +77,7 @@ class MessageNotProcessedQueueConsolePlugin
 
 			consoleManager.changeContext (
 				taskLogger,
+				privChecker,
 				targetContext,
 				"/" + queueItem.getRefObjectId ());
 

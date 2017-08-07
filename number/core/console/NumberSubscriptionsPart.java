@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -47,6 +48,9 @@ class NumberSubscriptionsPart
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -193,6 +197,7 @@ class NumberSubscriptionsPart
 				objectManager.writeTdForObjectLink (
 					transaction,
 					formatWriter,
+					privChecker,
 					link.getParentObject ());
 
 				// write subjectiption object cell
@@ -205,6 +210,7 @@ class NumberSubscriptionsPart
 					objectManager.writeTdForObjectLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						link.getSubscriptionObject (),
 						link.getParentObject ());
 

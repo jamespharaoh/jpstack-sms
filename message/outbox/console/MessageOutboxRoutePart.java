@@ -24,6 +24,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -58,6 +59,9 @@ class MessageOutboxRoutePart
 
 	@SingletonDependency
 	OutboxConsoleHelper outboxHelper;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
@@ -193,6 +197,7 @@ class MessageOutboxRoutePart
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getNumber ());
 
 				} else {
@@ -212,6 +217,7 @@ class MessageOutboxRoutePart
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getNumber ());
 
 				} else {

@@ -84,6 +84,7 @@ class NumberServicesPart
 						service ->
 							objectManager.canView (
 								transaction,
+								privChecker,
 								service)),
 					service ->
 						objectManager.objectPathMini (
@@ -180,6 +181,7 @@ class NumberServicesPart
 				objectManager.writeTdForObjectLink (
 					transaction,
 					formatWriter,
+					privChecker,
 					parent);
 
 				// write service table cell
@@ -187,6 +189,7 @@ class NumberServicesPart
 				objectManager.writeTdForObjectMiniLink (
 					transaction,
 					formatWriter,
+					privChecker,
 					service,
 					parent);
 

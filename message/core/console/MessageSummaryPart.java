@@ -27,6 +27,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -79,6 +80,9 @@ class MessageSummaryPart
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
@@ -184,6 +188,7 @@ class MessageSummaryPart
 						objectManager.writeTdForObjectMiniLink (
 							transaction,
 							formatWriter,
+							privChecker,
 							message.getNumber ()));
 
 				htmlTableDetailsRowWrite (
@@ -205,6 +210,7 @@ class MessageSummaryPart
 						objectManager.writeTdForObjectMiniLink (
 							transaction,
 							formatWriter,
+							privChecker,
 							message.getNumber ()));
 
 			}
@@ -226,6 +232,7 @@ class MessageSummaryPart
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getRoute ()));
 
 			htmlTableDetailsRowWrite (
@@ -240,6 +247,7 @@ class MessageSummaryPart
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getService ()));
 
 			htmlTableDetailsRowWriteRaw (
@@ -249,6 +257,7 @@ class MessageSummaryPart
 					objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getAffiliate ()));
 
 			if (
@@ -291,6 +300,7 @@ class MessageSummaryPart
 						() -> objectManager.writeTdForObjectMiniLink (
 							transaction,
 							formatWriter,
+							privChecker,
 							message.getCommand ()),
 						() -> htmlTableCellWrite (
 							formatWriter,
@@ -426,6 +436,7 @@ class MessageSummaryPart
 					() -> objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getUser ()),
 					() -> htmlTableCellWrite (
 						formatWriter,
@@ -439,6 +450,7 @@ class MessageSummaryPart
 					() -> objectManager.writeTdForObjectMiniLink (
 						transaction,
 						formatWriter,
+						privChecker,
 						message.getDeliveryType ()),
 					() -> htmlTableCellWrite (
 						formatWriter,

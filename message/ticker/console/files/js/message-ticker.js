@@ -10,8 +10,6 @@ function messageTickerInit () {
 	async.onDisconnect (
 		messageTicker._handleError);
 
-	async._keepaliveLoop ();
-
 };
 
 messageTicker._handleConnect =
@@ -24,7 +22,7 @@ function messageTickerHandleConnect () {
 };
 
 messageTicker._handleError =
-function messageTickerHandleConnect () {
+function messageTickerHandleError () {
 
 	var tableBody =
 		$("#tickerTable tbody");

@@ -14,6 +14,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.part.AbstractPagePart;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -49,6 +50,9 @@ class MessageNotProcessedSummaryPart
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	@SingletonDependency
 	UserConsoleLogic userConsoleLogic;
@@ -139,6 +143,7 @@ class MessageNotProcessedSummaryPart
 				() -> objectManager.writeTdForObjectMiniLink (
 					transaction,
 					formatWriter,
+					privChecker,
 					message.getRoute ()));
 
 			htmlTableDetailsRowWriteRaw (
