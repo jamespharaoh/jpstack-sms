@@ -1,0 +1,20 @@
+<record
+	name="wallet"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="walletService"/>
+
+		<code-field/>
+
+	</fields>
+
+</record>
