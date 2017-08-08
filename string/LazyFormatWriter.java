@@ -46,6 +46,17 @@ class LazyFormatWriter
 
 	}
 
+	public
+	LazyFormatWriter (
+			@NonNull String indentString) {
+
+		this ();
+
+		this.indentString =
+			indentString;
+
+	}
+
 	// public implementation
 
 	public

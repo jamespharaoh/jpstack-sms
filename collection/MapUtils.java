@@ -243,6 +243,7 @@ class MapUtils {
 			key instanceof CharSequence
 			|| key instanceof Number
 			|| key instanceof Boolean
+			|| key instanceof Class
 		) {
 
 			throw new NoSuchElementException (

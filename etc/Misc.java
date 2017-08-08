@@ -905,14 +905,6 @@ class Misc {
 
 	}
 
-	public static <Type>
-	Type orNull (
-			@NonNull Optional<Type> optional) {
-
-		return optional.orNull ();
-
-	}
-
 	public static
 	String fullClassName (
 			@NonNull Class<?> theClass) {
