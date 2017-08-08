@@ -162,14 +162,14 @@ class ConsoleHelperGenerator {
 				ifThenElse (
 					model.isRooted (),
 
-				() -> entityHelper.modelsByName ().get (
+				() -> entityHelper.recordModelsByName ().get (
 					"root"),
 
 				() -> ifThenElse (
 					model.parentTypeIsFixed ()
 					&& ! model.isRoot (),
 
-					() -> entityHelper.modelsByClass ().get (
+					() -> entityHelper.recordModelsByClass ().get (
 						model.parentField ().valueType ()),
 
 					() -> null

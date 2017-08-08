@@ -52,7 +52,7 @@ class ConsoleHelperGeneratorTool {
 		) {
 
 			List <Model <?>> models =
-				entityHelper.models ();
+				entityHelper.recordModels ();
 
 			taskLogger.noticeFormat (
 				"About to generate %s console helpers",
