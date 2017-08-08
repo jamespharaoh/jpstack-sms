@@ -107,11 +107,17 @@ class IdentityDateModelFieldBuilder
 					false)
 
 				.columnNames (
-					ImmutableList.<String>of (
+					ImmutableList.of (
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"date"))
+
+			;
 
 			// store field
 

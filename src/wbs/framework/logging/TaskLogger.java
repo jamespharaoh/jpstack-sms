@@ -55,6 +55,6 @@ interface TaskLogger
 	ImplicitArgument <CloseableTaskLogger, BorrowedTaskLogger>
 		implicitArgument =
 			new ImplicitArgument <> (
-				TaskLogger::borrow);
+				TaskLogger::borrowTaskLogger);
 
 }

@@ -1,5 +1,6 @@
 package wbs.framework.entity.generate.fields;
 
+import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -15,6 +16,9 @@ import wbs.framework.builder.annotations.BuilderTarget;
 import wbs.framework.codegen.JavaPropertyWriter;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.component.scaffold.PluginCompositeModelSpec;
+import wbs.framework.component.scaffold.PluginManager;
 import wbs.framework.entity.generate.ModelRecordGenerator;
 import wbs.framework.entity.generate.ModelWriter;
 import wbs.framework.entity.meta.fields.ComponentFieldSpec;
@@ -32,6 +36,9 @@ class ComponentFieldWriter
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	PluginManager pluginManager;
 
 	// builder
 
@@ -62,6 +69,11 @@ class ComponentFieldWriter
 
 		) {
 
+			PluginCompositeModelSpec targetModel =
+				mapItemForKeyRequired (
+					pluginManager.pluginCompositeModelsByName (),
+					spec.typeName ());
+
 			// write field
 
 			new JavaPropertyWriter ()
@@ -73,7 +85,7 @@ class ComponentFieldWriter
 
 				.typeNameFormat (
 					"%s.model.%s",
-					context.modelMeta ().plugin ().packageName (),
+					targetModel.plugin ().packageName (),
 					capitalise (
 						spec.typeName ()))
 
@@ -88,7 +100,7 @@ class ComponentFieldWriter
 							"new %s ()",
 							imports.registerFormat (
 								"%s.model.%s",
-								context.modelMeta ().plugin ().packageName (),
+								targetModel.plugin ().packageName (),
 								capitalise (
 									spec.typeName ()))))
 

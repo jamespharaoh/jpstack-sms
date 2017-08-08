@@ -500,7 +500,7 @@ class HibernateSessionFactoryBuilder {
 
 			for (
 				Model <?> model
-					: entityHelper.models ()
+					: entityHelper.recordModels ()
 			) {
 
 				configureModel (

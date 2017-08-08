@@ -58,7 +58,7 @@ class ModelGeneratorTool {
 			taskLogger.noticeFormat (
 				"About to generate %s models",
 				integerToDecimalString (
-					modelMetaLoader.modelMetas ().size ()));
+					modelMetaLoader.allModelMetas ().size ()));
 
 			StatusCounters statusCounters =
 				new StatusCounters ();

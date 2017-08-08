@@ -1,9 +1,7 @@
 package wbs.framework.entity.model;
 
-import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.TypeUtils.classForNameRequired;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
-import static wbs.utils.string.StringUtils.camelToUnderscore;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -18,24 +16,22 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.component.scaffold.PluginModelSpec;
+import wbs.framework.component.scaffold.PluginRecordModelSpec;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.entity.build.ModelBuilderManager;
 import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;
-import wbs.framework.entity.meta.model.RecordSpec;
-import wbs.framework.entity.record.Record;
+import wbs.framework.entity.meta.model.ModelMetaSpec;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
-import wbs.framework.object.ObjectHelper;
 import wbs.framework.schema.helper.SchemaNamesHelper;
 import wbs.framework.schema.helper.SchemaTypesHelper;
 
 @Accessors (fluent = true)
-@PrototypeComponent ("modelBuilder")
+@PrototypeComponent ("compositeModelBuilder")
 public
-class ModelBuilder <RecordType extends Record <RecordType>> {
+class CompositeModelBuilder <DataType> {
 
 	// singleton dependencies
 
@@ -54,22 +50,18 @@ class ModelBuilder <RecordType extends Record <RecordType>> {
 	// properties
 
 	@Getter @Setter
-	RecordSpec modelMeta;
+	ModelMetaSpec modelMeta;
 
 	// state
 
-	PluginModelSpec pluginModel;
+	PluginRecordModelSpec pluginModel;
 	PluginSpec plugin;
 
-	ModelImplementation <?> model;
+	CompositeModelImplementation <?> model;
 
-	String recordClassName;
+	String modelClassName;
 	String recordClassNameFull;
-	Class <RecordType> recordClass;
-
-	String objectHelperClassName;
-	String objectHelperClassNameFull;
-	Class <ObjectHelper <RecordType>> objectHelperClass;
+	Class <ModelType> modelClass;
 
 	// implementation
 
@@ -86,42 +78,14 @@ class ModelBuilder <RecordType extends Record <RecordType>> {
 
 		) {
 
-			return buildReal (
-				taskLogger);
-
-		} catch (Exception exception) {
-
-			throw new RuntimeException (
-				stringFormat (
-					"Error creating model %s",
-					modelMeta.name ()),
-				exception);
-
-		}
-
-	}
-
-	private
-	Model <?> buildReal (
-			@NonNull TaskLogger parentTaskLogger) {
-
-		try (
-
-			OwnedTaskLogger taskLogger =
-				logContext.nestTaskLogger (
-					parentTaskLogger,
-					"buildReal");
-
-		) {
-
 			plugin =
 				modelMeta.plugin ();
 
-			// record class
+			// model class
 
-			recordClassName =
+			modelClassName =
 				stringFormat (
-					"%sRec",
+					"%s",
 					capitalise (
 						modelMeta.name ()));
 
@@ -129,76 +93,25 @@ class ModelBuilder <RecordType extends Record <RecordType>> {
 				stringFormat (
 					"%s.model.%s",
 					plugin.packageName (),
-					recordClassName);
+					modelClassName);
 
-			Class <RecordType> recordClassTemp =
+			modelClass =
 				genericCastUnchecked (
 					classForNameRequired (
 						recordClassNameFull));
 
-			recordClass =
-				recordClassTemp;
-
-			// object helper class
-
-			objectHelperClassName =
-				stringFormat (
-					"%sObjectHelper",
-					capitalise (
-						modelMeta.name ()));
-
-			objectHelperClassNameFull =
-				stringFormat (
-					"%s.model.%s",
-					plugin.packageName (),
-					objectHelperClassName);
-
-			Class <ObjectHelper <RecordType>> objectHelperClassTemp =
-				genericCastUnchecked (
-					classForNameRequired (
-						objectHelperClassNameFull));
-
-			objectHelperClass =
-				objectHelperClassTemp;
-
 			// model
 
 			model =
-				new ModelImplementation <RecordType> ()
+				new CompositeModelImplementation <ModelType> ()
 
 				.objectClass (
-					recordClass)
+					modelClass)
 
 				.objectName (
 					modelMeta.name ())
 
-				.oldObjectName (
-					modelMeta.oldName ())
-
-				.objectTypeCode (
-					camelToUnderscore (
-						ifNull (
-							modelMeta.oldName (),
-							modelMeta.name ())))
-
-				.tableName (
-					ifNull (
-						modelMeta.tableName (),
-						schemaNamesHelper.tableName (
-							recordClass)))
-
-				.create (
-					ifNull (
-						modelMeta.create (),
-						true))
-
-				.mutable (
-					ifNull (
-						modelMeta.mutable (),
-						true))
-
-				.helperClass (
-					objectHelperClass);
+			;
 
 			// model fields
 
@@ -208,8 +121,8 @@ class ModelBuilder <RecordType extends Record <RecordType>> {
 				.modelMeta (
 					modelMeta)
 
-				.recordClass (
-					recordClass);
+				.modelClass (
+					modelClass);
 
 			ModelFieldBuilderTarget target =
 				new ModelFieldBuilderTarget ()

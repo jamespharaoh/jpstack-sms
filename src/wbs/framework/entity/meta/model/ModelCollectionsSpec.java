@@ -14,9 +14,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("collections")
 @PrototypeComponent ("modelCollectionsSpec")
-@ModelMetaData
 public
-class ModelCollectionsSpec {
+class ModelCollectionsSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)

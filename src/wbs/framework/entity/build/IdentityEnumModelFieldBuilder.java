@@ -1,5 +1,6 @@
 package wbs.framework.entity.build;
 
+import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.TypeUtils.classForNameRequired;
 import static wbs.utils.string.StringUtils.camelToSpaces;
@@ -30,6 +31,7 @@ import wbs.framework.entity.model.ModelFieldType;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
+import wbs.framework.schema.helper.SchemaTypesHelper;
 
 @PrototypeComponent ("identityEnumModelFieldBuilder")
 @ModelBuilder
@@ -44,6 +46,9 @@ class IdentityEnumModelFieldBuilder
 
 	@SingletonDependency
 	PluginManager pluginManager;
+
+	@SingletonDependency
+	SchemaTypesHelper schemaTypesHelper;
 
 	// builder
 
@@ -119,6 +124,10 @@ class IdentityEnumModelFieldBuilder
 					capitalise (
 						spec.typeName ()));
 
+			Class <?> valueType =
+				classForNameRequired (
+					fullFieldTypeName);
+
 			// create model field
 
 			ModelField modelField =
@@ -147,8 +156,7 @@ class IdentityEnumModelFieldBuilder
 					true)
 
 				.valueType (
-					classForNameRequired (
-						fullFieldTypeName))
+					valueType)
 
 				.nullable (
 					false)
@@ -158,7 +166,14 @@ class IdentityEnumModelFieldBuilder
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					mapItemForKeyRequired (
+						schemaTypesHelper.fieldTypeNames (),
+						valueType))
+
+			;
 
 			// store field
 

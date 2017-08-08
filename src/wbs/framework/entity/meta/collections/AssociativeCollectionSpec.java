@@ -14,7 +14,6 @@ import wbs.framework.entity.meta.model.RecordSpec;
 @Accessors (fluent = true)
 @Data
 @DataClass ("associative-collection")
-@ModelMetaData
 @PrototypeComponent ("associativeCollectionSpec")
 public
 class AssociativeCollectionSpec

@@ -50,7 +50,7 @@ class ObjectHelperGeneratorTool {
 		) {
 
 			List <Model <?>> models =
-				entityHelper.models ();
+				entityHelper.recordModels ();
 
 			taskLogger.noticeFormat (
 				"About to generate %s object helpers",

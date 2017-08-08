@@ -106,11 +106,17 @@ class BinaryModelFieldBuilder
 						false))
 
 				.columnNames (
-					ImmutableList.<String>of (
+					ImmutableList.of (
 						ifNull (
 							spec.columnName (),
 							schemaNamesHelper.columnName (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"bytea"))
+
+			;
 
 			// store field
 

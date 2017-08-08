@@ -343,21 +343,6 @@ class DataFromXmlImplementation
 					optionalGetRequired (
 						builderOptional);
 
-				// check for text
-
-				if (
-					stringIsNotEmpty (
-						element.getTextTrim ())
-				) {
-
-					taskLogger.errorFormat (
-						"Element <%s> contains text",
-						element.getName ());
-
-					return null;
-
-				}
-
 				// build it
 
 				object =

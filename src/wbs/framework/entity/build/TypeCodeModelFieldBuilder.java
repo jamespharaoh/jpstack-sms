@@ -102,11 +102,17 @@ class TypeCodeModelFieldBuilder
 					false)
 
 				.columnNames (
-					ImmutableList.<String>of (
+					ImmutableList.of (
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"text"))
+
+			;
 
 			// store field
 

@@ -14,13 +14,13 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("fields")
 @PrototypeComponent ("modelFieldsSpec")
-@ModelMetaData
 public
-class ModelFieldsSpec {
+class ModelFieldsSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)
-	List<ModelFieldSpec> fields =
-		new ArrayList<ModelFieldSpec> ();
+	List <ModelFieldSpec> fields =
+		new ArrayList<> ();
 
 }

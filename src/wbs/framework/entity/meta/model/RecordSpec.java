@@ -11,9 +11,11 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.data.annotations.DataAttribute;
+import wbs.framework.data.annotations.DataChild;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.data.annotations.DataParent;
+import wbs.framework.entity.meta.cachedview.CachedViewSpec;
 
 @Accessors (fluent = true)
 @Data
@@ -21,9 +23,9 @@ import wbs.framework.data.annotations.DataParent;
 @ToString (of = "name")
 @DataClass ("record")
 @PrototypeComponent ("recordSpec")
-@ModelMetaData
 public
 class RecordSpec {
+	implements ModelDataSpec {
 
 	@DataParent
 	PluginSpec plugin;
@@ -53,6 +55,9 @@ class RecordSpec {
 
 	// children
 
+	@DataChild
+	ModelPartitioningSpec partitioning;
+
 	@DataChildren (
 		childrenElement = "fields")
 	List <ModelFieldSpec> fields =
@@ -62,6 +67,9 @@ class RecordSpec {
 		childrenElement = "collections")
 	List <ModelCollectionSpec> collections =
 		new ArrayList<> ();
+
+	@DataChild
+	CachedViewSpec cachedView;
 
 	@DataChildren (
 		childrenElement = "dao-interfaces")
@@ -80,7 +88,7 @@ class RecordSpec {
 
 	@DataChildren (
 		direct = true,
-		excludeChildren = { "fields", "collections" })
+		excludeChildren = { "fields", "collections", "cached-view" })
 	List <Object> children =
 		new ArrayList<> ();
 

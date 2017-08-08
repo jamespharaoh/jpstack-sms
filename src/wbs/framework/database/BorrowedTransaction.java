@@ -113,7 +113,7 @@ class BorrowedTransaction
 	public
 	ParentTaskLogger parentTaskLogger () {
 
-		throw new UnsupportedOperationException ();
+		return ownedTransaction.taskLoggerImplementation ();
 
 	}
 

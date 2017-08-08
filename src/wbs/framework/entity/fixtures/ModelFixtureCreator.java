@@ -134,7 +134,7 @@ class ModelFixtureCreator {
 			) {
 
 				Model <?> model =
-					entityHelper.modelsByName ().get (
+					entityHelper.recordModelsByName ().get (
 						spec.name ());
 
 				fixtureBuilder.descend (

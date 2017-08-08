@@ -1,5 +1,6 @@
 package wbs.framework.hibernate;
 
+import static wbs.utils.collection.IterableUtils.iterableChainArguments;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -44,7 +45,10 @@ class HibernateComponentPlugin
 
 		) {
 
-			plugin.models ().models ().forEach (
+			iterableChainArguments (
+				plugin.models ().models (),
+				plugin.models ().compositeTypes ()
+			).forEach (
 				projectModelSpec ->
 					registerDaoHibernate (
 						taskLogger,

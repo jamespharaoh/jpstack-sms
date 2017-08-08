@@ -8,7 +8,6 @@ import static wbs.utils.etc.TypeUtils.classNameSimple;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -450,32 +449,8 @@ class SchemaTableFromModel {
 
 		) {
 
-			List <String> typeNames;
-
-			if (modelField.sqlType () != null) {
-
-				typeNames =
-					Collections.singletonList (
-						modelField.sqlType ());
-
-			} else {
-
-				typeNames =
-					schemaTypesHelper.fieldTypeNames ().get (
-						modelField.valueType ());
-
-				if (typeNames == null) {
-
-					taskLogger.errorFormat (
-						"Can't map type %s for %s",
-						modelField.valueType ().getSimpleName (),
-						modelField.fullName ());
-
-					return;
-
-				}
-
-			}
+			List <String> typeNames =
+				modelField.columnSqlTypes ();
 
 			if (
 				integerNotEqualSafe (
@@ -526,8 +501,6 @@ class SchemaTableFromModel {
 							modelField.nullable ()));
 
 			}
-
-		}
 
 	}
 

@@ -1,5 +1,6 @@
 package wbs.framework.schema.tool;
 
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -36,6 +37,9 @@ class SchemaTool {
 	// singleton dependencies
 
 	@SingletonDependency
+	CachedViewToSql cachedViewToSql;
+
+	@SingletonDependency
 	LoggingDataSource dataSource;
 
 	@SingletonDependency
@@ -53,7 +57,7 @@ class SchemaTool {
 	// prototype dependencies
 
 	@PrototypeDependency
-	ComponentProvider <SchemaFromModel> schemaFromModel;
+	ComponentProvider <SchemaFromModel> schemaFromModelProvider;
 
 	// state
 
@@ -79,7 +83,8 @@ class SchemaTool {
 			defineTables (
 				taskLogger);
 
-			createSchemaSqlScript ();
+			writeSchemaSqlScript (
+				taskLogger);
 
 			executeSchemaSqlScript (
 				taskLogger);
@@ -105,14 +110,14 @@ class SchemaTool {
 		) {
 
 			schema =
-				schemaFromModel.provide (
+				schemaFromModelProvider.provide (
 					taskLogger)
 
 				.enumTypes (
 					schemaTypesHelper.enumTypes ())
 
 				.modelsByClass (
-					entityHelper.modelsByClass ())
+					entityHelper.recordModelsByClass ())
 
 				.build (
 					taskLogger)
@@ -125,39 +130,71 @@ class SchemaTool {
 
 	}
 
-	void createSchemaSqlScript () {
-
-		sqlStatements =
-			new ArrayList <String> ();
-
-		schemaToSql.forSchema (
-			sqlStatements,
-			schema);
-
-		// write sql
+	private
+	void writeSchemaSqlScript (
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			AtomicFileWriter fileWriter =
-				new AtomicFileWriter (
-					"work/schema.sql");
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"writeSchemaSqlScript");
 
 		) {
 
+			sqlStatements =
+				new ArrayList <String> ();
+
+			schemaToSql.forSchema (
+				sqlStatements,
+				schema);
+
 			for (
-				String sqlStatement
-					: sqlStatements
+				Model <?> model
+					: entityHelper.recordModels ()
 			) {
 
-				fileWriter.writeString (
-					sqlStatement);
+				if (
+					isNull (
+						model.cachedView ())
+				) {
+					continue;
+				}
 
-				fileWriter.writeString (
-					";\n");
+				cachedViewToSql.forModel (
+					taskLogger,
+					sqlStatements,
+					model);
 
 			}
 
-			fileWriter.close ();
+			// write sql
+
+			try (
+
+				AtomicFileWriter fileWriter =
+					new AtomicFileWriter (
+						"work/schema.sql");
+
+			) {
+
+				for (
+					String sqlStatement
+						: sqlStatements
+				) {
+
+					fileWriter.writeString (
+						sqlStatement);
+
+					fileWriter.writeString (
+						";\n");
+
+				}
+
+				fileWriter.close ();
+
+			}
 
 		}
 
@@ -308,7 +345,7 @@ class SchemaTool {
 
 				for (
 					Model <?> model
-						: entityHelper.models ()
+						: entityHelper.recordModels ()
 				) {
 
 					int objectTypeId;

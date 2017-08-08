@@ -1,5 +1,7 @@
 package wbs.framework.entity.helper;
 
+import static wbs.utils.collection.MapUtils.mapWithDerivedKey;
+import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.io.FileUtils.deleteDirectory;
 import static wbs.utils.io.FileUtils.forceMkdir;
 import static wbs.utils.string.StringUtils.camelToHyphen;
@@ -10,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,8 +27,9 @@ import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.data.tools.DataToXml;
 import wbs.framework.entity.meta.model.ModelMetaLoader;
 import wbs.framework.entity.meta.model.RecordSpec;
+import wbs.framework.entity.model.CompositeModelBuilder;
 import wbs.framework.entity.model.Model;
-import wbs.framework.entity.model.ModelBuilder;
+import wbs.framework.entity.model.RecordModelBuilder;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -49,24 +51,61 @@ class EntityHelperImplementation
 	// prototype dependencies
 
 	@PrototypeDependency
-	ComponentProvider <ModelBuilder <?>> modelBuilder;
+	ComponentProvider <CompositeModelBuilder <?>> compositeModelBuilderProvider;
 
-	// properties
+	@PrototypeDependency
+	ComponentProvider <RecordModelBuilder <?>> recordModelBuilderProvider;
 
-	@Getter
-	List <String> entityClassNames;
-
-	@Getter
-	List <Class <?>> entityClasses;
+	// record model properties
 
 	@Getter
-	List <Model <?>> models;
+	List <String> recordClassNames;
 
 	@Getter
-	Map <Class <?>, Model <?>> modelsByClass;
+	List <Class <?>> recordClasses;
 
 	@Getter
-	Map <String, Model <?>> modelsByName;
+	List <Model <?>> recordModels;
+
+	@Getter
+	Map <Class <?>, Model <?>> recordModelsByClass;
+
+	@Getter
+	Map <String, Model <?>> recordModelsByName;
+
+	// composite model properties
+
+	@Getter
+	List <String> compositeClassNames;
+
+	@Getter
+	List <Class <?>> compositeClasses;
+
+	@Getter
+	List <Model <?>> compositeModels;
+
+	@Getter
+	Map <Class <?>, Model <?>> compositeModelsByClass;
+
+	@Getter
+	Map <String, Model <?>> compositeModelsByName;
+
+	// all model properties
+
+	@Getter
+	List <String> allModelClassNames;
+
+	@Getter
+	List <Class <?>> allModelClasses;
+
+	@Getter
+	List <Model <?>> allModels;
+
+	@Getter
+	Map <Class <?>, Model <?>> allModelsByClass;
+
+	@Getter
+	Map <String, Model <?>> allModelsByName;
 
 	// life cycle
 
@@ -84,20 +123,23 @@ class EntityHelperImplementation
 
 		) {
 
-			initEntityClassNames (
+			initClassNames (
 				taskLogger);
 
-			initEntityClasses (
+			initClasses (
 				taskLogger);
 
 			initModels (
+				taskLogger);
+
+			initIndexes (
 				taskLogger);
 
 		}
 
 	}
 
-	void initEntityClassNames (
+	void initClassNames (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
@@ -105,11 +147,17 @@ class EntityHelperImplementation
 			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
-					"initEntityClassNames");
+					"initClassNames");
 
 		) {
 
-			ImmutableList.Builder <String> entityClassNamesBuilder =
+			ImmutableList.Builder <String> modelClassNamesBuilder =
+				ImmutableList.builder ();
+
+			ImmutableList.Builder <String> recordClassNamesBuilder =
+				ImmutableList.builder ();
+
+			ImmutableList.Builder <String> compositeClassNamesBuilder =
 				ImmutableList.builder ();
 
 			for (
@@ -117,30 +165,60 @@ class EntityHelperImplementation
 					: modelMetaLoader.modelMetas ().values ()
 			) {
 
-				if (! modelMeta.type ().record ()) {
-					continue;
-				}
-
 				PluginSpec plugin =
 					modelMeta.plugin ();
 
-				entityClassNamesBuilder.add (
-					stringFormat (
-						"%s.model.%sRec",
-						plugin.packageName (),
-						capitalise (
-							modelMeta.name ())));
+				String modelClassName;
+
+				if (modelMeta.type ().record ()) {
+
+					modelClassName =
+						stringFormat (
+							"%s.model.%sRec",
+							plugin.packageName (),
+							capitalise (
+								modelMeta.name ()));
+
+					recordClassNamesBuilder.add (
+						modelClassName);
+
+				} else if (modelMeta.type ().component ()) {
+
+					modelClassName =
+						stringFormat (
+							"%s.model.%s",
+							plugin.packageName (),
+							capitalise (
+								modelMeta.name ()));
+
+					compositeClassNamesBuilder.add (
+						modelClassName);
+
+				} else {
+
+					throw shouldNeverHappen ();
+
+				}
+
+				modelClassNamesBuilder.add (
+					modelClassName);
 
 			}
 
-			entityClassNames =
-				entityClassNamesBuilder.build ();
+			allModelClassNames =
+				modelClassNamesBuilder.build ();
+
+			recordClassNames =
+				recordClassNamesBuilder.build ();
+
+			compositeClassNames =
+				compositeClassNamesBuilder.build ();
 
 		}
 
 	}
 
-	void initEntityClasses (
+	void initClasses (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
@@ -148,41 +226,83 @@ class EntityHelperImplementation
 			OwnedTaskLogger taskLogger =
 				logContext.nestTaskLogger (
 					parentTaskLogger,
-					"initEntityClasses");
+					"initClasses");
 
 		) {
 
-			ImmutableList.Builder <Class <?>> entityClassesBuilder =
+			ImmutableList.Builder <Class <?>> modelClassesBuilder =
+				ImmutableList.builder ();
+
+			ImmutableList.Builder <Class <?>> recordClassesBuilder =
 				ImmutableList.builder ();
 
 			for (
-				String entityClassName
-					: entityClassNames
+				String recordClassName
+					: recordClassNames
 			) {
 
 				try {
 
-					Class <?> entityClass =
+					Class <?> recordClass =
 						Class.forName (
-							entityClassName);
+							recordClassName);
 
-					entityClassesBuilder.add (
-						entityClass);
+					modelClassesBuilder.add (
+						recordClass);
+
+					recordClassesBuilder.add (
+						recordClass);
 
 				} catch (ClassNotFoundException exception) {
 
 					taskLogger.errorFormat (
-						"No such class %s",
-						entityClassName);
+						"No such record class %s",
+						recordClassName);
 
 				}
 
 			}
 
-			taskLogger.makeException ();
+			recordClasses =
+				recordClassesBuilder.build ();
 
-			entityClasses =
-				entityClassesBuilder.build ();
+			ImmutableList.Builder <Class <?>> compositeClassesBuilder =
+				ImmutableList.builder ();
+
+			for (
+				String compositeClassName
+					: compositeClassNames
+			) {
+
+				try {
+
+					Class <?> componentClass =
+						Class.forName (
+							compositeClassName);
+
+					modelClassesBuilder.add (
+						componentClass);
+
+					compositeClassesBuilder.add (
+						componentClass);
+
+				} catch (ClassNotFoundException exception) {
+
+					taskLogger.errorFormat (
+						"No such component class %s",
+						compositeClassName);
+
+				}
+
+			}
+
+			compositeClasses =
+				compositeClassesBuilder.build ();
+
+			allModelClasses =
+				modelClassesBuilder.build ();
+
+			taskLogger.makeException ();
 
 		}
 
@@ -216,14 +336,14 @@ class EntityHelperImplementation
 
 			}
 
-			ImmutableList.Builder <Model <?>> modelsBuilder =
+			ImmutableList.Builder <Model <?>> recordModelsBuilder =
 				ImmutableList.builder ();
 
-			ImmutableMap.Builder <Class <?>, Model <?>> modelsByClassBuilder =
-				ImmutableMap.builder ();
+			ImmutableList.Builder <Model <?>> compositeModelsBuilder =
+				ImmutableList.builder ();
 
-			ImmutableMap.Builder <String, Model <?>> modelsByNameBuilder =
-				ImmutableMap.builder ();
+			ImmutableList.Builder <Model <?>> allModelsBuilder =
+				ImmutableList.builder ();
 
 			int errors = 0;
 
@@ -232,19 +352,37 @@ class EntityHelperImplementation
 					: modelMetaLoader.modelMetas ().values ()
 			) {
 
-				if (! modelMeta.type ().record ()) {
-					continue;
+				Model <?> model;
+
+				if (modelMeta.type ().record ()) {
+
+					model =
+						recordModelBuilderProvider.provide (
+							taskLogger)
+
+						.modelMeta (
+							modelMeta)
+
+						.build (
+							taskLogger);
+
+				} else if (modelMeta.type ().component ()) {
+
+					model =
+						compositeModelBuilderProvider.provide (
+							taskLogger)
+
+						.modelMeta (
+							modelMeta)
+
+						.build (
+							taskLogger);
+
+				} else {
+
+					throw shouldNeverHappen ();
+
 				}
-
-				Model <?> model =
-					modelBuilder.provide (
-						taskLogger)
-
-					.modelMeta (
-						modelMeta)
-
-					.build (
-						taskLogger);
 
 				if (model == null) {
 
@@ -254,16 +392,24 @@ class EntityHelperImplementation
 
 				}
 
-				modelsBuilder.add (
+				allModelsBuilder.add (
 					model);
 
-				modelsByClassBuilder.put (
-					model.objectClass (),
-					model);
+				if (modelMeta.type ().record ()) {
 
-				modelsByNameBuilder.put (
-					model.objectName (),
-					model);
+					recordModelsBuilder.add (
+						model);
+
+				} else if (modelMeta.type ().component ()) {
+
+					compositeModelsBuilder.add (
+						model);
+
+				} else {
+
+					throw shouldNeverHappen ();
+
+				}
 
 				String outputFilename =
 					stringFormat (
@@ -290,14 +436,61 @@ class EntityHelperImplementation
 			if (errors > 0)
 				throw new RuntimeException ();
 
-			models =
-				modelsBuilder.build ();
+			allModels =
+				allModelsBuilder.build ();
 
-			modelsByClass =
-				modelsByClassBuilder.build ();
+			recordModels =
+				recordModelsBuilder.build ();
 
-			modelsByName =
-				modelsByNameBuilder.build ();
+			compositeModels =
+				compositeModelsBuilder.build ();
+
+		}
+
+	}
+
+	private
+	void initIndexes (
+			@NonNull TaskLogger parentTaskLogger) {
+
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"initIndexes");
+
+		) {
+
+			recordModelsByClass =
+				mapWithDerivedKey (
+					recordModels,
+					Model::objectClass);
+
+			recordModelsByName =
+				mapWithDerivedKey (
+					recordModels,
+					Model::objectName);
+
+			compositeModelsByClass =
+				mapWithDerivedKey (
+					compositeModels,
+					Model::objectClass);
+
+			compositeModelsByName =
+				mapWithDerivedKey (
+					compositeModels,
+					Model::objectName);
+
+			allModelsByClass =
+				mapWithDerivedKey (
+					allModels,
+					Model::objectClass);
+
+			allModelsByName =
+				mapWithDerivedKey (
+					allModels,
+					Model::objectName);
 
 		}
 

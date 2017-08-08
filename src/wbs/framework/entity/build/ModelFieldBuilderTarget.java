@@ -7,14 +7,14 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import wbs.framework.entity.model.ModelField;
-import wbs.framework.entity.model.ModelImplementation;
+import wbs.framework.entity.model.ModelImplementationMethods;
 
 @Accessors (fluent = true)
 @Data
 public
 class ModelFieldBuilderTarget {
 
-	ModelImplementation <?> model;
+	ModelImplementationMethods <?, ?> model;
 
 	List <ModelField> fields;
 	Map <String, ModelField> fieldsByName;

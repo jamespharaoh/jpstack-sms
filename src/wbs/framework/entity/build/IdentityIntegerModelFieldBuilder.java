@@ -109,7 +109,13 @@ class IdentityIntegerModelFieldBuilder
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"bigint"))
+
+			;
 
 			// store field
 

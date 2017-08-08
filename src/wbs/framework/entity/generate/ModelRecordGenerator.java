@@ -419,7 +419,9 @@ class ModelRecordGenerator {
 					modelMeta)
 
 				.recordClassName (
-					recordClassName);
+					recordClassName)
+
+			;
 
 			ModelFieldWriterTarget nextTarget =
 				new ModelFieldWriterTarget ()
@@ -428,7 +430,9 @@ class ModelRecordGenerator {
 					imports)
 
 				.formatWriter (
-					formatWriter);
+					formatWriter)
+
+			;
 
 			modelWriterBuilder.write (
 				taskLogger,

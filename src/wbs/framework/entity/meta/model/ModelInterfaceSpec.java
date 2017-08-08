@@ -15,9 +15,9 @@ import wbs.framework.data.annotations.DataClass;
 @Data
 @DataClass ("interface")
 @PrototypeComponent ("modelInterfaceSpec")
-@ModelMetaData
 public
-class ModelInterfaceSpec {
+class ModelInterfaceSpec
+	implements ModelDataSpec {
 
 	@DataAncestor
 	RecordSpec modelMeta;

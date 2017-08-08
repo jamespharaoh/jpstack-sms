@@ -107,11 +107,15 @@ class IndexModelFieldBuilder
 						false))
 
 				.columnNames (
-					ImmutableList.<String>of (
+					ImmutableList.of (
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
 								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"bigint"))
 
 				.indexCounterFieldName (
 					spec.counterName ());

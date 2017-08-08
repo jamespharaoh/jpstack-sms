@@ -106,7 +106,7 @@ class GeneratedIdModelFieldBuilder
 					ifNull (
 						spec.sequenceName (),
 						schemaNamesHelper.idSequenceName (
-							context.recordClass ())));
+							context.modelClass ())));
 
 			// store field
 
