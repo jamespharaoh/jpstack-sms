@@ -17,17 +17,17 @@ class SchemaTable {
 	String name;
 	SchemaPrimaryKey primaryKey;
 
-	Map<String,SchemaColumn> columns =
-		new LinkedHashMap<String,SchemaColumn> ();
+	Map <String, SchemaColumn> columns =
+		new LinkedHashMap<> ();
 
-	List<SchemaForeignKey> foreignKeys =
-		new ArrayList<SchemaForeignKey> ();
+	List <SchemaForeignKey> foreignKeys =
+		new ArrayList<> ();
 
-	Map<String,SchemaSequence> sequences =
-		new HashMap<String,SchemaSequence> ();
+	Map <String, SchemaSequence> sequences =
+		new HashMap<> ();
 
-	Map<String,SchemaIndex> indexes =
-		new HashMap<String,SchemaIndex> ();
+	Map <String, SchemaIndex> indexes =
+		new HashMap<> ();
 
 	public
 	SchemaTable addColumn (

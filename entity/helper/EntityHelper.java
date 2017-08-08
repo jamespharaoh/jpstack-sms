@@ -8,11 +8,22 @@ import wbs.framework.entity.model.Model;
 public
 interface EntityHelper {
 
-	List <String> entityClassNames ();
-	List <Class <?>> entityClasses ();
+	List <String> recordClassNames ();
+	List <Class <?>> recordClasses ();
+	List <Model <?>> recordModels ();
+	Map <Class <?>, Model <?>> recordModelsByClass ();
+	Map <String, Model <?>> recordModelsByName ();
 
-	List <Model <?>> models ();
-	Map <Class <?>, Model <?>> modelsByClass ();
-	Map <String, Model <?>> modelsByName ();
+	List <String> compositeClassNames ();
+	List <Class <?>> compositeClasses ();
+	List <Model <?>> compositeModels ();
+	Map <Class <?>, Model <?>> compositeModelsByClass ();
+	Map <String, Model <?>> compositeModelsByName ();
+
+	List <String> allModelClassNames ();
+	List <Class <?>> allModelClasses ();
+	List <Model <?>> allModels ();
+	Map <Class <?>, Model <?>> allModelsByClass ();
+	Map <String, Model <?>> allModelsByName ();
 
 }

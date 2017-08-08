@@ -106,11 +106,14 @@ class DurationModelFieldBuilder
 							camelToUnderscore (
 								fieldName))))
 
+				.columnSqlTypes (
+					ImmutableList.of (
+						"interval"))
+
 				.hibernateTypeHelper (
 					DurationUserType.class)
 
-				.sqlType (
-					"interval");
+			;
 
 			// store field
 

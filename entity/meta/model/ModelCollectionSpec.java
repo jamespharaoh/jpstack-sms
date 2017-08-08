@@ -1,6 +1,7 @@
 package wbs.framework.entity.meta.model;
 
 public
-interface ModelCollectionSpec {
+interface ModelCollectionSpec
+	extends ModelDataSpec {
 
 }

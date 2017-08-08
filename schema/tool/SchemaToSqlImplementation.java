@@ -83,8 +83,8 @@ class SchemaToSqlImplementation
 	@Override
 	public
 	void forSchemaTables (
-			@NonNull List<String> sqlStatements,
-			@NonNull List<SchemaTable> schemaTables) {
+			@NonNull List <String> sqlStatements,
+			@NonNull List <SchemaTable> schemaTables) {
 
 		for (
 			SchemaTable schemaTable

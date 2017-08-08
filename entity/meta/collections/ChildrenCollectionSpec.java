@@ -15,7 +15,6 @@ import wbs.framework.entity.meta.model.RecordSpec;
 @Data
 @DataClass ("children-collection")
 @PrototypeComponent ("childrenCollectionSpec")
-@ModelMetaData
 public
 class ChildrenCollectionSpec
 	implements ModelCollectionSpec {

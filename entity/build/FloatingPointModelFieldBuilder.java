@@ -102,11 +102,18 @@ class FloatingPointModelFieldBuilder
 						false))
 
 				.columnNames (
-					ImmutableList.<String>of (
+					ImmutableList.of (
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"double precision"))
+
+			;
+
 			// store field
 
 			target.fields ().add (

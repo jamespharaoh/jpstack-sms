@@ -27,7 +27,10 @@ class PluginManager {
 	List <PluginSpec> plugins;
 
 	@Getter @Setter
-	Map <String, PluginModelSpec> pluginModelsByName;
+	Map <String, PluginRecordModelSpec> pluginRecordModelsByName;
+
+	@Getter @Setter
+	Map <String, PluginCompositeModelSpec> pluginCompositeModelsByName;
 
 	@Getter @Setter
 	Map <String, PluginEnumTypeSpec> pluginEnumTypesByName;
@@ -38,12 +41,35 @@ class PluginManager {
 	// implementation
 
 	public
-	Class <? extends Record <?>> modelClass (
+	Class <? extends Record <?>> recordModelClass (
 			@NonNull String modelName) {
 
-		PluginModelSpec modelSpec =
+		PluginRecordModelSpec modelSpec =
 			mapItemForKeyRequired (
-				pluginModelsByName,
+				pluginRecordModelsByName,
+				hyphenToCamel (
+					modelName));
+
+		String modelClassName =
+			stringFormat (
+				"%s.model.%sRec",
+				modelSpec.plugin ().packageName (),
+				capitalise (
+					modelSpec.name ()));
+
+		return genericCastUnchecked (
+			classForNameRequired (
+				modelClassName));
+
+	}
+
+	public
+	Class <? extends Record <?>> compositeModelClass (
+			@NonNull String modelName) {
+
+		PluginCompositeModelSpec modelSpec =
+			mapItemForKeyRequired (
+				pluginCompositeModelsByName,
 				hyphenToCamel (
 					modelName));
 

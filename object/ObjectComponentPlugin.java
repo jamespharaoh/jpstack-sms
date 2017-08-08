@@ -10,7 +10,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.registry.ComponentDefinition;
 import wbs.framework.component.registry.ComponentRegistryBuilder;
-import wbs.framework.component.scaffold.PluginModelSpec;
+import wbs.framework.component.scaffold.PluginRecordModelSpec;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.component.tools.ComponentPlugin;
 import wbs.framework.logging.LogContext;
@@ -73,7 +73,7 @@ class ObjectComponentPlugin
 	void registerObjectHooks (
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ComponentRegistryBuilder componentRegistry,
-			@NonNull PluginModelSpec model) {
+			@NonNull PluginRecordModelSpec model) {
 
 		try (
 
@@ -145,7 +145,7 @@ class ObjectComponentPlugin
 	void registerObjectHelper (
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ComponentRegistryBuilder componentRegistry,
-			@NonNull PluginModelSpec model) {
+			@NonNull PluginRecordModelSpec model) {
 
 		try (
 
@@ -195,7 +195,7 @@ class ObjectComponentPlugin
 	void registerObjectHelperMethodsImplementation (
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull ComponentRegistryBuilder componentRegistry,
-			@NonNull PluginModelSpec model) {
+			@NonNull PluginRecordModelSpec model) {
 
 		try (
 

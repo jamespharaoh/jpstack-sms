@@ -1,19 +1,22 @@
 package wbs.framework.entity.model;
 
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import wbs.framework.entity.meta.cachedview.CachedViewSpec;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 
 public
-interface ModelMethods <RecordType extends Record <RecordType>> {
+interface ModelMethods <DataType> {
 
 	// identity
 
 	String objectName ();
-	Class <RecordType> objectClass ();
+	Class <DataType> objectClass ();
 	String objectTypeCode ();
 
 	String oldObjectName ();
@@ -26,12 +29,14 @@ interface ModelMethods <RecordType extends Record <RecordType>> {
 	ModelField descriptionField ();
 	ModelField idField ();
 	ModelField indexField ();
+	ModelField masterField ();
 	ModelField nameField ();
 	ModelField parentField ();
 	ModelField parentIdField ();
 	ModelField parentTypeField ();
 	ModelField timestampField ();
 	ModelField typeCodeField ();
+	ModelField typeField ();
 
 	List <ModelField> fields ();
 	Map <String, ModelField> fieldsByName ();
@@ -55,10 +60,14 @@ interface ModelMethods <RecordType extends Record <RecordType>> {
 	Class <? extends Record <?>> parentClassRequired ();
 	Class <? extends ObjectHelper <?>> helperClass ();
 
+	// other information
+
+	CachedViewSpec cachedView ();
+
 	// property accessors
 
 	Record <?> getParentOrNull (
-			RecordType object);
+			DataType object);
 
 	default
 	Record <?> getParentOrNullGeneric (
@@ -71,22 +80,23 @@ interface ModelMethods <RecordType extends Record <RecordType>> {
 	}
 
 	Record <?> getParentType (
-			RecordType object);
+			DataType object);
 
 	default
 	Record <?> getParentTypeGeneric (
 			Record <?> object) {
 
-		return objectClass ().cast (
-			object);
+		return genericCastUnchecked (
+			objectClass ().cast (
+				object));
 
 	}
 
 	Long getParentId (
-			RecordType object);
+			DataType object);
 
 	String getTypeCode (
-			RecordType object);
+			DataType object);
 
 	default
 	String getTypeCodeGeneric (
@@ -99,7 +109,7 @@ interface ModelMethods <RecordType extends Record <RecordType>> {
 	}
 
 	String getCode (
-			RecordType record);
+			DataType record);
 
 	default
 	String getCodeGeneric (
@@ -112,9 +122,9 @@ interface ModelMethods <RecordType extends Record <RecordType>> {
 	}
 
 	String getName (
-			RecordType record);
+			DataType record);
 
 	String getDescription (
-			RecordType record);
+			DataType record);
 
 }

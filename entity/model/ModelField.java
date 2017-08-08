@@ -55,6 +55,10 @@ class ModelField {
 		new ArrayList<> ();
 
 	@DataAttribute
+	List <String> columnSqlTypes =
+		new ArrayList<> ();
+
+	@DataAttribute
 	Class <?> valueType;
 
 	@DataAttribute
@@ -65,9 +69,6 @@ class ModelField {
 
 	@DataAttribute
 	Class <?> collectionValueType;
-
-	@DataAttribute
-	String sqlType;
 
 	@DataAttribute
 	Class <?> hibernateTypeHelper;
@@ -115,12 +116,12 @@ class ModelField {
 	String indexCounterFieldName;
 
 	@DataChildren
-	List<ModelField> fields =
-		new ArrayList<ModelField> ();
+	List <ModelField> fields =
+		new ArrayList<> ();
 
 	@DataChildrenIndex
-	Map<String,ModelField> fieldsByName =
-		new LinkedHashMap<String,ModelField> ();
+	Map <String, ModelField> fieldsByName =
+		new LinkedHashMap<> ();
 
 	//Field field;
 	//Annotation annotation;

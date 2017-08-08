@@ -106,7 +106,14 @@ class ParentIdModelFieldBuilder
 						ifNull (
 							spec.columnName (),
 							camelToUnderscore (
-								fieldName))));
+								fieldName))))
+
+				.columnSqlTypes (
+					ImmutableList.of (
+						"bigint"))
+
+			;
+
 			// store field
 
 			target.fields ().add (

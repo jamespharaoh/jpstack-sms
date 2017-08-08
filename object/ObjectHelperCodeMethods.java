@@ -147,6 +147,35 @@ interface ObjectHelperCodeMethods <
 
 	default
 	RecordType findByCodeOrThrow (
+			@NonNull Transaction parentTransaction,
+			@NonNull GlobalId parentGlobalId,
+			@NonNull List <String> codes,
+			@NonNull Supplier <? extends RuntimeException> orThrow) {
+
+		Optional <RecordType> recordOptional =
+			findByCode (
+				parentTransaction,
+				parentGlobalId,
+				codes);
+
+		if (
+			optionalIsPresent (
+				recordOptional)
+		) {
+
+			return recordOptional.get ();
+
+		} else {
+
+			throw (RuntimeException)
+				orThrow.get ();
+
+		}
+
+	}
+
+	default
+	RecordType findByCodeOrThrow (
 			Transaction parentTransaction,
 			Record <?> parent,
 			List <String> codes,
@@ -177,15 +206,15 @@ interface ObjectHelperCodeMethods <
 	default
 	RecordType findByCodeOrThrow (
 			Transaction parentTransaction,
-			Record <?> parent,
-			String code,
+			GlobalId parentGlobalId,
+			String code0,
 			Supplier <? extends RuntimeException> orThrow) {
 
 		return findByCodeOrThrow (
 			parentTransaction,
-			parent,
+			parentGlobalId,
 			singletonList (
-				code),
+				code0),
 			orThrow);
 
 	}
@@ -204,6 +233,22 @@ interface ObjectHelperCodeMethods <
 			ImmutableList.of (
 				code0,
 				code1),
+			orThrow);
+
+	}
+
+	default
+	RecordType findByCodeOrThrow (
+			Transaction parentTransaction,
+			Record <?> parent,
+			String code0,
+			Supplier <? extends RuntimeException> orThrow) {
+
+		return findByCodeOrThrow (
+			parentTransaction,
+			parent,
+			singletonList (
+				code0),
 			orThrow);
 
 	}

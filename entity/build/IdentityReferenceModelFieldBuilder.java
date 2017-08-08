@@ -1,13 +1,12 @@
 package wbs.framework.entity.build;
 
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.TypeUtils.classForNameRequired;
 import static wbs.utils.string.StringUtils.camelToSpaces;
 import static wbs.utils.string.StringUtils.camelToUnderscore;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
-
-import com.google.common.collect.ImmutableList;
 
 import lombok.NonNull;
 
@@ -21,7 +20,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.scaffold.PluginManager;
-import wbs.framework.component.scaffold.PluginModelSpec;
+import wbs.framework.component.scaffold.PluginRecordModelSpec;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.entity.meta.identities.IdentityReferenceFieldSpec;
 import wbs.framework.entity.model.ModelField;
@@ -78,8 +77,8 @@ class IdentityReferenceModelFieldBuilder
 					spec.name (),
 					spec.typeName ());
 
-			PluginModelSpec fieldTypePluginModel =
-				pluginManager.pluginModelsByName ().get (
+			PluginRecordModelSpec fieldTypePluginModel =
+				pluginManager.pluginRecordModelsByName ().get (
 					spec.typeName ());
 
 			PluginSpec fieldTypePlugin =
@@ -127,13 +126,18 @@ class IdentityReferenceModelFieldBuilder
 					false)
 
 				.columnNames (
-					ImmutableList.<String>of (
+					singletonList (
 						ifNull (
 							spec.columnName (),
 							stringFormat (
 								"%s_id",
 								camelToUnderscore (
-									fieldName)))));
+									fieldName)))))
+				.columnSqlTypes (
+					singletonList (
+						"bigint"))
+
+			;
 
 			// store field
 

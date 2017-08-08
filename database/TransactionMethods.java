@@ -112,6 +112,14 @@ interface TransactionMethods {
 
 	}
 
+	default
+	BorrowedTransaction borrowTransaction () {
+
+		return new BorrowedTransaction (
+			this.ownedTransaction ());
+
+	}
+
 	class IdGenerator {
 
 		private static

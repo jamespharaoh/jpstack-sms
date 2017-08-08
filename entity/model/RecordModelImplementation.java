@@ -2,6 +2,7 @@ package wbs.framework.entity.model;
 
 import static wbs.utils.collection.IterableUtils.iterableFilterMapToSet;
 import static wbs.utils.collection.IterableUtils.iterableFilterToList;
+import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.ArrayList;
@@ -15,11 +16,13 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 import wbs.framework.data.annotations.DataAttribute;
+import wbs.framework.data.annotations.DataChild;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataChildrenIndex;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.data.annotations.DataName;
 import wbs.framework.data.annotations.DataReference;
+import wbs.framework.entity.meta.cachedview.CachedViewSpec;
 import wbs.framework.entity.record.Record;
 import wbs.framework.entity.record.RootRecord;
 import wbs.framework.object.ObjectHelper;
@@ -30,8 +33,13 @@ import wbs.utils.etc.PropertyUtils;
 @Data
 @DataClass
 public
-class ModelImplementation <RecordType extends Record <RecordType>>
-	implements Model <RecordType> {
+class RecordModelImplementation <RecordType extends Record <RecordType>>
+	implements
+		ModelImplementationMethods <
+			RecordModelImplementation <RecordType>,
+			RecordType
+		>,
+		RecordModel <RecordType> {
 
 	// identity
 
@@ -110,10 +118,13 @@ class ModelImplementation <RecordType extends Record <RecordType>>
 	Map <String, ModelField> fieldsByName =
 		new LinkedHashMap<> ();
 
+	@DataChild
+	CachedViewSpec cachedView;
+
 	// helper
 
 	@DataAttribute
-	Class<? extends ObjectHelper<?>> helperClass;
+	Class <? extends ObjectHelper<?>> helperClass;
 
 	// methods
 
@@ -321,9 +332,32 @@ class ModelImplementation <RecordType extends Record <RecordType>>
 	@Override
 	public
 	ModelField field (
-			String name) {
+			@NonNull String name) {
 
-		return fieldsByName.get (name);
+		return mapItemForKeyRequired (
+			fieldsByName,
+			name);
+
+	}
+
+	@Override
+	public
+	List <ModelField> identityFields () {
+
+		return iterableFilterToList (
+			fields,
+			ModelField::identity);
+
+	}
+
+	@Override
+	public
+	Set <ModelFieldType> identityFieldTypes () {
+
+		return iterableFilterMapToSet (
+			fields,
+			ModelField::identity,
+			ModelField::type);
 
 	}
 

@@ -8,11 +8,15 @@
 	</layer>
 
 	<layer name="schema-tool">
+
 		<component class="builder.SchemaFromModel"/>
 		<component class="builder.SchemaTableFromModel"/>
+
+		<component class="tool.CachedViewToSqlImplementation"/>
 		<component class="tool.SchemaToSqlImplementation"/>
 		<component class="tool.SchemaToolExceptionLogger"/>
 		<component class="tool.SchemaToolSpecialConfig"/>
+
 	</layer>
 
 </plugin>

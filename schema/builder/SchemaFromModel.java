@@ -32,7 +32,7 @@ class SchemaFromModel {
 	// prototype dependencies
 
 	@PrototypeDependency
-	ComponentProvider <SchemaTableFromModel> schemaTableFromModel;
+	ComponentProvider <SchemaTableFromModel> schemaTableFromModelProvider;
 
 	// properties
 
@@ -65,7 +65,7 @@ class SchemaFromModel {
 			) {
 
 				SchemaTable schemaTable =
-					schemaTableFromModel.provide (
+					schemaTableFromModelProvider.provide (
 						taskLogger)
 
 					.modelsByClass (

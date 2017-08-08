@@ -189,6 +189,33 @@ class JavaClassWriter
 
 		}
 
+		if (
+			collectionIsNotEmpty (
+				parameters)
+		) {
+
+			return addImplements (
+				imports ->
+					stringFormat (
+						"%s <%s>",
+						imports.register (
+							interfaceName),
+						joinWithCommaAndSpace (
+							iterableMap (
+								parameters,
+								parameter ->
+									imports.register (
+										parameter)))));
+
+		} else {
+
+			return addImplements (
+				imports ->
+					imports.register (
+						interfaceName));
+
+		}
+
 		for (
 			String parameter
 				: parameters
