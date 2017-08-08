@@ -148,7 +148,7 @@ class ObjectSearchPageComponentBuilder <
 					spec.resultsClassName (),
 					() -> classForNameRequired (
 						spec.resultsClassName ()),
-					() -> pluginManager.modelClass (
+					() -> pluginManager.recordModelClass (
 						objectType));
 
 			String sessionKey =

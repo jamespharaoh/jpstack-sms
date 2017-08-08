@@ -9,15 +9,15 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("event-types")
 @PrototypeComponent ("eventTypesSpec")
-@ModelMetaData
 public
-class EventTypesSpec {
+class EventTypesSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)

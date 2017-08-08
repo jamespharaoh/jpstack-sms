@@ -9,19 +9,19 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("priv-types")
 @PrototypeComponent ("privTypesSpec")
-@ModelMetaData
 public
-class PrivTypesSpec {
+class PrivTypesSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)
-	List<PrivTypeSpec> privTypes =
-		new ArrayList<PrivTypeSpec> ();
+	List <PrivTypeSpec> privTypes =
+		new ArrayList<> ();
 
 }

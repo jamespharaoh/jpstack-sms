@@ -1,11 +1,11 @@
 package wbs.platform.scaffold.logic;
 
-import static wbs.utils.etc.Misc.orNull;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 import static wbs.utils.etc.ThreadUtils.threadInterruptAndJoinIgnoreInterrupt;
 import static wbs.utils.time.TimeUtils.laterThan;
 
@@ -206,7 +206,7 @@ class SliceLogicImplementation
 						.setCurrentQueueInactivityTime (
 							ifNull (
 								slice.getCurrentQueueInactivityTime (),
-								orNull (
+								optionalOrNull (
 									nextTimestampBySlice.get (
 										sliceId))))
 
