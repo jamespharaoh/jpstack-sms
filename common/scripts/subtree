@@ -86,7 +86,8 @@ case "$1" in
 			--prefix "$subtree_path" \
 			"$subtree_repo" \
 			"master" \
-			--message "Merge master of $subtree_name"
+			--message "Merge master of $subtree_name" \
+			--squash
 
 	done
 
