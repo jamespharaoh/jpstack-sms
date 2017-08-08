@@ -1059,7 +1059,7 @@ class StringUtils {
 			Object object) {
 
 		if (object == null)
-			return null;
+			return "(null)";
 
 		return object.toString ();
 
