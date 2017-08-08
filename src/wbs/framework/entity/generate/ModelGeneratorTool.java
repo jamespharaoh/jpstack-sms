@@ -58,7 +58,7 @@ class ModelGeneratorTool {
 			taskLogger.noticeFormat (
 				"About to generate %s models",
 				integerToDecimalString (
-					modelMetaLoader.allModelMetas ().size ()));
+					modelMetaLoader.allSpecs ().size ()));
 
 			StatusCounters statusCounters =
 				new StatusCounters ();
@@ -66,8 +66,8 @@ class ModelGeneratorTool {
 			for (
 				RecordSpec modelMeta
 					: Iterables.concat (
-						modelMetaLoader.modelMetas ().values (),
-						modelMetaLoader.componentMetas ().values ())
+						modelMetaLoader.recordSpecs ().values (),
+						modelMetaLoader.compositeSpecs ().values ())
 			) {
 
 				PluginSpec plugin =

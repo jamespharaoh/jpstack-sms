@@ -136,7 +136,7 @@ class QueueConsoleLogicImplementation
 
 			for (
 				RecordSpec modelMeta
-					: modelMetaLoader.modelMetas ().values ()
+					: modelMetaLoader.recordSpecs ().values ()
 			) {
 
 				for (

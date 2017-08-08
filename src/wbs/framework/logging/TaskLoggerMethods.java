@@ -81,19 +81,8 @@ interface TaskLoggerMethods
 			Function <TaskLogger, Type> function);
 
 	void wrap (
-			@NonNull Consumer <TaskLogger> function) {
+			Consumer <TaskLogger> function);
 
-		taskLoggerImplementation ().wrap (
-			function);
-
-	}
-
-	default
-	BorrowedTaskLogger borrowTaskLogger () {
-
-		return new BorrowedTaskLogger (
-			this.taskLoggerImplementation ());
-
-	BorrowedTaskLogger borrow ();
+	BorrowedTaskLogger borrowTaskLogger ();
 
 }

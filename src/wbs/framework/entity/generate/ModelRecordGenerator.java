@@ -124,7 +124,7 @@ class ModelRecordGenerator {
 						capitalise (
 							modelMeta.name ()));
 
-			} else if (modelMeta.type ().component ()) {
+			} else if (modelMeta.type ().composite ()) {
 
 				recordClassName =
 					capitalise (
@@ -273,7 +273,7 @@ class ModelRecordGenerator {
 			CommonRecord.class)
 
 		.put (
-			ModelMetaType.component,
+			ModelMetaType.composite,
 			RecordComponent.class)
 
 		.put (
@@ -585,7 +585,7 @@ class ModelRecordGenerator {
 
 			formatWriter.writeNewline ();
 
-		} else if (modelMeta.type ().component ()) {
+		} else if (modelMeta.type ().composite ()) {
 
 			// TODO this is not nice at all
 

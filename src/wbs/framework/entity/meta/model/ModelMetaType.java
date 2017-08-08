@@ -4,7 +4,7 @@ public
 enum ModelMetaType {
 
 	common,
-	component,
+	composite,
 	ephemeral,
 	event,
 	major,
@@ -13,13 +13,13 @@ enum ModelMetaType {
 	type;
 
 	public
-	boolean component () {
-		return this == component;
+	boolean composite () {
+		return this == composite;
 	}
 
 	public
 	boolean record () {
-		return this != component;
+		return this != composite;
 	}
 
 }

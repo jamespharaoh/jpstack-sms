@@ -12,8 +12,8 @@
 
 	<models>
 		<model name="messageStats"/>
-		<component-type name="messageStatsData"/>
-		<component-type name="messageStatsId"/>
+		<composite name="messageStatsData"/>
+		<composite name="messageStatsId"/>
 	</models>
 
 	<layer name="logic">

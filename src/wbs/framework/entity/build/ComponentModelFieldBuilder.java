@@ -2,6 +2,7 @@ package wbs.framework.entity.build;
 
 import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.TypeUtils.classForNameRequired;
 import static wbs.utils.string.StringUtils.camelToSpaces;
 import static wbs.utils.string.StringUtils.capitalise;
@@ -82,9 +83,9 @@ class ComponentModelFieldBuilder
 				capitalise (
 					spec.typeName ());
 
-			ModelMetaSpec compositeModel =
+			RecordSpec compositeModel =
 				mapItemForKeyRequired (
-					modelMetaLoader.compositeMetas (),
+					modelMetaLoader.compositeSpecs (),
 					spec.typeName ());
 
 			String fullFieldTypeName =
@@ -156,13 +157,13 @@ class ComponentModelFieldBuilder
 				.fieldsByName (
 					modelField.fieldsByName ());
 
-			RecordSpec componentMeta =
-				modelMetaLoader.componentMetas ().get (
+			RecordSpec compositeMeta =
+				modelMetaLoader.compositeSpecs ().get (
 					spec.typeName ());
 
 			if (
 				isNull (
-					componentMeta)
+					compositeMeta)
 			) {
 
 				throw new RuntimeException ();

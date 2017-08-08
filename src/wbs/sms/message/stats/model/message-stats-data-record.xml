@@ -1,6 +1,6 @@
 <record
 	name="messageStatsData"
-	type="component">
+	type="composite">
 
 	<fields>
 

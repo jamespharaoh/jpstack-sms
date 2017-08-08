@@ -169,8 +169,8 @@ class TimestampModelFieldBuilder
 		.build ();
 
 	public final static
-	Map <ColumnType, Optional <String>> sqlTypeByColumnType =
-		ImmutableMap.<ColumnType, Optional <String>> builder ()
+	Map <ColumnType, String> sqlTypeByColumnType =
+		ImmutableMap.<ColumnType, String> builder ()
 
 		.put (
 			ColumnType.postgresql,

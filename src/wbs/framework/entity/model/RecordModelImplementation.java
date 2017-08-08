@@ -361,25 +361,4 @@ class RecordModelImplementation <RecordType extends Record <RecordType>>
 
 	}
 
-	@Override
-	public
-	List <ModelField> identityFields () {
-
-		return iterableFilterToList (
-			fields,
-			ModelField::identity);
-
-	}
-
-	@Override
-	public
-	Set <ModelFieldType> identityFieldTypes () {
-
-		return iterableFilterMapToSet (
-			fields,
-			ModelField::identity,
-			ModelField::type);
-
-	}
-
 }

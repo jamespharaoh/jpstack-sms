@@ -24,7 +24,7 @@ import wbs.framework.entity.meta.cachedview.CachedViewSpec;
 @DataClass ("record")
 @PrototypeComponent ("recordSpec")
 public
-class RecordSpec {
+class RecordSpec
 	implements ModelDataSpec {
 
 	@DataParent

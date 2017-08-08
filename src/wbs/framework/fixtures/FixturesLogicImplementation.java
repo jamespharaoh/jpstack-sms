@@ -24,6 +24,7 @@ import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringIsNotEmpty;
 import static wbs.utils.string.StringUtils.stringSplitColon;
 import static wbs.utils.string.StringUtils.stringSplitFullStop;
+import static wbs.utils.time.TimeUtils.isoTimestampParseRequired;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
+
+import org.joda.time.Instant;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
@@ -183,6 +186,24 @@ class FixturesLogicImplementation
 						resolvedParamsBuilder.put (
 							nameCamel,
 							parseIntegerRequired (
+								valueString));
+
+					}
+
+				} else if (
+					classEqualSafe (
+						propertyType,
+						Instant.class)
+				) {
+
+					if (
+						stringIsNotEmpty (
+							valueString)
+					) {
+
+						resolvedParamsBuilder.put (
+							nameCamel,
+							isoTimestampParseRequired (
 								valueString));
 
 					}

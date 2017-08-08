@@ -216,53 +216,6 @@ class JavaClassWriter
 
 		}
 
-		for (
-			String parameter
-				: parameters
-		) {
-
-			if (
-				stringDoesNotContain (
-					".",
-					parameter)
-			) {
-
-				throw new IllegalArgumentException (
-					stringFormat (
-						"Not a fully qualified class name: %s",
-						parameter));
-
-			}
-
-		}
-
-		if (
-			collectionIsNotEmpty (
-				parameters)
-		) {
-
-			return addImplements (
-				imports ->
-					stringFormat (
-						"%s <%s>",
-						imports.register (
-							interfaceName),
-						joinWithCommaAndSpace (
-							iterableMap (
-								parameters,
-								parameter ->
-									imports.register (
-										parameter)))));
-
-		} else {
-
-			return addImplements (
-				imports ->
-					imports.register (
-						interfaceName));
-
-		}
-
 	}
 
 	public

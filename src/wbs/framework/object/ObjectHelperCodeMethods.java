@@ -147,35 +147,6 @@ interface ObjectHelperCodeMethods <
 
 	default
 	RecordType findByCodeOrThrow (
-			@NonNull Transaction parentTransaction,
-			@NonNull GlobalId parentGlobalId,
-			@NonNull List <String> codes,
-			@NonNull Supplier <? extends RuntimeException> orThrow) {
-
-		Optional <RecordType> recordOptional =
-			findByCode (
-				parentTransaction,
-				parentGlobalId,
-				codes);
-
-		if (
-			optionalIsPresent (
-				recordOptional)
-		) {
-
-			return recordOptional.get ();
-
-		} else {
-
-			throw (RuntimeException)
-				orThrow.get ();
-
-		}
-
-	}
-
-	default
-	RecordType findByCodeOrThrow (
 			Transaction parentTransaction,
 			Record <?> parent,
 			List <String> codes,

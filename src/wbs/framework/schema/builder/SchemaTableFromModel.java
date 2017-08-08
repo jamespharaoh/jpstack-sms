@@ -498,9 +498,13 @@ class SchemaTableFromModel {
 							typeName)
 
 						.nullable (
-							modelField.nullable ()));
+							modelField.nullable ()))
+
+				;
 
 			}
+
+		}
 
 	}
 
