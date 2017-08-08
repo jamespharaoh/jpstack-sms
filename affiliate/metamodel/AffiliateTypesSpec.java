@@ -9,19 +9,19 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("affiliate-types")
 @PrototypeComponent ("affiliateTypesSpec")
-@ModelMetaData
 public
-class AffiliateTypesSpec {
+class AffiliateTypesSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)
-	List<AffiliateTypeSpec> affiliateTypes =
-		new ArrayList<AffiliateTypeSpec> ();
+	List <AffiliateTypeSpec> affiliateTypes =
+		new ArrayList<> ();
 
 }

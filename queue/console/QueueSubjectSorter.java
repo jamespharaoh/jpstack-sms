@@ -116,8 +116,6 @@ class QueueSubjectSorter {
 	UserPrivChecker loggedInUserPrivChecker;
 	UserPrivChecker effectiveUserPrivChecker;
 
-	BorrowedTransaction transaction;
-
 	Set <SubjectInfo> subjectInfos =
 		new HashSet<> ();
 

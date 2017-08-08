@@ -9,19 +9,19 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataChildren;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("service-types")
 @PrototypeComponent ("serviceTypesSpec")
-@ModelMetaData
 public
-class ServiceTypesSpec {
+class ServiceTypesSpec
+	implements ModelDataSpec {
 
 	@DataChildren (
 		direct = true)
-	List<ServiceTypeSpec> serviceTypes =
-		new ArrayList<ServiceTypeSpec> ();
+	List <ServiceTypeSpec> serviceTypes =
+		new ArrayList<> ();
 
 }

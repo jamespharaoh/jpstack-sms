@@ -6,15 +6,15 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("affiliate-type")
 @PrototypeComponent ("affiliateTypeSpec")
-@ModelMetaData
 public
-class AffiliateTypeSpec {
+class AffiliateTypeSpec
+	implements ModelDataSpec {
 
 	@DataAttribute
 	String subject;

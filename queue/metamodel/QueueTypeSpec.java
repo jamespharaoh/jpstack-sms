@@ -6,15 +6,15 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
-import wbs.framework.entity.meta.model.ModelMetaData;
+import wbs.framework.entity.meta.model.ModelDataSpec;
 
 @Accessors (fluent = true)
 @Data
 @DataClass ("queue-type")
 @PrototypeComponent ("queueTypeSpec")
-@ModelMetaData
 public
-class QueueTypeSpec {
+class QueueTypeSpec
+	implements ModelDataSpec {
 
 	@DataAttribute
 	String parent;
