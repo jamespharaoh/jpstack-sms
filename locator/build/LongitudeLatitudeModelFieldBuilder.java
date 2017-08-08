@@ -124,6 +124,11 @@ class LongitudeLatitudeModelFieldBuilder
 						longitudeColumnName,
 						latitudeColumnName))
 
+				.columnSqlTypes (
+					ImmutableList.of (
+						"double precision",
+						"double precision"))
+
 				.hibernateTypeHelper (
 					classForNameRequired (
 						"wbs.sms.locator.hibernate.LongLatType"));
