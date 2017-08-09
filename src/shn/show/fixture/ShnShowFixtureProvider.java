@@ -118,7 +118,7 @@ class ShnShowFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-show-presenters.csv");
+					"local/test-data/shn-show-presenters.csv");
 
 		) {
 
@@ -214,7 +214,7 @@ class ShnShowFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-show-guests.csv");
+					"local/test-data/shn-show-guests.csv");
 
 		) {
 
@@ -310,7 +310,7 @@ class ShnShowFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-show-types.csv");
+					"local/test-data/shn-show-types.csv");
 
 		) {
 

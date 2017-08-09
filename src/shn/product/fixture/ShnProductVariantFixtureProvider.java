@@ -109,7 +109,7 @@ class ShnProductVariantFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-product-variant-types.csv");
+					"local/test-data/shn-product-variant-types.csv");
 
 		) {
 
@@ -170,7 +170,7 @@ class ShnProductVariantFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-product-variant-values.csv");
+					"local/test-data/shn-product-variant-values.csv");
 
 		) {
 

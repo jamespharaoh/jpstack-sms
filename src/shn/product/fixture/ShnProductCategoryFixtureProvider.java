@@ -109,7 +109,7 @@ class ShnProductCategoryFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-product-categories.csv");
+					"local/test-data/shn-product-categories.csv");
 
 		) {
 
@@ -170,7 +170,7 @@ class ShnProductCategoryFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-product-sub-categories.csv");
+					"local/test-data/shn-product-sub-categories.csv");
 
 		) {
 

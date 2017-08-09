@@ -1,5 +1,22 @@
 #!/bin/bash
 
 project_name="shopping-nation-platform"
+project_title="Shopping nation"
+
+default_slice="shn"
+default_timezone="Europe/London"
+
+database_name="shopping-nation-dev"
+
+public_url="http://shop.dev.wbsoft.co"
+dev_url="http://shop.dev.wbsoft.co"
+
+test_user_0="shn.james"
+test_user_1="shn.keith"
+test_user_2="shn.test2"
+test_user_3="shn.test3"
+
+developer_email="developer@shoppingnation.co.uk"
+platform_email="developer@shoppingnation.co.uk"
 
 # ex: noet ts=4 filetype=bash

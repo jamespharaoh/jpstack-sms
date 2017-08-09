@@ -171,7 +171,7 @@ class ShnProductFixtureProvider
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
-					"config/test-data/shn-products.csv");
+					"local/test-data/shn-products.csv");
 
 		) {
 
