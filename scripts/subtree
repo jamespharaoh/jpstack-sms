@@ -28,6 +28,8 @@ case "$1" in
 
 		IFS=: read subtree_owner subtree_name subtree_path <<<"$subtree"
 
+		subtree_repo="git@github.com:$subtree_owner/$subtree_name"
+
 		if test -d "$subtree_path"; then
 			echo "Skipping $subtree_path (already exists)" >&2
 			continue
@@ -39,6 +41,7 @@ case "$1" in
 			--prefix "$subtree_path" \
 			"$subtree_repo" \
 			"master" \
+			--message "Add subtree $subtree_path from $subtree_name (master)" \
 			--squash
 
 	done
@@ -83,7 +86,8 @@ case "$1" in
 			--prefix "$subtree_path" \
 			"$subtree_repo" \
 			"master" \
-			--message "Merge master of $subtree_name"
+			--message "Merge master of $subtree_name" \
+			--squash
 
 	done
 
