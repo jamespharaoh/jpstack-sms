@@ -1,0 +1,13 @@
+<plugin
+	name="modem-poll"
+	package="wbs.sms.modempoll">
+
+	<models>
+		<model name="modemPollQueue"/>
+	</models>
+
+	<console-modules>
+		<console-module name="modem-poll-queue"/>
+	</console-modules>
+
+</plugin>

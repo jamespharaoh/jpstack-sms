@@ -1,7 +1,0 @@
-<console-module
-	name="shopify-event-subject">
-
-	<console-helper-provider
-		object-name="shopifyEventSubject"/>
-
-</console-module>

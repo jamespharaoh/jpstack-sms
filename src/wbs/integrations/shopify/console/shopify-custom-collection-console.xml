@@ -1,7 +1,0 @@
-<console-module
-	name="shopify-custom-collection">
-
-	<console-helper-provider
-		object-name="shopifyCustomCollection"/>
-
-</console-module>

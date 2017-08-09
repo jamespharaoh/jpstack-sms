@@ -1,0 +1,23 @@
+<record
+	name="blacklist"
+	type="common">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<code-field
+			name="number"/>
+
+		<!-- data -->
+
+		<string-field
+			name="reason"/>
+
+	</fields>
+
+</record>
