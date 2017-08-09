@@ -4,6 +4,7 @@ import static wbs.utils.etc.Misc.iterable;
 import static wbs.utils.etc.Misc.lessThan;
 import static wbs.utils.etc.Misc.runFilter;
 import static wbs.utils.etc.Misc.runFilterAdvanced;
+import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.NumberUtils.integerEqualSafe;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThan;
@@ -12,6 +13,7 @@ import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -417,8 +419,7 @@ class RawMediaLogicImplementation
 
 		} else {
 
-			throw new RuntimeException (
-				"LOGIC ERROR");
+			throw shouldNeverHappen ();
 
 		}
 
@@ -469,6 +470,159 @@ class RawMediaLogicImplementation
 				sourceOffsetHorizontal + sourceWidth),
 			toJavaIntegerRequired (
 				sourceOffsetVertical + sourceHeight),
+			null);
+
+		graphics.dispose ();
+
+		return targetImage;
+
+	}
+
+	@Override
+	public
+	BufferedImage padAndResampleImage (
+			@NonNull BufferedImage sourceImage,
+			@NonNull Long targetWidth,
+			@NonNull Long targetHeight,
+			@NonNull Color paddingColour) {
+
+		// same image if already fits
+
+		if (
+
+			integerEqualSafe (
+				sourceImage.getWidth (),
+				targetWidth)
+
+			&& integerEqualSafe (
+				sourceImage.getHeight (),
+				targetHeight)
+
+		) {
+			return sourceImage;
+		}
+
+		// select crop type
+
+		long sourceRatio =
+			sourceImage.getWidth ()
+				* targetHeight;
+
+		long targetRatio =
+			targetWidth
+				* sourceImage.getHeight ();
+
+		long scaleWidth;
+		long scaleHeight;
+
+		if (
+			integerEqualSafe (
+				sourceRatio,
+				targetRatio)
+		) {
+
+			// keep same ratio
+
+			scaleWidth =
+				targetWidth;
+
+			scaleHeight =
+				targetHeight;
+
+		} else if (
+			moreThan (
+				sourceRatio,
+				targetRatio)
+		) {
+
+			// calclate height
+
+			scaleWidth =
+				targetWidth;
+
+			scaleHeight =
+				targetWidth
+					* sourceImage.getHeight ()
+					/ sourceImage.getWidth ();
+
+		} else if (
+			lessThan (
+				sourceRatio,
+				targetRatio)
+		) {
+
+			// calculate width
+
+			scaleWidth =
+				targetWidth
+					* sourceImage.getWidth ()
+					/ sourceImage.getHeight ();
+
+			scaleHeight =
+				targetHeight;
+
+		} else {
+
+			throw shouldNeverHappen ();
+
+		}
+
+		long offsetHorizontal =
+			(targetWidth - scaleWidth) / 2l;
+
+		long offsetVertical =
+			(targetHeight - scaleHeight) / 2l;
+
+		// determine image type
+
+		int imageType =
+			sourceImage.getType ();
+
+		if (imageType == BufferedImage.TYPE_CUSTOM) {
+
+			imageType =
+				BufferedImage.TYPE_INT_RGB;
+
+		}
+
+		// pad and resample image
+
+		BufferedImage targetImage =
+			new BufferedImage (
+				toJavaIntegerRequired (
+					targetWidth),
+				toJavaIntegerRequired (
+					targetHeight),
+				imageType);
+
+		Graphics2D graphics =
+			targetImage.createGraphics ();
+
+		graphics.setColor (
+			paddingColour);
+
+		graphics.fillRect (
+			0,
+			0,
+			toJavaIntegerRequired (
+				targetWidth),
+			toJavaIntegerRequired (
+				targetHeight));
+
+		graphics.drawImage (
+			sourceImage,
+			toJavaIntegerRequired (
+				offsetHorizontal),
+			toJavaIntegerRequired (
+				offsetVertical),
+			toJavaIntegerRequired (
+				offsetHorizontal + targetWidth),
+			toJavaIntegerRequired (
+				offsetVertical + targetHeight),
+			0,
+			0,
+			sourceImage.getWidth (),
+			sourceImage.getHeight (),
 			null);
 
 		graphics.dispose ();

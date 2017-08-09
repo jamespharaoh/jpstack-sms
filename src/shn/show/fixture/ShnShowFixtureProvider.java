@@ -13,11 +13,13 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventFixtureLogic;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -40,6 +42,9 @@ class ShnShowFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	EventFixtureLogic eventFixtureLogic;
@@ -73,25 +78,25 @@ class ShnShowFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createPresenters (
-				transaction);
+				taskLogger);
 
 			createGuests (
-				transaction);
+				taskLogger);
 
 			createShowTypes (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -101,13 +106,14 @@ class ShnShowFixtureProvider
 
 	private
 	void createPresenters (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createPresenters");
 
 			SafeBufferedReader reader =
@@ -188,7 +194,7 @@ class ShnShowFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 
@@ -196,13 +202,14 @@ class ShnShowFixtureProvider
 
 	private
 	void createGuests (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createGuests");
 
 			SafeBufferedReader reader =
@@ -283,7 +290,7 @@ class ShnShowFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 
@@ -291,13 +298,14 @@ class ShnShowFixtureProvider
 
 	private
 	void createShowTypes (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createShowTypes");
 
 			SafeBufferedReader reader =
@@ -372,7 +380,7 @@ class ShnShowFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 

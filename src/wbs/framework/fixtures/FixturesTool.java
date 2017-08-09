@@ -23,8 +23,6 @@ import wbs.framework.component.scaffold.PluginFixtureSpec;
 import wbs.framework.component.scaffold.PluginManager;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.component.tools.BackgroundProcess;
-import wbs.framework.database.Database;
-import wbs.framework.database.OwnedTransaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -36,9 +34,6 @@ class FixturesTool {
 
 	@SingletonDependency
 	List <BackgroundProcess> backgroundProcesses;
-
-	@SingletonDependency
-	Database database;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -170,11 +165,36 @@ class FixturesTool {
 				fixtureProviderProvider.provide (
 					taskLogger);
 
+			runFixtureProviderReal (
+				taskLogger,
+				plugin,
+				fixture,
+				fixtureProvider);
+
+		}
+
+	}
+
+	private
+	void runFixtureProviderReal (
+			@NonNull TaskLogger parentTaskLogger,
+			@NonNull PluginSpec plugin,
+			@NonNull PluginFixtureSpec fixture,
+			@NonNull FixtureProvider fixtureProvider) {
+
+		try (
+
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
+					"runFixtureProviderReal");
+
+		) {
+
 			try {
 
-				runFixtureProviderReal (
-					taskLogger,
-					fixtureProvider);
+				fixtureProvider.createFixtures (
+					taskLogger);
 
 			} catch (Exception exception) {
 
@@ -188,30 +208,6 @@ class FixturesTool {
 					taskLogger);
 
 			}
-
-		}
-
-	}
-
-	private
-	void runFixtureProviderReal (
-			@NonNull TaskLogger parentTaskLogger,
-			@NonNull FixtureProvider fixtureProvider) {
-
-		try (
-
-			OwnedTransaction transaction =
-				database.beginReadWrite (
-					logContext,
-					parentTaskLogger,
-					"runFixtureProviderReal");
-
-		) {
-
-			fixtureProvider.createFixtures (
-				transaction);
-
-			transaction.commit ();
 
 		}
 

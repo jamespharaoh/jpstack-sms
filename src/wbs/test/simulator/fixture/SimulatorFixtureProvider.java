@@ -7,11 +7,12 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
 import wbs.framework.database.Database;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuItemObjectHelper;
@@ -75,22 +76,22 @@ class SimulatorFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createMenuItem (
-				transaction);
+				taskLogger);
 
 			createSimulator (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -98,13 +99,14 @@ class SimulatorFixtureProvider
 
 	private
 	void createMenuItem (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createMenuItem");
 
 		) {
@@ -140,19 +142,22 @@ class SimulatorFixtureProvider
 
 			);
 
+			transaction.commit ();
+
 		}
 
 	}
 
 	private
 	void createSimulator (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createSimulator");
 
 		) {
@@ -288,6 +293,8 @@ class SimulatorFixtureProvider
 						1l))
 
 			);
+
+			transaction.commit ();
 
 		}
 

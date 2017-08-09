@@ -5,6 +5,7 @@ import static wbs.utils.collection.CollectionUtils.listItemAtIndexRequired;
 import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.collection.IterableUtils.iterableMapToList;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
+import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerNotEqualSafe;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalOr;
@@ -13,6 +14,7 @@ import static wbs.utils.string.PlaceholderUtils.placeholderMapCurlyBraces;
 import static wbs.utils.string.StringUtils.objectToString;
 import static wbs.utils.string.StringUtils.pluralise;
 import static wbs.utils.string.StringUtils.stringFormat;
+import static wbs.utils.string.StringUtils.stringIsNotEmpty;
 import static wbs.web.utils.HtmlUtils.htmlEncodeSimpleNewlineToBr;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ class ShnShopifyLogicImplementation
 
 	@Override
 	public
-	String productDescription (
+	String productBodyHtml (
 			@NonNull Transaction parentTransaction,
 			@NonNull ShnShopifyConnectionRec connection,
 			@NonNull ShnProductRec product) {
@@ -61,29 +63,60 @@ class ShnShopifyLogicImplementation
 
 		) {
 
-			return placeholderMapCurlyBraces (
-				connection.getProductDescriptionTemplate ().getText (),
-				ImmutableMap.<String, String> builder ()
+			if (
 
-				.put (
-					"description",
-					ifNotNullThenElse (
-						product.getPublicDescription (),
-						() -> htmlEncodeSimpleNewlineToBr (
-							product.getPublicDescription ().getText ()),
-						() -> ""))
+				isNotNull (
+					product.getPublicContents ())
 
-				.put (
-					"contents",
-					ifNotNullThenElse (
-						product.getPublicContents (),
-						() -> htmlEncodeSimpleNewlineToBr (
-							product.getPublicContents ().getText ()),
-						() -> ""))
+				&& stringIsNotEmpty (
+					product.getPublicContents ().getText ())
 
-				.build ()
+			) {
 
-			);
+				return placeholderMapCurlyBraces (
+					connection.getProductDescriptionAndContentsTemplate ()
+						.getText (),
+					ImmutableMap.<String, String> builder ()
+
+					.put (
+						"description",
+						ifNotNullThenElse (
+							product.getPublicDescription (),
+							() -> htmlEncodeSimpleNewlineToBr (
+								product.getPublicDescription ().getText ()),
+							() -> ""))
+
+					.put (
+						"contents",
+						ifNotNullThenElse (
+							product.getPublicContents (),
+							() -> htmlEncodeSimpleNewlineToBr (
+								product.getPublicContents ().getText ()),
+							() -> ""))
+
+					.build ()
+
+				);
+
+			} else {
+
+				return placeholderMapCurlyBraces (
+					connection.getProductDescriptionTemplate ().getText (),
+					ImmutableMap.<String, String> builder ()
+
+					.put (
+						"description",
+						ifNotNullThenElse (
+							product.getPublicDescription (),
+							() -> htmlEncodeSimpleNewlineToBr (
+								product.getPublicDescription ().getText ()),
+							() -> ""))
+
+					.build ()
+
+				);
+
+			}
 
 		}
 

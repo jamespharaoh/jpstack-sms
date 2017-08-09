@@ -17,12 +17,14 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.fixtures.FixturesLogic;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventFixtureLogic;
 
@@ -40,6 +42,9 @@ class ShnProductVariantFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	EventFixtureLogic eventFixtureLogic;
@@ -67,22 +72,22 @@ class ShnProductVariantFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createProductVariantTypes (
-				transaction);
+				taskLogger);
 
 			createProductVariantValues (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -92,13 +97,14 @@ class ShnProductVariantFixtureProvider
 
 	private
 	void createProductVariantTypes (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createProductVariantTypes");
 
 			SafeBufferedReader reader =
@@ -144,7 +150,7 @@ class ShnProductVariantFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 
@@ -152,13 +158,14 @@ class ShnProductVariantFixtureProvider
 
 	private
 	void createProductVariantValues (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createProductVariantValues");
 
 			SafeBufferedReader reader =
@@ -212,7 +219,7 @@ class ShnProductVariantFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 

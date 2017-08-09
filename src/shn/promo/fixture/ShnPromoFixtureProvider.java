@@ -5,16 +5,21 @@ import static wbs.utils.etc.Misc.doNothing;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 public
 class ShnPromoFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -24,13 +29,14 @@ class ShnPromoFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createFixtures");
 
 		) {

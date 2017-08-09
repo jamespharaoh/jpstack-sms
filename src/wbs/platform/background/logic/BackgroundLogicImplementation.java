@@ -9,6 +9,7 @@ import static wbs.utils.string.StringUtils.hyphenToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringNotEqualSafe;
 import static wbs.utils.string.StringUtils.stringSplitFullStop;
+import static wbs.utils.string.StringUtils.underscoreToSpacesCapitalise;
 
 import java.util.HashMap;
 import java.util.List;
@@ -230,7 +231,9 @@ class BackgroundLogicImplementation
 			;
 
 			transaction.noticeFormat (
-				"Found background process \"%s\" with id %s",
+				"Found background process \"%s - %s\" with id %s",
+					underscoreToSpacesCapitalise (
+						parentType.getCode ()),
 				backgroundProcess.getName (),
 				integerToDecimalString (
 					backgroundProcess.getId ()));

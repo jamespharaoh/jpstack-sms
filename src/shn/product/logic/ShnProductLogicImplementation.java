@@ -1,5 +1,7 @@
 package shn.product.logic;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +14,14 @@ import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
+import wbs.framework.component.annotations.SingletonDependency;
+import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
+
+import wbs.platform.media.logic.MediaLogic;
+import wbs.platform.media.logic.RawMediaLogic;
+import wbs.platform.media.model.MediaRec;
 
 import shn.product.model.ShnProductVariantValueRec;
 
@@ -25,6 +34,12 @@ class ShnProductLogicImplementation
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@SingletonDependency
+	MediaLogic mediaLogic;
+
+	@SingletonDependency
+	RawMediaLogic rawMediaLogic;
 
 	// public implementation
 
@@ -54,6 +69,46 @@ class ShnProductLogicImplementation
 		)));
 
 		return variantValuesSorted;
+
+	}
+
+	@Override
+	public
+	MediaRec normaliseImage (
+			@NonNull Transaction parentTransaction,
+			@NonNull MediaRec originalMedia) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"processImage");
+
+		) {
+
+			BufferedImage originalImage =
+				rawMediaLogic.readImageRequired (
+					transaction,
+					originalMedia.getContent ().getData (),
+					originalMedia.getMediaType ().getMimeType ());
+
+			BufferedImage processedImage =
+				rawMediaLogic.padAndResampleImage (
+					originalImage,
+					1024l,
+					1024l,
+					Color.white);
+
+			return mediaLogic.createMediaFromImageRequired (
+				transaction,
+				rawMediaLogic.writeImage (
+					processedImage,
+					originalMedia.getMediaType ().getMimeType ()),
+				originalMedia.getMediaType ().getMimeType (),
+				originalMedia.getFilename ());
+
+		}
 
 	}
 

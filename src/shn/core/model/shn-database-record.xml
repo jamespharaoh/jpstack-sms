@@ -32,6 +32,12 @@
 			name="timezone"
 			nullable="yes"/>
 
+		<!-- data -->
+
+		<timestamp-field
+			name="imageNormaliseTime"
+			column-type="postgresql"/>
+
 	</fields>
 
 	<priv-types>

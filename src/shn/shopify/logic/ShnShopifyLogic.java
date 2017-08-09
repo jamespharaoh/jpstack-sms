@@ -11,7 +11,7 @@ import shn.shopify.model.ShnShopifyConnectionRec;
 public
 interface ShnShopifyLogic {
 
-	String productDescription (
+	String productBodyHtml (
 			Transaction parentTransaction,
 			ShnShopifyConnectionRec connection,
 			ShnProductRec product);

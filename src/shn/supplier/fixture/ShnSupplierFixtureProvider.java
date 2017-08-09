@@ -13,11 +13,13 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.event.logic.EventFixtureLogic;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -36,6 +38,9 @@ class ShnSupplierFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	EventFixtureLogic eventFixtureLogic;
@@ -63,19 +68,19 @@ class ShnSupplierFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createSuppliers (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -83,14 +88,15 @@ class ShnSupplierFixtureProvider
 
 	private
 	void createSuppliers (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
-					"importTestData");
+					parentTaskLogger,
+					"createSuppliers");
 
 			SafeBufferedReader reader =
 				fileReaderBuffered (
@@ -168,7 +174,7 @@ class ShnSupplierFixtureProvider
 
 			}
 
-			transaction.flush ();
+			transaction.commit ();
 
 		}
 

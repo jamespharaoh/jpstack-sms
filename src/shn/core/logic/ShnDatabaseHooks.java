@@ -29,12 +29,33 @@ class ShnDatabaseHooks
 	@ClassSingletonDependency
 	LogContext logContext;
 
-	/*
-	@WeakSingletonDependency
-	ObjectManager objectManager;
-	*/
-
 	// public implementation
+
+	@Override
+	public
+	void beforeInsert (
+			@NonNull Transaction parentTransaction,
+			@NonNull ShnDatabaseRec database) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"beforeInsert");
+
+		) {
+
+			database
+
+				.setImageNormaliseTime (
+					transaction.now ())
+
+			;
+
+		}
+
+	}
 
 	@Override
 	public

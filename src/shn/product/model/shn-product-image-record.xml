@@ -28,6 +28,12 @@
 			name="originalMedia"
 			type="media"/>
 
+		<!-- data -->
+
+		<reference-field
+			name="normalisedMedia"
+			type="media"/>
+
 		<!-- statistics -->
 
 		<timestamp-field
@@ -36,6 +42,10 @@
 
 		<timestamp-field
 			name="updateTime"
+			column-type="postgresql"/>
+
+		<timestamp-field
+			name="normaliseTime"
 			column-type="postgresql"/>
 
 		<!-- shopify data -->
@@ -59,5 +69,15 @@
 			nullable="yes"/>
 
 	</fields>
+
+	<background-processes>
+
+		<background-process
+			object-type="shn-product-image"
+			name="Normalise"
+			description="Normalise shopping nation product images"
+			frequency="20 seconds"/>
+
+	</background-processes>
 
 </record>

@@ -37,6 +37,10 @@
 		<component class="console.ShnProductVariantObjectFieldsProvider"/>
 	</layer>
 
+	<layer name="daemon">
+		<component class="daemon.ShnProductImageNormaliseObjectDaemon"/>
+	</layer>
+
 	<layer name="logic">
 		<component class="logic.ShnProductLogicImplementation"/>
 	</layer>

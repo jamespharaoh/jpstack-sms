@@ -38,6 +38,11 @@
 			type="text"
 			nullable="yes"/>
 
+		<reference-field
+			name="productDescriptionAndContentsTemplate"
+			type="text"
+			nullable="yes"/>
+
 	</fields>
 
 	<priv-types>

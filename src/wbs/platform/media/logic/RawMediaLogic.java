@@ -2,6 +2,7 @@ package wbs.platform.media.logic;
 
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import com.google.common.base.Optional;
@@ -50,6 +51,12 @@ interface RawMediaLogic {
 			BufferedImage image,
 			Long maxWidth,
 			Long maxHeight);
+
+	BufferedImage padAndResampleImage (
+			BufferedImage image,
+			Long maxWidth,
+			Long maxHeight,
+			Color paddingColour);
 
 	BufferedImage rotateImage90 (
 			BufferedImage image);

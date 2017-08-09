@@ -924,7 +924,7 @@ class ShnShopifyProductSynchronisationHelper
 			"body html",
 			context ->
 				optionalOf (
-					shopifyLogic.productDescription (
+					shopifyLogic.productBodyHtml (
 						context.transaction (),
 						context.connection (),
 						context.local ())),

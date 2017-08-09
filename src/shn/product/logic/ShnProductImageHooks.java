@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.NonNull;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.WeakSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
@@ -28,6 +29,9 @@ class ShnProductImageHooks
 
 	@ClassSingletonDependency
 	LogContext logContext;
+
+	@WeakSingletonDependency
+	ShnProductLogic productLogic;
 
 	// public implementation
 
@@ -79,6 +83,14 @@ class ShnProductImageHooks
 
 				.setIndex (
 					product.getNumImagesNotDeleted ())
+
+				.setNormalisedMedia (
+					productLogic.normaliseImage (
+						transaction,
+						productImage.getOriginalMedia ()))
+
+				.setNormaliseTime (
+					transaction.now ())
 
 			;
 

@@ -12,11 +12,12 @@ import wbs.framework.component.config.WbsConfig;
 import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.data.tools.DataFromXml;
 import wbs.framework.data.tools.DataFromXmlBuilder;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.menu.model.MenuGroupObjectHelper;
 import wbs.platform.menu.model.MenuGroupRec;
@@ -36,6 +37,9 @@ class GazetteerFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	GazetteerEntryObjectHelper gazetteerEntryHelper;
@@ -68,13 +72,14 @@ class GazetteerFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
@@ -193,6 +198,8 @@ class GazetteerFixtureProvider
 				);
 
 			}
+
+			transaction.commit ();
 
 		}
 
