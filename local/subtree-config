@@ -9,6 +9,7 @@ subtrees=(
 	"jamespharaoh:jpstack-message-template:src/wbs/services/messagetemplate"
 	"jamespharaoh:jpstack-platform:src/wbs/platform"
 	"jamespharaoh:jpstack-shopify:src/wbs/integrations/shopify"
+	"jamespharaoh:jpstack-sms:src/wbs/sms"
 	"jamespharaoh:jpstack-ticket:src/wbs/services/ticket"
 	"jamespharaoh:jpstack-utils:src/wbs/utils"
 	"jamespharaoh:jpstack-wallet:src/wbs/services/wallet"
