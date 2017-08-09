@@ -1,0 +1,7 @@
+<console-module
+	name="sms-number-message-stats">
+
+	<console-helper-provider
+		object-name="smsNumberMessageStats"/>
+
+</console-module>

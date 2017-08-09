@@ -145,6 +145,19 @@
 
 	</collections>
 
+	<partitioning>
+
+		<partition-columns>
+			<column name="created_time"/>
+		</partition-columns>
+
+		<unique-index name="other_id">
+			<column name="route_id"/>
+			<column name="other_id"/>
+		</unique-index>
+
+	</partitioning>
+
 	<priv-types>
 
 		<!-- root -->

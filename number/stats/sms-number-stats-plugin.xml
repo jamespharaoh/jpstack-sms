@@ -1,0 +1,18 @@
+<plugin
+	name="sms-number-stats"
+	package="wbs.sms.number.stats">
+
+	<plugin-dependencies>
+		<plugin-dependency name="sms-core"/>
+	</plugin-dependencies>
+
+	<models>
+		<model name="smsNumberMessageStats"/>
+		<composite name="smsNumberMessageStatsId"/>
+	</models>
+
+	<console-modules>
+		<console-module name="sms-number-message-stats"/>
+	</console-modules>
+
+</plugin>

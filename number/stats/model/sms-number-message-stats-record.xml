@@ -1,5 +1,5 @@
 <record
-	name="messageStats"
+	name="smsNumberMessageStats"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- data -->
 
 		<component-field
-			type="messageStatsId"/>
+			type="smsNumberMessageStatsId"/>
 
 		<component-field
 			name="stats"
@@ -26,32 +26,37 @@
 
 			<group-field
 				name="date"
-				field="messageStatsId.date"
+				field="smsNumberMessageStatsId.date"
 				source="date"/>
 
 			<group-field
+				name="number"
+				field="smsNumberMessageStatsId.number"
+				source="number"/>
+
+			<group-field
 				name="service"
-				field="messageStatsId.service"
+				field="smsNumberMessageStatsId.service"
 				source="service"/>
 
 			<group-field
 				name="route"
-				field="messageStatsId.route"
+				field="smsNumberMessageStatsId.route"
 				source="route"/>
 
 			<group-field
 				name="affiliate"
-				field="messageStatsId.affiliate"
+				field="smsNumberMessageStatsId.affiliate"
 				source="affiliate"/>
 
 			<group-field
 				name="batch"
-				field="messageStatsId.batch"
+				field="smsNumberMessageStatsId.batch"
 				source="batch"/>
 
 			<group-field
 				name="network"
-				field="messageStatsId.network"
+				field="smsNumberMessageStatsId.network"
 				source="network"/>
 
 		</group-fields>

@@ -73,27 +73,6 @@ CREATE OR REPLACE FUNCTION message_after_insert ()
 RETURNS trigger AS $$
 BEGIN
 
-	INSERT INTO message_stats_queue (
-		service_id,
-		route_id,
-		affiliate_id,
-		batch_id,
-		network_id,
-		date,
-		direction,
-		status,
-		diff)
-	VALUES (
-		NEW.service_id,
-		NEW.route_id,
-		NEW.affiliate_id,
-		NEW.batch_id,
-		NEW.network_id,
-		NEW.date,
-		NEW.direction,
-		NEW.status,
-		1);
-
 	INSERT INTO message_ids VALUES (NEW.id, -1);
 
 	IF NEW.other_id IS NOT NULL THEN
@@ -119,60 +98,6 @@ $$ LANGUAGE 'plpgsql';
 CREATE OR REPLACE FUNCTION message_after_update ()
 RETURNS trigger AS $$
 BEGIN
-
-	IF OLD.service_id != NEW.service_id
-		OR OLD.route_id != NEW.route_id
-		OR OLD.affiliate_id != NEW.affiliate_id
-		OR OLD.batch_id != NEW.batch_id
-		OR OLD.network_id != NEW.network_id
-		OR OLD.date != NEW.date
-		OR OLD.direction != NEW.direction
-		OR OLD.status != NEW.status
-	THEN
-
-		INSERT INTO message_stats_queue (
-			service_id,
-			route_id,
-			affiliate_id,
-			batch_id,
-			network_id,
-			date,
-			direction,
-			status,
-			diff)
-		VALUES (
-			OLD.service_id,
-			OLD.route_id,
-			OLD.affiliate_id,
-			OLD.batch_id,
-			OLD.network_id,
-			OLD.date,
-			OLD.direction,
-			OLD.status,
-			-1);
-
-		INSERT INTO message_stats_queue (
-			service_id,
-			route_id,
-			affiliate_id,
-			batch_id,
-			network_id,
-			date,
-			direction,
-			status,
-			diff)
-		VALUES (
-			NEW.service_id,
-			NEW.route_id,
-			NEW.affiliate_id,
-			NEW.batch_id,
-			NEW.network_id,
-			NEW.date,
-			NEW.direction,
-			NEW.status,
-			1);
-
-	END IF;
 
 	IF
 		OLD.status != NEW.status

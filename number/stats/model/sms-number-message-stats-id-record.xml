@@ -1,0 +1,30 @@
+<record
+	name="smsNumberMessageStatsId"
+	type="composite">
+
+	<fields>
+
+		<date-field
+			name="date"/>
+
+		<reference-field
+			type="number"/>
+
+		<reference-field
+			type="service"/>
+
+		<reference-field
+			type="route"/>
+
+		<reference-field
+			type="affiliate"/>
+
+		<reference-field
+			type="batch"/>
+
+		<reference-field
+			type="network"/>
+
+	</fields>
+
+</record>
