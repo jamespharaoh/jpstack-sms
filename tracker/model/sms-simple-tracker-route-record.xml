@@ -1,0 +1,21 @@
+<record
+	name="smsSimpleTrackerRoute"
+	type="ephemeral">
+
+	<fields>
+
+		<!-- id -->
+
+		<generated-id-field/>
+
+		<!-- identity -->
+
+		<parent-field
+			type="smsSimpleTracker"/>
+
+		<identity-reference-field
+			type="route"/>
+
+	</fields>
+
+</record>

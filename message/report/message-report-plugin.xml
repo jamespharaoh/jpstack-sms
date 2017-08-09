@@ -1,0 +1,17 @@
+<plugin
+	name="message-report"
+	package="wbs.sms.message.report">
+
+	<models>
+		<model name="messageReport"/>
+	</models>
+
+	<layer name="logic">
+		<component class="logic.SmsDeliveryReportLogicImplementation"/>
+	</layer>
+
+	<console-modules>
+		<console-module name="message-report"/>
+	</console-modules>
+
+</plugin>
