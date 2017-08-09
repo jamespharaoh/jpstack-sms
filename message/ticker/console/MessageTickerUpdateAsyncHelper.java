@@ -20,6 +20,8 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
+import org.joda.time.DateTimeZone;
+
 import wbs.console.async.ConsoleAsyncConnectionHandle;
 import wbs.console.priv.UserPrivChecker;
 
@@ -52,6 +54,9 @@ class MessageTickerUpdateAsyncHelper
 
 	// singleton dependencies
 
+	@SingletonDependency
+	DefaultTimeFormatter defaultTimeFormatter;
+
 	@ClassSingletonDependency
 	LogContext logContext;
 
@@ -66,9 +71,6 @@ class MessageTickerUpdateAsyncHelper
 
 	@SingletonDependency
 	MessageTickerManager messageTickerManager;
-
-	@SingletonDependency
-	DefaultTimeFormatter timeFormatter;
 
 	@SingletonDependency
 	WbsConfig wbsConfig;
@@ -377,8 +379,8 @@ class MessageTickerUpdateAsyncHelper
 
 			messageObject.addProperty (
 				"timestamp",
-				timeFormatter.timeString (
-					timeFormatter.timezoneParseRequired (
+				defaultTimeFormatter.timeString (
+					DateTimeZone.forID (
 						ifNull (
 							user.getDefaultTimezone (),
 							user.getSlice ().getDefaultTimezone (),

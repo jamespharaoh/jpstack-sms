@@ -24,10 +24,9 @@ import wbs.sms.message.core.model.MessageObjectHelper;
 import wbs.sms.message.core.model.MessageRec;
 import wbs.sms.message.core.model.MessageSearch;
 import wbs.sms.message.core.model.MessageSearch.MessageSearchOrder;
+import wbs.sms.message.core.model.MessageStatus;
 
 import wbs.utils.time.interval.TextualInterval;
-
-import wbs.sms.message.core.model.MessageStatus;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("messageSourceImpl")

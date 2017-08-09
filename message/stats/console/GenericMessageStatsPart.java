@@ -5,6 +5,7 @@ import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
+import static wbs.utils.time.TimeUtils.isoDateString;
 import static wbs.web.utils.HtmlAttributeUtils.htmlClassAttribute;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphClose;
 import static wbs.web.utils.HtmlBlockUtils.htmlParagraphOpen;
@@ -46,7 +47,6 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
 import wbs.utils.string.FormatWriter;
-import wbs.utils.time.core.DefaultTimeFormatter;
 
 import wbs.web.misc.UrlParams;
 
@@ -75,9 +75,6 @@ class GenericMessageStatsPart
 
 	@SingletonDependency
 	SmsStatsConsoleLogic statsConsoleLogic;
-
-	@SingletonDependency
-	DefaultTimeFormatter timeFormatter;
 
 	// prototype dependencies
 
@@ -481,7 +478,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.minusWeeks (1)));
 
 				htmlLinkWrite (
@@ -491,7 +488,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.plusWeeks (1)));
 
 				htmlLinkWrite (
@@ -509,7 +506,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.minusDays (49)));
 
 				htmlLinkWrite (
@@ -519,7 +516,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.plusDays (49)));
 
 				htmlLinkWrite (
@@ -537,7 +534,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.minusMonths (6)));
 
 				htmlLinkWrite (
@@ -547,7 +544,7 @@ class GenericMessageStatsPart
 
 				myUrlParams.set (
 					"date",
-					timeFormatter.dateStringShort (
+					isoDateString (
 						dateField.date.plusMonths (6)));
 
 				htmlLinkWrite (
