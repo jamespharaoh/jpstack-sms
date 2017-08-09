@@ -6,11 +6,12 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.group.model.GroupObjectHelper;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -23,6 +24,9 @@ class GroupFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	GroupObjectHelper groupHelper;
@@ -47,13 +51,14 @@ class GroupFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
@@ -121,6 +126,8 @@ class GroupFixtureProvider
 				);
 
 			}
+
+			transaction.commit ();
 
 		}
 

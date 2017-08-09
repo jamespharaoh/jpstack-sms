@@ -14,13 +14,15 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.database.Database;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.fixtures.FixturesLogic;
 import wbs.framework.fixtures.TestAccounts;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.deployment.model.ConsoleDeploymentObjectHelper;
 import wbs.platform.event.logic.EventFixtureLogic;
@@ -37,6 +39,9 @@ class DeploymentFixtureProvider
 
 	@SingletonDependency
 	ConsoleDeploymentObjectHelper consoleDeploymentHelper;
+
+	@SingletonDependency
+	Database database;
 
 	@SingletonDependency
 	EventFixtureLogic eventFixtureLogic;
@@ -67,22 +72,22 @@ class DeploymentFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createMenuItems (
-				transaction);
+				taskLogger);
 
 			createConsoleDeployments (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -90,13 +95,14 @@ class DeploymentFixtureProvider
 
 	private
 	void createMenuItems (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createMenuItems");
 
 		) {
@@ -132,19 +138,22 @@ class DeploymentFixtureProvider
 
 			);
 
+			transaction.commit ();
+
 		}
 
 	}
 
 	private
 	void createConsoleDeployments (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createConsoleDeployments");
 
 		) {
@@ -181,6 +190,8 @@ class DeploymentFixtureProvider
 					emptySet ());
 
 			});
+
+			transaction.commit ();
 
 		}
 

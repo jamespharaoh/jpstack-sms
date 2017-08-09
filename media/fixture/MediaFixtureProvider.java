@@ -6,11 +6,15 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
+import wbs.framework.database.Database;
 import wbs.framework.database.NestedTransaction;
+import wbs.framework.database.OwnedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.GlobalId;
 import wbs.framework.fixtures.FixtureProvider;
 import wbs.framework.logging.LogContext;
+import wbs.framework.logging.OwnedTaskLogger;
+import wbs.framework.logging.TaskLogger;
 
 import wbs.platform.media.model.MediaTypeObjectHelper;
 import wbs.platform.menu.model.MenuGroupObjectHelper;
@@ -22,6 +26,9 @@ class MediaFixtureProvider
 	implements FixtureProvider {
 
 	// singleton dependencies
+
+	@SingletonDependency
+	Database database;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -43,28 +50,28 @@ class MediaFixtureProvider
 	@Override
 	public
 	void createFixtures (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
+			OwnedTaskLogger taskLogger =
+				logContext.nestTaskLogger (
+					parentTaskLogger,
 					"createFixtures");
 
 		) {
 
 			createMenuItems (
-				transaction);
+				taskLogger);
 
 			createTextMediaTypes (
-				transaction);
+				taskLogger);
 
 			createImageMediaTypes (
-				transaction);
+				taskLogger);
 
 			createVideoMediaTypes (
-				transaction);
+				taskLogger);
 
 		}
 
@@ -74,13 +81,14 @@ class MediaFixtureProvider
 
 	private
 	void createMenuItems (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createMenuItems");
 
 		) {
@@ -116,19 +124,22 @@ class MediaFixtureProvider
 
 			);
 
+			transaction.commit ();
+
 		}
 
 	}
 
 	private
 	void createTextMediaTypes (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createTextMediaTypes");
 
 		) {
@@ -139,19 +150,22 @@ class MediaFixtureProvider
 				"Plain text",
 				"txt");
 
+			transaction.commit ();
+
 		}
 
 	}
 
 	private
 	void createImageMediaTypes (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createImageMediaTypes");
 
 		) {
@@ -180,19 +194,22 @@ class MediaFixtureProvider
 				"MPEG-4 image",
 				"mp4");
 
+			transaction.commit ();
+
 		}
 
 	}
 
 	private
 	void createVideoMediaTypes (
-			@NonNull Transaction parentTransaction) {
+			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
 
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
+			OwnedTransaction transaction =
+				database.beginReadWrite (
 					logContext,
+					parentTaskLogger,
 					"createVideoMediaTypes");
 
 		) {
