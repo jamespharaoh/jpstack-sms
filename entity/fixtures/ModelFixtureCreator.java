@@ -130,7 +130,7 @@ class ModelFixtureCreator {
 
 			for (
 				RecordSpec spec
-					: modelMetaLoader.modelMetas ().values ()
+					: modelMetaLoader.allSpecs ().values ()
 			) {
 
 				Model <?> model =

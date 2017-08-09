@@ -21,7 +21,7 @@ import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.entity.build.ModelBuilderManager;
 import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -50,7 +50,7 @@ class CompositeModelBuilder <DataType> {
 	// properties
 
 	@Getter @Setter
-	ModelMetaSpec modelMeta;
+	RecordSpec modelMeta;
 
 	// state
 

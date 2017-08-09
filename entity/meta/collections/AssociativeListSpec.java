@@ -8,7 +8,6 @@ import wbs.framework.data.annotations.DataAncestor;
 import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.entity.meta.model.ModelCollectionSpec;
-import wbs.framework.entity.meta.model.ModelMetaData;
 import wbs.framework.entity.meta.model.RecordSpec;
 
 @Accessors (fluent = true)

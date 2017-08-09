@@ -81,6 +81,12 @@ class ObjectModelImplementation <RecordType extends Record <RecordType>>
 
 	@Override
 	public
+	ModelField activeField () {
+		return model.activeField ();
+	}
+
+	@Override
+	public
 	ModelField codeField () {
 		return model.codeField ();
 	}

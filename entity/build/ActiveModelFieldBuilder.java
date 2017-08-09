@@ -1,5 +1,6 @@
 package wbs.framework.entity.build;
 
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.camelToSpaces;
 import static wbs.utils.string.StringUtils.camelToUnderscore;
@@ -107,6 +108,10 @@ class ActiveModelFieldBuilder
 							spec.columnName (),
 							camelToUnderscore (
 								fieldName))))
+
+				.columnSqlTypes (
+					singletonList (
+						"boolean"))
 
 			;
 

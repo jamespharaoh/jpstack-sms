@@ -24,6 +24,7 @@ interface ModelMethods <DataType> {
 
 	// fields
 
+	ModelField activeField ();
 	ModelField codeField ();
 	ModelField deletedField ();
 	ModelField descriptionField ();

@@ -65,13 +65,13 @@ class ModelMetaLoader {
 	// properties
 
 	@Getter
-	Map <String, ModelMetaSpec> allModelMetas;
+	Map <String, RecordSpec> allSpecs;
 
 	@Getter
-	Map <String, ModelMetaSpec> recordModelMetas;
+	Map <String, RecordSpec> recordSpecs;
 
 	@Getter
-	Map <String, ModelMetaSpec> compositeMetas;
+	Map <String, RecordSpec> compositeSpecs;
 
 	// state
 
@@ -148,13 +148,13 @@ class ModelMetaLoader {
 
 		) {
 
-			ImmutableMap.Builder <String, ModelMetaSpec> allBuilder =
+			ImmutableMap.Builder <String, RecordSpec> allBuilder =
 				ImmutableMap.builder ();
 
-			ImmutableMap.Builder <String, ModelMetaSpec> recordBuilder =
+			ImmutableMap.Builder <String, RecordSpec> recordBuilder =
 				ImmutableMap.builder ();
 
-			ImmutableMap.Builder <String, ModelMetaSpec> compositeBuilder =
+			ImmutableMap.Builder <String, RecordSpec> compositeBuilder =
 				ImmutableMap.builder ();
 
 			pluginManager.plugins ().forEach (
@@ -174,7 +174,7 @@ class ModelMetaLoader {
 							pluginSpec.models ().compositeTypes ())
 				) {
 
-					Optional <ModelMetaSpec> modelMetaOptional =
+					Optional <RecordSpec> modelMetaOptional =
 						loadModelMeta (
 							taskLogger,
 							pluginSpec,
@@ -187,7 +187,7 @@ class ModelMetaLoader {
 						continue;
 					}
 
-					ModelMetaSpec modelMeta =
+					RecordSpec modelMeta =
 						optionalGetRequired (
 							modelMetaOptional);
 
@@ -201,7 +201,7 @@ class ModelMetaLoader {
 							modelMeta.name (),
 							modelMeta);
 
-					} else if (modelMeta.type.component ()) {
+					} else if (modelMeta.type.composite ()) {
 
 						compositeBuilder.put (
 							modelMeta.name (),
@@ -227,13 +227,13 @@ class ModelMetaLoader {
 
 			}
 
-			allModelMetas =
+			allSpecs =
 				allBuilder.build ();
 
-			recordModelMetas =
+			recordSpecs =
 				recordBuilder.build ();
 
-			compositeMetas =
+			compositeSpecs =
 				compositeBuilder.build ();
 
 		}
@@ -241,7 +241,7 @@ class ModelMetaLoader {
 	}
 
 	private
-	Optional <ModelMetaSpec> loadModelMeta (
+	Optional <RecordSpec> loadModelMeta (
 			@NonNull TaskLogger parentTaskLogger,
 			@NonNull PluginSpec plugin,
 			@NonNull String modelName) {

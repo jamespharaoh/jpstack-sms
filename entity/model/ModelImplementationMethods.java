@@ -7,6 +7,9 @@ interface ModelImplementationMethods <
 >
 	extends Model <DataType> {
 
+	ConcreteImplementation activeField (
+			ModelField activeField);
+
 	ConcreteImplementation codeField (
 			ModelField codeField);
 

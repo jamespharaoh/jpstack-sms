@@ -82,6 +82,12 @@ class CompositeModelImplementation <DataType>
 
 	@Override
 	public
+	ModelField activeField () {
+		throw new UnsupportedOperationException ();
+	}
+
+	@Override
+	public
 	ModelField codeField () {
 		throw new UnsupportedOperationException ();
 	}
@@ -275,6 +281,15 @@ class CompositeModelImplementation <DataType>
 	public
 	CompositeModelImplementation <DataType> idField (
 			@NonNull ModelField idField) {
+
+		throw new UnsupportedOperationException ();
+
+	}
+
+	@Override
+	public
+	CompositeModelImplementation <DataType> activeField (
+			@NonNull ModelField activeField) {
 
 		throw new UnsupportedOperationException ();
 

@@ -162,7 +162,7 @@ class EntityHelperImplementation
 
 			for (
 				RecordSpec modelMeta
-					: modelMetaLoader.modelMetas ().values ()
+					: modelMetaLoader.allSpecs ().values ()
 			) {
 
 				PluginSpec plugin =
@@ -182,7 +182,7 @@ class EntityHelperImplementation
 					recordClassNamesBuilder.add (
 						modelClassName);
 
-				} else if (modelMeta.type ().component ()) {
+				} else if (modelMeta.type ().composite ()) {
 
 					modelClassName =
 						stringFormat (
@@ -349,7 +349,7 @@ class EntityHelperImplementation
 
 			for (
 				RecordSpec modelMeta
-					: modelMetaLoader.modelMetas ().values ()
+					: modelMetaLoader.allSpecs ().values ()
 			) {
 
 				Model <?> model;
@@ -366,7 +366,7 @@ class EntityHelperImplementation
 						.build (
 							taskLogger);
 
-				} else if (modelMeta.type ().component ()) {
+				} else if (modelMeta.type ().composite ()) {
 
 					model =
 						compositeModelBuilderProvider.provide (
@@ -400,7 +400,7 @@ class EntityHelperImplementation
 					recordModelsBuilder.add (
 						model);
 
-				} else if (modelMeta.type ().component ()) {
+				} else if (modelMeta.type ().composite ()) {
 
 					compositeModelsBuilder.add (
 						model);

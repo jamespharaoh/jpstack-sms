@@ -270,7 +270,7 @@ interface TaskLoggerDefault
 
 	@Override
 	default
-	BorrowedTaskLogger borrow () {
+	BorrowedTaskLogger borrowTaskLogger () {
 
 		return new BorrowedTaskLogger (
 			this.realTaskLogger ());

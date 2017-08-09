@@ -162,7 +162,7 @@ class RealTaskLoggerImplementation
 				optionalMapRequiredOrDefault (
 					ParentTaskLogger::debugEnabled,
 					parentOptional,
-					true);
+					false);
 
 		}
 

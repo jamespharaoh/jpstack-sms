@@ -113,7 +113,7 @@ class BorrowedTransaction
 	public
 	ParentTaskLogger parentTaskLogger () {
 
-		return ownedTransaction.taskLoggerImplementation ();
+		return ownedTransaction.realTaskLogger ();
 
 	}
 
