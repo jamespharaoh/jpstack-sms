@@ -11,6 +11,9 @@ database_name="shopping-nation-dev"
 public_url="http://shop.dev.wbsoft.co"
 dev_url="http://shop.dev.wbsoft.co"
 
+dev_hostname="shop.dev.wbsoft.co"
+vpn_hostname="${HOSTNAME}.vpn.wellbehavedsoftware.com"
+
 test_user_0="shn.james"
 test_user_1="shn.keith"
 test_user_2="shn.test2"
