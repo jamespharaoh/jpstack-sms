@@ -1,5 +1,5 @@
 <record
-	name="smsSimpleTracker"
+	name="sms-simple-tracker"
 	type="major">
 
 	<fields>
@@ -20,27 +20,27 @@
 		<description-field/>
 
 		<reference-field
-			name="defaultSmsTracker"
-			type="smsTracker"/>
+			name="default-sms-tracker"
+			type="sms-tracker"/>
 
 		<integer-field
-			name="failureTotalSecsMin"/>
+			name="failure-total-secs-min"/>
 
 		<integer-field
-			name="failureCountMin"/>
+			name="failure-count-min"/>
 
 		<integer-field
-			name="failureSingleSecsMin"/>
+			name="failure-single-secs-min"/>
 
 		<integer-field
-			name="sinceScanSecsMax"/>
+			name="since-scan-secs-max"/>
 
 	</fields>
 
 	<collections>
 
 		<children-collection
-			type="smsSimpleTrackerRoute"/>
+			type="sms-simple-tracker-route"/>
 
 	</collections>
 

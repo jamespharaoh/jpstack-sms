@@ -1,0 +1,13 @@
+<event-types>
+
+	<event-type
+		name="SMS outbox cancelled"
+		text="%0 cancelled %1"
+		admin="no"/>
+
+	<event-type
+		name="SMS outbox retried"
+		text="%0 retried %1"
+		admin="no"/>
+
+</event-types>

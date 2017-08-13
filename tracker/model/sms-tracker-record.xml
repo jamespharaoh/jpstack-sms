@@ -1,5 +1,5 @@
 <record
-	name="smsTracker"
+	name="sms-tracker"
 	type="minor">
 
 	<fields>

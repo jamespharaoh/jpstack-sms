@@ -439,7 +439,7 @@ class ObjectSmsMessagesPageBuilder <
 
 			.title (
 				capitalise (
-					consoleHelper.friendlyName () + " messages"))
+					consoleHelper.friendlyNameSingular () + " messages"))
 
 			.pagePartFactory (
 				partFactory)
@@ -460,7 +460,7 @@ class ObjectSmsMessagesPageBuilder <
 				objectSmsMessagesPageSpec.privKey (),
 				stringFormat (
 					"%s.messages",
-					consoleHelper.objectName ()));
+					consoleHelper.objectTypeCamel ()));
 
 		tabName =
 			ifNull (

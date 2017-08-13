@@ -1,5 +1,5 @@
 <record
-	name="wapPushMessage"
+	name="wap-push-message"
 	type="minor">
 
 	<fields>
@@ -17,11 +17,11 @@
 		<!-- data -->
 
 		<reference-field
-			name="textText"
+			name="text-text"
 			type="text"/>
 
 		<reference-field
-			name="urlText"
+			name="url-text"
 			type="text"/>
 
 	</fields>

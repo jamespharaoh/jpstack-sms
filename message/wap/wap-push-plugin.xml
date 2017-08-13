@@ -3,7 +3,7 @@
 	package="wbs.sms.message.wap">
 
 	<models>
-		<model name="wapPushMessage"/>
+		<model name="wap-push-message"/>
 	</models>
 
 	<layer name="logic">

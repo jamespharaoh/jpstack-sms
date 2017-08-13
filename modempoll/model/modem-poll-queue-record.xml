@@ -1,5 +1,5 @@
 <record
-	name="modemPollQueue"
+	name="modem-poll-queue"
 	type="ephemeral">
 
 	<fields>
@@ -14,7 +14,7 @@
 			name="pdu"/>
 
 		<timestamp-field
-			name="createdTime"
+			name="created-time"
 			column-type="postgresql"/>
 
 		<!-- statistics -->
@@ -26,7 +26,7 @@
 		<!-- state -->
 
 		<timestamp-field
-			name="retryTime"
+			name="retry-time"
 			column-type="postgresql"/>
 
 		<string-field

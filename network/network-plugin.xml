@@ -12,7 +12,7 @@
 
 	<models>
 		<model name="network"/>
-		<model name="networkPrefix"/>
+		<model name="network-prefix"/>
 	</models>
 
 	<layer name="logic">

@@ -8,7 +8,7 @@
 
 	<models>
 		<model name="gazetteer"/>
-		<model name="gazetteerEntry"/>
+		<model name="gazetteer-entry"/>
 	</models>
 
 	<fixtures>

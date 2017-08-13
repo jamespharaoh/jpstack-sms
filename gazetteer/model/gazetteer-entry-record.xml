@@ -1,5 +1,5 @@
 <record
-	name="gazetteerEntry"
+	name="gazetteer-entry"
 	type="common">
 
 	<fields>
@@ -26,7 +26,7 @@
 		<!-- settings -->
 
 		<longitude-latitude-field
-			name="longLat"/>
+			name="long-lat"/>
 
 		<yes-no-field
 			name="canonical"/>

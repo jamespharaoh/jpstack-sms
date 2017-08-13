@@ -1,5 +1,5 @@
 <record
-	name="magicNumberUse"
+	name="magic-number-use"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="magicNumber"/>
+			type="magic-number"/>
 
 		<identity-reference-field
 			type="number"/>
@@ -22,10 +22,10 @@
 			type="command"/>
 
 		<integer-field
-			name="refId"/>
+			name="ref-id"/>
 
 		<timestamp-field
-			name="lastUseTimestamp"
+			name="last-use-timestamp"
 			column-type="postgresql"/>
 
 	</fields>

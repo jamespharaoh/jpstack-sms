@@ -13,11 +13,11 @@
 	</sql-scripts>
 
 	<models>
-		<custom-type name="messageDirection"/>
-		<custom-type name="messageStatus"/>
+		<custom-type name="message-direction"/>
+		<custom-type name="message-status"/>
 		<model name="message"/>
-		<model name="messageExpiry"/>
-		<model name="messageType"/>
+		<model name="message-expiry"/>
+		<model name="message-type"/>
 	</models>
 
 	<layer name="logic">

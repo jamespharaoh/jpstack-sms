@@ -8,11 +8,11 @@
 	</sql-scripts>
 
 	<models>
-		<model name="smsSimpleTracker"/>
-		<model name="smsSimpleTrackerNumber"/>
-		<model name="smsSimpleTrackerRoute"/>
-		<model name="smsTracker"/>
-		<model name="smsTrackerType"/>
+		<model name="sms-simple-tracker"/>
+		<model name="sms-simple-tracker-number"/>
+		<model name="sms-simple-tracker-route"/>
+		<model name="sms-tracker"/>
+		<model name="sms-tracker-type"/>
 	</models>
 
 	<layer name="logic">

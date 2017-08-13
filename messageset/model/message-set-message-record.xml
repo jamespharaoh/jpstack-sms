@@ -1,5 +1,5 @@
 <record
-	name="messageSetMessage"
+	name="message-set-message"
 	type="ephemeral">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="messageSet"
+			type="message-set"
 			cacheable="yes"/>
 
 		<index-field/>

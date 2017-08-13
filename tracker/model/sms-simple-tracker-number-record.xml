@@ -1,5 +1,5 @@
 <record
-	name="smsSimpleTrackerNumber"
+	name="sms-simple-tracker-number"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="smsSimpleTracker"/>
+			type="sms-simple-tracker"/>
 
 		<identity-reference-field
 			type="number"/>
@@ -19,7 +19,7 @@
 		<!-- data -->
 
 		<timestamp-field
-			name="lastScan"
+			name="last-scan"
 			column-type="postgresql"
 			nullable="yes"/>
 

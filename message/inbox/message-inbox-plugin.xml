@@ -7,11 +7,14 @@
 	</sql-scripts>
 
 	<models>
-		<enum-type name="inboxState"/>
+
+		<enum-type name="inbox-state"/>
+
 		<model name="inbox"/>
-		<model name="inboxAttempt"/>
-		<model name="inboxMultipartBuffer"/>
-		<model name="inboxMultipartLog"/>
+		<model name="inbox-attempt"/>
+		<model name="inbox-multipart-buffer"/>
+		<model name="inbox-multipart-log"/>
+
 	</models>
 
 	<layer name="logic">

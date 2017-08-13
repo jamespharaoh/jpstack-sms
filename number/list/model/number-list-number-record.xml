@@ -1,5 +1,5 @@
 <record
-	name="numberListNumber"
+	name="number-list-number"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="numberList"/>
+			type="number-list"/>
 
 		<identity-reference-field
 			type="number"/>

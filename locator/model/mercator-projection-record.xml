@@ -1,5 +1,5 @@
 <record
-	name="mercatorProjection"
+	name="mercator-projection"
 	type="major">
 
 	<record-interfaces>
@@ -27,22 +27,22 @@
 		<!-- data -->
 
 		<reference-field
-			type="biaxialEllipsoid"/>
+			type="biaxial-ellipsoid"/>
 
 		<floating-point-field
-			name="scaleFactor"/>
+			name="scale-factor"/>
 
 		<floating-point-field
-			name="originLongitude"/>
+			name="origin-longitude"/>
 
 		<floating-point-field
-			name="originLatitude"/>
+			name="origin-latitude"/>
 
 		<floating-point-field
-			name="originEasting"/>
+			name="origin-easting"/>
 
 		<floating-point-field
-			name="originNorthing"/>
+			name="origin-northing"/>
 
 	</fields>
 

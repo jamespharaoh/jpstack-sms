@@ -1,5 +1,5 @@
 <record
-	name="smsCustomer"
+	name="sms-customer"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="smsCustomerManager"/>
+			type="sms-customer-manager"/>
 
 		<code-field/>
 
@@ -21,38 +21,38 @@
 			type="number"/>
 
 		<timestamp-field
-			name="createdTime"
+			name="created-time"
 			column-type="iso"/>
 
 		<timestamp-field
-			name="lastActionTime"
+			name="last-action-time"
 			column-type="iso"
 			nullable="yes"/>
 
 		<reference-field
-			name="activeSession"
-			type="smsCustomerSession"
+			name="active-session"
+			type="sms-customer-session"
 			nullable="yes"/>
 
 		<!-- settings -->
 
 		<date-field
-			name="dateOfBirth"
+			name="date-of-birth"
 			nullable="yes"/>
 
 		<reference-field
-			name="notesText"
+			name="notes-text"
 			type="text"
 			nullable="yes"/>
 
 		<reference-field
-			type="smsCustomerAffiliate"
+			type="sms-customer-affiliate"
 			nullable="yes"/>
 
 		<!-- statistics -->
 
 		<integer-field
-			name="numSessions"
+			name="num-sessions"
 			default="0"/>
 
 	</fields>
@@ -66,19 +66,5 @@
 			frequency="10 seconds"/>
 
 	</background-processes>
-
-	<event-types>
-
-		<event-type
-			name="Sms customer affiliate update message"
-			text="Affiliate for %0 set to %1 due to %2"
-			admin="no"/>
-
-		<event-type
-			name="Sms customer session end manually"
-			text="%0 ended session for %1, giving reason %2"
-			admin="no"/>
-
-	</event-types>
 
 </record>

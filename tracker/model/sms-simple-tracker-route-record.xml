@@ -1,5 +1,5 @@
 <record
-	name="smsSimpleTrackerRoute"
+	name="sms-simple-tracker-route"
 	type="ephemeral">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="smsSimpleTracker"/>
+			type="sms-simple-tracker"/>
 
 		<identity-reference-field
 			type="route"/>

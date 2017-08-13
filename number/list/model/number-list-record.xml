@@ -1,5 +1,5 @@
 <record
-	name="numberList"
+	name="number-list"
 	type="major">
 
 	<fields>
@@ -26,12 +26,12 @@
 		<!-- settings -->
 
 		<reference-field
-			type="numberFormat"/>
+			type="number-format"/>
 
 		<!-- statistics -->
 
 		<integer-field
-			name="numberCount"
+			name="number-count"
 			default="0"/>
 
 	</fields>
@@ -72,20 +72,6 @@
 			template="yes"/>
 
 	</priv-types>
-
-	<event-types>
-
-		<event-type
-			name="Number list numbers added"
-			text="%0 added %1 numbers to %2"
-			admin="no"/>
-
-		<event-type
-			name="Number list numbers removed"
-			text="%0 removed %1 numbers from %2"
-			admin="no"/>
-
-	</event-types>
 
 	<number-lookup-types>
 

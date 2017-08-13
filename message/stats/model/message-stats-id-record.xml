@@ -1,5 +1,5 @@
 <record
-	name="messageStatsId"
+	name="message-stats-id"
 	type="composite">
 
 	<fields>

@@ -1,5 +1,5 @@
 <record
-	name="failedMessage"
+	name="failed-message"
 	type="minor"
 	table="failedmessage">
 

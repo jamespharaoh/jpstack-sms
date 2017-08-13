@@ -11,9 +11,9 @@
 	</sql-scripts>
 
 	<models>
-		<model name="messageStats"/>
-		<composite name="messageStatsData"/>
-		<composite name="messageStatsId"/>
+		<model name="message-stats"/>
+		<composite name="message-stats-data"/>
+		<composite name="message-stats-id"/>
 	</models>
 
 	<layer name="logic">

@@ -8,9 +8,9 @@
 	</plugin-dependencies>
 
 	<models>
-		<model name="smsSpendLimiter"/>
-		<model name="smsSpendLimiterNumber"/>
-		<model name="smsSpendLimiterNumberDay"/>
+		<model name="sms-spend-limiter"/>
+		<model name="sms-spend-limiter-number"/>
+		<model name="sms-spend-limiter-number-day"/>
 	</models>
 
 	<sql-scripts>
@@ -18,7 +18,7 @@
 	</sql-scripts>
 
 	<fixtures>
-		<fixture name="smsSpendLimit"/>
+		<fixture name="sms-spend-limit"/>
 	</fixtures>
 
 	<layer name="console">

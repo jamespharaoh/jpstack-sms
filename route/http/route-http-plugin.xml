@@ -3,7 +3,7 @@
 	package="wbs.sms.route.http">
 
 	<models>
-		<model name="httpRoute"/>
+		<model name="http-route"/>
 	</models>
 
 	<layer name="daemon">

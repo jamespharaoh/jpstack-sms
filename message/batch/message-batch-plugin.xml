@@ -8,8 +8,8 @@
 
 	<models>
 		<model name="batch"/>
-		<model name="batchSubject"/>
-		<model name="batchType"/>
+		<model name="batch-subject"/>
+		<model name="batch-type"/>
 	</models>
 
 	<layer name="fixture">
