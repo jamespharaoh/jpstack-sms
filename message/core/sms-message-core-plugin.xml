@@ -28,22 +28,22 @@
 
 		<bootstrap-component class="console.MessageContentFormFieldSpec"/>
 
-		<component class="console.MessageManuallyDeliverFormActionHelper"/>
-		<component class="console.MessageManuallyRetryFormActionHelper"/>
-		<component class="console.MessageManuallyUndeliverFormActionHelper"/>
-		<component class="console.MessageManuallyUnholdFormActionHelper"/>
 		<component class="console.MessageConsoleHooks"/>
 		<component class="console.MessageConsoleLogicImplementation"/>
 		<component class="console.MessageConsolePluginManager"/>
 		<component class="console.MessageContentCsvFormFieldInterfaceMapping"/>
 		<component class="console.MessageContentFormFieldBuilder"/>
 		<component class="console.MessageContentHtmlFormFieldInterfaceMapping"/>
+		<component class="console.MessageManuallyDeliverFormActionHelper"/>
+		<component class="console.MessageManuallyRetryFormActionHelper"/>
+		<component class="console.MessageManuallyUndeliverFormActionHelper"/>
+		<component class="console.MessageManuallyUnholdFormActionHelper"/>
 		<component class="console.MessageMediaContext"/>
-		<component class="console.MessageMediasPart"/>
 		<component class="console.MessageMediaSummaryPart"/>
+		<component class="console.MessageMediasPart"/>
 		<component class="console.MessageReportsPart"/>
-		<component class="console.MessageStatusConsoleHelper"/>
 		<component class="console.MessageSourceImplementation"/>
+		<component class="console.MessageStatusConsoleHelper"/>
 		<component class="console.MessageSummaryPart"/>
 		<component class="console.MessageThreadPart"/>
 

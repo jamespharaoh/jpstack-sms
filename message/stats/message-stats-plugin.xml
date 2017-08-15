@@ -29,11 +29,11 @@
 		<component class="console.RouteStatsSource"/>
 		<component class="console.ServiceStatsSourceBuilder"/>
 		<component class="console.SmsStatsConsoleLogicImplementation"/>
-		<component class="console.SmsStatsFormatter"/>
-		<component class="console.SmsStatsSourceImplementation"/>
 		<component class="console.SmsStatsDailyTimeScheme"/>
-		<component class="console.SmsStatsWeeklyTimeScheme"/>
+		<component class="console.SmsStatsFormatter"/>
 		<component class="console.SmsStatsMonthlyTimeScheme"/>
+		<component class="console.SmsStatsSourceImplementation"/>
+		<component class="console.SmsStatsWeeklyTimeScheme"/>
 	</layer>
 
 	<console-modules>
