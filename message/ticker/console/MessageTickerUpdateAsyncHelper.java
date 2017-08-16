@@ -379,7 +379,7 @@ class MessageTickerUpdateAsyncHelper
 
 			messageObject.addProperty (
 				"timestamp",
-				defaultTimeFormatter.timeString (
+				defaultTimeFormatter.timeStringSeconds (
 					DateTimeZone.forID (
 						ifNull (
 							user.getDefaultTimezone (),

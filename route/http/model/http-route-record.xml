@@ -1,5 +1,5 @@
 <record
-	name="httpRoute"
+	name="http-route"
 	type="minor">
 
 	<fields>
@@ -32,27 +32,27 @@
 			name="params"/>
 
 		<string-field
-			name="successRegex"
+			name="success-regex"
 			column="successregex"/>
 
 		<string-field
-			name="temporaryFailureRegex"
+			name="temporary-failure-regex"
 			column="tempfailureregex"/>
 
 		<string-field
-			name="permanentFailureRegex"
+			name="permanent-failure-regex"
 			column="permfailureregex"/>
 
 		<string-field
-			name="dailyFailureRegex"
+			name="daily-failure-regex"
 			column="dailyfailureregex"/>
 
 		<string-field
-			name="creditFailureRegex"
+			name="credit-failure-regex"
 			column="creditfailureregex"/>
 
 		<string-field
-			name="paramEncoding"/>
+			name="param-encoding"/>
 
 	</fields>
 

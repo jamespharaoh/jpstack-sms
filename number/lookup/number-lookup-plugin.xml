@@ -3,8 +3,8 @@
 	package="wbs.sms.number.lookup">
 
 	<models>
-		<model name="numberLookup"/>
-		<model name="numberLookupType"/>
+		<model name="number-lookup"/>
+		<model name="number-lookup-type"/>
 	</models>
 
 	<layer name="fixture">

@@ -21,12 +21,12 @@
 		<!-- settings -->
 
 		<reference-field
-			name="virtualNetworkOfNetwork"
+			name="virtual-network-of-network"
 			type="network"
 			nullable="yes"/>
 
 		<yes-no-field
-			name="shortMultipartMessages"
+			name="short-multipart-messages"
 			default="no"/>
 
 	</fields>

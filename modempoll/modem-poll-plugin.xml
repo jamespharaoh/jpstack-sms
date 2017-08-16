@@ -3,7 +3,7 @@
 	package="wbs.sms.modempoll">
 
 	<models>
-		<model name="modemPollQueue"/>
+		<model name="modem-poll-queue"/>
 	</models>
 
 	<console-modules>

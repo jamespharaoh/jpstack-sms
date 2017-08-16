@@ -1,5 +1,5 @@
 <record
-	name="inboxAttempt"
+	name="inbox-attempt"
 	type="event">
 
 	<fields>
@@ -25,14 +25,14 @@
 
 		<enum-field
 			name="result"
-			type="inboxState"/>
+			type="inbox-state"/>
 
 		<string-field
-			name="statusMessage"
+			name="status-message"
 			nullable="yes"/>
 
 		<reference-field
-			type="exceptionLog"
+			type="exception-log"
 			nullable="yes"/>
 
 	</fields>

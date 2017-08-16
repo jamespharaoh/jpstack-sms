@@ -1,5 +1,5 @@
 <record
-	name="routeOutboxSummary"
+	name="route-outbox-summary"
 	type="minor"
 	create="no"
 	mutable="no">
@@ -19,10 +19,10 @@
 		<!-- statistics -->
 
 		<integer-field
-			name="numMessages"/>
+			name="num-messages"/>
 
 		<timestamp-field
-			name="oldestTime"
+			name="oldest-time"
 			column-type="postgresql"/>
 
 	</fields>

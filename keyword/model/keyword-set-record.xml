@@ -1,5 +1,5 @@
 <record
-	name="keywordSet"
+	name="keyword-set"
 	type="major">
 
 	<fields>
@@ -27,15 +27,15 @@
 
 		<enum-field
 			name="type"
-			type="keywordSetType"/>
+			type="keyword-set-type"/>
 
 		<reference-field
-			name="fallbackCommand"
+			name="fallback-command"
 			type="command"
 			nullable="yes"/>
 
 		<integer-field
-			name="fallbackTimeout"
+			name="fallback-timeout"
 			nullable="yes"/>
 
 	</fields>

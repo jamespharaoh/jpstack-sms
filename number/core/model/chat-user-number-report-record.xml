@@ -1,5 +1,5 @@
 <record
-	name="chatUserNumberReport"
+	name="chat-user-number-report"
 	type="minor">
 
 	<!-- TODO this should /not/ be here!!! -->
@@ -19,22 +19,22 @@
 		<!-- data -->
 
 		<timestamp-field
-			name="lastSuccess"
+			name="last-success"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<timestamp-field
-			name="firstFailure"
+			name="first-failure"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<timestamp-field
-			name="permanentFailureReceived"
+			name="permanent-failure-received"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<integer-field
-			name="permanentFailureCount"
+			name="permanent-failure-count"
 			default="0"/>
 
 	</fields>

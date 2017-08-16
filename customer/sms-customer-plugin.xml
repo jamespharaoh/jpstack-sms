@@ -12,15 +12,15 @@
 	</sql-scripts>
 
 	<models>
-		<model name="smsCustomer"/>
-		<model name="smsCustomerAffiliate"/>
-		<model name="smsCustomerManager"/>
-		<model name="smsCustomerSession"/>
-		<model name="smsCustomerTemplate"/>
+		<model name="sms-customer"/>
+		<model name="sms-customer-affiliate"/>
+		<model name="sms-customer-manager"/>
+		<model name="sms-customer-session"/>
+		<model name="sms-customer-template"/>
 	</models>
 
 	<fixtures>
-		<fixture name="smsCustomerManager"/>
+		<fixture name="sms-customer-manager"/>
 	</fixtures>
 
 	<layer name="console">

@@ -7,8 +7,8 @@
 	</sql-scripts>
 
 	<models>
-		<model name="routeTest"/>
-		<model name="routeTester"/>
+		<model name="route-test"/>
+		<model name="route-tester"/>
 	</models>
 
 	<layer name="daemon">

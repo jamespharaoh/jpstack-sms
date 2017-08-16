@@ -11,7 +11,7 @@
 	</layer>
 
 	<fixtures>
-		<fixture name="smsCore"/>
+		<fixture name="sms-core"/>
 	</fixtures>
 
 </plugin>

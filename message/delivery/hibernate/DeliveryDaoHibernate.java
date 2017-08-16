@@ -12,7 +12,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.delivery.model.DeliveryDao;
@@ -21,7 +21,7 @@ import wbs.sms.message.delivery.model.DeliveryRec;
 @SingletonComponent ("deliveryDao")
 public
 class DeliveryDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements DeliveryDao {
 
 	// singleton dependencies

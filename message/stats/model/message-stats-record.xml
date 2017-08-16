@@ -1,5 +1,5 @@
 <record
-	name="messageStats"
+	name="message-stats"
 	type="common">
 
 	<fields>
@@ -11,11 +11,11 @@
 		<!-- data -->
 
 		<component-field
-			type="messageStatsId"/>
+			type="message-stats-id"/>
 
 		<component-field
 			name="stats"
-			type="messageStatsData"/>
+			type="message-stats-data"/>
 
 	</fields>
 

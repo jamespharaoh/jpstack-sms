@@ -1,5 +1,5 @@
 <record
-	name="networkPrefix"
+	name="network-prefix"
 	type="ephemeral">
 
 	<fields>

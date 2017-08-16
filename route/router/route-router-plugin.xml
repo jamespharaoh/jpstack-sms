@@ -8,8 +8,8 @@
 
 	<models>
 		<model name="router"/>
-		<model name="routerType"/>
-		<model name="simpleRouter"/>
+		<model name="router-type"/>
+		<model name="simple-router"/>
 	</models>
 
 	<layer name="fixture">
@@ -30,7 +30,7 @@
 	</layer>
 
 	<fixtures>
-		<fixture name="simpleRouter"/>
+		<fixture name="simple-router"/>
 	</fixtures>
 
 	<console-modules>

@@ -34,27 +34,27 @@
 			nullable="yes"/>
 
 		<yes-no-field
-			name="canReceive"
+			name="can-receive"
 			default="no"/>
 
 		<yes-no-field
-			name="canSend"
+			name="can-send"
 			default="no"/>
 
 		<yes-no-field
-			name="deliveryReports"
+			name="delivery-reports"
 			default="no"/>
 
 		<integer-field
-			name="expirySecs"
+			name="expiry-secs"
 			nullable="yes"/>
 
 		<integer-field
-			name="inCharge"
+			name="in-charge"
 			default="0"/>
 
 		<integer-field
-			name="outCharge"
+			name="out-charge"
 			default="0"/>
 
 		<reference-field
@@ -62,29 +62,29 @@
 			nullable="yes"/>
 
 		<integer-field
-			name="maxTries"
+			name="max-tries"
 			nullable="yes"/>
 
 		<yes-no-field
-			name="avRequired"
+			name="av-required"
 			default="no"/>
 
 		<yes-no-field
-			name="inboundImpliesAdult"
+			name="inbound-implies-adult"
 			default="no"/>
 
 		<enum-field
-			name="networkBehaviour"
-			type="routeNetworkBehaviour"
-			default="alwaysUpdate"/>
+			name="network-behaviour"
+			type="route-network-behaviour"
+			default="always-update"/>
 
 		<reference-field
 			type="currency"
 			nullable="yes"/>
 
 		<reference-field
-			name="blockNumberLookup"
-			type="numberLookup"
+			name="block-number-lookup"
+			type="number-lookup"
 			nullable="yes"/>
 
 	</fields>
@@ -92,14 +92,14 @@
 	<collections>
 
 		<associative-collection
-			name="inboundMessageTypes"
-			type="messageType"
+			name="inbound-message-types"
+			type="message-type"
 			table="route_message_type"
 			where-sql="direction = 0"/>
 
 		<associative-collection
-			name="outboundMessageTypes"
-			type="messageType"
+			name="outbound-message-types"
+			type="message-type"
 			table="route_message_type"
 			where-sql="direction = 1"/>
 

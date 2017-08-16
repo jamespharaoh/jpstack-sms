@@ -8,6 +8,8 @@ import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.entity.meta.model.ModelFieldSpec;
 
+import wbs.utils.string.StringFormat;
+
 @Accessors (fluent = true)
 @Data
 @DataClass ("longitude-latitude-field")
@@ -17,7 +19,8 @@ class LongitudeLatitudeFieldSpec
 	implements ModelFieldSpec {
 
 	@DataAttribute (
-		required = true)
+		required = true,
+		format = StringFormat.hyphenated)
 	String name;
 
 	@DataAttribute (

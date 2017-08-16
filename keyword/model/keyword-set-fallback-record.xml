@@ -1,5 +1,5 @@
 <record
-	name="keywordSetFallback"
+	name="keyword-set-fallback"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="keywordSet"/>
+			type="keyword-set"/>
 
 		<identity-reference-field
 			type="number"/>

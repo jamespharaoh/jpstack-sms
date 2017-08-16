@@ -9,7 +9,7 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.modempoll.model.ModemPollQueueDao;
@@ -17,7 +17,7 @@ import wbs.sms.modempoll.model.ModemPollQueueRec;
 
 public
 class ModemPollQueueDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements ModemPollQueueDao {
 
 	// singleton dependencies

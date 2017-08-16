@@ -1,5 +1,5 @@
 <record
-	name="routeTest"
+	name="route-test"
 	type="event">
 
 	<fields>
@@ -11,12 +11,12 @@
 		<!-- identity -->
 
 		<parent-field
-			type="routeTester"/>
+			type="route-tester"/>
 
 		<!-- TODO index -->
 
 		<timestamp-field
-			name="sentTime"
+			name="sent-time"
 			column-type="postgresql"/>
 
 		<!-- data -->
@@ -25,16 +25,16 @@
 			type="route"/>
 
 		<reference-field
-			name="sentMessage"
+			name="sent-message"
 			type="message"/>
 
 		<timestamp-field
-			name="returnedTime"
+			name="returned-time"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<reference-field
-			name="returnedMessage"
+			name="returned-message"
 			type="message"
 			nullable="yes"/>
 

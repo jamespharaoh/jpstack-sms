@@ -34,7 +34,7 @@
 
 			<object-search-page
 				name="search"
-				object-type="numberListNumber"
+				object-type="number-list-number"
 				search-class="wbs.sms.number.list.model.NumberListNumberSearch"
 				search-form="search"
 				results-form="results"

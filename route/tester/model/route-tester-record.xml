@@ -1,5 +1,5 @@
 <record
-	name="routeTester"
+	name="route-tester"
 	type="major">
 
 	<fields>
@@ -29,21 +29,21 @@
 			type="route"/>
 
 		<string-field
-			name="routeNumber"/>
+			name="route-number"/>
 
 		<string-field
-			name="destNumber"/>
+			name="dest-number"/>
 
 		<string-field
-			name="destKeyword"/>
+			name="dest-keyword"/>
 
 		<integer-field
-			name="intervalSecs"/>
+			name="interval-secs"/>
 
 		<!-- state -->
 
 		<timestamp-field
-			name="lastTest"
+			name="last-test"
 			column-type="postgresql"
 			nullable="yes"/>
 

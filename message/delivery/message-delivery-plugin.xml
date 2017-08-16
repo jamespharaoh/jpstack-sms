@@ -4,7 +4,7 @@
 
 	<models>
 		<model name="delivery"/>
-		<model name="deliveryType"/>
+		<model name="delivery-type"/>
 	</models>
 
 	<layer name="fixture">

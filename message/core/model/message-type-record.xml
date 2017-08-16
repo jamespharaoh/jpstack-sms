@@ -1,5 +1,5 @@
 <record
-	name="messageType"
+	name="message-type"
 	type="type">
 
 	<fields>
@@ -21,13 +21,13 @@
 	<collections>
 
 		<associative-collection
-			name="inboundRoutes"
+			name="inbound-routes"
 			type="route"
 			table="route_message_type"
 			where-sql="direction = 0"/>
 
 		<associative-collection
-			name="outboundRoutes"
+			name="outbound-routes"
 			type="route"
 			table="route_message_type"
 			where-sql="direction = 1"/>

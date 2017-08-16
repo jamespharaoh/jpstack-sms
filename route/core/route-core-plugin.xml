@@ -7,13 +7,13 @@
 	</plugin-dependencies>
 
 	<models>
-		<enum-type name="routeNetworkBehaviour"/>
+		<enum-type name="route-network-behaviour"/>
 		<model name="route"/>
 	</models>
 
 	<layer name="console">
-		<component class="console.RouteSummaryAdditionalPartManager"/>
 		<component class="console.RouteSummaryAdditionalPart"/>
+		<component class="console.RouteSummaryAdditionalPartManager"/>
 	</layer>
 
 	<fixtures>

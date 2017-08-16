@@ -3,7 +3,7 @@
 	package="wbs.sms.smpp">
 
 	<models>
-		<model name="smppRoute"/>
+		<model name="smpp-route"/>
 	</models>
 
 	<console-modules>

@@ -23,36 +23,36 @@
 		<!-- statistics -->
 
 		<timestamp-field
-			name="createdTime"
+			name="created-time"
 			column-type="iso"/>
 
 		<timestamp-field
-			name="processedTime"
+			name="processed-time"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<timestamp-field
-			name="lastAttempt"
+			name="last-attempt"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<integer-field
-			name="numAttempts"
+			name="num-attempts"
 			default="0"/>
 
 		<!-- state -->
 
 		<enum-field
 			name="state"
-			type="inboxState"/>
+			type="inbox-state"/>
 
 		<timestamp-field
-			name="nextAttempt"
+			name="next-attempt"
 			column-type="iso"
 			nullable="yes"/>
 
 		<string-field
-			name="statusMessage"
+			name="status-message"
 			nullable="yes"/>
 
 	</fields>

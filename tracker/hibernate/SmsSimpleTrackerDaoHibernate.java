@@ -7,7 +7,7 @@ import lombok.NonNull;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.core.hibernate.MessageDirectionType;
@@ -19,7 +19,7 @@ import wbs.sms.tracker.model.SmsSimpleTrackerRec;
 
 public
 class SmsSimpleTrackerDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements SmsSimpleTrackerDao {
 
 	// singleton dependencies

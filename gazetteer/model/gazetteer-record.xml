@@ -29,7 +29,7 @@
 
 		<children-collection
 			name="entries"
-			type="gazetteerEntry"/>
+			type="gazetteer-entry"/>
 
 	</collections>
 

@@ -11,9 +11,9 @@
 	</sql-scripts>
 
 	<models>
-		<model name="magicNumber"/>
-		<model name="magicNumberSet"/>
-		<model name="magicNumberUse"/>
+		<model name="magic-number"/>
+		<model name="magic-number-set"/>
+		<model name="magic-number-use"/>
 	</models>
 
 	<layer name="logic">
@@ -30,7 +30,7 @@
 	</layer>
 
 	<fixtures>
-		<fixture name="magicNumber"/>
+		<fixture name="magic-number"/>
 	</fixtures>
 
 	<console-modules>

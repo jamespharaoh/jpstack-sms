@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="keywordSet"/>
+			type="keyword-set"/>
 
 		<code-field
 			name="keyword"/>
@@ -31,7 +31,7 @@
 			default="no"/>
 
 		<yes-no-field
-			name="leaveIntact"
+			name="leave-intact"
 			default="no"/>
 
 	</fields>

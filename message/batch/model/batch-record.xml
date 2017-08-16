@@ -22,7 +22,7 @@
 
 		<reference-field
 			name="subject"
-			type="batchSubject"/>
+			type="batch-subject"/>
 
 	</fields>
 

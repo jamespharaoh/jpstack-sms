@@ -1,5 +1,5 @@
 <record
-	name="smsCustomerAffiliate"
+	name="sms-customer-affiliate"
 	type="major">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="smsCustomerManager"/>
+			type="sms-customer-manager"/>
 
 		<code-field/>
 

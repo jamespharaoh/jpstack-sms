@@ -18,7 +18,7 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.hibernate.AliasToBeanNestedResultTransformer;
 import wbs.framework.hibernate.DateUserType;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.stats.model.MessageStatsDao;
@@ -27,7 +27,7 @@ import wbs.sms.message.stats.model.MessageStatsSearch;
 
 public
 class MessageStatsDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements MessageStatsDao {
 
 	// singleton dependencies

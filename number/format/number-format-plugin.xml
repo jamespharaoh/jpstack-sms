@@ -7,8 +7,8 @@
 	</plugin-dependencies>
 
 	<models>
-		<model name="numberFormat"/>
-		<model name="numberFormatPattern"/>
+		<model name="number-format"/>
+		<model name="number-format-pattern"/>
 	</models>
 
 	<layer name="logic">
@@ -16,7 +16,7 @@
 	</layer>
 
 	<fixtures>
-		<fixture name="numberFormat"/>
+		<fixture name="number-format"/>
 	</fixtures>
 
 	<console-modules>

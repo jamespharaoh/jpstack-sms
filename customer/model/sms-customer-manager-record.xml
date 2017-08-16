@@ -1,5 +1,5 @@
 <record
-	name="smsCustomerManager"
+	name="sms-customer-manager"
 	type="major">
 
 	<fields>
@@ -26,12 +26,12 @@
 		<!-- settings -->
 
 		<integer-field
-			name="sessionTimeout"
+			name="session-timeout"
 			nullable="yes"/>
 
 		<reference-field
-			name="stopNumberList"
-			type="numberList"
+			name="stop-number-list"
+			type="number-list"
 			nullable="yes"/>
 
 	</fields>

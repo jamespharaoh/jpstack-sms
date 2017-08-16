@@ -1,5 +1,5 @@
 <record
-	name="magicNumberSet"
+	name="magic-number-set"
 	type="major">
 
 	<fields>
@@ -26,7 +26,7 @@
 		<!-- settings -->
 
 		<reference-field
-			type="numberFormat"
+			type="number-format"
 			nullable="yes"/>
 
 	</fields>

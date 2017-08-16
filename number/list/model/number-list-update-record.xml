@@ -1,5 +1,5 @@
 <record
-	name="numberListUpdate"
+	name="number-list-update"
 	type="event">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="numberList"/>
+			type="number-list"/>
 
 		<!-- TODO index -->
 
@@ -37,7 +37,7 @@
 			name="present"/>
 
 		<integer-field
-			name="numberCount"/>
+			name="number-count"/>
 
 	</fields>
 

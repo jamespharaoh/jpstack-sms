@@ -1,5 +1,5 @@
 <record
-	name="smsCustomerSession"
+	name="sms-customer-session"
 	type="event">
 
 	<fields>
@@ -12,35 +12,35 @@
 
 		<parent-field
 			name="customer"
-			type="smsCustomer"
+			type="sms-customer"
 			cacheable="yes"/>
 
 		<index-field
 			cacheable="yes"/>
 
 		<timestamp-field
-			name="startTime"
+			name="start-time"
 			column-type="iso"/>
 
 		<!-- data -->
 
 		<timestamp-field
-			name="endTime"
+			name="end-time"
 			column-type="iso"
 			nullable="yes"/>
 
 		<reference-field
-			name="welcomeMessage"
+			name="welcome-message"
 			type="message"
 			nullable="yes"/>
 
 		<reference-field
-			name="warningMessage"
+			name="warning-message"
 			type="message"
 			nullable="yes"/>
 
 		<reference-field
-			name="stopMessage"
+			name="stop-message"
 			type="message"
 			nullable="yes"/>
 

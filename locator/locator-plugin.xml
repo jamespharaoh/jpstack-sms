@@ -3,12 +3,15 @@
 	package="wbs.sms.locator">
 
 	<models>
-		<custom-type name="longLat"/>
-		<model name="biaxialEllipsoid"/>
+
+		<custom-type name="long-lat"/>
+
+		<model name="biaxial-ellipsoid"/>
 		<model name="locator"/>
-		<model name="locatorLog"/>
-		<model name="locatorType"/>
-		<model name="mercatorProjection"/>
+		<model name="locator-log"/>
+		<model name="locator-type"/>
+		<model name="mercator-projection"/>
+
 	</models>
 
 	<layer name="model-meta">

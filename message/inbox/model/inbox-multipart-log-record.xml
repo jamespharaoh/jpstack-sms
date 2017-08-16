@@ -1,5 +1,5 @@
 <record
-	name="inboxMultipartLog"
+	name="inbox-multipart-log"
 	type="event">
 
 	<fields>
@@ -20,13 +20,13 @@
 		<!-- data -->
 
 		<string-field
-			name="msgFrom"/>
+			name="msg-from"/>
 
 		<integer-field
-			name="multipartId"/>
+			name="multipart-id"/>
 
 		<integer-field
-			name="multipartSegMax"/>
+			name="multipart-seg-max"/>
 
 	</fields>
 

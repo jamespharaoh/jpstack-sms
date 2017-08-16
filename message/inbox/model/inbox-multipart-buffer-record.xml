@@ -1,5 +1,5 @@
 <record
-	name="inboxMultipartBuffer"
+	name="inbox-multipart-buffer"
 	type="event">
 
 	<fields>
@@ -20,33 +20,33 @@
 			type="route"/>
 
 		<integer-field
-			name="multipartId"/>
+			name="multipart-id"/>
 
 		<integer-field
-			name="multipartSegMax"/>
+			name="multipart-seg-max"/>
 
 		<integer-field
-			name="multipartSeg"/>
+			name="multipart-seg"/>
 
 		<string-field
-			name="msgTo"/>
+			name="msg-to"/>
 
 		<string-field
-			name="msgFrom"/>
+			name="msg-from"/>
 
 		<timestamp-field
-			name="msgNetworkTime"
+			name="msg-network-time"
 			column-type="postgresql"/>
 
 		<reference-field
-			name="msgNetwork"
+			name="msg-network"
 			type="network"/>
 
 		<string-field
-			name="msgOtherId"/>
+			name="msg-other-id"/>
 
 		<string-field
-			name="msgText"/>
+			name="msg-text"/>
 
 	</fields>
 

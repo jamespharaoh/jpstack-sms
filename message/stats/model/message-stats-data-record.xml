@@ -1,67 +1,67 @@
 <record
-	name="messageStatsData"
+	name="message-stats-data"
 	type="composite">
 
 	<fields>
 
 		<integer-field
-			name="inTotal"
+			name="in-total"
 			default="0"/>
 
 		<integer-field
-			name="outTotal"
+			name="out-total"
 			default="0"/>
 
 		<integer-field
-			name="outPending"
+			name="out-pending"
 			default="0"/>
 
 		<integer-field
-			name="outCancelled"
+			name="out-cancelled"
 			default="0"/>
 
 		<integer-field
-			name="outFailed"
+			name="out-failed"
 			default="0"/>
 
 		<integer-field
-			name="outSent"
+			name="out-sent"
 			default="0"/>
 
 		<integer-field
-			name="outSubmitted"
+			name="out-submitted"
 			default="0"/>
 
 		<integer-field
-			name="outDelivered"
+			name="out-delivered"
 			default="0"/>
 
 		<integer-field
-			name="outUndelivered"
+			name="out-undelivered"
 			default="0"/>
 
 		<integer-field
-			name="outReportTimedOut"
+			name="out-report-timed-out"
 			default="0"/>
 
 		<integer-field
-			name="outHeld"
+			name="out-held"
 			default="0"/>
 
 		<integer-field
-			name="outBlacklisted"
+			name="out-blacklisted"
 			default="0"/>
 
 		<integer-field
-			name="outManuallyUndelivered"
+			name="out-manually-undelivered"
 			default="0"/>
 
 		<integer-field
-			name="outManuallyDelivered"
+			name="out-manually-delivered"
 			default="0"/>
 
 		<integer-field
-			name="outRejected"
+			name="out-rejected"
 			default="0"/>
 
 	</fields>
