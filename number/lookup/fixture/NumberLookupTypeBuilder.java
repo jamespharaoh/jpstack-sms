@@ -2,7 +2,7 @@ package wbs.sms.number.lookup.fixture;
 
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
-import static wbs.utils.string.StringUtils.camelToUnderscore;
+import static wbs.utils.string.StringUtils.hyphenToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import lombok.NonNull;
@@ -84,7 +84,7 @@ class NumberLookupTypeBuilder
 
 			transaction.noticeFormat (
 				"Create delivery type %s.%s",
-				camelToUnderscore (
+				hyphenToUnderscore (
 					ifNull (
 						spec.subject (),
 						parent.name ())),
@@ -99,7 +99,7 @@ class NumberLookupTypeBuilder
 			throw new RuntimeException (
 				stringFormat (
 					"Error creating number lookup type %s.%s",
-					camelToUnderscore (
+					hyphenToUnderscore (
 						ifNull (
 							spec.subject (),
 							parent.name ())),
@@ -127,7 +127,7 @@ class NumberLookupTypeBuilder
 			// lookup parent type
 
 			String parentTypeCode =
-				camelToUnderscore (
+				hyphenToUnderscore (
 					ifNull (
 						spec.subject (),
 						parent.name ()));

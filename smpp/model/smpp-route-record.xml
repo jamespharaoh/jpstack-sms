@@ -1,5 +1,5 @@
 <record
-	name="smppRoute"
+	name="smpp-route"
 	type="major">
 
 	<fields>
@@ -17,16 +17,16 @@
 		<!-- settings -->
 
 		<string-field
-			name="connectHostname"/>
+			name="connect-hostname"/>
 
 		<integer-field
-			name="connectPort"/>
+			name="connect-port"/>
 
 		<string-field
-			name="bindSystemId"/>
+			name="bind-system-id"/>
 
 		<string-field
-			name="bindPassword"/>
+			name="bind-password"/>
 
 	</fields>
 

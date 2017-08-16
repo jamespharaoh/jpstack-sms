@@ -7,12 +7,15 @@
 	</sql-scripts>
 
 	<models>
-		<enum-type name="smsOutboxAttemptState"/>
-		<model name="failedMessage"/>
+
+		<enum-type name="sms-outbox-attempt-state"/>
+
+		<model name="failed-message"/>
 		<model name="outbox"/>
-		<model name="routeOutboxSummary"/>
-		<model name="smsOutboxAttempt"/>
-		<model name="smsOutboxMultipartLink"/>
+		<model name="route-outbox-summary"/>
+		<model name="sms-outbox-attempt"/>
+		<model name="sms-outbox-multipart-link"/>
+
 	</models>
 
 	<layer name="logic">

@@ -2,7 +2,8 @@ package wbs.sms.locator.build;
 
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.TypeUtils.classForNameRequired;
-import static wbs.utils.string.StringUtils.camelToSpaces;
+import static wbs.utils.string.StringUtils.hyphenToCamel;
+import static wbs.utils.string.StringUtils.hyphenToSpaces;
 
 import com.google.common.collect.ImmutableList;
 
@@ -96,10 +97,11 @@ class LongitudeLatitudeModelFieldBuilder
 					context.parentModelField ())
 
 				.name (
-					spec.name ())
+					hyphenToCamel (
+						spec.name ()))
 
 				.label (
-					camelToSpaces (
+					hyphenToSpaces (
 						spec.name ()))
 
 				.type (

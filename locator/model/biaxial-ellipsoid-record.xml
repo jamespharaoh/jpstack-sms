@@ -1,5 +1,5 @@
 <record
-	name="biaxialEllipsoid"
+	name="biaxial-ellipsoid"
 	type="major">
 
 	<record-interfaces>
@@ -27,10 +27,10 @@
 		<!-- settings -->
 
 		<floating-point-field
-			name="semiMajorAxisA"/>
+			name="semi-major-axis-a"/>
 
 		<floating-point-field
-			name="semiMajorAxisB"/>
+			name="semi-major-axis-b"/>
 
 	</fields>
 

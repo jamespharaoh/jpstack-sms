@@ -3,9 +3,9 @@
 	package="wbs.sms.messageset">
 
 	<models>
-		<model name="messageSet"/>
-		<model name="messageSetMessage"/>
-		<model name="messageSetType"/>
+		<model name="message-set"/>
+		<model name="message-set-message"/>
+		<model name="message-set-type"/>
 	</models>
 
 	<layer name="fixture">

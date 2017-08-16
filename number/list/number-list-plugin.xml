@@ -11,9 +11,9 @@
 	</sql-scripts>
 
 	<models>
-		<model name="numberList"/>
-		<model name="numberListNumber"/>
-		<model name="numberListUpdate"/>
+		<model name="number-list"/>
+		<model name="number-list-number"/>
+		<model name="number-list-update"/>
 	</models>
 
 	<layer name="console">
@@ -29,7 +29,7 @@
 	</layer>
 
 	<fixtures>
-		<fixture name="numberList"/>
+		<fixture name="number-list"/>
 	</fixtures>
 
 	<console-modules>

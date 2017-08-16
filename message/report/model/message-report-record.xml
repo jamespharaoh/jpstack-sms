@@ -1,5 +1,5 @@
 <record
-	name="messageReport"
+	name="message-report"
 	type="event">
 
 	<!-- TODO this is horrible -->
@@ -16,33 +16,33 @@
 			type="message"/>
 
 		<timestamp-field
-			name="receivedTime"
+			name="received-time"
 			column-type="postgresql"/>
 
 		<!-- data -->
 
 		<enum-field
-			name="newMessageStatus"
-			type="messageStatus"/>
+			name="new-message-status"
+			type="message-status"/>
 
 		<reference-field
-			name="theirCode"
+			name="their-code"
 			type="text"
 			column="code"
 			nullable="yes"/>
 
 		<reference-field
-			name="theirDescription"
+			name="their-description"
 			type="text"
 			nullable="yes"/>
 
 		<reference-field
-			name="extraInformation"
+			name="extra-information"
 			type="text"
 			nullable="yes"/>
 
 		<timestamp-field
-			name="theirTimestamp"
+			name="their-timestamp"
 			column-type="postgresql"
 			nullable="yes"/>
 

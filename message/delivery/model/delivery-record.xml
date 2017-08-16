@@ -17,12 +17,12 @@
 		<!-- data -->
 
 		<enum-field
-			name="oldMessageStatus"
-			type="messageStatus"/>
+			name="old-message-status"
+			type="message-status"/>
 
 		<enum-field
-			name="newMessageStatus"
-			type="messageStatus"/>
+			name="new-message-status"
+			type="message-status"/>
 
 	</fields>
 

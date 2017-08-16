@@ -1,5 +1,5 @@
 <record
-	name="deliveryType"
+	name="delivery-type"
 	type="type">
 
 	<fields>

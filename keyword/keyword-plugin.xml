@@ -11,10 +11,13 @@
 	</sql-scripts>
 
 	<models>
-		<enum-type name="keywordSetType"/>
+
+		<enum-type name="keyword-set-type"/>
+
 		<model name="keyword"/>
-		<model name="keywordSet"/>
-		<model name="keywordSetFallback"/>
+		<model name="keyword-set"/>
+		<model name="keyword-set-fallback"/>
+
 	</models>
 
 	<layer name="logic">

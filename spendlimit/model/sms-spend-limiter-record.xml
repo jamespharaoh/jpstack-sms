@@ -1,5 +1,5 @@
 <record
-	name="smsSpendLimiter"
+	name="sms-spend-limiter"
 	type="major">
 
 	<fields>
@@ -41,33 +41,33 @@
 		<!-- daily advice -->
 
 		<integer-field
-			name="dailySpendAdviceAmount"
+			name="daily-spend-advice-amount"
 			nullable="yes"/>
 
 		<reference-field
-			name="dailySpendAdviceMessage"
+			name="daily-spend-advice-message"
 			type="text"
 			nullable="yes"/>
 
 		<!-- daily limit -->
 
 		<integer-field
-			name="dailySpendLimitAmount"
+			name="daily-spend-limit-amount"
 			nullable="yes"/>
 
 		<reference-field
-			name="dailySpendLimitMessage"
+			name="daily-spend-limit-message"
 			type="text"
 			nullable="yes"/>
 
 		<!-- ongoing advice -->
 
 		<integer-field
-			name="ongoingSpendAdviceAmount"
+			name="ongoing-spend-advice-amount"
 			nullable="yes"/>
 
 		<reference-field
-			name="ongoingSpendAdviceMessage"
+			name="ongoing-spend-advice-message"
 			type="text"
 			nullable="yes"/>
 

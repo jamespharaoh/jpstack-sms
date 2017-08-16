@@ -1,5 +1,5 @@
 <record
-	name="smsOutboxMultipartLink"
+	name="sms-outbox-multipart-link"
 	type="minor">
 
 	<fields>
@@ -17,7 +17,7 @@
 		<!-- data -->
 
 		<reference-field
-			name="mainMessage"
+			name="main-message"
 			type="message"/>
 
 		<yes-no-field

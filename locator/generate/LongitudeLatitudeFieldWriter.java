@@ -1,5 +1,7 @@
 package wbs.sms.locator.generate;
 
+import static wbs.utils.string.StringUtils.hyphenToCamel;
+
 import lombok.NonNull;
 
 import wbs.framework.builder.Builder;
@@ -74,7 +76,8 @@ class LongitudeLatitudeFieldWriter
 					"wbs.sms.locator.model.LongLat")
 
 				.propertyName (
-					spec.name ())
+					hyphenToCamel (
+						spec.name ()))
 
 				.setUpdatedFieldName (
 					ModelRecordGenerator.recordUpdatedFieldName)

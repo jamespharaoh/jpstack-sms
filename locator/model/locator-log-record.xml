@@ -1,5 +1,5 @@
 <record
-	name="locatorLog"
+	name="locator-log"
 	type="event">
 
 	<fields>
@@ -14,7 +14,7 @@
 			type="locator"/>
 
 		<timestamp-field
-			name="startTime"
+			name="start-time"
 			column-type="postgresql"/>
 
 		<!-- details -->
@@ -25,14 +25,14 @@
 		<!-- data -->
 
 		<timestamp-field
-			name="endTime"
+			name="end-time"
 			column-type="postgresql"/>
 
 		<yes-no-field
 			name="success"/>
 
 		<longitude-latitude-field
-			name="longLat"/>
+			name="long-lat"/>
 
 		<reference-field
 			type="service"/>
@@ -41,10 +41,10 @@
 			type="affiliate"/>
 
 		<string-field
-			name="errorCode"/>
+			name="error-code"/>
 
 		<reference-field
-			name="errorText"
+			name="error-text"
 			type="text"/>
 
 	</fields>

@@ -1,5 +1,5 @@
 <record
-	name="smsSpendLimiterNumber"
+	name="sms-spend-limiter-number"
 	type="common">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="smsSpendLimiter"/>
+			type="sms-spend-limiter"/>
 
 		<identity-reference-field
 			type="number"/>
@@ -19,17 +19,17 @@
 		<!-- data -->
 
 		<integer-field
-			name="totalSpent"/>
+			name="total-spent"/>
 
 		<integer-field
-			name="adviceSpent"/>
+			name="advice-spent"/>
 
 		<date-field
-			name="lastSpendDate"
+			name="last-spend-date"
 			nullable="yes"/>
 
 		<integer-field
-			name="lastDailySpend"
+			name="last-daily-spend"
 			nullable="yes"/>
 
 	</fields>
@@ -37,13 +37,13 @@
 	<collections>
 
 		<associative-collection
-			name="spendMessages"
+			name="spend-messages"
 			type="message"
 			table="sms_spend_limiter_number_spend_message"
 			owned="yes"/>
 
 		<associative-collection
-			name="adviceMessages"
+			name="advice-messages"
 			type="message"
 			table="sms_spend_limiter_number_advice_message"
 			owned="yes"/>

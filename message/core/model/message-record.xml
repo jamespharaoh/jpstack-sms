@@ -11,35 +11,35 @@
 		<!-- identity -->
 
 		<timestamp-field
-			name="createdTime"
+			name="created-time"
 			column-type="postgresql"/>
 
 		<!-- data -->
 
 		<integer-field
-			name="threadId"
+			name="thread-id"
 			column="thread_message_id"/>
 
 		<string-field
-			name="otherId"
+			name="other-id"
 			nullable="yes"/>
 
 		<reference-field
 			type="text"/>
 
 		<string-field
-			name="numFrom"/>
+			name="num-from"/>
 
 		<string-field
-			name="numTo"/>
+			name="num-to"/>
 
 		<enum-field
 			name="direction"
-			type="messageDirection"/>
+			type="message-direction"/>
 
 		<enum-field
 			name="status"
-			type="messageStatus"/>
+			type="message-status"/>
 
 		<reference-field
 			type="number"/>
@@ -63,12 +63,12 @@
 			name="date"/>
 
 		<timestamp-field
-			name="processedTime"
+			name="processed-time"
 			column-type="postgresql"
 			nullable="yes"/>
 
 		<timestamp-field
-			name="networkTime"
+			name="network-time"
 			column-type="postgresql"
 			nullable="yes"/>
 
@@ -80,11 +80,11 @@
 			default="0"/>
 
 		<reference-field
-			type="deliveryType"
+			type="delivery-type"
 			nullable="yes"/>
 
 		<reference-field
-			name="subjectText"
+			name="subject-text"
 			type="text"
 			nullable="yes"/>
 
@@ -93,7 +93,7 @@
 			nullable="yes"/>
 
 		<reference-field
-			type="messageType"/>
+			type="message-type"/>
 
 		<reference-field
 			type="user"
@@ -105,16 +105,16 @@
 
 		<!-- TODO why is this a string???? -->
 		<string-field
-			name="adultVerified"
+			name="adult-verified"
 			nullable="yes"/>
 
 		<integer-field
-			name="numAttempts"
+			name="num-attempts"
 			nullable="yes"/>
 
 		<reference-field
-			name="notProcessedQueueItem"
-			type="queueItem"
+			name="not-processed-queue-item"
+			type="queue-item"
 			nullable="yes"/>
 
 	</fields>
@@ -129,7 +129,7 @@
 
 		<children-collection
 			name="reports"
-			type="messageReport"/>
+			type="message-report"/>
 
 		<associative-collection
 			name="tags"
@@ -139,8 +139,8 @@
 			owned="yes"/>
 
 		<children-collection
-			name="multipartCompanionLinks"
-			type="smsOutboxMultipartLink"
+			name="multipart-companion-links"
+			type="sms-outbox-multipart-link"
 			join-column="main_message_id"/>
 
 	</collections>
@@ -207,44 +207,5 @@
 			template="yes"/>
 
 	</priv-types>
-
-	<event-types>
-
-		<event-type
-			name="Message manually undelivered"
-			text="%0 manually undelivered %1"
-			admin="no"/>
-
-		<event-type
-			name="Message manually delivered"
-			text="%0 manually delivered %1"
-			admin="no"/>
-
-		<event-type
-			name="Message manually unheld"
-			text="%0 manually unheld %1"
-			admin="no"/>
-
-		<event-type
-			name="Message manually retried"
-			text="%0 manually retried %1"
-			admin="no"/>
-
-		<event-type
-			name="Message manually processed"
-			text="%0 manually processed %1"
-			admin="no"/>
-
-		<event-type
-			name="Message ignored"
-			text="%0 ignored %1"
-			admin="no"/>
-
-		<event-type
-			name="Message processed again"
-			text="%0 processed %1 again"
-			admin="no"/>
-
-	</event-types>
 
 </record>

@@ -20,7 +20,7 @@
 			type="route"/>
 
 		<timestamp-field
-			name="createdTime"
+			name="created-time"
 			column-type="postgresql"/>
 
 		<integer-field
@@ -30,7 +30,7 @@
 		<!-- state -->
 
 		<timestamp-field
-			name="retryTime"
+			name="retry-time"
 			column-type="postgresql"/>
 
 		<integer-field
@@ -38,7 +38,7 @@
 			default="0"/>
 
 		<integer-field
-			name="remainingTries"
+			name="remaining-tries"
 			nullable="yes"/>
 
 		<string-field
@@ -46,7 +46,7 @@
 			nullable="yes"/>
 
 		<yes-no-field
-			name="dailyFailure"
+			name="daily-failure"
 			default="no"/>
 
 		<timestamp-field
@@ -81,19 +81,5 @@
 			template="yes"/>
 
 	</priv-types>
-
-	<event-types>
-
-		<event-type
-			name="SMS outbox cancelled"
-			text="%0 cancelled %1"
-			admin="no"/>
-
-		<event-type
-			name="SMS outbox retried"
-			text="%0 retried %1"
-			admin="no"/>
-
-	</event-types>
 
 </record>

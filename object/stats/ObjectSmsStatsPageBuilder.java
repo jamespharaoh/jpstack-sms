@@ -145,13 +145,13 @@ class ObjectSmsStatsPageBuilder <
 					taskLogger)
 
 					.name (
-						consoleHelper.objectName () + ".stats")
+						consoleHelper.objectTypeCamel () + ".stats")
 
 					.defaultLabel (
 						"Stats")
 
 					.localFile (
-						consoleHelper.objectName () + ".stats")
+						consoleHelper.objectTypeCamel () + ".stats")
 
 					.privKeys (
 						privKey),
@@ -177,7 +177,7 @@ class ObjectSmsStatsPageBuilder <
 		) {
 
 			consoleModule.addContextFile (
-				consoleHelper.objectName () + ".stats",
+				consoleHelper.objectTypeCamel () + ".stats",
 				consoleFileProvider.provide (
 					taskLogger)
 
@@ -213,7 +213,7 @@ class ObjectSmsStatsPageBuilder <
 					taskLogger)
 
 				.localName (
-					"/" + consoleHelper.objectName () + ".stats")
+					"/" + consoleHelper.objectTypeCamel () + ".stats")
 
 				.objectLookup (
 					consoleHelper);
@@ -224,11 +224,11 @@ class ObjectSmsStatsPageBuilder <
 						taskLoggerNested)
 
 				.tab (
-					consoleHelper.objectName () + ".stats")
+					consoleHelper.objectTypeCamel () + ".stats")
 
 				.title (
 					capitalise (
-						consoleHelper.friendlyName () + " stats"))
+						consoleHelper.friendlyNameSingular () + " stats"))
 
 				.pagePartFactory (
 					partFactory)
@@ -249,7 +249,7 @@ class ObjectSmsStatsPageBuilder <
 				spec.privKey (),
 				stringFormat (
 					"%s.stats",
-					consoleHelper.objectName ()));
+					consoleHelper.objectTypeCamel ()));
 
 	}
 

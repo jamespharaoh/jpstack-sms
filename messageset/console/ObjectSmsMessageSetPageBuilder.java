@@ -359,7 +359,7 @@ class ObjectSmsMessageSetPageBuilder <
 		privKey =
 			stringFormat (
 				"%s.manage",
-				consoleHelper.objectName ());
+				consoleHelper.objectTypeCamel ());
 
 		tabName =
 			stringFormat (

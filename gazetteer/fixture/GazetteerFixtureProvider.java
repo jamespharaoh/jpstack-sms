@@ -15,7 +15,7 @@ import wbs.framework.data.tools.DataFromXmlBuilder;
 import wbs.framework.database.Database;
 import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.GlobalId;
-import wbs.framework.fixtures.FixtureProvider;
+import wbs.framework.fixtures.Fixture;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
@@ -34,7 +34,7 @@ import wbs.sms.locator.model.LongLat;
 @PrototypeComponent ("gazetteerFixtureProvider")
 public
 class GazetteerFixtureProvider
-	implements FixtureProvider {
+	implements Fixture {
 
 	// singleton dependencies
 

@@ -3,7 +3,7 @@
 	package="wbs.sms.message.report">
 
 	<models>
-		<model name="messageReport"/>
+		<model name="message-report"/>
 	</models>
 
 	<layer name="logic">

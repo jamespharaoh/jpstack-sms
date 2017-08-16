@@ -18,7 +18,7 @@ import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.framework.logging.LogContext;
 
@@ -32,7 +32,7 @@ import wbs.sms.route.core.model.RouteRec;
 @SingletonComponent ("outboxDao")
 public
 class OutboxDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements OutboxDao {
 
 	// singleton dependencies

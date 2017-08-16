@@ -1,5 +1,5 @@
 <record
-	name="batchSubject"
+	name="batch-subject"
 	type="minor">
 
 	<fields>
@@ -21,7 +21,7 @@
 		<!-- details -->
 
 		<type-field
-			type="batchType"
+			type="batch-type"
 			column="type_id"/>
 
 	</fields>

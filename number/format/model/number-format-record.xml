@@ -1,5 +1,5 @@
 <record
-	name="numberFormat"
+	name="number-format"
 	type="major">
 
 	<fields>
@@ -21,7 +21,7 @@
 		<!-- statistics -->
 
 		<integer-field
-			name="numPatterns"
+			name="num-patterns"
 			default="0"/>
 
 	</fields>
@@ -29,7 +29,7 @@
 	<collections>
 
 		<children-list
-			type="numberFormatPattern"/>
+			type="number-format-pattern"/>
 
 	</collections>
 

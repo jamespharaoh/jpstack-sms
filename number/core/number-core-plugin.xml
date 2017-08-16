@@ -11,7 +11,7 @@
 	</sql-scripts>
 
 	<models>
-		<model name="chatUserNumberReport"/>
+		<model name="chat-user-number-report"/>
 		<model name="number"/>
 	</models>
 

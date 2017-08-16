@@ -1,5 +1,5 @@
 <record
-	name="smsOutboxAttempt"
+	name="sms-outbox-attempt"
 	type="event">
 
 	<fields>
@@ -18,36 +18,36 @@
 			cacheable="yes"/>
 
 		<timestamp-field
-			name="startTime"
+			name="start-time"
 			column-type="iso"/>
 
 		<!-- data -->
 
 		<enum-field
 			name="state"
-			type="smsOutboxAttemptState"/>
+			type="sms-outbox-attempt-state"/>
 
 		<string-field
-			name="statusMessage"/>
+			name="status-message"/>
 
 		<reference-field
 			type="route"/>
 
 		<timestamp-field
-			name="endTime"
+			name="end-time"
 			column-type="iso"
 			nullable="yes"/>
 
 		<binary-field
-			name="requestTrace"
+			name="request-trace"
 			nullable="yes"/>
 
 		<binary-field
-			name="responseTrace"
+			name="response-trace"
 			nullable="yes"/>
 
 		<binary-field
-			name="errorTrace"
+			name="error-trace"
 			nullable="yes"/>
 
 	</fields>

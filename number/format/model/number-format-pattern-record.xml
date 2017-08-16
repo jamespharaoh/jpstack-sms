@@ -1,5 +1,5 @@
 <record
-	name="numberFormatPattern"
+	name="number-format-pattern"
 	type="ephemeral">
 
 	<fields>
@@ -11,7 +11,7 @@
 		<!-- identity -->
 
 		<parent-field
-			type="numberFormat"
+			type="number-format"
 			cacheable="yes"/>
 
 		<index-field/>
@@ -23,16 +23,16 @@
 		<!-- settings -->
 
 		<string-field
-			name="inputPrefix"/>
+			name="input-prefix"/>
 
 		<string-field
-			name="outputPrefix"/>
+			name="output-prefix"/>
 
 		<integer-field
-			name="minimumLength"/>
+			name="minimum-length"/>
 
 		<integer-field
-			name="maximumLength"/>
+			name="maximum-length"/>
 
 	</fields>
 

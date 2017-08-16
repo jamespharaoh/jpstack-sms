@@ -10,7 +10,7 @@ import org.joda.time.Instant;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.message.inbox.model.InboxMultipartBufferRec;
@@ -19,7 +19,7 @@ import wbs.sms.message.inbox.model.InboxMultipartLogRec;
 
 public
 class InboxMultipartLogDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements InboxMultipartLogDao {
 
 	// singleton dependencies

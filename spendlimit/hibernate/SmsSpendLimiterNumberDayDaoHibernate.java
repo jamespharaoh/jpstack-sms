@@ -8,7 +8,7 @@ import org.joda.time.LocalDate;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
-import wbs.framework.hibernate.HibernateDao;
+import wbs.framework.hibernate.HibernateDaoLegacy;
 import wbs.framework.logging.LogContext;
 
 import wbs.sms.spendlimit.model.SmsSpendLimiterNumberDayDaoMethods;
@@ -17,7 +17,7 @@ import wbs.sms.spendlimit.model.SmsSpendLimiterNumberRec;
 
 public
 class SmsSpendLimiterNumberDayDaoHibernate
-	extends HibernateDao
+	extends HibernateDaoLegacy
 	implements SmsSpendLimiterNumberDayDaoMethods {
 
 	// singleton dependencies
