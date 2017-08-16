@@ -2,7 +2,7 @@ package wbs.sms.command.fixture;
 
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
-import static wbs.utils.string.StringUtils.camelToUnderscore;
+import static wbs.utils.string.StringUtils.hyphenToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import lombok.NonNull;
@@ -86,7 +86,7 @@ class CommandTypeBuilder
 
 				transaction.noticeFormat (
 					"Create command type %s.%s",
-					camelToUnderscore (
+					hyphenToUnderscore (
 						ifNull (
 							spec.subject (),
 							parent.name ())),
@@ -101,7 +101,7 @@ class CommandTypeBuilder
 				throw new RuntimeException (
 					stringFormat (
 						"Error creating command type %s.%s",
-						camelToUnderscore (
+						hyphenToUnderscore (
 							ifNull (
 								spec.subject (),
 								parent.name ())),
@@ -131,7 +131,7 @@ class CommandTypeBuilder
 			// lookup parent type
 
 			String parentTypeCode =
-				camelToUnderscore (
+				hyphenToUnderscore (
 					ifNull (
 						spec.subject (),
 						parent.name ()));

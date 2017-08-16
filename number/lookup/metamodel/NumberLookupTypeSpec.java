@@ -8,6 +8,8 @@ import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.entity.meta.model.ModelDataSpec;
 
+import wbs.utils.string.StringFormat;
+
 @Accessors (fluent = true)
 @Data
 @DataClass ("number-lookup-type")
@@ -16,7 +18,8 @@ public
 class NumberLookupTypeSpec
 	implements ModelDataSpec {
 
-	@DataAttribute
+	@DataAttribute (
+		format = StringFormat.hyphenated)
 	String subject;
 
 	@DataAttribute (
