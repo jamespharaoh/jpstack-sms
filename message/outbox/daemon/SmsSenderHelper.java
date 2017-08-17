@@ -4,11 +4,11 @@ import static wbs.utils.string.StringUtils.stringFormatArray;
 
 import java.util.List;
 
+import com.google.gson.JsonObject;
+
 import lombok.Data;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
-
-import org.json.simple.JSONObject;
 
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.TaskLogger;
@@ -49,8 +49,8 @@ interface SmsSenderHelper <StateType> {
 
 		StateType state;
 
-		JSONObject requestTrace;
-		JSONObject errorTrace;
+		JsonObject requestTrace;
+		JsonObject errorTrace;
 
 		// property utils
 
@@ -84,9 +84,9 @@ interface SmsSenderHelper <StateType> {
 		String statusMessage;
 		Throwable exception;
 
-		JSONObject requestTrace;
-		JSONObject responseTrace;
-		JSONObject errorTrace;
+		JsonObject requestTrace;
+		JsonObject responseTrace;
+		JsonObject errorTrace;
 
 	}
 
@@ -113,7 +113,7 @@ interface SmsSenderHelper <StateType> {
 		List <String> otherIds;
 		Long simulateMessageParts;
 
-		JSONObject errorTrace;
+		JsonObject errorTrace;
 
 		// property utils
 

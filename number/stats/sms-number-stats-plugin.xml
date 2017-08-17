@@ -7,8 +7,8 @@
 	</plugin-dependencies>
 
 	<models>
-		<model name="smsNumberMessageStats"/>
-		<composite name="smsNumberMessageStatsId"/>
+		<model name="sms-number-message-stats"/>
+		<composite name="sms-number-message-stats-id"/>
 	</models>
 
 	<console-modules>

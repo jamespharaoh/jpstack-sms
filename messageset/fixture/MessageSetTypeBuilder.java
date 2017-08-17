@@ -2,7 +2,7 @@ package wbs.sms.messageset.fixture;
 
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
-import static wbs.utils.string.StringUtils.camelToUnderscore;
+import static wbs.utils.string.StringUtils.hyphenToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import lombok.NonNull;
@@ -90,7 +90,7 @@ class MessageSetTypeBuilder
 			throw new RuntimeException (
 				stringFormat (
 					"Error creating message set type %s.%s",
-					camelToUnderscore (
+					hyphenToUnderscore (
 						ifNull (
 							spec.subject (),
 							parent.name ())),
@@ -118,7 +118,7 @@ class MessageSetTypeBuilder
 			// lookup parent type
 
 			String parentTypeCode =
-				camelToUnderscore (
+				hyphenToUnderscore (
 					ifNull (
 						spec.subject (),
 						parent.name ()));

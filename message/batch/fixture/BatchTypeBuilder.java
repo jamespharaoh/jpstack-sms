@@ -2,7 +2,7 @@ package wbs.sms.message.batch.fixture;
 
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
-import static wbs.utils.string.StringUtils.camelToUnderscore;
+import static wbs.utils.string.StringUtils.hyphenToUnderscore;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import lombok.NonNull;
@@ -86,7 +86,7 @@ class BatchTypeBuilder
 
 				transaction.noticeFormat (
 					"Create batch type %s.%s",
-					camelToUnderscore (
+					hyphenToUnderscore (
 						ifNull (
 							spec.subject (),
 							parent.name ())),
@@ -101,7 +101,7 @@ class BatchTypeBuilder
 				throw new RuntimeException (
 					stringFormat (
 						"Error creating batch type %s.%s",
-						camelToUnderscore (
+						hyphenToUnderscore (
 							ifNull (
 								spec.subject (),
 								parent.name ())),
@@ -131,7 +131,7 @@ class BatchTypeBuilder
 			// lookup subject
 
 			String subjectTypeCode =
-				camelToUnderscore (
+				hyphenToUnderscore (
 					ifNull (
 						spec.subject (),
 						parent.name ()));
@@ -145,7 +145,7 @@ class BatchTypeBuilder
 			// lookup batch
 
 			String batchTypeCode =
-				camelToUnderscore (
+				hyphenToUnderscore (
 					spec.batch ());
 
 			ObjectTypeRec batchType =
